@@ -1,0 +1,20 @@
+.return-info {
+	position: fixed;
+	top: 80px;
+	right: 20px;
+	color: #fff;
+	padding: 7px 20px;
+	background-color: #7e258c;
+	border-radius: 6px;
+}
+
+.return-info span {
+	padding: 0 20px;
+}
+
+.return-option div span {
+	transition: 0.1s;
+}
+.return-option div:hover span:first-child {
+	font-size: 0;
+}

@@ -1,0 +1,25 @@
+.btn-table-success {
+	color: #30af25;
+	border: 1px solid #30af25;
+}
+.btn-table-success:hover {
+	background-color: #30af25;
+	border: 1px solid #30af25;
+	color: #fff;
+}
+.btn-table-success:active {
+	background-color: #30af25 !important;
+	border: 1px solid #30af25 !important;
+	color: #fff !important;
+}
+
+.debt-page-toggle {
+	margin-bottom: 10px;
+}
+
+/* .debt-page-toggle label {
+	border: none;
+	outline: none;
+	color: white !important;
+	background-color: #7e258c !important;
+} */

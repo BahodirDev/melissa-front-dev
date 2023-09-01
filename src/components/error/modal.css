@@ -1,0 +1,40 @@
+.modalWrapper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 9;
+  display: grid;
+  place-items: center;
+}
+
+.errorModal {
+  width: 400px;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.errorModal h1 {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.errorModal h4 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.modal-btn {
+  width: 100%;
+  background-color: #6601A6;
+  outline: none;
+  border: none;
+  font-weight: 500;
+}
+
+.modal-btn:hover {
+  background-color: #6601A6;
+}

@@ -1,0 +1,74 @@
+.store-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	gap: 1rem;
+}
+
+.store-item {
+	text-align: center;
+	box-shadow: 4px 4px 10px 0px rgba(0, 0, 0, 0.25);
+	border-radius: 12px;
+	padding: 12px;
+	border: 1px solid #d9d9d9;
+	width: 300px;
+}
+
+.store-item-top {
+	display: flex;
+	margin-bottom: 20px;
+}
+
+.store-item-top h4 {
+	margin-left: 10px;
+	line-height: 1.5;
+}
+
+.store-item-bottom {
+	display: flex;
+	justify-content: space-between;
+}
+
+.store-item-bottom span {
+	line-height: 2;
+}
+
+.store-info {
+	position: fixed;
+	top: 80px;
+	right: 20px;
+	color: #fff;
+	padding: 7px 20px;
+	background-color: #7e258c;
+	border-radius: 6px;
+}
+
+.store-info span {
+	padding: 0 20px;
+}
+
+/* .store-item {
+	border: ;
+} */
+
+/* .my-card__item {
+	max-width: 300px;
+	height: 150px;
+	border-radius: 12px;
+	box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
+	padding: 1rem;
+	position: relative;
+	background-image: linear-gradient(to right, #ece9e6, #ffffff);
+}
+
+.my-card__item span {
+	position: absolute;
+	right: 1rem;
+	bottom: 1rem;
+}
+
+.btn-purple {
+	background-color: #7e258c !important;
+	color: #fff !important;
+	border: none;
+	padding: 3.5px 10px;
+} */

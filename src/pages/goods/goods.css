@@ -1,0 +1,43 @@
+.good-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	gap: 1rem;
+}
+
+.good-item {
+	text-align: center;
+	box-shadow: 4px 4px 10px 0px rgba(0, 0, 0, 0.25);
+	border-radius: 12px;
+	padding: 12px;
+	border: 1px solid #d9d9d9;
+	text-align: left;
+	width: 300px;
+}
+
+.good-input {
+	width: 200px !important;
+}
+
+.good-item-bottom {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1rem;
+}
+
+.good-item-bottom span {
+	line-height: 2;
+}
+
+.goods-info {
+	position: fixed;
+	top: 80px;
+	right: 20px;
+	color: #fff;
+	padding: 7px 20px;
+	background-color: #7e258c;
+	border-radius: 6px;
+}
+
+.goods-info span {
+	padding: 0 20px;
+}
