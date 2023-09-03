@@ -344,7 +344,7 @@ export default function Employees() {
 			</div>
 			<div className="emp-info">
 				<i className="fa-solid fa-user-tag"></i> Xodimlar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 			{state?.loading ? (
 				<Loader />

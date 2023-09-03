@@ -277,7 +277,7 @@ function Deliver() {
 			</div>
 			<div className="deliverInfo">
 				<i className="fa-solid fa-truck"></i> Ta'minotchilar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 
 			{state?.loading ? (

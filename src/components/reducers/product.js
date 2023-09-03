@@ -72,19 +72,19 @@ export const productSlice = createSlice({
 		},
 		editData: (state, action) => {
 			const index = state.dataProduct.findIndex(
-				(item) => item.products_id === action.payload.products_id
+				(item) => item.products_id === action.payload?.products_id
 			)
 			const indexStore = state.dataStore.findIndex(
-				(item) => item.store_id === action.payload.store_id
+				(item) => item.store_id === action.payload?.store_id
 			)
 			const indexCurrency = state.dataCurrency.findIndex(
-				(item) => item.currency_id === action.payload.currency_id
+				(item) => item.currency_id === action.payload?.currency_id
 			)
 			const indexDeliver = state.dataDeliver.findIndex(
-				(item) => item.deliver_id === action.payload.deliver_id
+				(item) => item.deliver_id === action.payload?.deliver_id
 			)
 			const indexGood = state.dataGood.findIndex(
-				(item) => item.goods_id === action.payload.goods_id
+				(item) => item.goods_id === action.payload?.goods_id
 			)
 
 			if (index !== -1) {

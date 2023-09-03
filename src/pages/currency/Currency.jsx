@@ -298,7 +298,7 @@ export default function Currency() {
 			</div>
 			<div className="currency-info">
 				<i className="fa-solid fa-money-bill-transfer"></i> Valyutalar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 			{state?.loading ? (
 				<Loader />

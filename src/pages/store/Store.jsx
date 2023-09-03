@@ -118,6 +118,7 @@ export default function Store() {
 	const deleteStore = (id) => {
 		request("DELETE", `${process.env.REACT_APP_URL}/store/store-delete/${id}`)
 			.then((data) => {
+				// console.log(data)
 				getData()
 				setModal_alert("Xabar")
 				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
@@ -216,7 +217,7 @@ export default function Store() {
 
 			<div className="store-info">
 				<i className="fa-solid fa-warehouse"></i> Omborlar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 			{/* <AntTable data={store} tableName="store" /> */}
 			{state?.loading ? (

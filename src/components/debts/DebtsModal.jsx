@@ -119,10 +119,10 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				}))
 				dispatch(addData(updatedData))
 				dispatch(addDebtToClient(updatedData))
-				console.log(updatedData)
 
 				request("GET", `${process.env.REACT_APP_URL}/products/products-list`)
 					.then((data) => {
+						// console.log(data)
 						dispatch(setDataProduct(data))
 						setDebtsModal(false)
 						setModalAlert("Xabar")
@@ -229,8 +229,8 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 								optionLabelProp="label"
 								// disabled={productList.length}
 							>
-								{productsList.length
-									? productsList.map((item, idx) => {
+								{product?.dataProduct?.length
+									? product?.dataProduct.map((item, idx) => {
 											return (
 												<Option
 													className="client-option"

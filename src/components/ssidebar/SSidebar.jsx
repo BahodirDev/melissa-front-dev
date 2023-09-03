@@ -71,11 +71,11 @@ export default function SSidebar() {
 						<i className="fa-solid fa-money-bill-transfer"></i>
 					</NavLink>
 				</li>
-				<li>
+				{/* <li>
 					<NavLink to="/settings">
 						<i className="fa-solid fa-gear"></i>
 					</NavLink>
-				</li>
+				</li> */}
 
 				<li className="slogout">
 					<a

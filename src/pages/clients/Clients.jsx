@@ -297,8 +297,8 @@ export default function Employees() {
 				</div>
 			</div>
 			<div className="clients-info">
-				<i className="fa-solid fa-users"></i> Mijozlar soni: {state?.quantity}{" "}
-				ta
+				<i className="fa-solid fa-users"></i> Mijozlar soni:{" "}
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 			{state?.loading ? (
 				<Loader />

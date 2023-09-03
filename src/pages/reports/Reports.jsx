@@ -111,7 +111,7 @@ export default function Reports() {
 			filterObj.isEnter = false
 		}
 
-		console.log(filterObj)
+		// console.log(filterObj)
 		request(
 			"POST",
 			`${process.env.REACT_APP_URL}/reports/reports-filter`,
@@ -259,19 +259,19 @@ export default function Reports() {
 					<div className="reports-info">
 						<span>
 							<i className="fa-solid fa-tags"></i> Umumiy savdo:{" "}
-							{addComma(report?.benefit ? report.benefit : 0)} лв
+							{addComma(report?.benefit ? report.benefit : 0)} so'm
 						</span>
 						<span>
 							<i className="fa-solid fa-tags"></i> Foyda:{" "}
-							{addComma(report?.capital ? report.capital : 0)} лв
+							{addComma(report?.capital ? report.capital : 0)} so'm
 						</span>
 						<span>
 							<i className="fa-solid fa-tags"></i> Kirim:{" "}
-							{addComma(report?.outcome ? report.outcome : 0)} лв
+							{addComma(report?.outcome ? report.outcome : 0)} so'm
 						</span>
 						<span>
 							<i className="fa-solid fa-tags"></i> Chiqim:{" "}
-							{addComma(report?.income ? report.income : 0)} лв
+							{addComma(report?.income ? report.income : 0)} so'm
 						</span>
 					</div>
 					<AntReportTable

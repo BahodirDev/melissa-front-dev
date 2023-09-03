@@ -74,7 +74,6 @@ export default function MyModal({ myModal, setMyModal }) {
 		)
 			.then((data) => {
 				setFilteredProducts(data)
-				console.log(data)
 			})
 			.catch((error) => console.log(error?.response?.data))
 	}
@@ -89,11 +88,14 @@ export default function MyModal({ myModal, setMyModal }) {
 				cost: (item?.cost / item?.currency_amount).toFixed(2),
 				price: (item?.price / item?.currency_amount).toFixed(2),
 				code: item?.code,
+				store_id: item?.store_id,
+				deliver_id: item?.deliver_id,
+				currency_amount: item?.currency_amount,
 			}
 		})
-		console.log(newArr)
+
 		request("PATCH", `${process.env.REACT_APP_URL}/products/products-sale`, {
-			products: productList,
+			products: newArr,
 		})
 			.then((dataP) => {
 				request("get", `${process.env.REACT_APP_URL}/products/products-list`)

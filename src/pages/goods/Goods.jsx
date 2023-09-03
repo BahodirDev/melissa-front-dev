@@ -239,7 +239,7 @@ export default function Goods() {
 			</div>
 			<div className="goods-info">
 				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 			{state?.loading ? (
 				<Loader />
