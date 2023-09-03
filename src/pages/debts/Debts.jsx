@@ -12,12 +12,14 @@ import {
 	deleteData as deleteDeliverData,
 	editData as editDeliverData,
 	setData as setDeliverDebt,
+	setQuantity as setQuantityD,
 } from "../../components/reducers/d-debt"
 import {
 	deleteData,
 	editData,
 	setData,
 	setLoading,
+	setQuantity,
 } from "../../components/reducers/debt"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { validation } from "../../components/validation"
@@ -47,7 +49,17 @@ function Debts() {
 	const getData = (list, setList) => {
 		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`)
 			.then((data) => {
-				dispatch(setList(data))
+				console.log(data)
+				if (list === "debts" || list === "deliver-debts") {
+					dispatch(setList(data.data))
+					if (list === "debts") {
+						dispatch(setQuantity(data.amount))
+					} else {
+						dispatch(setQuantityD(data.amount))
+					}
+				} else {
+					dispatch(setList(data))
+				}
 			})
 			.catch((error) => {
 				console.log(error)
@@ -439,7 +451,7 @@ function Debts() {
 
 			<div className="return-info">
 				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
-				{showDeliver ? 1111 : 2222} ta
+				{showDeliver ? dDebt.quantity : debt.quantity} ta
 			</div>
 			<div style={{ height: "10px" }}></div>
 

@@ -61,7 +61,7 @@ export default function Sidebar() {
 				<li>
 					<NavLink to="/deliver">
 						<i className="fa-solid fa-truck"></i>
-						<span className="link-name">Yetbakiz beruvchi</span>
+						<span className="link-name">Ta'minotchi</span>
 					</NavLink>
 				</li>
 				<li>
@@ -82,12 +82,12 @@ export default function Sidebar() {
 						<span className="link-name">Pul birliklari</span>
 					</NavLink>
 				</li>
-				<li>
+				{/* <li>
 					<NavLink to="/settings">
 						<i className="fa-solid fa-gear"></i>
 						<span className="link-name">Sozlamalar</span>
 					</NavLink>
-				</li>
+				</li> */}
 
 				<li className="logout">
 					<a

@@ -130,18 +130,19 @@ export default function Goods() {
 	const deleteGood = (id) => {
 		request("DELETE", `${process.env.REACT_APP_URL}/goods/goods-delete/${id}`)
 			.then((data) => {
-				getData()
-				setModal_alert("Xabar")
-				setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
-			})
-			.catch((err) => {
-				if (err?.response?.data?.error === "GOODS_ALREADY_EXIST") {
+				console.log(data?.response?.data)
+				if (data?.data?.error === "GOODS_ALREADY_EXIST") {
 					setModal_alert("Xatolik")
 					setModal_msg("Kategoriyada mahsulot mavjud")
 				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Kategoriyani o'chirib bo'lmadi")
+					getData()
+					setModal_alert("Xabar")
+					setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
 				}
+			})
+			.catch((err) => {
+				setModal_alert("Xatolik")
+				setModal_msg("Kategoriyani o'chirib bo'lmadi")
 			})
 	}
 
@@ -239,7 +240,7 @@ export default function Goods() {
 			</div>
 			<div className="goods-info">
 				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 			{state?.loading ? (
 				<Loader />

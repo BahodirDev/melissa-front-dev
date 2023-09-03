@@ -13,6 +13,8 @@
 .ssidebar ul {
 	padding: 0 15px;
 	margin-top: 30px;
+	overflow-y: auto;
+	height: calc(100vh - 50px - 100px);
 }
 
 .ssidebar ul li a {

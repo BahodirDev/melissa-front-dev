@@ -118,18 +118,18 @@ export default function Store() {
 	const deleteStore = (id) => {
 		request("DELETE", `${process.env.REACT_APP_URL}/store/store-delete/${id}`)
 			.then((data) => {
-				getData()
-				setModal_alert("Xabar")
-				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
-			})
-			.catch((err) => {
-				if (err.response.data.error === "PRODUCT_FOUND") {
+				if (data?.data?.error === "PRODUCT_FOUND") {
 					setModal_alert("Xatolik")
 					setModal_msg("Omborda maxsulot borligi uchun o'chirilmadi")
 				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Omborni o'chirishda xatolik")
+					getData()
+					setModal_alert("Xabar")
+					setModal_msg("Ombor muvoffaqiyatli o'chirildi")
 				}
+			})
+			.catch((err) => {
+				setModal_alert("Xatolik")
+				setModal_msg("Omborni o'chirishda xatolik")
 			})
 	}
 
@@ -216,7 +216,7 @@ export default function Store() {
 
 			<div className="store-info">
 				<i className="fa-solid fa-warehouse"></i> Omborlar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 			{/* <AntTable data={store} tableName="store" /> */}
 			{state?.loading ? (

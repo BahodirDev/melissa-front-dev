@@ -394,7 +394,7 @@ function Return() {
 
 			<div className="return-info">
 				<i className="fa-solid fa-user-tag"></i> Qaytgan mahsulotlar soni:{" "}
-				{state?.quantity} ta
+				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 
 			<ReturnTable

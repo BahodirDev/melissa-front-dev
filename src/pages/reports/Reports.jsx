@@ -8,7 +8,6 @@ import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import {
-	setBenefit,
 	setCapital,
 	setData,
 	setIncome,
@@ -50,7 +49,7 @@ export default function Reports() {
 					// console.log(data)
 					dispatch(setter(data?.data))
 					dispatch(setCapital(data?.hisob?.totalProductCost))
-					dispatch(setBenefit(data?.hisob?.totalCost))
+					// dispatch(setBenefit(data?.hisob?.totalCost))
 					dispatch(setIncome(data?.hisob?.totalCostPilus))
 					dispatch(setOutcome(data?.hisob?.totalCostMinus))
 				} else {
@@ -111,7 +110,7 @@ export default function Reports() {
 			filterObj.isEnter = false
 		}
 
-		console.log(filterObj)
+		// console.log(filterObj)
 		request(
 			"POST",
 			`${process.env.REACT_APP_URL}/reports/reports-filter`,
@@ -257,21 +256,21 @@ export default function Reports() {
 					</Button>
 
 					<div className="reports-info">
-						<span>
+						{/* <span>
 							<i className="fa-solid fa-tags"></i> Umumiy savdo:{" "}
-							{addComma(report?.benefit ? report.benefit : 0)} лв
-						</span>
+							{addComma(report?.benefit ? report.benefit : 0)} so'm
+						</span> */}
 						<span>
 							<i className="fa-solid fa-tags"></i> Foyda:{" "}
-							{addComma(report?.capital ? report.capital : 0)} лв
+							{addComma(report?.capital ? report.capital : 0)} so'm
 						</span>
 						<span>
 							<i className="fa-solid fa-tags"></i> Kirim:{" "}
-							{addComma(report?.outcome ? report.outcome : 0)} лв
+							{addComma(report?.outcome ? report.outcome : 0)} so'm
 						</span>
 						<span>
 							<i className="fa-solid fa-tags"></i> Chiqim:{" "}
-							{addComma(report?.income ? report.income : 0)} лв
+							{addComma(report?.income ? report.income : 0)} so'm
 						</span>
 					</div>
 					<AntReportTable

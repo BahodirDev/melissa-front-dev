@@ -73,19 +73,19 @@ const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 			render: (text, record) => (
 				<nobr>
 					<button
-						className="btn btn-sm btn-table-success"
+						className="btn btn-sm btn-table-success mx-1"
 						onClick={(e) => payConfirmModal(e, closeDebt, record?.id)}
 					>
 						<i className="fa-solid fa-check"></i>
 					</button>
-					<button
+					{/* <button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={(e) =>
 							payModal(e, payDebt, record?.id, record?.price_total)
 						}
 					>
 						<i className="fas fa-edit"></i>
-					</button>
+					</button> */}
 					<button
 						className="btn btn-sm btn-outline-danger"
 						onClick={(e) =>

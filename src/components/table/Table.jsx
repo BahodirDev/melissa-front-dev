@@ -66,12 +66,12 @@ const AntTable = ({ data, deleteItem, editProduct }) => {
 			dataIndex: "products_count_cost",
 		},
 		{
-			title: <nobr>Narx(umumiy)</nobr>,
-			dataIndex: "total_price",
-		},
-		{
 			title: <nobr>Sotuv narxi</nobr>,
 			dataIndex: "products_count_price",
+		},
+		{
+			title: <nobr>Narx(umumiy)</nobr>,
+			dataIndex: "total_price",
 		},
 		{
 			title: "Sana",

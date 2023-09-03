@@ -1,0 +1,34 @@
+---at the end
+change values of 'currency.json'
+'?.' everywhere
+test report filter
+rewrite products table
+sms
+
+charts for stats
+  top clients
+  top suppliers
+  capital
+  benefit
+  deliver debts
+  client debts
+  trending products(category)
+  products by stores
+  current balance
+
+---now
+loading is not showing while data being loaded
+'Saqlash' on login form
+user info data to reports while perehod and sale
+info product, return, report, debts
+search of every page & filter of products page
+sold, received or debt closed re fetch report list
+first close collapse then set setSubmitted(false) then emtpy // new data
+
+
+check every request validation errors
+new section inside "umumiy qarz(ism, izoh, qarz, sana)", "oldindan to'lov"
+
+
+---backend
+product edit count increase write new report obj

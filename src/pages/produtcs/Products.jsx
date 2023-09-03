@@ -5,14 +5,15 @@ import { useOutletContext } from "react-router-dom"
 import { addComma } from "../../components/addComma"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
-import { setData as setDataCurrency } from "../../components/reducers/currency"
-import { setData as setDataDelivers } from "../../components/reducers/deliver"
-import { setData } from "../../components/reducers/good"
 import {
 	addData,
 	editData,
 	setAmount,
+	setDataCurrency,
+	setDataDeliver,
+	setDataGood,
 	setDataProduct,
+	setDataStore,
 	setLoading,
 	setQuantity,
 	setSum,
@@ -53,7 +54,7 @@ export default function Products() {
 	useEffect(() => {
 		dispatch(setLoading(true))
 		let stores =
-			state?.dataProduct.length &&
+			state?.dataProduct?.length &&
 			state?.dataProduct.filter(
 				(item) =>
 					item?.goods_id?.goods_name
@@ -92,9 +93,9 @@ export default function Products() {
 		dispatch(setLoading(true))
 
 		getData()
-
-		getData1("goods", setData)
-		getData1("deliver", setDataDelivers)
+		getData1("store", setDataStore)
+		getData1("goods", setDataGood)
+		getData1("deliver", setDataDeliver)
 		getData1("currency", setDataCurrency)
 
 		dispatch(setLoading(false))
@@ -131,8 +132,9 @@ export default function Products() {
 					newProductObj
 				)
 					.then((data) => {
-						dispatch(editData(data))
-						console.log(data)
+						dispatch(
+							editData({ products_id: data?.products_id, ...newProductObj })
+						)
 						setNewGoodsId({})
 						setNewDeliverId({})
 						setNewStoreId({})
@@ -152,7 +154,7 @@ export default function Products() {
 						setModal_msg("Mahsulot o'zgartirishda xatolik")
 					})
 			} else {
-				console.log(newProductObj)
+				// console.log(newProductObj)
 				request(
 					"POST",
 					`${process.env.REACT_APP_URL}/products/products-post`,
@@ -191,23 +193,22 @@ export default function Products() {
 			`${process.env.REACT_APP_URL}/products/products-delete/${id}`
 		)
 			.then((data) => {
-				getData()
-				setModal_msg("Mahsulot muvoffaqiyatli o'chirildi")
-				setModal_alert("Xabar")
-				setSn("")
-			})
-			.catch((err) => {
-				// console.log(err?.response?.data)
-				if (err?.response?.data?.error === "PRODUCT_FOUND") {
+				if (data?.data?.error === "PRODUCT_FOUND") {
 					setModal_alert("Xatolik")
 					setModal_msg("Mahsulot omborda mavjud")
-				} else if (err?.response?.data?.error === "DEBTS_EXIST") {
+				} else if (data?.data?.error === "DEBTS_EXIST") {
 					setModal_alert("Xatolik")
 					setModal_msg("Mahsulotda qarzdorlik mavjud")
 				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Mahsulot o'chirib bo'lmadi")
+					getData()
+					setModal_msg("Mahsulot muvoffaqiyatli o'chirildi")
+					setModal_alert("Xabar")
+					setSn("")
 				}
+			})
+			.catch((err) => {
+				setModal_alert("Xatolik")
+				setModal_msg("Mahsulot o'chirib bo'lmadi")
 			})
 	}
 
@@ -297,13 +298,17 @@ export default function Products() {
 							onChange={(e) => setNewGoodsId(JSON.parse(e))}
 							optionLabelProp="label"
 						>
-							{good?.data.length
-								? good?.data.map((item) => (
+							{state?.dataGood?.length
+								? state?.dataGood.map((item) => (
 										<Option
+											className="client-option"
 											value={JSON.stringify(item)}
 											label={`${item?.goods_name} - ${item?.goods_code}`}
 										>
-											{item?.goods_name} - {item?.goods_code}
+											<div>
+												<span>{item?.goods_name} - </span>
+												<span>{item?.goods_code}</span>
+											</div>
 										</Option>
 								  ))
 								: null}
@@ -331,8 +336,8 @@ export default function Products() {
 							}
 							onChange={(e) => setNewDeliverId(JSON.parse(e))}
 						>
-							{deliver?.data.length
-								? mapOptionList("courier", deliver?.data)
+							{state?.dataDeliver?.length
+								? mapOptionList("courier", state?.dataDeliver)
 								: null}
 						</Select>
 						<div className="validation-field-error">
@@ -393,7 +398,7 @@ export default function Products() {
 							style={{ width: "100%" }}
 							onChange={(e) => setNewPercentId(JSON.parse(e))}
 						>
-							{currency?.data.length
+							{currency?.data?.length
 								? mapOptionList("currency", currency?.data)
 								: null}
 						</Select>
