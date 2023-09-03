@@ -5,6 +5,7 @@ export const dDebtSlice = createSlice({
 	initialState: {
 		data: [],
 		loading: false,
+		quantity: 0,
 	},
 	reducers: {
 		setData: (state, action) => {
@@ -12,6 +13,9 @@ export const dDebtSlice = createSlice({
 		},
 		setLoading: (state, action) => {
 			state.loading = action.payload
+		},
+		setQuantity: (state, action) => {
+			state.quantity = action.payload
 		},
 		addData: (state, action) => {
 			state.data = [

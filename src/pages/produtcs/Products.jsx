@@ -193,23 +193,22 @@ export default function Products() {
 			`${process.env.REACT_APP_URL}/products/products-delete/${id}`
 		)
 			.then((data) => {
-				getData()
-				setModal_msg("Mahsulot muvoffaqiyatli o'chirildi")
-				setModal_alert("Xabar")
-				setSn("")
-			})
-			.catch((err) => {
-				// console.log(err?.response?.data)
-				if (err?.response?.data?.error === "PRODUCT_FOUND") {
+				if (data?.data?.error === "PRODUCT_FOUND") {
 					setModal_alert("Xatolik")
 					setModal_msg("Mahsulot omborda mavjud")
-				} else if (err?.response?.data?.error === "DEBTS_EXIST") {
+				} else if (data?.data?.error === "DEBTS_EXIST") {
 					setModal_alert("Xatolik")
 					setModal_msg("Mahsulotda qarzdorlik mavjud")
 				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Mahsulot o'chirib bo'lmadi")
+					getData()
+					setModal_msg("Mahsulot muvoffaqiyatli o'chirildi")
+					setModal_alert("Xabar")
+					setSn("")
 				}
+			})
+			.catch((err) => {
+				setModal_alert("Xatolik")
+				setModal_msg("Mahsulot o'chirib bo'lmadi")
 			})
 	}
 

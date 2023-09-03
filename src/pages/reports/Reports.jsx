@@ -8,7 +8,6 @@ import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import {
-	setBenefit,
 	setCapital,
 	setData,
 	setIncome,
@@ -50,7 +49,7 @@ export default function Reports() {
 					// console.log(data)
 					dispatch(setter(data?.data))
 					dispatch(setCapital(data?.hisob?.totalProductCost))
-					dispatch(setBenefit(data?.hisob?.totalCost))
+					// dispatch(setBenefit(data?.hisob?.totalCost))
 					dispatch(setIncome(data?.hisob?.totalCostPilus))
 					dispatch(setOutcome(data?.hisob?.totalCostMinus))
 				} else {
@@ -257,10 +256,10 @@ export default function Reports() {
 					</Button>
 
 					<div className="reports-info">
-						<span>
+						{/* <span>
 							<i className="fa-solid fa-tags"></i> Umumiy savdo:{" "}
 							{addComma(report?.benefit ? report.benefit : 0)} so'm
-						</span>
+						</span> */}
 						<span>
 							<i className="fa-solid fa-tags"></i> Foyda:{" "}
 							{addComma(report?.capital ? report.capital : 0)} so'm
