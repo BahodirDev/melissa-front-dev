@@ -1,5 +1,7 @@
+import { useState } from "react"
 import noDataImg from "../../assets/img/no data.png"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
+import DeliverDebtList from "./DeliverDebtList"
 
 function DeliverList({
 	data,
@@ -8,6 +10,8 @@ function DeliverList({
 	toggleDesc,
 	setToggleDesc,
 }) {
+	const [loc, setLoc] = useState(true)
+
 	return (
 		<div className="deliver-wrapper">
 			{data.length ? (
@@ -26,23 +30,39 @@ function DeliverList({
 										)}
 									</p>
 									<span>Manzil: {item?.deliver_place}</span>
-
 									<div
 										className={`clients-desc ${
 											toggleDesc === item?.deliver_id || "hide-client-desc"
 										}`}
+										style={{
+											marginTop: loc
+												? "38px"
+												: `-${item?.deliver_debts?.length ? "223" : "47"}px`,
+										}}
 									>
-										<div>Qarzdorlik...</div>
+										<div className="clients_desc-i">
+											{item?.deliver_debts?.length ? (
+												<div className="clients_desc-item">
+													<DeliverDebtList data={item?.deliver_debts} />
+												</div>
+											) : (
+												"Qarzdorlik mavjud emas"
+											)}
+										</div>
 									</div>
 
 									<div className="deliver-btn-group">
 										<button
 											className="btn btn-melissa btn-desc-deliver"
-											onClick={() =>
+											onClick={(e) => {
 												toggleDesc === item?.deliver_id
 													? setToggleDesc(0)
 													: setToggleDesc(item?.deliver_id)
-											}
+
+												setLoc(
+													window.innerHeight - e.clientY > 220 ? true : false
+												)
+											}}
 										>
 											<i className="fa-solid fa-message"></i>
 										</button>

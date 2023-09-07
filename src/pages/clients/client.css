@@ -44,6 +44,7 @@
 	margin-left: -1rem;
 	box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.25);
 	overflow: hidden;
+	text-align: left;
 }
 .clients_desc-i {
 	padding: 10px;

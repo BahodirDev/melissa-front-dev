@@ -1,4 +1,4 @@
-import { Input, Select } from "antd"
+import { Button, Input, Select } from "antd"
 import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
@@ -33,13 +33,15 @@ export default function Products() {
 	const [sn, setSn] = useState("")
 	const [toggleClass, setToggleClass] = useState(false)
 	const request = useApiRequest()
-	const [saerchInputValue] = useOutletContext()
+	const [searchInputValue, setSearchInputValue] = useOutletContext()
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
 	const state = useSelector((state) => state.product)
 	const { good, currency, deliver, store } = useSelector((state) => state)
 	const dispatch = useDispatch()
+	const [productId, setProductId] = useState("")
+	const [buttonValid, setButtonValid] = useState(false)
 
 	// new data
 	const [newGoodsId, setNewGoodsId] = useState({})
@@ -52,21 +54,9 @@ export default function Products() {
 	const [newPercentId, setNewPercentId] = useState({})
 
 	useEffect(() => {
-		dispatch(setLoading(true))
-		let stores =
-			state?.dataProduct?.length &&
-			state?.dataProduct.filter(
-				(item) =>
-					item?.goods_id?.goods_name
-						.toLowerCase()
-						.includes(saerchInputValue.toLowerCase()) ||
-					item?.goods_id?.goods_code
-						.toLowerCase()
-						.includes(saerchInputValue.toLowerCase())
-			)
-		setFilteredProducts(stores)
-		dispatch(setLoading(false))
-	}, [saerchInputValue])
+		let isValid = searchInputValue.length || productId?.length
+		setButtonValid(isValid)
+	}, [productId, searchInputValue])
 
 	const getData = () => {
 		request("GET", `${process.env.REACT_APP_URL}/products/products-list`)
@@ -270,6 +260,21 @@ export default function Products() {
 			})
 	}
 
+	const setFilters = () => {
+		request(
+			"GET",
+			`${process.env.REACT_APP_URL}/products/products-by-storeid/${productId}`
+		)
+			.then((data) => setFilteredProducts(data))
+			.catch((err) => console.log(err))
+	}
+
+	const clearFilters = () => {
+		setFilteredProducts([])
+		setProductId("")
+		setSearchInputValue("")
+	}
+
 	return (
 		<div>
 			{error_modal(modal_alert, modal_msg, modal_msg?.length, setModal_msg)}
@@ -277,9 +282,37 @@ export default function Products() {
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
 				ref={buttonRef}
+				style={{ float: "left", padding: "3px 10px" }}
 			>
 				Qo'shish
 			</button>
+
+			<div className="product-filter-row">
+				<Select
+					style={{ width: "100%" }}
+					id="store"
+					value={productId ? productId : null}
+					placeholder="Ombor 1"
+					onChange={(e) => setProductId(e)}
+					allowClear
+				>
+					{store?.data?.length
+						? store.data.map((item) => {
+								return (
+									<Option value={item?.store_id}>{item?.store_name}</Option>
+								)
+						  })
+						: null}
+				</Select>
+
+				<Button disabled={!buttonValid} onClick={clearFilters}>
+					Tozalash
+				</Button>
+				<Button onClick={setFilters} disabled={!productId}>
+					Filterlash
+				</Button>
+			</div>
+
 			<div className="my-content">
 				<div action="" className="form-group row mb-2 px-2">
 					<div className="product-add__input">
@@ -350,7 +383,7 @@ export default function Products() {
 						<Select
 							id="store"
 							value={newStoreId ? newStoreId?.store_name : ""}
-							placeholder="Sklad 1"
+							placeholder="Ombor 1"
 							style={{ width: "100%" }}
 							onChange={(e) => setNewStoreId(JSON.parse(e))}
 						>
@@ -459,6 +492,7 @@ export default function Products() {
 					</div>
 				</div>
 			</div>
+
 			{state?.loading ? (
 				<Loader />
 			) : (
@@ -478,7 +512,7 @@ export default function Products() {
 					</div>
 					<AntTable
 						data={
-							saerchInputValue.length ? filteredProducts : state?.dataProduct
+							filteredProducts.length ? filteredProducts : state?.dataProduct
 						}
 						deleteItem={deleteProduct}
 						editProduct={editProduct}
