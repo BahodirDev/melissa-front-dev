@@ -48,8 +48,8 @@ export default function Login() {
 			.then((data) => {
 				if (data?.status == 200) {
 					localStorage.setItem("user", data?.token)
-					// history("/")
 					window.location.reload(false)
+					// console.log(data)
 				} else {
 					setLoginErrorMsg(data?.error)
 				}
