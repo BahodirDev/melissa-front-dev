@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { Option } from "antd/es/mentions"
+import BeforeDebtTable from "../../components/before_debt_table/before_debt_table"
 import DDebtTable from "../../components/d_debt_table/debt_table"
 import DebtTable from "../../components/debt_table/debt_table"
 import { error_modal } from "../../components/error_modal/error_modal"
@@ -22,6 +23,7 @@ import {
 	setQuantity,
 } from "../../components/reducers/debt"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
+import TotalDebtTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
 import useApiRequest from "../../customHook/useUrl"
 import "./debts.css"
@@ -37,19 +39,29 @@ function Debts() {
 	const [submitted, setSubmitted] = useState(false)
 	const [toggleClass, setToggleClass] = useState(false)
 	const [goods, setGoods] = useState([])
-	const [showDeliver, setShowDeliver] = useState(false)
+	const [showDeliver, setShowDeliver] = useState("client")
 
-	// new data
+	// new data deliver
 	const [newDeliver, setNewDeliver] = useState({})
 	const [newGood, setNewGood] = useState({})
 	const [newCurrency, setNewCurrency] = useState({})
 	const [newCount, setNewCount] = useState(0)
 	const [newCost, setNewCost] = useState(0)
 
+	// new data total
+	const [totalName, setTotalName] = useState("")
+	const [totalCost, setTotalCost] = useState(0)
+	const [totalComment, setTotalComment] = useState("")
+	const [totalDate, setTotalDate] = useState("")
+	const [totalDueDate, setTotalDueDate] = useState("")
+
+	// new data before
+	const [beforeName, setBeforename] = useState("")
+
 	const getData = (list, setList) => {
 		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`)
 			.then((data) => {
-				console.log(data)
+				// console.log(data)
 				if (list === "debts" || list === "deliver-debts") {
 					dispatch(setList(data.data))
 					if (list === "debts") {
@@ -62,7 +74,7 @@ function Debts() {
 				}
 			})
 			.catch((error) => {
-				console.log(error)
+				// console.log(error)
 			})
 	}
 
@@ -237,18 +249,31 @@ function Debts() {
 		dispatch(editDeliverData({ id, sum }))
 	}
 
+	const addNewTotalDebt = () => {
+		setSubmitted(true)
+	}
+
+	const addBeforeDebt = () => {
+		setSubmitted(true)
+	}
+
 	return (
 		<>
 			<Radio.Group
 				value={showDeliver}
-				onChange={(e) => setShowDeliver(e.target.value)}
+				onChange={(e) => {
+					setSubmitted(false)
+					setShowDeliver(e.target.value)
+				}}
 				className="debt-page-toggle"
 			>
-				<Radio.Button value={false}>Mijoz</Radio.Button>
-				<Radio.Button value={true}>Ta'minotchi</Radio.Button>
+				<Radio.Button value="client">Mijoz</Radio.Button>
+				<Radio.Button value="supplier">Ta'minotchi</Radio.Button>
+				<Radio.Button value="total">Umumiy qarzdorlik</Radio.Button>
+				<Radio.Button value="before">Oldindan to'lov</Radio.Button>
 			</Radio.Group>
 
-			{showDeliver ? (
+			{showDeliver === "supplier" ? (
 				<>
 					<button
 						className={`btn btn-melissa mb-1 mx-2 ${
@@ -429,9 +454,163 @@ function Debts() {
 							<div className="col">
 								<br />
 								<button
-									className="btn btn-melissa"
+									className="btn btn-melissa mx-1"
 									onClick={addNewDebtDeliver}
-									style={{ padding: "4px 10px" }}
+									style={{ padding: "3px 10px" }}
+								>
+									<i className="fas fa-plus"></i>
+									{buttonLoader && (
+										<span
+											className="spinner-grow spinner-grow-sm"
+											role="status"
+											aria-hidden="true"
+											style={{ marginLeft: "5px" }}
+										></span>
+									)}
+								</button>
+							</div>
+						</div>
+					</div>
+				</>
+			) : showDeliver === "total" ? (
+				<>
+					<button
+						className={`btn btn-melissa mb-1 mx-2 ${
+							toggleClass && "collapseActive"
+						}`}
+						style={{ padding: "3px 10px" }}
+						onClick={collapse}
+						ref={buttonRef}
+					>
+						Qo'shish
+					</button>
+					<div className="my-content">
+						<div className="form-group d-flex mb-3">
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Haridor</label>
+								<Input
+									placeholder="Alisher"
+									value={totalName}
+									onChange={(e) => setTotalName(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted && validation(!totalName, "Ism kiritish majburiy")}
+									{totalName.length
+										? validation(totalName.length < 3, "Kamida 3 ta harf kerak")
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Narx</label>
+								<Input
+									type="number"
+									placeholder="20,000.00 so'm"
+									value={totalCost > 0.01 ? totalCost : null}
+									onChange={(e) => setTotalCost(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted && validation(!totalCost, "Son kiritish majburiy")}
+									{totalCost
+										? validation(totalCost < 0.01, "Noto'g'ri qiymat")
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Izoh</label>
+								<Input
+									placeholder="Izoh"
+									value={totalComment}
+									onChange={(e) => setTotalComment(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!totalComment, "Izoh kiritish majburiy")}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Berilgan sana</label>
+								<Input
+									type="date"
+									value={totalDate}
+									onChange={(e) => setTotalDate(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted && validation(!totalDate, "Sana tanlash majburiy")}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">To'lanadigan sana</label>
+								<Input
+									type="date"
+									value={totalDueDate}
+									onChange={(e) => setTotalDueDate(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!totalDueDate, "Sana belgilash majburiy")}
+								</div>
+							</div>
+
+							<div className="col">
+								<br />
+								<button
+									className="btn btn-melissa mx-1"
+									onClick={addNewTotalDebt}
+									style={{ padding: "3px 10px" }}
+								>
+									<i className="fas fa-plus"></i>
+									{buttonLoader && (
+										<span
+											className="spinner-grow spinner-grow-sm"
+											role="status"
+											aria-hidden="true"
+											style={{ marginLeft: "5px" }}
+										></span>
+									)}
+								</button>
+							</div>
+						</div>
+					</div>
+				</>
+			) : showDeliver === "before" ? (
+				<>
+					<button
+						className={`btn btn-melissa mb-1 mx-2 ${
+							toggleClass && "collapseActive"
+						}`}
+						style={{ padding: "3px 10px" }}
+						onClick={collapse}
+						ref={buttonRef}
+					>
+						Qo'shish
+					</button>
+					<div className="my-content">
+						<div className="form-group d-flex mb-3">
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Haridor</label>
+								<Input
+									placeholder="Alisher"
+									value={beforeName}
+									onChange={(e) => setBeforename(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!beforeName, "Ism kiritish majburiy")}
+									{beforeName.length
+										? validation(
+												beforeName.length < 3,
+												"Kamida 3 ta harf kerak"
+										  )
+										: null}
+								</div>
+							</div>
+
+							<div className="col">
+								<br />
+								<button
+									className="btn btn-melissa mx-1"
+									onClick={addBeforeDebt}
+									style={{ padding: "3px 10px" }}
 								>
 									<i className="fas fa-plus"></i>
 									{buttonLoader && (
@@ -451,27 +630,38 @@ function Debts() {
 
 			<div className="return-info">
 				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
-				{showDeliver ? dDebt.quantity : debt.quantity} ta
+				{showDeliver === "client"
+					? debt.quantity
+					: showDeliver === "supplier"
+					? dDebt.quantity
+					: showDeliver === "total"
+					? "0"
+					: "0"}
+				so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
 
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
 			{debt.data.loading ? (
 				<Loader />
-			) : showDeliver ? (
-				<DDebtTable
-					data={dDebt.data}
-					closeDeliverDebt={closeDeliverDebt}
-					deleteDeliverDebt={deleteDeliverDebt}
-					payDeliverDebt={payDeliverDebt}
-				/>
-			) : (
+			) : showDeliver === "client" ? (
 				<DebtTable
 					data={debt.data}
 					closeDebt={closeDebt}
 					payDebt={payDebt}
 					deleteDebt={deleteDebt}
 				/>
+			) : showDeliver === "supplier" ? (
+				<DDebtTable
+					data={dDebt.data}
+					closeDeliverDebt={closeDeliverDebt}
+					deleteDeliverDebt={deleteDeliverDebt}
+					payDeliverDebt={payDeliverDebt}
+				/>
+			) : showDeliver === "total" ? (
+				<TotalDebtTable data={[]} />
+			) : (
+				<BeforeDebtTable data={[]} />
 			)}
 		</>
 	)

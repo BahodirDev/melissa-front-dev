@@ -6,8 +6,8 @@ import App from "./App"
 import store from "./components/store"
 import "./index.css"
 
-let token = localStorage.getItem("user")
-axios.defaults.headers.common["Authorization"] = token
+axios.defaults.baseURL = process.env.REACT_APP_URL
+axios.defaults.headers.common["Authorization"] = localStorage.getItem("user")
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 
