@@ -20,15 +20,9 @@ charts for stats
 loading is not showing while data being loaded
 'Saqlash' on login form
 user info data to reports while perehod and sale
-info product, return, report, debts
+info for pages - product, return, report, debts
+debt info modal in deliver and client page
 search of every page & filter of products page
 sold, received or debt closed re fetch report list
 first close collapse then set setSubmitted(false) then emtpy // new data
-
-
-check every request validation errors
-new section inside "umumiy qarz(ism, izoh, qarz, sana)", "oldindan to'lov"
-
-
----backend
-product edit count increase write new report obj
+check every request validation errors(success modal when `else if(data.error.status === 200))---------------rewrite fetch from scrach
