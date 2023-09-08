@@ -33,7 +33,7 @@ export default function Products() {
 	const [sn, setSn] = useState("")
 	const [toggleClass, setToggleClass] = useState(false)
 	const request = useApiRequest()
-	const [searchInputValue, setSearchInputValue] = useOutletContext()
+	const [searchInputValue, setSearchInputValue, sidebar] = useOutletContext()
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
@@ -274,7 +274,6 @@ export default function Products() {
 		setProductId("")
 		setSearchInputValue("")
 	}
-
 	return (
 		<div>
 			{error_modal(modal_alert, modal_msg, modal_msg?.length, setModal_msg)}
@@ -282,36 +281,10 @@ export default function Products() {
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
 				ref={buttonRef}
-				style={{ float: "left", padding: "3px 10px" }}
+				style={{ padding: "3px 10px" }}
 			>
 				Qo'shish
 			</button>
-
-			<div className="product-filter-row">
-				<Select
-					style={{ width: "100%" }}
-					id="store"
-					value={productId ? productId : null}
-					placeholder="Ombor 1"
-					onChange={(e) => setProductId(e)}
-					allowClear
-				>
-					{store?.data?.length
-						? store.data.map((item) => {
-								return (
-									<Option value={item?.store_id}>{item?.store_name}</Option>
-								)
-						  })
-						: null}
-				</Select>
-
-				<Button disabled={!buttonValid} onClick={clearFilters}>
-					Tozalash
-				</Button>
-				<Button onClick={setFilters} disabled={!productId}>
-					Filterlash
-				</Button>
-			</div>
 
 			<div className="my-content">
 				<div action="" className="form-group row mb-2 px-2">
@@ -496,8 +469,8 @@ export default function Products() {
 			{state?.loading ? (
 				<Loader />
 			) : (
-				<>
-					<div className="products-info">
+				<div>
+					<div className="products-info" id="productsInfo">
 						<span>
 							<i className="fa-solid fa-tags"></i> Kategoriya: {state?.quantity}{" "}
 							ta
@@ -510,6 +483,38 @@ export default function Products() {
 							{addComma(state?.sum)} so'm
 						</span>
 					</div>
+
+					<div
+						className="product-filter-row"
+						style={{
+							left: sidebar ? 370 : 200 + "px",
+						}}
+					>
+						<Select
+							style={{ width: "100%" }}
+							id="store"
+							value={productId ? productId : null}
+							placeholder="Ombor 1"
+							onChange={(e) => setProductId(e)}
+							allowClear
+						>
+							{store?.data?.length
+								? store.data.map((item) => {
+										return (
+											<Option value={item?.store_id}>{item?.store_name}</Option>
+										)
+								  })
+								: null}
+						</Select>
+
+						<Button disabled={!buttonValid} onClick={clearFilters}>
+							Tozalash
+						</Button>
+						<Button onClick={setFilters} disabled={!productId}>
+							Filterlash
+						</Button>
+					</div>
+
 					<AntTable
 						data={
 							filteredProducts.length ? filteredProducts : state?.dataProduct
@@ -517,7 +522,7 @@ export default function Products() {
 						deleteItem={deleteProduct}
 						editProduct={editProduct}
 					/>
-				</>
+				</div>
 			)}
 		</div>
 	)

@@ -40,6 +40,7 @@ function Debts() {
 	const [toggleClass, setToggleClass] = useState(false)
 	const [goods, setGoods] = useState([])
 	const [showDeliver, setShowDeliver] = useState("client")
+	const [beforeData, setBeforeData] = useState([])
 
 	// new data deliver
 	const [newDeliver, setNewDeliver] = useState({})
@@ -56,7 +57,13 @@ function Debts() {
 	const [totalDueDate, setTotalDueDate] = useState("")
 
 	// new data before
-	const [beforeName, setBeforename] = useState("")
+	const [beforeGood, setBeforeGood] = useState({})
+	const [beforeDeliver, setBeforeDeliver] = useState({})
+	const [beforeCost, setBeforeCost] = useState(0)
+	const [beforeCount, setBeforeCount] = useState(0)
+	const [beforeCurrency, setBeforeCurrency] = useState({})
+	const [beforeDate, setBeforeDate] = useState("")
+	const [beforeDueDate, setBeforeDueDate] = useState("")
 
 	const getData = (list, setList) => {
 		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`)
@@ -87,6 +94,14 @@ function Debts() {
 		request("GET", `${process.env.REACT_APP_URL}/goods/goods-list`)
 			.then((data) => {
 				setGoods(data)
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+
+		request("GET", `${process.env.REACT_APP_URL}/ordered/ordered-products-list`)
+			.then((data) => {
+				setBeforeData(data)
 			})
 			.catch((error) => {
 				console.log(error)
@@ -249,12 +264,53 @@ function Debts() {
 		dispatch(editDeliverData({ id, sum }))
 	}
 
+	// total
 	const addNewTotalDebt = () => {
 		setSubmitted(true)
 	}
 
+	// before
 	const addBeforeDebt = () => {
 		setSubmitted(true)
+		if (
+			beforeGood?.goods_id &&
+			beforeDeliver?.deliver_id &&
+			beforeCost > 0 &&
+			beforeCount > 0 &&
+			beforeCurrency?.currency_name &&
+			beforeDate &&
+			beforeDueDate
+		) {
+			setButtonLoader(true)
+			let newObj = {
+				goods_id: beforeGood?.goods_id,
+				deliver_id: beforeDeliver?.deliver_id,
+				debts_cost: beforeCost,
+				debts_count: beforeCount,
+				debts_currency: beforeCurrency?.currency_symbol,
+				debts_currency_amount: beforeCurrency.currency_amount,
+				debts_due_date: new Date(beforeDueDate).toISOString(),
+				debts_selected_date: new Date(beforeDate).toISOString(),
+			}
+			request(
+				"POST",
+				`${process.env.REACT_APP_URL}/ordered/ordered-products-post`,
+				newObj
+			)
+				.then((data) => {
+					buttonRef.current.click()
+					setModalAlert("Xabar")
+					setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
+					console.log(data)
+					// clear input values
+				})
+				.catch((err) => {
+					console.log(err?.response?.data)
+					setModalAlert("Xatolik")
+					setModalMsg("Oldindan to'lov kiritishda xatolik")
+				})
+			setButtonLoader(false)
+		}
 	}
 
 	return (
@@ -586,22 +642,207 @@ function Debts() {
 					</button>
 					<div className="my-content">
 						<div className="form-group d-flex mb-3">
-							<div className="debt-input-col validation-field">
-								<label htmlFor="">Haridor</label>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Kategoriya</label>
+								<Select
+									showSearch
+									style={{ width: "100%" }}
+									placeholder="Qidiruv..."
+									value={
+										beforeGood?.goods_name
+											? `${beforeGood?.goods_name} - ${beforeGood?.goods_code}`
+											: null
+									}
+									onChange={(e) => {
+										setBeforeGood(JSON.parse(e))
+									}}
+									optionLabelProp="label"
+								>
+									{goods.length
+										? goods.map((item, idx) => {
+												return (
+													<Option
+														className="client-option"
+														value={JSON.stringify(item)}
+														label={item?.goods_name}
+													>
+														<div>
+															<span>{item?.goods_name} - </span>
+															<span>{item?.goods_code}</span>
+														</div>
+													</Option>
+												)
+										  })
+										: null}
+								</Select>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(
+											!beforeGood?.goods_name,
+											"Kategoriya tanlash majburiy"
+										)}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Ta'minotchi</label>
+								<Select
+									showSearch
+									style={{ width: "100%" }}
+									placeholder="Qidiruv..."
+									value={
+										beforeDeliver?.deliver_name
+											? beforeDeliver?.deliver_name
+											: null
+									}
+									onChange={(e) => {
+										setBeforeDeliver(JSON.parse(e))
+									}}
+									optionLabelProp="label"
+								>
+									{deliver?.data.length
+										? deliver?.data.map((item, idx) => {
+												if (!item?.isdelete) {
+													return (
+														<Option
+															className="client-option"
+															value={JSON.stringify(item)}
+															label={`${
+																item?.deliver_name
+															} - ${item?.deliver_nomer.replace(
+																/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+																"+$1 ($2) $3-$4-$5"
+															)}`}
+														>
+															<div>
+																<span>{item?.deliver_name} - </span>
+																<span>
+																	{item?.deliver_nomer.replace(
+																		/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+																		"+$1 ($2) $3-$4-$5"
+																	)}
+																</span>
+															</div>
+														</Option>
+													)
+												}
+										  })
+										: null}
+								</Select>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(
+											!beforeDeliver.deliver_name,
+											"Ta'minotchi tanlash majburiy"
+										)}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Miqdor</label>
 								<Input
-									placeholder="Alisher"
-									value={beforeName}
-									onChange={(e) => setBeforename(e.target.value)}
+									style={{ width: "100%" }}
+									placeholder="200"
+									value={beforeCount ? beforeCount : null}
+									onChange={(e) => setBeforeCount(e.target.value)}
+									optionLabelProp="label"
+									type="number"
+								/>
+								<div className="validation-field-error">
+									{submitted
+										? beforeCount.length
+											? validation(beforeCount < 0.01, "Noto'g'ri qiymat")
+											: validation(
+													!beforeCount.length,
+													"Miqdor kiritish majburiy"
+											  )
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Pul birligi</label>
+								<Select
+									showSearch
+									style={{ width: "100%" }}
+									placeholder="Qidiruv..."
+									value={
+										beforeCurrency?.currency_name
+											? `${beforeCurrency.currency_name} - ${beforeCurrency.currency_amount}`
+											: null
+									}
+									onChange={(e) => setBeforeCurrency(JSON.parse(e))}
+									optionLabelProp="label"
+								>
+									{currency.data.length
+										? currency.data.map((item, idx) => {
+												return (
+													<Option
+														className="client-option"
+														value={JSON.stringify(item)}
+														label={item?.currency_name}
+													>
+														<div>
+															<span></span>
+															<span>
+																{item?.currency_name} - {item?.currency_amount}
+															</span>
+														</div>
+													</Option>
+												)
+										  })
+										: null}
+								</Select>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(
+											!beforeCurrency.currency_name,
+											"Valyuta tanlash majburiy"
+										)}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Narx</label>
+								<Input
+									style={{ width: "100%" }}
+									placeholder="20,000.00	"
+									value={beforeCost ? beforeCost : null}
+									onChange={(e) => setBeforeCost(e.target.value)}
+									optionLabelProp="label"
+									type="number"
+								/>
+								<div className="validation-field-error">
+									{submitted
+										? beforeCost.length
+											? validation(beforeCost < 0.01, "Noto'g'ri qiymat")
+											: validation(
+													!beforeCost.length,
+													"Miqdor kiritish majburiy"
+											  )
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Berilgan sana</label>
+								<Input
+									style={{ width: "100%" }}
+									value={beforeDate ? beforeDate : null}
+									onChange={(e) => setBeforeDate(e.target.value)}
+									type="date"
 								/>
 								<div className="validation-field-error">
 									{submitted &&
-										validation(!beforeName, "Ism kiritish majburiy")}
-									{beforeName.length
-										? validation(
-												beforeName.length < 3,
-												"Kamida 3 ta harf kerak"
-										  )
-										: null}
+										validation(!beforeDate, "Sana tanlash majburiy")}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">To'lanadigan sana</label>
+								<Input
+									style={{ width: "100%" }}
+									value={beforeDueDate ? beforeDueDate : null}
+									onChange={(e) => setBeforeDueDate(e.target.value)}
+									type="date"
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!beforeDueDate, "Sana belgilash majburiy")}
 								</div>
 							</div>
 
@@ -636,7 +877,7 @@ function Debts() {
 					? dDebt.quantity
 					: showDeliver === "total"
 					? "0"
-					: "0"}
+					: beforeData?.amount}
 				so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
@@ -661,7 +902,7 @@ function Debts() {
 			) : showDeliver === "total" ? (
 				<TotalDebtTable data={[]} />
 			) : (
-				<BeforeDebtTable data={[]} />
+				<BeforeDebtTable data={beforeData?.data} />
 			)}
 		</>
 	)
