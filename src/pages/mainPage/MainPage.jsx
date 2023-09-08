@@ -5,7 +5,6 @@ import MyModal from "../../components/modal/Modal"
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
-import useApiRequest from "../../customHook/useUrl"
 import "./main.css"
 
 export default function MainPage() {
@@ -14,7 +13,6 @@ export default function MainPage() {
 	const [sidebar, setSidebar] = useState(false)
 	const [searchInput, setSearchInput] = useState("")
 	const inputRef = useRef(null)
-	const request = useApiRequest()
 	const url = useLocation()
 	const navigate = useNavigate()
 
@@ -74,10 +72,13 @@ export default function MainPage() {
 					searchInput={searchInput}
 					setSearchInput={setSearchInput}
 				/>
-				<div className="content">
+				<div
+					className="content"
+					style={{ width: sidebar && "calc(100vw - 250px)" }}
+				>
 					<MyModal myModal={myModal} setMyModal={setMyModal} />
 					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} />
-					<Outlet context={[searchInput, setSearchInput]} />
+					<Outlet context={[searchInput, setSearchInput, sidebar]} />
 				</div>
 			</div>
 		</div>

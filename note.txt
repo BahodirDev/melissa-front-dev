@@ -7,6 +7,7 @@ sms
 first close collapse then set setSubmitted(false) then emtpy // new data
 loading is not showing while data being loaded
 'Saqlash' on login form
+loading while requests
 
 charts for stats
   top clients
@@ -24,3 +25,5 @@ search of every page
 user info data to reports while perehod and sale
 sold, received or debt closed re fetch report list
 check every request validation errors(success modal when `else if(data.error.status === 200))---------------rewrite fetch from scrach
+date & due_date for client/supplier debt
+order debt edit, delete
