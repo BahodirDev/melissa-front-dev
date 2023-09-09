@@ -1,12 +1,14 @@
 import { Table } from "antd"
 import moment from "moment"
 import noDataImg from "../../assets/img/no data.png"
+import { productDeleteConfirm } from "../delete_modal/delete_modal"
 
-const BeforeDebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
+const BeforeDebtTable = ({ data, deleteDebt, editDebt }) => {
 	let arr =
 		data?.length &&
 		data.map((item) => {
 			return {
+				id: item?.deliver_debt_id,
 				cost: item?.debts_cost + item?.debts_currency,
 				count: "x" + item?.debts_count,
 				currencyName: item?.debts_currency,
@@ -57,17 +59,15 @@ const BeforeDebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 					</button>
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						// onClick={(e) =>
-						// 	payModal(e, payDebt, record?.id, record?.price_total)
-						// }
+						onClick={() => editDebt(record?.id)}
 					>
 						<i className="fas fa-edit"></i>
 					</button>
 					<button
 						className="btn btn-sm btn-outline-danger"
-						// onClick={(e) =>
-						// 	productDeleteConfirm(e, "Qarzdorlik", deleteDebt, record?.id)
-						// }
+						onClick={(e) =>
+							productDeleteConfirm(e, "Oldindan to'lov", deleteDebt, record?.id)
+						}
 					>
 						<i className="fa-solid fa-trash-can"></i>
 					</button>

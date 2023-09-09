@@ -9,6 +9,7 @@ loading is not showing while data being loaded
 'Saqlash' on login form
 loading while requests
 
+
 charts for stats
   top clients
   top suppliers
@@ -20,10 +21,17 @@ charts for stats
   products by stores
   current balance
 
+
 ---now
+reports filter not working
 search of every page
 user info data to reports while perehod and sale
 sold, received or debt closed re fetch report list
 check every request validation errors(success modal when `else if(data.error.status === 200))---------------rewrite fetch from scrach
 date & due_date for client/supplier debt
-order debt edit, delete
+before debt deliver/good name instead of id
+order debt edit
+
+
+after backend
+before data add/delete/edit info(Umumiy summa) reducer

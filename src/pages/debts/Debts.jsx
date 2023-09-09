@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { Option } from "antd/es/mentions"
+import moment from "moment"
 import BeforeDebtTable from "../../components/before_debt_table/before_debt_table"
 import DDebtTable from "../../components/d_debt_table/debt_table"
 import DebtTable from "../../components/debt_table/debt_table"
@@ -23,13 +24,14 @@ import {
 	setQuantity,
 } from "../../components/reducers/debt"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
+import { setData as setDataGood } from "../../components/reducers/good"
 import TotalDebtTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
 import useApiRequest from "../../customHook/useUrl"
 import "./debts.css"
 
 function Debts() {
-	const { debt, deliver, currency, dDebt } = useSelector((state) => state)
+	const { debt, deliver, currency, dDebt, good } = useSelector((state) => state)
 	const [buttonLoader, setButtonLoader] = useState(false)
 	const buttonRef = useRef(null)
 	const dispatch = useDispatch()
@@ -38,9 +40,9 @@ function Debts() {
 	const [modalMsg, setModalMsg] = useState("")
 	const [submitted, setSubmitted] = useState(false)
 	const [toggleClass, setToggleClass] = useState(false)
-	const [goods, setGoods] = useState([])
 	const [showDeliver, setShowDeliver] = useState("client")
 	const [beforeData, setBeforeData] = useState([])
+	const [objId, setObjId] = useState("")
 
 	// new data deliver
 	const [newDeliver, setNewDeliver] = useState({})
@@ -90,14 +92,7 @@ function Debts() {
 		getData("debts", setData)
 		getData("deliver", setDataDeliver)
 		getData("deliver-debts", setDeliverDebt)
-
-		request("GET", `${process.env.REACT_APP_URL}/goods/goods-list`)
-			.then((data) => {
-				setGoods(data)
-			})
-			.catch((error) => {
-				console.log(error)
-			})
+		getData("goods", setDataGood)
 
 		request("GET", `${process.env.REACT_APP_URL}/ordered/ordered-products-list`)
 			.then((data) => {
@@ -115,13 +110,26 @@ function Debts() {
 		let content = event.target.nextElementSibling
 		if (content.style.maxHeight) {
 			content.style.maxHeight = null
-			// setNewStoreName("")
-			// setObjId("")
+			setObjId("")
 			setNewDeliver({})
 			setNewGood({})
 			setNewCurrency({})
 			setNewCount(0)
 			setNewCost(0)
+
+			setTotalName("")
+			setTotalCost(0)
+			setTotalComment("")
+			setTotalDate("")
+			setTotalDueDate("")
+
+			setBeforeGood({})
+			setBeforeDeliver({})
+			setBeforeCost(0)
+			setBeforeCount(0)
+			setBeforeCurrency({})
+			setBeforeDate("")
+			setBeforeDueDate("")
 		} else {
 			content.style.maxHeight = content.scrollHeight + "px"
 		}
@@ -292,25 +300,88 @@ function Debts() {
 				debts_due_date: new Date(beforeDueDate).toISOString(),
 				debts_selected_date: new Date(beforeDate).toISOString(),
 			}
-			request(
-				"POST",
-				`${process.env.REACT_APP_URL}/ordered/ordered-products-post`,
-				newObj
-			)
-				.then((data) => {
-					buttonRef.current.click()
-					setModalAlert("Xabar")
-					setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
-					console.log(data)
-					// clear input values
-				})
-				.catch((err) => {
-					console.log(err?.response?.data)
-					setModalAlert("Xatolik")
-					setModalMsg("Oldindan to'lov kiritishda xatolik")
-				})
+			if (objId) {
+				console.log("update: " + objId)
+			} else {
+				request(
+					"POST",
+					`${process.env.REACT_APP_URL}/ordered/ordered-products-post`,
+					newObj
+				)
+					.then((data) => {
+						buttonRef.current.click()
+						setModalAlert("Xabar")
+						setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
+						setBeforeData({
+							amount:
+								beforeData?.amount +
+								data?.debts_currency_amount *
+									data?.debts_cost *
+									data?.debts_count,
+							data: [...beforeData?.data, data],
+						})
+					})
+					.catch((err) => {
+						console.log(err)
+						setModalAlert("Xatolik")
+						setModalMsg("Oldindan to'lov kiritishda xatolik")
+					})
+			}
 			setButtonLoader(false)
 		}
+	}
+
+	const deleteBeforeDebt = (id) => {
+		request(
+			"delete",
+			`${process.env.REACT_APP_URL}/ordered/ordered-products-delete/${id}`
+		)
+			.then((data) => {
+				setModalAlert("Xabar")
+				setModalMsg("Oldindan to'lov muvoffaqiyatli o'chirildi")
+				const index = beforeData?.data.findIndex(
+					(item) => item?.deliver_debt_id === data?.deliver_debt_id
+				)
+				beforeData?.data.splice(index, 1)
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
+
+	const openEditBeforeDebt = (id) => {
+		setObjId(id)
+		const index = beforeData?.data.findIndex(
+			(item) => item?.deliver_debt_id === id
+		)
+		// console.log(beforeData?.data[index])
+		let goodIndex = good?.data.findIndex(
+			(item) => item?.goods_id === beforeData?.data[index]?.goods_id
+		)
+		let supplierIndex = deliver?.data?.findIndex(
+			(item) => item?.deliver_id === beforeData?.data[index]?.deliver_id
+		)
+		let currencyIndex = currency?.data?.findIndex(
+			(item) =>
+				item?.currency_symbol === beforeData?.data[index]?.debts_currency
+		)
+
+		setBeforeDeliver(toggleClass ? {} : deliver?.data[supplierIndex])
+		setBeforeGood(toggleClass ? {} : good?.data[goodIndex])
+		setBeforeCount(toggleClass ? 0 : beforeData?.data[index]?.debts_count)
+		setBeforeCurrency(toggleClass ? {} : currency?.data[currencyIndex])
+		setBeforeCost(toggleClass ? 0 : beforeData?.data[index]?.debts_cost)
+		setBeforeDate(
+			moment(beforeData?.data[index]?.debts_createdat)
+				.zone(+7)
+				.format("YYYY-MM-DD")
+		)
+		setBeforeDueDate(
+			moment(beforeData?.data[index]?.debts_due_date)
+				.zone(+7)
+				.format("YYYY-MM-DD")
+		)
+		buttonRef.current.click()
 	}
 
 	return (
@@ -407,8 +478,8 @@ function Debts() {
 									}}
 									optionLabelProp="label"
 								>
-									{goods.length
-										? goods.map((item, idx) => {
+									{good?.data.length
+										? good?.data.map((item, idx) => {
 												return (
 													<Option
 														className="client-option"
@@ -653,13 +724,11 @@ function Debts() {
 											? `${beforeGood?.goods_name} - ${beforeGood?.goods_code}`
 											: null
 									}
-									onChange={(e) => {
-										setBeforeGood(JSON.parse(e))
-									}}
+									onChange={(e) => setBeforeGood(JSON.parse(e))}
 									optionLabelProp="label"
 								>
-									{goods.length
-										? goods.map((item, idx) => {
+									{good?.data.length
+										? good?.data.map((item, idx) => {
 												return (
 													<Option
 														className="client-option"
@@ -841,8 +910,14 @@ function Debts() {
 									type="date"
 								/>
 								<div className="validation-field-error">
-									{submitted &&
-										validation(!beforeDueDate, "Sana belgilash majburiy")}
+									{submitted
+										? beforeDueDate
+											? validation(
+													new Date(beforeDueDate) < new Date(beforeDate),
+													"Noto'g'ri sana"
+											  )
+											: validation(!beforeDueDate, "Sana belgilash majburiy")
+										: null}
 								</div>
 							</div>
 
@@ -902,7 +977,11 @@ function Debts() {
 			) : showDeliver === "total" ? (
 				<TotalDebtTable data={[]} />
 			) : (
-				<BeforeDebtTable data={beforeData?.data} />
+				<BeforeDebtTable
+					data={beforeData?.data}
+					deleteDebt={deleteBeforeDebt}
+					editDebt={openEditBeforeDebt}
+				/>
 			)}
 		</>
 	)
