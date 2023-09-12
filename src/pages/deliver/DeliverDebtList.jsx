@@ -2,7 +2,7 @@ import { addComma } from "../../components/addComma"
 
 const DeliverDebtList = ({ data }) => {
 	return data.map((item) => {
-		console.log(item)
+		// console.log(item)
 		if (!item?.isdone) {
 			return (
 				<>

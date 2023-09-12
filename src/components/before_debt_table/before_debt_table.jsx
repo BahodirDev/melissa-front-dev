@@ -2,6 +2,7 @@ import { Table } from "antd"
 import moment from "moment"
 import noDataImg from "../../assets/img/no data.png"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
+import { payModal } from "../pay_modal/pay_modal"
 
 const BeforeDebtTable = ({ data, deleteDebt, editDebt }) => {
 	let arr =
@@ -59,7 +60,7 @@ const BeforeDebtTable = ({ data, deleteDebt, editDebt }) => {
 					</button>
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						onClick={() => editDebt(record?.id)}
+						onClick={(e) => payModal(e, editDebt, record?.id, record?.count)}
 					>
 						<i className="fas fa-edit"></i>
 					</button>

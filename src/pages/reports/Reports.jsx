@@ -21,7 +21,7 @@ const { RangePicker } = DatePicker
 
 export default function Reports() {
 	const [buttonValid, setButtonValid] = useState(false)
-	const [filteredData, setFilteredData] = useState([])
+	const [filteredData, setFilteredData] = useState({})
 	const request = useApiRequest()
 	const { report, store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
@@ -49,7 +49,6 @@ export default function Reports() {
 					// console.log(data)
 					dispatch(setter(data?.data))
 					dispatch(setCapital(data?.hisob?.totalProductCost))
-					// dispatch(setBenefit(data?.hisob?.totalCost))
 					dispatch(setIncome(data?.hisob?.totalCostPilus))
 					dispatch(setOutcome(data?.hisob?.totalCostMinus))
 				} else {
@@ -110,13 +109,13 @@ export default function Reports() {
 			filterObj.isEnter = false
 		}
 
-		// console.log(filterObj)
 		request(
 			"POST",
 			`${process.env.REACT_APP_URL}/reports/reports-filter`,
 			filterObj
 		)
 			.then((data) => {
+				// console.log(data?.hisob)
 				setFilteredData(data)
 			})
 			.catch((error) => {
@@ -248,33 +247,46 @@ export default function Reports() {
 						onClick={clearFilters}
 						style={{ marginRight: "10px" }}
 					>
-						O'chirish
+						Tozalash
 					</Button>
 
 					<Button onClick={setFilters} disabled={!buttonValid}>
-						Ko'rish
+						Saqlash
 					</Button>
 
 					<div className="reports-info">
-						{/* <span>
-							<i className="fa-solid fa-tags"></i> Umumiy savdo:{" "}
-							{addComma(report?.benefit ? report.benefit : 0)} so'm
-						</span> */}
 						<span>
 							<i className="fa-solid fa-tags"></i> Foyda:{" "}
-							{addComma(report?.capital ? report.capital : 0)} so'm
+							{addComma(
+								filteredData?.data
+									? filteredData?.hisob?.totalProductCost
+									: report.capital
+							)}{" "}
+							so'm
 						</span>
 						<span>
 							<i className="fa-solid fa-tags"></i> Kirim:{" "}
-							{addComma(report?.outcome ? report.outcome : 0)} so'm
+							{addComma(
+								filteredData?.data
+									? filteredData?.hisob?.totalCostMinus
+									: report.outcome
+							)}{" "}
+							so'm
 						</span>
 						<span>
 							<i className="fa-solid fa-tags"></i> Chiqim:{" "}
-							{addComma(report?.income ? report.income : 0)} so'm
+							{addComma(
+								filteredData?.data
+									? filteredData?.hisob?.totalCostPilus
+									: report.income
+							)}{" "}
+							so'm
 						</span>
 					</div>
 					<AntReportTable
-						data={filteredData?.length ? filteredData : report?.data}
+						data={
+							filteredData?.data ? filteredData?.data : report?.data
+						}
 					/>
 				</div>
 			)}

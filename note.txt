@@ -23,15 +23,19 @@ charts for stats
 
 
 ---now
-reports filter not working
-search of every page
+check button loading
 user info data to reports while perehod and sale
 sold, received or debt closed re fetch report list
 check every request validation errors(success modal when `else if(data.error.status === 200))---------------rewrite fetch from scrach
 date & due_date for client/supplier debt
-before debt deliver/good name instead of id
-order debt edit
+before data delete info(Umumiy summa) reducer
+product delete visible only to 
+log out if self username/password update
+card wrapper edit scroll to top(one ready in good.jsx)
+search of every page
 
 
 after backend
-before data add/delete/edit info(Umumiy summa) reducer
+close before debt at once
+before debt deliver/good name instead of id
+before debt count 0 isdone true

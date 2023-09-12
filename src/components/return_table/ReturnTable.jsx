@@ -12,9 +12,9 @@ const ReturnTable = ({ data, deleteItem, editItem }) => {
 				id: item?.return_id,
 				name: item?.return_name,
 				store: item?.return_store,
-				count: item?.return_count,
-				cost_each: addComma(item?.return_cost) + " лв",
-				cost_total: addComma(item?.return_cost * item?.return_count) + " лв",
+				count: 'x'+item?.return_count,
+				cost_each: addComma(item?.return_cost) + " so'm",
+				cost_total: addComma(item?.return_cost * item?.return_count) + " so'm",
 				reason: item?.return_case,
 				client:
 					item?.clients?.clients_name +

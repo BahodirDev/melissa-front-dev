@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { Option } from "antd/es/mentions"
-import moment from "moment"
 import BeforeDebtTable from "../../components/before_debt_table/before_debt_table"
 import DDebtTable from "../../components/d_debt_table/debt_table"
 import DebtTable from "../../components/debt_table/debt_table"
@@ -87,13 +86,7 @@ function Debts() {
 			})
 	}
 
-	useEffect(() => {
-		dispatch(setLoading(true))
-		getData("debts", setData)
-		getData("deliver", setDataDeliver)
-		getData("deliver-debts", setDeliverDebt)
-		getData("goods", setDataGood)
-
+	const getBeforeData = () => {
 		request("GET", `${process.env.REACT_APP_URL}/ordered/ordered-products-list`)
 			.then((data) => {
 				setBeforeData(data)
@@ -101,6 +94,16 @@ function Debts() {
 			.catch((error) => {
 				console.log(error)
 			})
+	}
+
+	useEffect(() => {
+		dispatch(setLoading(true))
+		getData("debts", setData)
+		getData("deliver", setDataDeliver)
+		getData("deliver-debts", setDeliverDebt)
+		getData("goods", setDataGood)
+		getBeforeData()
+
 		dispatch(setLoading(true))
 	}, [])
 
@@ -300,35 +303,42 @@ function Debts() {
 				debts_due_date: new Date(beforeDueDate).toISOString(),
 				debts_selected_date: new Date(beforeDate).toISOString(),
 			}
-			if (objId) {
-				console.log("update: " + objId)
-			} else {
-				request(
-					"POST",
-					`${process.env.REACT_APP_URL}/ordered/ordered-products-post`,
-					newObj
-				)
-					.then((data) => {
-						buttonRef.current.click()
-						setModalAlert("Xabar")
-						setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
-						setBeforeData({
-							amount:
-								beforeData?.amount +
-								data?.debts_currency_amount *
-									data?.debts_cost *
-									data?.debts_count,
-							data: [...beforeData?.data, data],
-						})
+			// if (objId) {
+			// 	console.log(newObj)
+			// 	// request(
+			// 	// 	"POST",
+			// 	// 	`${process.env.REACT_APP_URL}/ordered/ordered-products-change/${objId}`,
+			// 	// 	newObj
+			// 	// )
+			// 	// 	.then((data) => console.log(data))
+			// 	// 	.catch((err) => console.log(err))
+			// } else {
+			request(
+				"POST",
+				`${process.env.REACT_APP_URL}/ordered/ordered-products-post`,
+				newObj
+			)
+				.then((data) => {
+					buttonRef.current.click()
+					setModalAlert("Xabar")
+					setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
+					setBeforeData({
+						amount:
+							beforeData?.amount +
+							data?.debts_currency_amount *
+								data?.debts_cost *
+								data?.debts_count,
+						data: [...beforeData?.data, data],
 					})
-					.catch((err) => {
-						console.log(err)
-						setModalAlert("Xatolik")
-						setModalMsg("Oldindan to'lov kiritishda xatolik")
-					})
-			}
-			setButtonLoader(false)
+				})
+				.catch((err) => {
+					console.log(err)
+					setModalAlert("Xatolik")
+					setModalMsg("Oldindan to'lov kiritishda xatolik")
+				})
 		}
+		setButtonLoader(false)
+		// }
 	}
 
 	const deleteBeforeDebt = (id) => {
@@ -343,45 +353,70 @@ function Debts() {
 					(item) => item?.deliver_debt_id === data?.deliver_debt_id
 				)
 				beforeData?.data.splice(index, 1)
+
+				// setBeforeData({
+				// 	amount:
+				// 		beforeData?.amount +
+				// 		data?.debts_currency_amount * data?.debts_cost * data?.debts_count,
+				// 	data: [...beforeData?.data, data],
+				// })
 			})
 			.catch((error) => {
 				console.log(error)
 			})
 	}
 
-	const openEditBeforeDebt = (id) => {
-		setObjId(id)
-		const index = beforeData?.data.findIndex(
-			(item) => item?.deliver_debt_id === id
-		)
-		// console.log(beforeData?.data[index])
-		let goodIndex = good?.data.findIndex(
-			(item) => item?.goods_id === beforeData?.data[index]?.goods_id
-		)
-		let supplierIndex = deliver?.data?.findIndex(
-			(item) => item?.deliver_id === beforeData?.data[index]?.deliver_id
-		)
-		let currencyIndex = currency?.data?.findIndex(
-			(item) =>
-				item?.currency_symbol === beforeData?.data[index]?.debts_currency
-		)
+	// const openEditBeforeDebt = (id) => {
+	// 	setObjId(id)
+	// 	const index = beforeData?.data.findIndex(
+	// 		(item) => item?.deliver_debt_id === id
+	// 	)
+	// 	// console.log(beforeData?.data[index])
+	// 	let goodIndex = good?.data.findIndex(
+	// 		(item) => item?.goods_id === beforeData?.data[index]?.goods_id
+	// 	)
+	// 	let supplierIndex = deliver?.data?.findIndex(
+	// 		(item) => item?.deliver_id === beforeData?.data[index]?.deliver_id
+	// 	)
+	// 	let currencyIndex = currency?.data?.findIndex(
+	// 		(item) =>
+	// 			item?.currency_symbol === beforeData?.data[index]?.debts_currency
+	// 	)
 
-		setBeforeDeliver(toggleClass ? {} : deliver?.data[supplierIndex])
-		setBeforeGood(toggleClass ? {} : good?.data[goodIndex])
-		setBeforeCount(toggleClass ? 0 : beforeData?.data[index]?.debts_count)
-		setBeforeCurrency(toggleClass ? {} : currency?.data[currencyIndex])
-		setBeforeCost(toggleClass ? 0 : beforeData?.data[index]?.debts_cost)
-		setBeforeDate(
-			moment(beforeData?.data[index]?.debts_createdat)
-				.zone(+7)
-				.format("YYYY-MM-DD")
+	// 	setBeforeDeliver(toggleClass ? {} : deliver?.data[supplierIndex])
+	// 	setBeforeGood(toggleClass ? {} : good?.data[goodIndex])
+	// 	setBeforeCount(toggleClass ? 0 : beforeData?.data[index]?.debts_count)
+	// 	setBeforeCurrency(toggleClass ? {} : currency?.data[currencyIndex])
+	// 	setBeforeCost(toggleClass ? 0 : beforeData?.data[index]?.debts_cost)
+	// 	setBeforeDate(
+	// 		moment(beforeData?.data[index]?.debts_createdat)
+	// 			.zone(+7)
+	// 			.format("YYYY-MM-DD")
+	// 	)
+	// 	setBeforeDueDate(
+	// 		moment(beforeData?.data[index]?.debts_due_date)
+	// 			.zone(+7)
+	// 			.format("YYYY-MM-DD")
+	// 	)
+	// 	buttonRef.current.click()
+	// }
+
+	const beforeDebtPart = (id, amount) => {
+		request(
+			"PATCH",
+			`${process.env.REACT_APP_URL}/ordered/ordered-products-change/${id}`,
+			{ amount }
 		)
-		setBeforeDueDate(
-			moment(beforeData?.data[index]?.debts_due_date)
-				.zone(+7)
-				.format("YYYY-MM-DD")
-		)
-		buttonRef.current.click()
+			.then((data) => {
+				getBeforeData()
+				setModalAlert("Xabar")
+				setModalMsg("To'lov muvoffaqiyatli o'zgartirildi")
+			})
+			.catch((err) => {
+				setModalAlert('Xatolik')
+				setModalMsg("To'lov o'zgartirishda xatolik")
+				console.log(err)
+			})
 	}
 
 	return (
@@ -980,7 +1015,8 @@ function Debts() {
 				<BeforeDebtTable
 					data={beforeData?.data}
 					deleteDebt={deleteBeforeDebt}
-					editDebt={openEditBeforeDebt}
+					// editDebt={openEditBeforeDebt}
+					editDebt={beforeDebtPart}
 				/>
 			)}
 		</>

@@ -26,14 +26,15 @@ import "./product.css"
 const { Option } = Select
 
 export default function Products() {
-	const [filteredProducts, setFilteredProducts] = useState([])
+	const [filteredProducts, setFilteredProducts] = useState({})
 	const [buttonLoader, setButtonLoader] = useState(false)
 	const [modal_msg, setModal_msg] = useState("")
 	const [modal_alert, setModal_alert] = useState("")
 	const [sn, setSn] = useState("")
 	const [toggleClass, setToggleClass] = useState(false)
 	const request = useApiRequest()
-	const [searchInputValue, setSearchInputValue, sidebar] = useOutletContext()
+	const [searchInputValue, setSearchInputValue, sidebar, userInfo] =
+		useOutletContext()
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
@@ -42,6 +43,8 @@ export default function Products() {
 	const dispatch = useDispatch()
 	const [productId, setProductId] = useState("")
 	const [buttonValid, setButtonValid] = useState(false)
+	const [deliverId, setDeliverId] = useState("")
+	const [goodId, setGoodId] = useState("")
 
 	// new data
 	const [newGoodsId, setNewGoodsId] = useState({})
@@ -54,9 +57,13 @@ export default function Products() {
 	const [newPercentId, setNewPercentId] = useState({})
 
 	useEffect(() => {
-		let isValid = searchInputValue.length || productId?.length
+		let isValid =
+			searchInputValue.length ||
+			productId?.length ||
+			goodId.length ||
+			deliverId.length
 		setButtonValid(isValid)
-	}, [productId, searchInputValue])
+	}, [productId, searchInputValue, goodId, deliverId])
 
 	const getData = () => {
 		request("GET", `${process.env.REACT_APP_URL}/products/products-list`)
@@ -137,11 +144,13 @@ export default function Products() {
 						setModal_msg("Maxsulot muvoffaqiyatli o'zgartirildi")
 						buttonRef.current.click()
 						setSubmitted(false)
+						setButtonLoader(false)
 					})
 					.catch((err) => {
 						console.log(err?.response?.data)
 						setModal_alert("Xatolik")
 						setModal_msg("Mahsulot o'zgartirishda xatolik")
+						setButtonLoader(false)
 					})
 			} else {
 				// console.log(newProductObj)
@@ -165,15 +174,15 @@ export default function Products() {
 						setModal_alert("Xabar")
 						setModal_msg("Maxsulot muvoffaqiyatli qo'shildi")
 						buttonRef.current.click()
+						setButtonLoader(false)
 						setSubmitted(false)
 					})
 					.catch((err) => {
 						setModal_alert("Xatolik")
 						setModal_msg("Mahsulot qo'shib bo'lmadi")
+						setButtonLoader(false)
 					})
 			}
-
-			setButtonLoader(false)
 		}
 	}
 
@@ -261,11 +270,16 @@ export default function Products() {
 	}
 
 	const setFilters = () => {
-		request(
-			"GET",
-			`${process.env.REACT_APP_URL}/products/products-by-storeid/${productId}`
-		)
-			.then((data) => setFilteredProducts(data))
+		request("post", `${process.env.REACT_APP_URL}/products/products-filter`, {
+			store_id: productId,
+			goods_name: searchInputValue,
+			goods_code: searchInputValue,
+			deliver_id: deliverId,
+			goods_id: goodId,
+		})
+			.then((data) => {
+				setFilteredProducts(data)
+			})
 			.catch((err) => console.log(err))
 	}
 
@@ -448,7 +462,7 @@ export default function Products() {
 					<div className="col">
 						<br />
 						<button
-							// disabled={!buttonValid}
+							disabled={buttonLoader}
 							className="btn product-add__btn"
 							onClick={addNewProduct}
 						>
@@ -472,15 +486,25 @@ export default function Products() {
 				<div>
 					<div className="products-info" id="productsInfo">
 						<span>
-							<i className="fa-solid fa-tags"></i> Kategoriya: {state?.quantity}{" "}
+							<i className="fa-solid fa-tags"></i> Kategoriya:{" "}
+							{filteredProducts?.data
+								? filteredProducts?.hisob?.kategoriya
+								: state?.quantity}{" "}
 							ta
 						</span>
 						<span>
-							<i className="fa-solid fa-bookmark"></i> Soni: {state?.amount} ta
+							<i className="fa-solid fa-bookmark"></i> Soni:{" "}
+							{filteredProducts?.data
+								? filteredProducts?.hisob?.soni
+								: state?.amount}{" "}
+							ta
 						</span>
 						<span>
 							<i className="fa-solid fa-sack-dollar"></i> Summasi:{" "}
-							{addComma(state?.sum)} so'm
+							{filteredProducts?.data
+								? addComma(filteredProducts?.hisob?.umumiyQiymati)
+								: addComma(state?.sum)}{" "}
+							so'm
 						</span>
 					</div>
 
@@ -506,21 +530,58 @@ export default function Products() {
 								  })
 								: null}
 						</Select>
+						<Select
+							style={{ width: "100%" }}
+							id="store"
+							value={deliverId ? deliverId : null}
+							placeholder="Ta'minotchi"
+							onChange={(e) => setDeliverId(e)}
+							allowClear
+						>
+							{state?.dataDeliver?.length
+								? state?.dataDeliver.map((item) => {
+										return (
+											<Option value={item?.deliver_id}>
+												{item?.deliver_name}
+											</Option>
+										)
+								  })
+								: null}
+						</Select>
+						<Select
+							style={{ width: "100%" }}
+							id="store"
+							value={goodId ? goodId : null}
+							placeholder="Kategoriya"
+							onChange={(e) => setGoodId(e)}
+							allowClear
+						>
+							{state?.dataGood?.length
+								? state?.dataGood.map((item) => {
+										return (
+											<Option value={item?.goods_id}>{item?.goods_name}</Option>
+										)
+								  })
+								: null}
+						</Select>
 
 						<Button disabled={!buttonValid} onClick={clearFilters}>
 							Tozalash
 						</Button>
-						<Button onClick={setFilters} disabled={!productId}>
-							Filterlash
+						<Button onClick={setFilters} disabled={!buttonValid}>
+							Saqlash
 						</Button>
 					</div>
 
 					<AntTable
 						data={
-							filteredProducts.length ? filteredProducts : state?.dataProduct
+							filteredProducts?.data
+								? filteredProducts?.data
+								: state?.dataProduct
 						}
 						deleteItem={deleteProduct}
 						editProduct={editProduct}
+						userRole={userInfo?.role}
 					/>
 				</div>
 			)}
