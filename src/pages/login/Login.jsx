@@ -48,8 +48,10 @@ export default function Login() {
 			.then((data) => {
 				if (data?.status == 200) {
 					localStorage.setItem("user", data?.token)
+					localStorage.setItem("role", data?.user?.user_role)
+					localStorage.setItem("name", data?.user?.user_name)
+					localStorage.setItem("id", data?.user?.user_id)
 					window.location.reload(false)
-					// console.log(data)
 				} else {
 					setLoginErrorMsg(data?.error)
 				}
@@ -131,10 +133,10 @@ export default function Login() {
 					</div>
 				</div>
 				<div className="save-check">
-					<input id="save" onChange={() => setSave(!save)} type="checkbox" />
+					{/* <input id="save" onChange={() => setSave(!save)} type="checkbox" />
 					<label htmlFor="save" style={{ color: save && "#000" }}>
 						Saqlash
-					</label>
+					</label> */}
 				</div>
 
 				<button

@@ -15,11 +15,20 @@ export default function MainPage() {
 	const inputRef = useRef(null)
 	const url = useLocation()
 	const navigate = useNavigate()
+	const [userInfo, setUserInfo] = useState(0)
+	const [action, setAction] = useState({})
 
 	useEffect(() => {
-		if (!localStorage.getItem("user")) {
+		let userToken = localStorage.getItem("user")
+		setUserInfo({
+			role: localStorage.getItem("role"),
+			name: localStorage.getItem("name"),
+		})
+		if (!userToken) {
 			navigate("/login")
 		}
+
+		setSearchInput("")
 
 		window.addEventListener("keydown", (e) => {
 			if (e.key === "Escape") {
@@ -71,6 +80,8 @@ export default function MainPage() {
 					sidebar={sidebar}
 					searchInput={searchInput}
 					setSearchInput={setSearchInput}
+					userInfo={userInfo}
+					action={action}
 				/>
 				<div
 					className="content"
@@ -78,7 +89,16 @@ export default function MainPage() {
 				>
 					<MyModal myModal={myModal} setMyModal={setMyModal} />
 					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} />
-					<Outlet context={[searchInput, setSearchInput, sidebar]} />
+					<Outlet
+						context={[
+							searchInput,
+							setSearchInput,
+							sidebar,
+							userInfo,
+							action,
+							setAction,
+						]}
+					/>
 				</div>
 			</div>
 		</div>

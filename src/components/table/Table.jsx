@@ -4,7 +4,7 @@ import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 
-const AntTable = ({ data, deleteItem, editProduct }) => {
+const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 	let arr2 =
 		data?.length &&
 		data?.map((item) => {
@@ -14,8 +14,8 @@ const AntTable = ({ data, deleteItem, editProduct }) => {
 				product_id: item?.products_id,
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
-				products_box_count: Math.ceil(item?.products_box_count),
-				products_count: item?.products_count,
+				products_box_count: 'x'+Math.ceil(item?.products_box_count),
+				products_count: 'x'+item?.products_count,
 				products_count_cost:
 					addComma(item?.products_count_cost) +
 					item?.currency_id?.currency_symbol,
@@ -84,30 +84,32 @@ const AntTable = ({ data, deleteItem, editProduct }) => {
 			},
 		},
 		{
-			title: "Tahrirlash",
-			render: (text, record) => (
-				<nobr>
-					<button
+			title: userRole == 1 && "Tahrirlash",
+			render: (text, record) =>
+				userRole == 1 && (
+					<nobr>
+						{/* <button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={() => editProduct(record?.product_id)}
 					>
 						<i className="fas fa-edit"></i>
-					</button>
-					<button
-						className="btn btn-sm btn-outline-danger mx-1"
-						onClick={(e) =>
-							productDeleteConfirm(
-								e,
-								"Mahsulot",
-								deleteItem,
-								record?.product_id
-							)
-						}
-					>
-						<i className="fa-solid fa-trash-can"></i>
-					</button>
-				</nobr>
-			),
+					</button> */}
+
+						<button
+							className="btn btn-sm btn-outline-danger mx-1"
+							onClick={(e) =>
+								productDeleteConfirm(
+									e,
+									"Mahsulot",
+									deleteItem,
+									record?.product_id
+								)
+							}
+						>
+							<i className="fa-solid fa-trash-can"></i>
+						</button>
+					</nobr>
+				),
 		},
 	]
 

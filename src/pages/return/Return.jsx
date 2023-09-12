@@ -2,8 +2,11 @@ import { Input, Select } from "antd"
 import { Option } from "antd/es/mentions"
 import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { useOutletContext } from "react-router-dom"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
+import { setData as setDataDeliver } from "../../components/reducers/deliver"
+import { setData as setDataGoods } from "../../components/reducers/good"
 import {
 	addData,
 	editData,
@@ -19,6 +22,7 @@ import useApiRequest from "../../customHook/useUrl"
 import "./return.css"
 
 function Return() {
+	const [filteredData, setFilteredData] = useState({})
 	const [btnLoading, setBtnLoading] = useState(false)
 	const request = useApiRequest()
 	const [modalAlert, setModalAlert] = useState("")
@@ -27,8 +31,19 @@ function Return() {
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
-	const state = useSelector((state) => state.return)
+	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
+	const [searchStoreId, setSearchStoreId] = useState("")
+	const [searchDeliverId, setSearchDeliverId] = useState("")
+	const [searchGoodId, setSearchGoodId] = useState("")
 
 	// new data
 	const [name, setName] = useState("")
@@ -38,30 +53,47 @@ function Return() {
 	const [store, setStore] = useState("")
 	const [reason, setReason] = useState("")
 
-	const getData = () => {
-		request("GET", `${process.env.REACT_APP_URL}/return/return-list`)
-			.then((data) => {
-				dispatch(setDataReturn(data))
-				dispatch(setQuantity())
-			})
-			.catch((err) => console.error(err))
+	useEffect(() => {
+		setAction({
+			url: "return/return-filter",
+			body: {
+				store_id: searchStoreId,
+				goods_id: searchGoodId,
+				deliver_id: searchDeliverId,
+				goods_name: saerchInputValue,
+				goods_code: saerchInputValue,
+			},
+			res: setFilteredData,
+			submitted: setSubmitted,
+			clearValues: {
+				first: setSearchStoreId,
+				second: setSearchGoodId,
+				third: setSearchDeliverId,
+			},
+		})
+	}, [saerchInputValue, searchStoreId, searchGoodId, searchDeliverId])
+
+	const getData = (list, action) => {
+		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`).then(
+			(data) => {
+				dispatch(action(data))
+				if (list === "return") {
+					dispatch(setQuantity())
+				}
+			}
+		)
+		// .catch((err) => console.error(err))
 	}
 
 	useEffect(() => {
 		dispatch(setLoading(true))
-		getData()
 
-		request("GET", `${process.env.REACT_APP_URL}/clients/clients-list`)
-			.then((data) => {
-				dispatch(setDataClient(data))
-			})
-			.catch((err) => console.error(err))
+		getData("return", setDataReturn)
+		getData("clients", setDataClient)
+		getData("store", setDataStore)
+		getData("deliver", setDataDeliver)
+		getData("goods", setDataGoods)
 
-		request("GET", `${process.env.REACT_APP_URL}/store/store-list`)
-			.then((data) => {
-				dispatch(setDataStore(data))
-			})
-			.catch((err) => console.error(err))
 		dispatch(setLoading(false))
 	}, [])
 
@@ -186,17 +218,17 @@ function Return() {
 				setName(toggleClass ? "" : data?.return_name)
 				setCount(toggleClass ? "" : data?.return_count)
 				setCost(toggleClass ? "" : data?.return_cost)
-				const index = state?.dataClient.findIndex(
+				const index = state?.return?.dataClient.findIndex(
 					(item) => item.clients_id === data?.client_id
 				)
-				setClient(toggleClass ? "" : state?.dataClient[index])
+				setClient(toggleClass ? "" : state?.return?.dataClient[index])
 				setStore(toggleClass ? "" : data?.return_store)
 				setReason(toggleClass ? "" : data?.return_case)
 				setObjId(id)
 				buttonRef.current.click()
 			})
 			.catch((error) => {
-				console.log(error?.response?.data)
+				console.log(error)
 				if (error?.response?.data?.error === "RETURN_ITEM_NOT_FOUND") {
 					setModalAlert("Xatolik")
 					setModalMsg("Qaytgan mahsuot topilmadi")
@@ -207,7 +239,7 @@ function Return() {
 			})
 	}
 
-	return state?.loading ? (
+	return state?.return?.loading ? (
 		<Loader />
 	) : (
 		<>
@@ -260,8 +292,8 @@ function Return() {
 							onChange={(e) => setClient(JSON.parse(e))}
 							optionLabelProp="label"
 						>
-							{state?.dataClient?.length
-								? state?.dataClient.map((item) => {
+							{state?.return?.dataClient?.length
+								? state?.return?.dataClient.map((item) => {
 										if (!item?.isdelete) {
 											return (
 												<Option
@@ -310,8 +342,8 @@ function Return() {
 							optionLabelProp="label"
 							style={{ width: "100%" }}
 						>
-							{state?.dataStore?.length
-								? state?.dataStore.map((item) => {
+							{state?.return?.dataStore?.length
+								? state?.return?.dataStore.map((item) => {
 										return (
 											<Option value={item?.store_name} label={item?.store_name}>
 												{item?.store_name}
@@ -394,11 +426,67 @@ function Return() {
 
 			<div className="return-info">
 				<i className="fa-solid fa-user-tag"></i> Qaytgan mahsulotlar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
+				{state?.return?.quantity ? state?.return?.quantity : 0} ta
+			</div>
+
+			<div
+				className="return-item-filter-row"
+				style={{
+					left: sidebar ? 370 : 200 + "px",
+				}}
+			>
+				<Select
+					style={{ width: "100%" }}
+					id="store"
+					value={searchStoreId ? searchStoreId : null}
+					placeholder="Ombor 1"
+					onChange={(e) => setSearchStoreId(e)}
+					allowClear
+				>
+					{state?.store?.data?.length
+						? state?.store?.data.map((item) => {
+								return (
+									<Option value={item?.store_id}>{item?.store_name}</Option>
+								)
+						  })
+						: null}
+				</Select>
+				<Select
+					style={{ width: "100%" }}
+					id="store"
+					value={searchDeliverId ? searchDeliverId : null}
+					placeholder="Ta'minotchi"
+					onChange={(e) => setSearchDeliverId(e)}
+					allowClear
+				>
+					{state?.deliver?.data?.length
+						? state?.deliver?.data.map((item) => {
+								return (
+									<Option value={item?.deliver_id}>{item?.deliver_name}</Option>
+								)
+						  })
+						: null}
+				</Select>
+				<Select
+					style={{ width: "100%" }}
+					id="store"
+					value={searchGoodId ? searchGoodId : null}
+					placeholder="Kategoriya"
+					onChange={(e) => setSearchGoodId(e)}
+					allowClear
+				>
+					{state?.good?.data?.length
+						? state?.good?.data.map((item) => {
+								return (
+									<Option value={item?.goods_id}>{item?.goods_name}</Option>
+								)
+						  })
+						: null}
+				</Select>
 			</div>
 
 			<ReturnTable
-				data={state?.dataReturn}
+				data={submitted ? filteredData : state?.return?.dataReturn}
 				deleteItem={deleteItem}
 				editItem={editItem}
 			/>
