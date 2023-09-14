@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.5fa8d6ea.css",
+    "main.js": "/static/js/main.56e87f12.js",
+    "static/media/Photoshop-Logo-Illustration-Mockup-Tutorial.jpg": "/static/media/Photoshop-Logo-Illustration-Mockup-Tutorial.f9e0eb62ecd13c97ddfe.jpg",
+    "static/media/Photoshop-Logo-Illustration-Mockup-Tutorial 1.png": "/static/media/Photoshop-Logo-Illustration-Mockup-Tutorial 1.d13ae75f33261418967c.png",
+    "static/media/no data.png": "/static/media/no data.e766eda0a614ea9fd415.png",
+    "static/media/admin.jpg": "/static/media/admin.af612fac08b149cb6a1d.jpg",
+    "index.html": "/index.html",
+    "main.5fa8d6ea.css.map": "/static/css/main.5fa8d6ea.css.map",
+    "main.56e87f12.js.map": "/static/js/main.56e87f12.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5fa8d6ea.css",
+    "static/js/main.56e87f12.js"
+  ]
+}
