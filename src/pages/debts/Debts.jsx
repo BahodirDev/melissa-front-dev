@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { Option } from "antd/es/mentions"
+import BeforeDebtTable from "../../components/before_debt_table/before_debt_table"
 import DDebtTable from "../../components/d_debt_table/debt_table"
 import DebtTable from "../../components/debt_table/debt_table"
 import { error_modal } from "../../components/error_modal/error_modal"
@@ -12,20 +13,24 @@ import {
 	deleteData as deleteDeliverData,
 	editData as editDeliverData,
 	setData as setDeliverDebt,
+	setQuantity as setQuantityD,
 } from "../../components/reducers/d-debt"
 import {
 	deleteData,
 	editData,
 	setData,
 	setLoading,
+	setQuantity,
 } from "../../components/reducers/debt"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
+import { setData as setDataGood } from "../../components/reducers/good"
+import TotalDebtTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
 import useApiRequest from "../../customHook/useUrl"
 import "./debts.css"
 
 function Debts() {
-	const { debt, deliver, currency, dDebt } = useSelector((state) => state)
+	const { debt, deliver, currency, dDebt, good } = useSelector((state) => state)
 	const [buttonLoader, setButtonLoader] = useState(false)
 	const buttonRef = useRef(null)
 	const dispatch = useDispatch()
@@ -34,20 +39,57 @@ function Debts() {
 	const [modalMsg, setModalMsg] = useState("")
 	const [submitted, setSubmitted] = useState(false)
 	const [toggleClass, setToggleClass] = useState(false)
-	const [goods, setGoods] = useState([])
-	const [showDeliver, setShowDeliver] = useState(false)
+	const [showDeliver, setShowDeliver] = useState("client")
+	const [beforeData, setBeforeData] = useState([])
+	const [objId, setObjId] = useState("")
 
-	// new data
+	// new data deliver
 	const [newDeliver, setNewDeliver] = useState({})
 	const [newGood, setNewGood] = useState({})
 	const [newCurrency, setNewCurrency] = useState({})
 	const [newCount, setNewCount] = useState(0)
 	const [newCost, setNewCost] = useState(0)
 
+	// new data total
+	const [totalName, setTotalName] = useState("")
+	const [totalCost, setTotalCost] = useState(0)
+	const [totalComment, setTotalComment] = useState("")
+	const [totalDate, setTotalDate] = useState("")
+	const [totalDueDate, setTotalDueDate] = useState("")
+
+	// new data before
+	const [beforeGood, setBeforeGood] = useState({})
+	const [beforeDeliver, setBeforeDeliver] = useState({})
+	const [beforeCost, setBeforeCost] = useState(0)
+	const [beforeCount, setBeforeCount] = useState(0)
+	const [beforeCurrency, setBeforeCurrency] = useState({})
+	const [beforeDate, setBeforeDate] = useState("")
+	const [beforeDueDate, setBeforeDueDate] = useState("")
+
 	const getData = (list, setList) => {
 		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`)
 			.then((data) => {
-				dispatch(setList(data))
+				// console.log(data)
+				if (list === "debts" || list === "deliver-debts") {
+					dispatch(setList(data.data))
+					if (list === "debts") {
+						dispatch(setQuantity(data.amount))
+					} else {
+						dispatch(setQuantityD(data.amount))
+					}
+				} else {
+					dispatch(setList(data))
+				}
+			})
+			.catch((error) => {
+				// console.log(error)
+			})
+	}
+
+	const getBeforeData = () => {
+		request("GET", `${process.env.REACT_APP_URL}/ordered/ordered-products-list`)
+			.then((data) => {
+				setBeforeData(data)
 			})
 			.catch((error) => {
 				console.log(error)
@@ -59,14 +101,9 @@ function Debts() {
 		getData("debts", setData)
 		getData("deliver", setDataDeliver)
 		getData("deliver-debts", setDeliverDebt)
+		getData("goods", setDataGood)
+		getBeforeData()
 
-		request("GET", `${process.env.REACT_APP_URL}/goods/goods-list`)
-			.then((data) => {
-				setGoods(data)
-			})
-			.catch((error) => {
-				console.log(error)
-			})
 		dispatch(setLoading(true))
 	}, [])
 
@@ -76,13 +113,26 @@ function Debts() {
 		let content = event.target.nextElementSibling
 		if (content.style.maxHeight) {
 			content.style.maxHeight = null
-			// setNewStoreName("")
-			// setObjId("")
+			setObjId("")
 			setNewDeliver({})
 			setNewGood({})
 			setNewCurrency({})
 			setNewCount(0)
 			setNewCost(0)
+
+			setTotalName("")
+			setTotalCost(0)
+			setTotalComment("")
+			setTotalDate("")
+			setTotalDueDate("")
+
+			setBeforeGood({})
+			setBeforeDeliver({})
+			setBeforeCost(0)
+			setBeforeCount(0)
+			setBeforeCurrency({})
+			setBeforeDate("")
+			setBeforeDueDate("")
 		} else {
 			content.style.maxHeight = content.scrollHeight + "px"
 		}
@@ -225,18 +275,167 @@ function Debts() {
 		dispatch(editDeliverData({ id, sum }))
 	}
 
+	// total
+	const addNewTotalDebt = () => {
+		setSubmitted(true)
+	}
+
+	// before
+	const addBeforeDebt = () => {
+		setSubmitted(true)
+		if (
+			beforeGood?.goods_id &&
+			beforeDeliver?.deliver_id &&
+			beforeCost > 0 &&
+			beforeCount > 0 &&
+			beforeCurrency?.currency_name &&
+			beforeDate &&
+			beforeDueDate
+		) {
+			setButtonLoader(true)
+			let newObj = {
+				goods_id: beforeGood?.goods_id,
+				deliver_id: beforeDeliver?.deliver_id,
+				debts_cost: beforeCost,
+				debts_count: beforeCount,
+				debts_currency: beforeCurrency?.currency_symbol,
+				debts_currency_amount: beforeCurrency.currency_amount,
+				debts_due_date: new Date(beforeDueDate).toISOString(),
+				debts_selected_date: new Date(beforeDate).toISOString(),
+			}
+			// if (objId) {
+			// 	console.log(newObj)
+			// 	// request(
+			// 	// 	"POST",
+			// 	// 	`${process.env.REACT_APP_URL}/ordered/ordered-products-change/${objId}`,
+			// 	// 	newObj
+			// 	// )
+			// 	// 	.then((data) => console.log(data))
+			// 	// 	.catch((err) => console.log(err))
+			// } else {
+			request(
+				"POST",
+				`${process.env.REACT_APP_URL}/ordered/ordered-products-post`,
+				newObj
+			)
+				.then((data) => {
+					buttonRef.current.click()
+					setModalAlert("Xabar")
+					setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
+					setBeforeData({
+						amount:
+							beforeData?.amount +
+							data?.debts_currency_amount *
+								data?.debts_cost *
+								data?.debts_count,
+						data: [...beforeData?.data, data],
+					})
+				})
+				.catch((err) => {
+					console.log(err)
+					setModalAlert("Xatolik")
+					setModalMsg("Oldindan to'lov kiritishda xatolik")
+				})
+		}
+		setButtonLoader(false)
+		// }
+	}
+
+	const deleteBeforeDebt = (id) => {
+		request(
+			"delete",
+			`${process.env.REACT_APP_URL}/ordered/ordered-products-delete/${id}`
+		)
+			.then((data) => {
+				setModalAlert("Xabar")
+				setModalMsg("Oldindan to'lov muvoffaqiyatli o'chirildi")
+				const index = beforeData?.data.findIndex(
+					(item) => item?.deliver_debt_id === data?.deliver_debt_id
+				)
+				beforeData?.data.splice(index, 1)
+
+				// setBeforeData({
+				// 	amount:
+				// 		beforeData?.amount +
+				// 		data?.debts_currency_amount * data?.debts_cost * data?.debts_count,
+				// 	data: [...beforeData?.data, data],
+				// })
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
+
+	// const openEditBeforeDebt = (id) => {
+	// 	setObjId(id)
+	// 	const index = beforeData?.data.findIndex(
+	// 		(item) => item?.deliver_debt_id === id
+	// 	)
+	// 	// console.log(beforeData?.data[index])
+	// 	let goodIndex = good?.data.findIndex(
+	// 		(item) => item?.goods_id === beforeData?.data[index]?.goods_id
+	// 	)
+	// 	let supplierIndex = deliver?.data?.findIndex(
+	// 		(item) => item?.deliver_id === beforeData?.data[index]?.deliver_id
+	// 	)
+	// 	let currencyIndex = currency?.data?.findIndex(
+	// 		(item) =>
+	// 			item?.currency_symbol === beforeData?.data[index]?.debts_currency
+	// 	)
+
+	// 	setBeforeDeliver(toggleClass ? {} : deliver?.data[supplierIndex])
+	// 	setBeforeGood(toggleClass ? {} : good?.data[goodIndex])
+	// 	setBeforeCount(toggleClass ? 0 : beforeData?.data[index]?.debts_count)
+	// 	setBeforeCurrency(toggleClass ? {} : currency?.data[currencyIndex])
+	// 	setBeforeCost(toggleClass ? 0 : beforeData?.data[index]?.debts_cost)
+	// 	setBeforeDate(
+	// 		moment(beforeData?.data[index]?.debts_createdat)
+	// 			.zone(+7)
+	// 			.format("YYYY-MM-DD")
+	// 	)
+	// 	setBeforeDueDate(
+	// 		moment(beforeData?.data[index]?.debts_due_date)
+	// 			.zone(+7)
+	// 			.format("YYYY-MM-DD")
+	// 	)
+	// 	buttonRef.current.click()
+	// }
+
+	const beforeDebtPart = (id, amount) => {
+		request(
+			"PATCH",
+			`${process.env.REACT_APP_URL}/ordered/ordered-products-change/${id}`,
+			{ amount }
+		)
+			.then((data) => {
+				getBeforeData()
+				setModalAlert("Xabar")
+				setModalMsg("To'lov muvoffaqiyatli o'zgartirildi")
+			})
+			.catch((err) => {
+				setModalAlert('Xatolik')
+				setModalMsg("To'lov o'zgartirishda xatolik")
+				console.log(err)
+			})
+	}
+
 	return (
 		<>
 			<Radio.Group
 				value={showDeliver}
-				onChange={(e) => setShowDeliver(e.target.value)}
+				onChange={(e) => {
+					setSubmitted(false)
+					setShowDeliver(e.target.value)
+				}}
 				className="debt-page-toggle"
 			>
-				<Radio.Button value={false}>Mijoz</Radio.Button>
-				<Radio.Button value={true}>Ta'minotchi</Radio.Button>
+				<Radio.Button value="client">Mijoz</Radio.Button>
+				<Radio.Button value="supplier">Ta'minotchi</Radio.Button>
+				<Radio.Button value="total">Umumiy qarzdorlik</Radio.Button>
+				<Radio.Button value="before">Oldindan to'lov</Radio.Button>
 			</Radio.Group>
 
-			{showDeliver ? (
+			{showDeliver === "supplier" ? (
 				<>
 					<button
 						className={`btn btn-melissa mb-1 mx-2 ${
@@ -314,8 +513,8 @@ function Debts() {
 									}}
 									optionLabelProp="label"
 								>
-									{goods.length
-										? goods.map((item, idx) => {
+									{good?.data.length
+										? good?.data.map((item, idx) => {
 												return (
 													<Option
 														className="client-option"
@@ -417,9 +616,352 @@ function Debts() {
 							<div className="col">
 								<br />
 								<button
-									className="btn btn-melissa"
+									className="btn btn-melissa mx-1"
 									onClick={addNewDebtDeliver}
-									style={{ padding: "4px 10px" }}
+									style={{ padding: "3px 10px" }}
+								>
+									<i className="fas fa-plus"></i>
+									{buttonLoader && (
+										<span
+											className="spinner-grow spinner-grow-sm"
+											role="status"
+											aria-hidden="true"
+											style={{ marginLeft: "5px" }}
+										></span>
+									)}
+								</button>
+							</div>
+						</div>
+					</div>
+				</>
+			) : showDeliver === "total" ? (
+				<>
+					<button
+						className={`btn btn-melissa mb-1 mx-2 ${
+							toggleClass && "collapseActive"
+						}`}
+						style={{ padding: "3px 10px" }}
+						onClick={collapse}
+						ref={buttonRef}
+					>
+						Qo'shish
+					</button>
+					<div className="my-content">
+						<div className="form-group d-flex mb-3">
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Haridor</label>
+								<Input
+									placeholder="Alisher"
+									value={totalName}
+									onChange={(e) => setTotalName(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted && validation(!totalName, "Ism kiritish majburiy")}
+									{totalName.length
+										? validation(totalName.length < 3, "Kamida 3 ta harf kerak")
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Narx</label>
+								<Input
+									type="number"
+									placeholder="20,000.00 so'm"
+									value={totalCost > 0.01 ? totalCost : null}
+									onChange={(e) => setTotalCost(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted && validation(!totalCost, "Son kiritish majburiy")}
+									{totalCost
+										? validation(totalCost < 0.01, "Noto'g'ri qiymat")
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Izoh</label>
+								<Input
+									placeholder="Izoh"
+									value={totalComment}
+									onChange={(e) => setTotalComment(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!totalComment, "Izoh kiritish majburiy")}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Berilgan sana</label>
+								<Input
+									type="date"
+									value={totalDate}
+									onChange={(e) => setTotalDate(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted && validation(!totalDate, "Sana tanlash majburiy")}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">To'lanadigan sana</label>
+								<Input
+									type="date"
+									value={totalDueDate}
+									onChange={(e) => setTotalDueDate(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!totalDueDate, "Sana belgilash majburiy")}
+								</div>
+							</div>
+
+							<div className="col">
+								<br />
+								<button
+									className="btn btn-melissa mx-1"
+									onClick={addNewTotalDebt}
+									style={{ padding: "3px 10px" }}
+								>
+									<i className="fas fa-plus"></i>
+									{buttonLoader && (
+										<span
+											className="spinner-grow spinner-grow-sm"
+											role="status"
+											aria-hidden="true"
+											style={{ marginLeft: "5px" }}
+										></span>
+									)}
+								</button>
+							</div>
+						</div>
+					</div>
+				</>
+			) : showDeliver === "before" ? (
+				<>
+					<button
+						className={`btn btn-melissa mb-1 mx-2 ${
+							toggleClass && "collapseActive"
+						}`}
+						style={{ padding: "3px 10px" }}
+						onClick={collapse}
+						ref={buttonRef}
+					>
+						Qo'shish
+					</button>
+					<div className="my-content">
+						<div className="form-group d-flex mb-3">
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Kategoriya</label>
+								<Select
+									showSearch
+									style={{ width: "100%" }}
+									placeholder="Qidiruv..."
+									value={
+										beforeGood?.goods_name
+											? `${beforeGood?.goods_name} - ${beforeGood?.goods_code}`
+											: null
+									}
+									onChange={(e) => setBeforeGood(JSON.parse(e))}
+									optionLabelProp="label"
+								>
+									{good?.data.length
+										? good?.data.map((item, idx) => {
+												return (
+													<Option
+														className="client-option"
+														value={JSON.stringify(item)}
+														label={item?.goods_name}
+													>
+														<div>
+															<span>{item?.goods_name} - </span>
+															<span>{item?.goods_code}</span>
+														</div>
+													</Option>
+												)
+										  })
+										: null}
+								</Select>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(
+											!beforeGood?.goods_name,
+											"Kategoriya tanlash majburiy"
+										)}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Ta'minotchi</label>
+								<Select
+									showSearch
+									style={{ width: "100%" }}
+									placeholder="Qidiruv..."
+									value={
+										beforeDeliver?.deliver_name
+											? beforeDeliver?.deliver_name
+											: null
+									}
+									onChange={(e) => {
+										setBeforeDeliver(JSON.parse(e))
+									}}
+									optionLabelProp="label"
+								>
+									{deliver?.data.length
+										? deliver?.data.map((item, idx) => {
+												if (!item?.isdelete) {
+													return (
+														<Option
+															className="client-option"
+															value={JSON.stringify(item)}
+															label={`${
+																item?.deliver_name
+															} - ${item?.deliver_nomer.replace(
+																/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+																"+$1 ($2) $3-$4-$5"
+															)}`}
+														>
+															<div>
+																<span>{item?.deliver_name} - </span>
+																<span>
+																	{item?.deliver_nomer.replace(
+																		/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+																		"+$1 ($2) $3-$4-$5"
+																	)}
+																</span>
+															</div>
+														</Option>
+													)
+												}
+										  })
+										: null}
+								</Select>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(
+											!beforeDeliver.deliver_name,
+											"Ta'minotchi tanlash majburiy"
+										)}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Miqdor</label>
+								<Input
+									style={{ width: "100%" }}
+									placeholder="200"
+									value={beforeCount ? beforeCount : null}
+									onChange={(e) => setBeforeCount(e.target.value)}
+									optionLabelProp="label"
+									type="number"
+								/>
+								<div className="validation-field-error">
+									{submitted
+										? beforeCount.length
+											? validation(beforeCount < 0.01, "Noto'g'ri qiymat")
+											: validation(
+													!beforeCount.length,
+													"Miqdor kiritish majburiy"
+											  )
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Pul birligi</label>
+								<Select
+									showSearch
+									style={{ width: "100%" }}
+									placeholder="Qidiruv..."
+									value={
+										beforeCurrency?.currency_name
+											? `${beforeCurrency.currency_name} - ${beforeCurrency.currency_amount}`
+											: null
+									}
+									onChange={(e) => setBeforeCurrency(JSON.parse(e))}
+									optionLabelProp="label"
+								>
+									{currency.data.length
+										? currency.data.map((item, idx) => {
+												return (
+													<Option
+														className="client-option"
+														value={JSON.stringify(item)}
+														label={item?.currency_name}
+													>
+														<div>
+															<span></span>
+															<span>
+																{item?.currency_name} - {item?.currency_amount}
+															</span>
+														</div>
+													</Option>
+												)
+										  })
+										: null}
+								</Select>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(
+											!beforeCurrency.currency_name,
+											"Valyuta tanlash majburiy"
+										)}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Narx</label>
+								<Input
+									style={{ width: "100%" }}
+									placeholder="20,000.00	"
+									value={beforeCost ? beforeCost : null}
+									onChange={(e) => setBeforeCost(e.target.value)}
+									optionLabelProp="label"
+									type="number"
+								/>
+								<div className="validation-field-error">
+									{submitted
+										? beforeCost.length
+											? validation(beforeCost < 0.01, "Noto'g'ri qiymat")
+											: validation(
+													!beforeCost.length,
+													"Miqdor kiritish majburiy"
+											  )
+										: null}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">Berilgan sana</label>
+								<Input
+									style={{ width: "100%" }}
+									value={beforeDate ? beforeDate : null}
+									onChange={(e) => setBeforeDate(e.target.value)}
+									type="date"
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!beforeDate, "Sana tanlash majburiy")}
+								</div>
+							</div>
+							<div className="debt-input-col debt-order-input-col validation-field">
+								<label htmlFor="">To'lanadigan sana</label>
+								<Input
+									style={{ width: "100%" }}
+									value={beforeDueDate ? beforeDueDate : null}
+									onChange={(e) => setBeforeDueDate(e.target.value)}
+									type="date"
+								/>
+								<div className="validation-field-error">
+									{submitted
+										? beforeDueDate
+											? validation(
+													new Date(beforeDueDate) < new Date(beforeDate),
+													"Noto'g'ri sana"
+											  )
+											: validation(!beforeDueDate, "Sana belgilash majburiy")
+										: null}
+								</div>
+							</div>
+
+							<div className="col">
+								<br />
+								<button
+									className="btn btn-melissa mx-1"
+									onClick={addBeforeDebt}
+									style={{ padding: "3px 10px" }}
 								>
 									<i className="fas fa-plus"></i>
 									{buttonLoader && (
@@ -439,26 +981,42 @@ function Debts() {
 
 			<div className="return-info">
 				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
-				{showDeliver ? 1111 : 2222} ta
+				{showDeliver === "client"
+					? debt.quantity
+					: showDeliver === "supplier"
+					? dDebt.quantity
+					: showDeliver === "total"
+					? "0"
+					: beforeData?.amount}
+				so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
 
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
 			{debt.data.loading ? (
 				<Loader />
-			) : showDeliver ? (
+			) : showDeliver === "client" ? (
+				<DebtTable
+					data={debt.data}
+					closeDebt={closeDebt}
+					payDebt={payDebt}
+					deleteDebt={deleteDebt}
+				/>
+			) : showDeliver === "supplier" ? (
 				<DDebtTable
 					data={dDebt.data}
 					closeDeliverDebt={closeDeliverDebt}
 					deleteDeliverDebt={deleteDeliverDebt}
 					payDeliverDebt={payDeliverDebt}
 				/>
+			) : showDeliver === "total" ? (
+				<TotalDebtTable data={[]} />
 			) : (
-				<DebtTable
-					data={debt.data}
-					closeDebt={closeDebt}
-					payDebt={payDebt}
-					deleteDebt={deleteDebt}
+				<BeforeDebtTable
+					data={beforeData?.data}
+					deleteDebt={deleteBeforeDebt}
+					// editDebt={openEditBeforeDebt}
+					editDebt={beforeDebtPart}
 				/>
 			)}
 		</>

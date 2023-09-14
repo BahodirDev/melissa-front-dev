@@ -5,7 +5,6 @@ import MyModal from "../../components/modal/Modal"
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
-import useApiRequest from "../../customHook/useUrl"
 import "./main.css"
 
 export default function MainPage() {
@@ -14,14 +13,22 @@ export default function MainPage() {
 	const [sidebar, setSidebar] = useState(false)
 	const [searchInput, setSearchInput] = useState("")
 	const inputRef = useRef(null)
-	const request = useApiRequest()
 	const url = useLocation()
 	const navigate = useNavigate()
+	const [userInfo, setUserInfo] = useState(0)
+	const [action, setAction] = useState({})
 
 	useEffect(() => {
-		if (!localStorage.getItem("user")) {
+		let userToken = localStorage.getItem("user")
+		setUserInfo({
+			role: localStorage.getItem("role"),
+			name: localStorage.getItem("name"),
+		})
+		if (!userToken) {
 			navigate("/login")
 		}
+
+		setSearchInput("")
 
 		window.addEventListener("keydown", (e) => {
 			if (e.key === "Escape") {
@@ -73,11 +80,25 @@ export default function MainPage() {
 					sidebar={sidebar}
 					searchInput={searchInput}
 					setSearchInput={setSearchInput}
+					userInfo={userInfo}
+					action={action}
 				/>
-				<div className="content">
+				<div
+					className="content"
+					style={{ width: sidebar && "calc(100vw - 250px)" }}
+				>
 					<MyModal myModal={myModal} setMyModal={setMyModal} />
 					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} />
-					<Outlet context={[searchInput, setSearchInput]} />
+					<Outlet
+						context={[
+							searchInput,
+							setSearchInput,
+							sidebar,
+							userInfo,
+							action,
+							setAction,
+						]}
+					/>
 				</div>
 			</div>
 		</div>

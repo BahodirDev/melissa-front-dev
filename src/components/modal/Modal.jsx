@@ -99,7 +99,7 @@ export default function MyModal({ myModal, setMyModal }) {
 		})
 			.then((dataP) => {
 				request("get", `${process.env.REACT_APP_URL}/products/products-list`)
-					.then((data) => dispatch(setDataProduct(data)))
+					.then((data) => dispatch(setDataProduct(data?.data)))
 					.catch((err) => console.log(err?.response?.data))
 				setMyModal(false)
 				setProductList([])

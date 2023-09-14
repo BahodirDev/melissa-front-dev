@@ -1,7 +1,8 @@
-import { Input } from "antd"
+import { Button, Input } from "antd"
 import { useLocation } from "react-router-dom"
 import user_image from "../../assets/img/admin.jpg"
-import searchIcon from "../../assets/img/search icon.png"
+import useApiRequest from "../../customHook/useUrl"
+import { employee_role } from "../../pages/employees/employee_role"
 import "./navbar.css"
 
 export default function Navbar({
@@ -10,8 +11,32 @@ export default function Navbar({
 	sidebar,
 	setSearchInput,
 	searchInput,
+	userInfo,
+	action,
 }) {
 	const location = useLocation()
+	const request = useApiRequest()
+
+	const submitSearch = () => {
+		request(
+			"POST",
+			`${process.env.REACT_APP_URL}/${action?.url}`,
+			action?.body
+		).then((data) => {
+			action?.res(data)
+			action?.submitted(true)
+		})
+	}
+
+	const clearSearch = () => {
+		if (action?.url === "return/return-filter") {
+			action?.clearValues.first("")
+			action?.clearValues.second("")
+			action?.clearValues.third("")
+		}
+		setSearchInput("")
+		action?.submitted(false)
+	}
 
 	return (
 		<div className="top-bar">
@@ -36,15 +61,29 @@ export default function Navbar({
 				location.pathname.slice(1)
 			) ? (
 				<div className="search-form">
-					<img src={searchIcon} alt="" />
+					{/* <img src={searchIcon} alt="" /> */}
 					<Input
 						ref={inputRef}
 						type="text"
 						className=""
 						placeholder="Qidiruv..."
 						value={searchInput}
+						allowClear
 						onChange={(e) => setSearchInput(e.target.value)}
 					/>
+					{location.pathname !== "/" &&
+					"goods return debts store deliver clients employees currency".includes(
+						location.pathname.slice(1)
+					) ? (
+						<>
+							<Button className="" onClick={clearSearch}>
+								Tozalash
+							</Button>
+							<Button className="" onClick={submitSearch}>
+								Saqlash
+							</Button>
+						</>
+					) : null}
 				</div>
 			) : null}
 
@@ -69,8 +108,12 @@ export default function Navbar({
 					<img src={user_image} alt="user image" />
 				</div>
 				<div className="nav-user__about">
-					<p className="nav-user__name">John</p>
-					<span className="nav-user__role">Admin</span>
+					<p className="nav-user__name">
+						{userInfo?.name ? userInfo?.name : "Hodim"}
+					</p>
+					<span className="nav-user__role">
+						{employee_role(userInfo?.role)}
+					</span>
 				</div>
 			</div>
 		</div>

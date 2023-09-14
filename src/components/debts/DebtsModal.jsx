@@ -108,10 +108,12 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				product_code: item?.product_code,
 			}
 		})
+		console.log(debtArr)
 		request("POST", `${process.env.REACT_APP_URL}/debts/debts-post`, {
 			debts: debtArr,
 		})
 			.then((dataDebt) => {
+				console.log(dataDebt)
 				// update reducer
 				const updatedData = debtArr.map((obj, index) => ({
 					...obj,

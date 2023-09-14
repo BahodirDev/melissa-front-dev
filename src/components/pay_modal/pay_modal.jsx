@@ -27,7 +27,7 @@ export const payModal = (e, action, id, max) => {
 				/>
 			</>
 		),
-		okText: "To'lash",
+		okText: "Saqlash",
 		okType: "danger",
 		cancelText: "Bekor qilish",
 		width: 300,

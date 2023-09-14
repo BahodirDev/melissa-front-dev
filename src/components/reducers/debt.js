@@ -15,7 +15,7 @@ export const debtSlice = createSlice({
 			state.loading = action.payload
 		},
 		setQuantity: (state, action) => {
-			state.quantity = state.data.length
+			state.quantity = action.payload
 		},
 		addData: (state, action) => {
 			action.payload?.map((item) => {

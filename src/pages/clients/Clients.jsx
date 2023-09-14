@@ -86,32 +86,25 @@ export default function Employees() {
 					newClient
 				)
 					.then((data) => {
-						// request(
-						// 	"PATCH",
-						// 	`${process.env.REACT_APP_URL}/clients/clients-patch/${objId}`,
-						// 	newClient
-						// )
-						// 	.then((data) => dispatch(editData(data)))
-						// 	.catch((err) => console.log(err?.response.data))
-						dispatch(editData(data))
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Mijoz muvoffaqiyatli o'zgartirildi")
-						setNew_name("")
-						setNew_number("")
-						setDesc("")
-						setObjId("")
-						setSubmitted(false)
-					})
-					.catch((err) => {
-						console.log(err)
-						if (err?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
+						if (data?.data?.error === "CLIENTS_ALREADY_EXIST") {
 							setModal_alert("Xatolik")
 							setModal_msg("Mijoz allaqachon mavjud")
 						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Mijoz o'zgartirishda xatolik")
+							dispatch(editData(data))
+							buttonRef.current.click()
+							setModal_alert("Xabar")
+							setModal_msg("Mijoz muvoffaqiyatli o'zgartirildi")
+							setNew_name("")
+							setNew_number("")
+							setDesc("")
+							setObjId("")
+							setSubmitted(false)
 						}
+					})
+					.catch((err) => {
+						// console.log(err)
+						setModal_alert("Xatolik")
+						setModal_msg("Mijoz o'zgartirishda xatolik")
 					})
 			} else {
 				request(
@@ -120,25 +113,24 @@ export default function Employees() {
 					newClient
 				)
 					.then((data) => {
-						dispatch(addData(data))
-						dispatch(setQuantity())
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Mijoz muvoffaqiyatli qo'shildi")
-						setNew_name("")
-						setNew_number("")
-						setDesc("")
-						setSubmitted(false)
-					})
-					.catch((err) => {
-						// console.log(err.response.data)
-						if (err?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
+						if (data?.data?.error === "CLIENTS_ALREADY_EXIST") {
 							setModal_alert("Xatolik")
 							setModal_msg("Mijoz allaqachon mavjud")
 						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Mijoz qo'shib bo'lmadi")
+							dispatch(addData(data))
+							dispatch(setQuantity())
+							buttonRef.current.click()
+							setModal_alert("Xabar")
+							setModal_msg("Mijoz muvoffaqiyatli qo'shildi")
+							setNew_name("")
+							setNew_number("")
+							setDesc("")
+							setSubmitted(false)
 						}
+					})
+					.catch((err) => {
+						setModal_alert("Xatolik")
+						setModal_msg("Mijoz qo'shib bo'lmadi")
 					})
 			}
 			setBtn_loading(false)

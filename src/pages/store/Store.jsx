@@ -118,19 +118,18 @@ export default function Store() {
 	const deleteStore = (id) => {
 		request("DELETE", `${process.env.REACT_APP_URL}/store/store-delete/${id}`)
 			.then((data) => {
-				// console.log(data)
-				getData()
-				setModal_alert("Xabar")
-				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
-			})
-			.catch((err) => {
-				if (err.response.data.error === "PRODUCT_FOUND") {
+				if (data?.data?.error === "PRODUCT_FOUND") {
 					setModal_alert("Xatolik")
 					setModal_msg("Omborda maxsulot borligi uchun o'chirilmadi")
 				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Omborni o'chirishda xatolik")
+					getData()
+					setModal_alert("Xabar")
+					setModal_msg("Ombor muvoffaqiyatli o'chirildi")
 				}
+			})
+			.catch((err) => {
+				setModal_alert("Xatolik")
+				setModal_msg("Omborni o'chirishda xatolik")
 			})
 	}
 

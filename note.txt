@@ -3,16 +3,11 @@ change values of 'currency.json'
 '?.' everywhere
 test report filter
 rewrite products table
-
----now
+sms
+first close collapse then set setSubmitted(false) then emtpy // new data
 loading is not showing while data being loaded
 'Saqlash' on login form
-user info data to reports while perehod and sale
-info product, return, report, debts
-search of every page & filter of products page
-sold, received or debt closed re fetch report list
-first close collapse then set setSubmitted(false) then emtpy // new data
-delete store & deliver 403 error inside then. 'cannot delete cause it is in use'
+loading while requests
 
 
 charts for stats
@@ -27,11 +22,20 @@ charts for stats
   current balance
 
 
----backend
-delete store & deliver 403 error inside then. 'cannot delete cause it is in use' ---------- (not returning error status in then or catch)
-deliver-debt isdone not adding to report(ig)
-debt added turning irrational numbers into rational
-deliver debt is not deleting unless isdone is true
-product edit count increase write new report obj
-that error where in reports one row currency is symbol another is name. it's most likely in adding to debts
-fetch get debts-list not working
+---now
+check button loading
+user info data to reports while perehod and sale
+sold, received or debt closed re fetch report list
+check every request validation errors(success modal when `else if(data.error.status === 200))---------------rewrite fetch from scrach
+date & due_date for client/supplier debt
+before data delete info(Umumiy summa) reducer
+product delete visible only to 
+log out if self username/password update
+card wrapper edit scroll to top(one ready in good.jsx)
+search of every page
+
+
+after backend
+close before debt at once
+before debt deliver/good name instead of id
+before debt count 0 isdone true

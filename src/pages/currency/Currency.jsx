@@ -77,6 +77,7 @@ export default function Currency() {
 					}
 				)
 					.then((data) => {
+						// console.log(data);
 						dispatch(editData(data))
 						setNewName({})
 						setNewAmount(0)
@@ -88,7 +89,7 @@ export default function Currency() {
 						buttonRef.current.click()
 					})
 					.catch((err) => {
-						console.log(err?.response?.data)
+						// console.log(err)
 						if (err.response.data.error === "CURRENCY_ALREADY_EXIST") {
 							setModal_msg("Pul birligi allaqachon mavjud")
 							setModal_alert("Xatolik")
@@ -114,27 +115,26 @@ export default function Currency() {
 					newCurrency
 				)
 					.then((data) => {
-						dispatch(addData(data))
-						dispatch(setQuantity())
-						setNewName({})
-						setNewAmount(0)
-						setModal_msg("Pul birligi muvoffaqiyatli qo'shildi")
-						setModal_alert("Xabar")
-						setUser_id("")
-						setSubmitted(false)
-						buttonRef.current.click()
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						if (err?.response?.data?.error === "CURRENCY_ALREADY_EXIST") {
+						if (data?.response?.data?.error === "CURRENCY_ALREADY_EXIST") {
 							setModal_msg("Pul birligi allaqachon mavjud")
 							setModal_alert("Xatolik")
 							setUser_id("")
 						} else {
-							setModal_msg("Pul birligi qo'shib bo'lmadi")
-							setModal_alert("Xatolik")
+							dispatch(addData(data))
+							dispatch(setQuantity())
+							setNewName({})
+							setNewAmount(0)
+							setModal_msg("Pul birligi muvoffaqiyatli qo'shildi")
+							setModal_alert("Xabar")
 							setUser_id("")
+							setSubmitted(false)
+							buttonRef.current.click()
 						}
+					})
+					.catch((err) => {
+						setModal_msg("Pul birligi qo'shib bo'lmadi")
+						setModal_alert("Xatolik")
+						setUser_id("")
 					})
 			}
 			setButtonLoader(false)

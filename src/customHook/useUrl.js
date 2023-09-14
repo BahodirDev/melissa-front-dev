@@ -23,7 +23,8 @@ const useApiRequest = () => {
 					history("/login")
 					// window.location.reload(false)
 				}
-				return
+				// console.log(error)
+				return error
 			}
 		},
 		[]
@@ -32,3 +33,5 @@ const useApiRequest = () => {
 	return makeRequest
 }
 export default useApiRequest
+
+

@@ -17,8 +17,8 @@ import GoodsList from "./GoodsList"
 import "./goods.css"
 
 export default function Goods() {
-	const [filteredProducts, setFilteredProducts] = useState([])
 	const [buttonLoader, setButtonLoader] = useState(false)
+	const [filteredProducts, setFilteredProducts] = useState([])
 	const [modal_alert, setModal_alert] = useState("")
 	const [modal_msg, setModal_msg] = useState("")
 	const [toggleClass, setToggleClass] = useState(false)
@@ -26,7 +26,8 @@ export default function Goods() {
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
 	const request = useApiRequest()
-	const [saerchInputValue] = useOutletContext()
+	const [saerchInputValue, setSearchInput, sidebar, userInfo, setAction] =
+		useOutletContext()
 	const state = useSelector((state) => state.good)
 	const dispatch = useDispatch()
 
@@ -88,6 +89,7 @@ export default function Goods() {
 						setNewGoodCode("")
 						setObjId("")
 						setSubmitted(false)
+						setButtonLoader(false)
 					})
 					.catch((error) => {
 						if (error?.response?.data?.error === "GOODS_ALREADY_EXIST") {
@@ -97,6 +99,7 @@ export default function Goods() {
 							setModal_alert("Xatolik")
 							setModal_msg("Kategoriya o'zgartirishda xatolik")
 						}
+						setButtonLoader(false)
 					})
 			} else {
 				request("post", `${process.env.REACT_APP_URL}/goods/goods-post`, {
@@ -112,6 +115,7 @@ export default function Goods() {
 						setNewGoodName("")
 						setNewGoodCode("")
 						setSubmitted(false)
+						setButtonLoader(false)
 					})
 					.catch((error) => {
 						if (error?.response?.data?.error === "GOODS_ALREADY_EXIST") {
@@ -121,27 +125,28 @@ export default function Goods() {
 							setModal_alert("Xatolik")
 							setModal_msg("Kategoriya qo'shib bo'lmadi")
 						}
+						setButtonLoader(false)
 					})
 			}
-			setButtonLoader(false)
 		}
 	}
 
 	const deleteGood = (id) => {
 		request("DELETE", `${process.env.REACT_APP_URL}/goods/goods-delete/${id}`)
 			.then((data) => {
-				getData()
-				setModal_alert("Xabar")
-				setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
-			})
-			.catch((err) => {
-				if (err?.response?.data?.error === "GOODS_ALREADY_EXIST") {
+				console.log(data?.response?.data)
+				if (data?.data?.error === "GOODS_ALREADY_EXIST") {
 					setModal_alert("Xatolik")
 					setModal_msg("Kategoriyada mahsulot mavjud")
 				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Kategoriyani o'chirib bo'lmadi")
+					getData()
+					setModal_alert("Xabar")
+					setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
 				}
+			})
+			.catch((err) => {
+				setModal_alert("Xatolik")
+				setModal_msg("Kategoriyani o'chirib bo'lmadi")
 			})
 	}
 
@@ -160,7 +165,15 @@ export default function Goods() {
 	}
 
 	const updateGood = (id) => {
-		// const good = products.find((item) => item.goods_id === id)
+		let divTop = document.querySelector(".content").scrollTop
+		let scrollTop = setInterval(() => {
+			divTop -= 10
+			document.querySelector(".content").scrollTop = divTop
+
+			if (divTop <= 0) {
+				clearInterval(scrollTop)
+			}
+		}, 1)
 		request("GET", `${process.env.REACT_APP_URL}/goods/goods-list/${id}`)
 			.then((data) => {
 				setNewGoodName(toggleClass ? "" : data[0]?.goods_name)
@@ -180,8 +193,10 @@ export default function Goods() {
 			})
 	}
 
+	// setAction({ url: "good/ fiter path", body: {} })
+
 	return (
-		<div>
+		<div id="cardWrapperTop">
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
@@ -201,7 +216,8 @@ export default function Goods() {
 							onChange={(e) => setNewGoodName(e.target.value)}
 						/>
 						<div className="validation-field-error">
-							{submitted && validation(!newGoodName, "Nom kiritish majburiy")}
+							{submitted &&
+								validation(!newGoodName.trim(), "Nom kiritish majburiy")}
 						</div>
 					</div>
 					<div className="product-add__input good-input validation-field">
@@ -213,14 +229,15 @@ export default function Goods() {
 							onChange={(e) => setNewGoodCode(e.target.value)}
 						/>
 						<div className="validation-field-error">
-							{submitted && validation(!newGoodCode, "Kod kiritish majburiy")}
+							{submitted &&
+								validation(!newGoodCode.trim(), "Kod kiritish majburiy")}
 						</div>
 					</div>
 					<div className="col-1">
 						<br />
 						<button
 							className="btn btn-melissa"
-							// disabled={!buttonValid}
+							disabled={buttonLoader}
 							onClick={() => postNewGood()}
 							style={{ padding: "4px 10px" }}
 						>
