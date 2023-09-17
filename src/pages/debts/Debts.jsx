@@ -26,6 +26,7 @@ import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { setData as setDataGood } from "../../components/reducers/good"
 import TotalDebtTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
+import { post } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import "./debts.css"
 
@@ -278,6 +279,23 @@ function Debts() {
 	// total
 	const addNewTotalDebt = () => {
 		setSubmitted(true)
+		if (
+			totalName.length >= 3 &&
+			totalCost > 0 &&
+			totalComment.length &&
+			totalDate &&
+			totalDueDate &&
+			new Date(totalDate) <= new Date(totalDueDate)
+		) {
+			let newTotalDebtObj = {
+				client_id: totalName,
+				price: totalCost,
+				description: totalComment,
+				debts_due_date: new Date(totalDate).toISOString(),
+				selectedDate: new Date(totalDueDate).toISOString(),
+			}
+			post("/debts-note/debts-note-post", newTotalDebtObj).then((data) => console.log(data))
+		}
 	}
 
 	// before
@@ -290,7 +308,8 @@ function Debts() {
 			beforeCount > 0 &&
 			beforeCurrency?.currency_name &&
 			beforeDate &&
-			beforeDueDate
+			beforeDueDate &&
+			new Date(beforeData) <= new Date(beforeDueDate)
 		) {
 			setButtonLoader(true)
 			let newObj = {
@@ -336,6 +355,9 @@ function Debts() {
 					setModalAlert("Xatolik")
 					setModalMsg("Oldindan to'lov kiritishda xatolik")
 				})
+			// post("/ordered/ordered-products-post", newObj).then((data) =>
+			// 	console.log(data)
+			// )
 		}
 		setButtonLoader(false)
 		// }
@@ -413,7 +435,7 @@ function Debts() {
 				setModalMsg("To'lov muvoffaqiyatli o'zgartirildi")
 			})
 			.catch((err) => {
-				setModalAlert('Xatolik')
+				setModalAlert("Xatolik")
 				setModalMsg("To'lov o'zgartirishda xatolik")
 				console.log(err)
 			})

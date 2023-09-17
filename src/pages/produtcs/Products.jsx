@@ -541,8 +541,19 @@ export default function Products() {
 							{state?.dataDeliver?.length
 								? state?.dataDeliver.map((item) => {
 										return (
-											<Option value={item?.deliver_id}>
-												{item?.deliver_name}
+											<Option
+												className="client-option"
+												value={item?.deliver_id}
+											>
+												<div>
+													<span>{item?.deliver_name} - </span>
+													<span>
+														{item?.deliver_nomer.replace(
+															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+															"+$1 ($2) $3-$4-$5"
+														)}
+													</span>
+												</div>
 											</Option>
 										)
 								  })

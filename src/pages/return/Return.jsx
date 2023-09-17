@@ -452,6 +452,7 @@ function Return() {
 						: null}
 				</Select>
 				<Select
+					showSearch
 					style={{ width: "100%" }}
 					id="store"
 					value={searchDeliverId ? searchDeliverId : null}
@@ -459,10 +460,20 @@ function Return() {
 					onChange={(e) => setSearchDeliverId(e)}
 					allowClear
 				>
-					{state?.deliver?.data?.length
-						? state?.deliver?.data.map((item) => {
+					{state?.client?.data?.length
+						? state?.client?.data.map((item) => {
 								return (
-									<Option value={item?.deliver_id}>{item?.deliver_name}</Option>
+									<Option className="client-option" value={item?.clients_id}>
+										<div>
+											<span>{item?.clients_name} - </span>
+											<span>
+												{item?.clients_nomer.replace(
+													/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+													"+$1 ($2) $3-$4-$5"
+												)}
+											</span>
+										</div>
+									</Option>
 								)
 						  })
 						: null}

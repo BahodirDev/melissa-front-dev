@@ -12,6 +12,7 @@ import {
 	setQuantity,
 } from "../../components/reducers/store"
 import { validation } from "../../components/validation"
+import { patch, post } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import StoreList from "./StoreList"
 import "./store.css"
@@ -63,6 +64,9 @@ export default function Store() {
 		if (newStoreName.length) {
 			setButtonLoader(true)
 			if (objId) {
+				// patch(`/store/store-patch/${objId}`, { store_name: newStoreName }).then(
+				// 	(data) => console.log(data)
+				// )
 				request(
 					"PATCH",
 					`${process.env.REACT_APP_URL}/store/store-patch/${objId}`,
@@ -89,6 +93,9 @@ export default function Store() {
 						}
 					})
 			} else {
+				// post("/store/store-post", { store_name: newStoreName }).then((data) =>
+				// 	console.log(data)
+				// )
 				request("POST", `${process.env.REACT_APP_URL}/store/store-post`, {
 					store_name: newStoreName,
 				})

@@ -5,6 +5,7 @@ import MyModal from "../../components/modal/Modal"
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
+import { get } from "../../customHook/api"
 import "./main.css"
 
 export default function MainPage() {
@@ -19,14 +20,18 @@ export default function MainPage() {
 	const [action, setAction] = useState({})
 
 	useEffect(() => {
-		let userToken = localStorage.getItem("user")
 		setUserInfo({
+			userToken: localStorage.getItem("user"),
 			role: localStorage.getItem("role"),
 			name: localStorage.getItem("name"),
 		})
-		if (!userToken) {
-			navigate("/login")
-		}
+		get("/currency/currency-list").then((data) => {
+			if (data?.response?.status === 401) {
+				localStorage.clear()
+				navigate("/login")
+				// window.location.reload(false)
+			}
+		})
 
 		setSearchInput("")
 

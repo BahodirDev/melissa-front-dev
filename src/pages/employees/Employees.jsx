@@ -13,6 +13,7 @@ import {
 	setQuantity,
 } from "../../components/reducers/users"
 import { validation } from "../../components/validation"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import EmployeeList from "./EmployeeList"
 import "./employee.css"
@@ -49,13 +50,16 @@ export default function Employees() {
 
 	const getData = () => {
 		dispatch(setLoading(true))
-		request("GET", `${process.env.REACT_APP_URL}/users/users-list`)
-			.then((data) => {
-				dispatch(setData(data))
+		get("/users/users-list").then((data) => {
+			if (Array.isArray(data?.data)) {
+				dispatch(setData(data?.data))
 				dispatch(setQuantity())
-			})
-			.catch((err) => console.error(err))
-		dispatch(setLoading(false))
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot topilmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	useEffect(getData, [])
@@ -78,13 +82,9 @@ export default function Employees() {
 				user_password: new_password,
 			}
 			if (objId) {
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/users/users-patch/${objId}`,
-					newUser
-				)
-					.then((data) => {
-						dispatch(editData(data))
+				patch(`/users/users-patch/${objId}`, newUser).then((data) => {
+					if (data?.status === 200) {
+						dispatch(editData(data?.data))
 						buttonRef.current.click()
 						setModal_alert("Xabar")
 						setModal_msg("Hodim muvoffaqiyatli o'zgartirildi")
@@ -95,26 +95,19 @@ export default function Employees() {
 						setNew_password("")
 						setObjId("")
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						if (err?.response?.data?.error === "USER_ALREADY_EXIST") {
-							// if emp already exists
-							setModal_alert("Xatolik")
-							setModal_msg("Xodim allaqachon mavjud")
-						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Xodim o'zgartirishda xatolik")
-						}
-					})
+					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
+						setModal_alert("Malumot o'zgartirilmadi")
+						setModal_msg("Bunday xodim allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Xodim o'zgartirib bo'lmadi")
+					}
+					setBtn_loading(false)
+				})
 			} else {
-				request(
-					"POST",
-					`${process.env.REACT_APP_URL}/users/users-post`,
-					newUser
-				)
-					.then((data) => {
-						dispatch(addData(data?.data))
+				post("/users/users-post", newUser).then((data) => {
+					if (data?.status === 201) {
+						dispatch(addData(data?.data?.data))
 						dispatch(setQuantity())
 						buttonRef.current.click()
 						setModal_alert("Xabar")
@@ -125,41 +118,34 @@ export default function Employees() {
 						setNew_login("")
 						setNew_password("")
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						if (err?.response?.data?.error === "USER_ALREADY_EXIST") {
-							// if emp already exists
-							setModal_alert("Xatolik")
-							setModal_msg("Xodim allaqachon mavjud")
-						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Xodim qo'shib bo'lmadi")
-						}
-					})
+					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
+						setModal_alert("Xodim qo'shilmadi")
+						setModal_msg("Xodim allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Xodim qo'shib bo'lmadi")
+					}
+					setBtn_loading(false)
+				})
 			}
-			setBtn_loading(false)
 		}
 	}
 
 	const deleteUser = (id) => {
-		request("DELETE", `${process.env.REACT_APP_URL}/users/users-delete/${id}`)
-			.then((data) => {
+		dispatch(setLoading(true))
+		remove(`/users/users-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
 				getData()
 				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Hodim muvoffaqiyatli o'chirildi")
 				setUser_id("")
-			})
-			.catch((err) => {
-				// if (err.response.data.error === "") {
-				// 	setModal_alert("Xatolik")
-				// 	setModal_msg("Xodim o'chirib bo'lmadi")
-				// } else {
-				setModal_alert("Xatolik")
+			} else {
+				setModal_alert("Nomalum server xatolik")
 				setModal_msg("Xodim o'chirib bo'lmadi")
-				// }
-			})
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const collapse = (event) => {
@@ -180,27 +166,19 @@ export default function Employees() {
 	}
 
 	const editEmp = (id) => {
-		// const obj = users.find((item) => item?.user_id === id)
-		request("GET", `${process.env.REACT_APP_URL}/users/users-list/${id}`)
-			.then((data) => {
-				setNew_name(toggleClass ? "" : data[0]?.user_name)
-				setNew_number(toggleClass ? "" : data[0]?.user_nomer.slice(3))
-				setNew_login(toggleClass ? "" : data[0]?.user_login)
-				setNew_password(toggleClass ? "" : data[0]?.user_password)
-				setNew_job(toggleClass ? "" : data[0]?.user_role)
-				setObjId(id)
-				buttonRef.current.click()
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "USER_NOT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Hodim topilmadi")
-				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Nomalum server xatolik")
-				}
-			})
+		const data = state?.data.find((item) => item?.user_id === id)
+		if (data.user_id) {
+			setNew_name(toggleClass ? "" : data?.user_name)
+			setNew_number(toggleClass ? "" : data?.user_nomer.slice(3))
+			setNew_login(toggleClass ? "" : data?.user_login)
+			setNew_password(toggleClass ? "" : data?.user_password)
+			setNew_job(toggleClass ? "" : data?.user_role)
+			setObjId(id)
+			buttonRef.current.click()
+		} else {
+			setModal_alert("Xatolik")
+			setModal_msg("Nomalum xatolik")
+		}
 	}
 
 	return (
@@ -328,6 +306,7 @@ export default function Employees() {
 							className="btn btn-melissa"
 							onClick={addNewUser}
 							style={{ padding: "3px 10px" }}
+							disabled={btn_loading}
 						>
 							<i className="fas fa-plus"></i>
 							{btn_loading && (
