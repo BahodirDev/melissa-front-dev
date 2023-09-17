@@ -18,11 +18,11 @@ const useApiRequest = () => {
 				const response = await axios(config)
 				return response.data
 			} catch (error) {
-				if (error?.response?.data?.status == 401) {
-					localStorage.clear()
-					history("/login")
-					// window.location.reload(false)
-				}
+				// if (error?.response?.data?.status == 401) {
+				// 	localStorage.clear()
+				// 	history("/login")
+				// 	// window.location.reload(false)
+				// }
 				// console.log(error)
 				return error
 			}

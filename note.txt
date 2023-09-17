@@ -5,9 +5,8 @@ test report filter
 rewrite products table
 sms
 first close collapse then set setSubmitted(false) then emtpy // new data
-loading is not showing while data being loaded
 'Saqlash' on login form
-loading while requests
+modal alert and messages
 
 
 charts for stats
@@ -23,19 +22,22 @@ charts for stats
 
 
 ---now
-check button loading
-user info data to reports while perehod and sale
 sold, received or debt closed re fetch report list
-check every request validation errors(success modal when `else if(data.error.status === 200))---------------rewrite fetch from scrach
 date & due_date for client/supplier debt
 before data delete info(Umumiy summa) reducer
-product delete visible only to 
+product delete visible only to admin
 log out if self username/password update
 card wrapper edit scroll to top(one ready in good.jsx)
-search of every page
+move 'Saqlash', 'Tozalash' buttons to navbar in report and product
+search of every page done(return)
+update requests done(currency, employees)
+check loading and btnLoading done(currency, employees)
+crud of debt note
 
 
 after backend
+user info data to reports while perehod and sale
+return filter client_id instead of deliver_id
 close before debt at once
 before debt deliver/good name instead of id
 before debt count 0 isdone true

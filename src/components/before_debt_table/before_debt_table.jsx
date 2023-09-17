@@ -14,8 +14,8 @@ const BeforeDebtTable = ({ data, deleteDebt, editDebt }) => {
 				count: "x" + item?.debts_count,
 				currencyName: item?.debts_currency,
 				currencyAmount: item?.debts_currency_amount,
-				deliver: item?.deliver_id,
-				good: item?.goods_id,
+				deliver: item?.deliver_id?.deliver_name,
+				good: item?.goods_id?.deliver_name,
 				date: `${moment(item?.debts_createdat).zone(+7).format("YYYY/MM/DD")}`,
 				dueDate: `${moment(item?.debts_due_date)
 					.zone(+7)

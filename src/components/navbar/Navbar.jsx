@@ -57,7 +57,7 @@ export default function Navbar({
 			</button>
 
 			{location.pathname !== "/" &&
-			"reports products goods return debts store deliver clients employees currency".includes(
+			"reports products goods return debts store deliver clients employees".includes(
 				location.pathname.slice(1)
 			) ? (
 				<div className="search-form">
@@ -72,7 +72,7 @@ export default function Navbar({
 						onChange={(e) => setSearchInput(e.target.value)}
 					/>
 					{location.pathname !== "/" &&
-					"goods return debts store deliver clients employees currency".includes(
+					"goods return debts store deliver clients employees".includes(
 						location.pathname.slice(1)
 					) ? (
 						<>
