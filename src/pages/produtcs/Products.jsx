@@ -286,8 +286,11 @@ export default function Products() {
 	const clearFilters = () => {
 		setFilteredProducts([])
 		setProductId("")
+		setDeliverId("")
+		setGoodId("")
 		setSearchInputValue("")
 	}
+
 	return (
 		<div>
 			{error_modal(modal_alert, modal_msg, modal_msg?.length, setModal_msg)}
