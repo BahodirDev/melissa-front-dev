@@ -28,6 +28,9 @@ const DDebtTable = ({
 				price_each: addComma(item?.debts_cost) + item?.debts_currency,
 				price_total:
 					addComma(item?.debts_count * item?.debts_cost) + item?.debts_currency,
+				duedate: `${moment(item?.debts_due_date)
+					.zone(+7)
+					.format("YYYY/MM/DD HH:MM")}`,
 				date: `${moment(item?.debts_createdat)
 					.zone(+7)
 					.format("YYYY/MM/DD HH:MM")}`,
@@ -59,8 +62,15 @@ const DDebtTable = ({
 			dataIndex: "price_total",
 		},
 		{
-			title: "Sana",
-			dataIndex: "date",
+			title: "Berilgan sana",
+			dataIndex: 'date',
+			render: (text) => {
+				return <>{text.slice(0, 10)}</>
+			},
+		},
+		{
+			title: "To'lanadigan sana",
+			dataIndex: "duedate",
 			defaultSortOrder: "descend",
 			sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
 			render: (text) => {
