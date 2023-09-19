@@ -1,7 +1,9 @@
 import { Input, Modal, Select } from "antd"
 import { Option } from "antd/es/mentions"
+import moment from "moment"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { get, post } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import { addComma } from "../addComma"
 import { error_modal } from "../error_modal/error_modal"
@@ -28,6 +30,8 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 	const [productObj, setProductObj] = useState({})
 	const [debtsCount, setDebtsCount] = useState(0)
 	const [debtsPrice, setDebtsPrice] = useState(0)
+	const [date, setDate] = useState("")
+	const [dueDate, setDueDate] = useState("")
 	const [debtsPriceCheck, setDebtsPriceCheck] = useState(0)
 
 	useEffect(() => {
@@ -37,9 +41,19 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				clientId &&
 				productObj?.products_id &&
 				debtsCount > 0 &&
-				debtsPriceCheck > 0
+				debtsPriceCheck > 0 &&
+				date &&
+				dueDate &&
+				new Date(date) <= new Date(dueDate)
 		} else {
-			isValid = clientId && productObj && debtsCount > 0 && debtsPrice > 0
+			isValid =
+				clientId &&
+				productObj &&
+				debtsCount > 0 &&
+				debtsPrice > 0 &&
+				date &&
+				dueDate &&
+				new Date(date) <= new Date(dueDate)
 		}
 		setBtnValid(isValid)
 	}, [
@@ -49,6 +63,8 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 		debtsPrice,
 		debtsPriceCheck,
 		priceCheck,
+		date,
+		dueDate,
 	])
 
 	const addDebtToList = () => {
@@ -65,6 +81,8 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				debts_currency: productObj?.currency_id?.currency_symbol,
 				debts_currency_amount: productObj?.currency_id?.currency_amount,
 				debts_price: priceCheck ? debtsPriceCheck : debtsPrice,
+				date,
+				dueDate,
 			}
 			setDebtList([newDebtObj, ...debtList])
 
@@ -81,6 +99,8 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 			setDebtsCount(0)
 			setDebtsPrice(0)
 			setDebtsPriceCheck(0)
+			setDate("")
+			setDueDate("")
 		}
 	}
 
@@ -106,26 +126,22 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				product_id: item?.product_id,
 				product_name: item?.product_name,
 				product_code: item?.product_code,
+				debts_selected_date: new Date(item?.date).toISOString(),
+				debts_due_date: new Date(item?.dueDate).toISOString(),
 			}
 		})
-		console.log(debtArr)
-		request("POST", `${process.env.REACT_APP_URL}/debts/debts-post`, {
-			debts: debtArr,
-		})
-			.then((dataDebt) => {
-				console.log(dataDebt)
-				// update reducer
+		post("/debts/debts-post", { debts: debtArr }).then((data) => {
+			if (data?.status === 200) {
 				const updatedData = debtArr.map((obj, index) => ({
 					...obj,
-					debts_id: dataDebt[index].debts_id,
+					debts_id: data?.data[index].debts_id,
 				}))
 				dispatch(addData(updatedData))
 				dispatch(addDebtToClient(updatedData))
 
-				request("GET", `${process.env.REACT_APP_URL}/products/products-list`)
-					.then((data) => {
-						// console.log(data)
-						dispatch(setDataProduct(data))
+				get("/products/products-list").then((data) => {
+					if (data?.status === 201) {
+						dispatch(setDataProduct(data?.data))
 						setDebtsModal(false)
 						setModalAlert("Xabar")
 						setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
@@ -135,15 +151,16 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 						setDebtsPriceCheck(0)
 						setDebtList([])
 						setClientId({})
-					})
-					.catch((err) => console.log(err?.response?.data))
-			})
-			.catch((err) => {
-				console.log(err?.response?.data)
-				setModalAlert("Xatolik")
+						setDate("")
+						setDueDate("")
+					}
+				})
+			} else {
+				setModalAlert("Nomalum server xatolik")
 				setModalMsg("Qarzdorlik qo'shib bo'lmadi")
-			})
-		setBtnLoading(false)
+			}
+			setBtnLoading(false)
+		})
 	}
 
 	return (
@@ -157,7 +174,7 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				open={debtsModal}
 				onOk={() => setDebtsModal(false)}
 				onCancel={() => setDebtsModal(false)}
-				width={1100}
+				width={1200}
 				footer={[]}
 			>
 				<div className="debt-modal">
@@ -295,6 +312,27 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 								/>
 							)}
 						</div>
+						<div className="debt-input-col">
+							<label htmlFor="">Berilgan sana</label>
+							<Input
+								style={{ width: "100%" }}
+								value={date ? date : null}
+								onChange={(e) => setDate(e.target.value)}
+								type="date"
+							/>
+						</div>
+						<div className="debt-input-col modal-validation-error-field">
+							<label htmlFor="">To'lanadigan sana</label>
+							<Input
+								style={{ width: "100%" }}
+								value={dueDate ? dueDate : null}
+								onChange={(e) => setDueDate(e.target.value)}
+								type="date"
+							/>
+							<div className="modal-validation-error">
+								{new Date(date) > new Date(dueDate) && "Noto'g'ri sana"}
+							</div>
+						</div>
 						<div className="debt-input-col-btn">
 							<label>Umumiy narx:</label>
 							<br />
@@ -323,11 +361,15 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 											<h6>
 												{item?.product_name} - {item?.product_code}
 											</h6>
-											<h6>{item?.debts_count} ta</h6>
+											<h6>x{item?.debts_count}</h6>
 											<h6>{item?.client}</h6>
 											<h6>{addComma(item?.debts_price)} so'm</h6>
 											<h6>
 												{addComma(item?.debts_price * item?.debts_count)} so'm
+											</h6>
+											<h6>
+												{moment(item?.date).format("MM-DD")}/
+												{moment(item?.dueDate).format("MM-DD")}
 											</h6>
 											<button
 												className="btn btn-sm btn-melissa"
@@ -344,7 +386,7 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				</div>
 				<button
 					className="btn btn-sell__modal"
-					disabled={debtList.length ? false : true}
+					disabled={!debtList.length || btnLoading}
 					onClick={addDebt}
 				>
 					Qarz qo'shish

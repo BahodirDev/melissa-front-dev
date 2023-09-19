@@ -1,12 +1,19 @@
 import { Input, Modal, Select } from "antd"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { get } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import { addComma } from "../addComma"
 import { error_modal } from "../error_modal/error_modal"
 import { setData as setDataClient } from "../reducers/client"
 import { setData as setDataCurrency } from "../reducers/currency"
 import { setDataProduct } from "../reducers/product"
+import {
+	setCapital,
+	setData as setDataReport,
+	setIncome,
+	setOutcome,
+} from "../reducers/report"
 import { setData } from "../reducers/store"
 import ProductModalList from "./ProductModalList"
 import "./modal.css"
@@ -101,6 +108,14 @@ export default function MyModal({ myModal, setMyModal }) {
 				request("get", `${process.env.REACT_APP_URL}/products/products-list`)
 					.then((data) => dispatch(setDataProduct(data?.data)))
 					.catch((err) => console.log(err?.response?.data))
+				get("/reports/reports-list").then((data) => {
+					if (data?.status === 201) {
+						dispatch(setDataReport(data?.data?.data))
+						dispatch(setCapital(data?.data?.hisob?.totalProductCost))
+						dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
+						dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
+					}
+				})
 				setMyModal(false)
 				setProductList([])
 				setStore_id("")
@@ -113,14 +128,14 @@ export default function MyModal({ myModal, setMyModal }) {
 				setPrice_bh(0)
 				setProductPrice(0)
 				setProductQ(0)
+				setBtnloading(false)
 			})
 			.catch((error) => {
 				console.error(error?.response?.data)
 				setModalAlert("Xatolik")
 				setModalMsg("Mahsulot sotishda xatolik")
+				setBtnloading(false)
 			})
-
-		setBtnloading(false)
 	}
 
 	const sellProduct = () => {

@@ -2,9 +2,8 @@ import { Table } from "antd"
 import moment from "moment/moment"
 import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
-import { payConfirmModal } from "../pay_confirm_modal/pay_confirm_modal"
-import { payModal } from "../pay_modal/pay_modal"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
+import { payConfirmModal } from "../pay_confirm_modal/pay_confirm_modal"
 
 const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 	let arr = []
@@ -29,9 +28,8 @@ const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 					price_total:
 						addComma(item?.debts_count * item?.debts_price) +
 						item?.debts_currency,
-					date: `${moment(item?.debts_createdat)
-						.zone(+7)
-						.format("YYYY/MM/DD HH:MM")}`,
+					date: `${moment(item?.debts_createdat).format("YYYY/MM/DD")}`,
+					duedate: `${moment(item?.debts_due_date).format("YYYY/MM/DD HH:MM")}`,
 				})
 			}
 		})
@@ -60,8 +58,12 @@ const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 			dataIndex: "price_total",
 		},
 		{
-			title: "Sana",
+			title: "Berilgan sana",
 			dataIndex: "date",
+		},
+		{
+			title: "To'lanadigan sana",
+			dataIndex: "duedate",
 			defaultSortOrder: "descend",
 			sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
 			render: (text) => {

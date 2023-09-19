@@ -208,8 +208,8 @@ function Debts() {
 				debts_count: newCount,
 				debts_currency: newCurrency?.currency_symbol,
 				debts_currency_amount: newCurrency?.currency_amount,
-				debts_selected_date: new Date().toISOString(),
-				debts_due_date: new Date().toISOString(),
+				debts_selected_date: new Date(deliverDate).toISOString(),
+				debts_due_date: new Date(deliverDueDate).toISOString(),
 
 				goods_name: newGood?.goods_name,
 				goods_code: newGood?.goods_code,
@@ -804,6 +804,7 @@ function Debts() {
 									className="btn btn-melissa mx-1"
 									onClick={addNewTotalDebt}
 									style={{ padding: "3px 10px" }}
+									disabled={buttonLoader}
 								>
 									<i className="fas fa-plus"></i>
 									{buttonLoader && (
