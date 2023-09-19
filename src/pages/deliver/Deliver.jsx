@@ -13,6 +13,7 @@ import {
 	setQuantity,
 } from "../../components/reducers/deliver"
 import { validation } from "../../components/validation"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import DeliverList from "./DeliverList"
 import "./deliver.css"
@@ -27,7 +28,14 @@ function Deliver() {
 	const [modal_msg, setModal_msg] = useState("")
 	const [modal_alert, setModal_alert] = useState("")
 	const [user_id, setUser_id] = useState("")
-	const [saerchInputValue] = useOutletContext()
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
 	const [filteredData, setFilteredData] = useState([])
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
@@ -35,25 +43,33 @@ function Deliver() {
 	const [submitted, setSubmitted] = useState(false)
 	const state = useSelector((state) => state.deliver)
 	const dispatch = useDispatch()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	useEffect(() => {
-		dispatch(setLoading(true))
-		let deliver = state?.data.filter((item) =>
-			item?.deliver_name.toLowerCase().includes(saerchInputValue.toLowerCase())
-		)
-		setFilteredData(deliver)
-		dispatch(setLoading(false))
+		setAction({
+			url: "/deliver/deliver-search",
+			body: {
+				delivery_name: saerchInputValue,
+			},
+			res: setFilteredData,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
 	}, [saerchInputValue])
 
 	const getData = () => {
 		dispatch(setLoading(true))
-		request("GET", `${process.env.REACT_APP_URL}/deliver/deliver-list`)
-			.then((data) => {
-				dispatch(setData(data))
+		get("/deliver/deliver-list").then((data) => {
+			if (data?.status === 201) {
+				dispatch(setData(data?.data))
 				dispatch(setQuantity())
-			})
-			.catch((err) => console.error(err))
-		dispatch(setLoading(false))
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot topilmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	useEffect(getData, [])
@@ -75,115 +91,99 @@ function Deliver() {
 
 	const addNewDeliver = () => {
 		setSubmitted(true)
-		if (name.length >= 3 && phone.slice(18) !== "_" && loc.length >= 3) {
+		if (name.length >= 3 && phone.slice(18) !== "_" && loc) {
 			setBtn_loading(true)
 			if (objId) {
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/deliver/deliver-patch/${objId}`,
-					{
-						deliver_name: name,
-						deliver_nomer: phone.replace(/\D/g, ""),
-						deliver_place: loc,
-					}
-				)
-					.then((data) => {
-						dispatch(editData(data.data))
+				patch(`/deliver/deliver-patch/${objId}`, {
+					deliver_name: name,
+					deliver_nomer: phone.replace(/\D/g, ""),
+					deliver_place: loc,
+				}).then((data) => {
+					if (data?.status === 200) {
+						dispatch(editData(data?.data?.data))
 						buttonRef.current.click()
-						setModal_msg("Ta'minotchi muvoffaqiyatli o'zgartirildi")
-						setModal_alert("Xabar")
 						setName("")
 						setPhone("")
 						setLoc("")
 						setObjId("")
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						if (err?.response?.data?.error === "USER_ALREADY_EXIST") {
-							setModal_msg("Ta'minotchi allaqachon bor")
-							setModal_alert("Xatolik")
-						} else {
-							setModal_msg("Ta'minotchi o'zgartirishda xatolik")
-							setModal_alert("Xatolik")
-						}
-					})
+						setModal_msg("Malumot muvoffaqiyatli o'zgartirildi")
+						setModal_alert("Xabar")
+					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
+						setModal_alert("Malumot o'zgartirilmadi")
+						setModal_msg("Bunday ta'minotchi allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Malumot o'zgartirib bo'lmadi")
+					}
+					setBtn_loading(false)
+				})
 			} else {
 				let newDeliver = {
 					deliver_name: name,
 					deliver_nomer: phone.replace(/\D/g, ""),
 					deliver_place: loc,
 				}
-				request(
-					"POST",
-					`${process.env.REACT_APP_URL}/deliver/deliver-post`,
-					newDeliver
-				)
-					.then((data) => {
-						dispatch(addData(data?.data))
+				post("/deliver/deliver-post", newDeliver).then((data) => {
+					if (data?.status === 201) {
+						dispatch(addData(data?.data?.data))
 						dispatch(setQuantity())
 						buttonRef.current.click()
-						setModal_msg("Ta'minotchi muvoffaqiyatli qo'shildi")
-						setModal_alert("Xabar")
 						setName("")
 						setPhone("")
 						setLoc("")
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						if (err?.response?.data?.error === "USER_ALREADY_EXIST") {
-							setModal_msg("Ta'minotchi allaqachon bor")
-							setModal_alert("Xatolik")
-						} else {
-							setModal_msg("Ta'minotchi qo'shishda xatolik")
-							setModal_alert("Xatolik")
-						}
-					})
+						setModal_msg("Ta'minotchi muvoffaqiyatli qo'shildi")
+						setModal_alert("Xabar")
+					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
+						setModal_alert("Malumot o'zgartirilmadi")
+						setModal_msg("Bunday ta'minotchi allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Malumot o'zgartirib bo'lmadi")
+					}
+					setBtn_loading(false)
+				})
 			}
-			setBtn_loading(false)
 		}
 	}
 
 	const deleteDeliver = (id) => {
-		request(
-			"DELETE",
-			`${process.env.REACT_APP_URL}/deliver/deliver-delete/${id}`
-		)
-			.then((data) => {
+		dispatch(setLoading(true))
+		remove(`/deliver/deliver-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
 				getData()
 				dispatch(setQuantity())
+				setUser_id("")
 				setModal_msg("Ta'minotchi o'chirildi")
 				setModal_alert("Xabar")
-				setUser_id("")
-			})
-			.catch((err) => {
-				setModal_msg("Ta'minotchi o'chirib bo'lmadi")
-				setModal_alert("Xatolik")
-				setUser_id("")
-			})
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot o'chirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const editDeliver = (id) => {
-		// const obj = data.find((item) => item.deliver_id === id)
-		request("GET", `${process.env.REACT_APP_URL}/deliver/deliver-list/${id}`)
-			.then((data) => {
-				setName(toggleClass ? "" : data?.deliver_name)
-				setPhone(toggleClass ? "" : data?.deliver_nomer.slice(3))
-				setLoc(toggleClass ? "" : data?.deliver_place)
-				setObjId(id)
-				buttonRef.current.click()
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "DELIVER_NOT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Ta'minotchi topilmadi")
-				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Nomalum server xatolik")
-				}
-			})
+		let divTop = document.querySelector(".content").scrollTop
+		let scrollTop = setInterval(() => {
+			divTop -= 20
+			document.querySelector(".content").scrollTop = divTop
+
+			if (divTop <= 0) {
+				clearInterval(scrollTop)
+			}
+		}, 10)
+
+		const index = state?.data.findIndex((item) => item.deliver_id === id)
+		if (index !== -1) {
+			setName(toggleClass ? "" : state?.data[index]?.deliver_name)
+			setPhone(toggleClass ? "" : state?.data[index]?.deliver_nomer.slice(3))
+			setLoc(toggleClass ? "" : state?.data[index]?.deliver_place)
+			setObjId(id)
+			buttonRef.current.click()
+		}
 	}
 
 	return (
@@ -250,17 +250,17 @@ function Deliver() {
 						/>
 						<div className="validation-field-error">
 							{submitted && validation(!loc, "Manzil kiritish majburiy")}
-							{loc.length
-								? validation(loc.length < 3, "Kamida 3 ta harf kerak")
-								: null}
+							{loc.length ? validation(!loc, "Manzil kiritish majburiy") : null}
 						</div>
 					</div>
+
 					<div className="col p-0 mx-1">
 						<br />
 						<button
 							className="btn btn-melissa"
 							onClick={addNewDeliver}
 							style={{ padding: "4px 10px" }}
+							disabled={btn_loading}
 						>
 							<i className="fas fa-plus"></i>
 							{btn_loading && (
@@ -284,7 +284,7 @@ function Deliver() {
 				<Loader />
 			) : (
 				<DeliverList
-					data={saerchInputValue.length ? filteredData : state?.data}
+					data={searchSubmitted ? filteredData : state?.data}
 					deleteDeliver={deleteDeliver}
 					editDeliver={editDeliver}
 					toggleDesc={toggleDesc}

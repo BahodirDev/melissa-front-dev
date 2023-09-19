@@ -31,6 +31,7 @@ function Return() {
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
 	const [
@@ -55,7 +56,7 @@ function Return() {
 
 	useEffect(() => {
 		setAction({
-			url: "return/return-filter",
+			url: "/return/return-filter",
 			body: {
 				store_id: searchStoreId,
 				goods_id: searchGoodId,
@@ -64,12 +65,13 @@ function Return() {
 				goods_code: saerchInputValue,
 			},
 			res: setFilteredData,
-			submitted: setSubmitted,
+			submitted: setSearchSubmitted,
 			clearValues: {
 				first: setSearchStoreId,
 				second: setSearchGoodId,
 				third: setSearchDeliverId,
 			},
+			setLoading: setLoading,
 		})
 	}, [saerchInputValue, searchStoreId, searchGoodId, searchDeliverId])
 
@@ -497,7 +499,7 @@ function Return() {
 			</div>
 
 			<ReturnTable
-				data={submitted ? filteredData : state?.return?.dataReturn}
+				data={searchSubmitted ? filteredData : state?.return?.dataReturn}
 				deleteItem={deleteItem}
 				editItem={editItem}
 			/>
