@@ -21,12 +21,10 @@ const AntTable = ({
 					client: item?.client_name,
 					price: addComma(item?.price),
 					desc: item?.description,
-					date: `${moment(item?.debts_createdat)
-						.zone(+7)
-						.format("YYYY/MM/DD HH:MM")}`,
-					duedate: `${moment(item?.debts_due_date)
-						.zone(+7)
-						.format("YYYY/MM/DD HH:MM")}`,
+					date: `${moment(item?.debts_due_date).format("YYYY/MM/DD HH:MM")}`,
+					duedate: `${moment(item?.debts_createdat).format(
+						"YYYY/MM/DD HH:MM"
+					)}`,
 				})
 			}
 		})

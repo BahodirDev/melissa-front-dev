@@ -8,6 +8,10 @@ first close collapse then set setSubmitted(false) then emtpy // new data
 'Saqlash' on login form
 modal alert and messages
 addComma function is used
+debt section localstorage
+move 'Saqlash', 'Tozalash' buttons to navbar in report and product
+fix css positioning of info alert
+hide page/functions based on user role
 
 
 charts for stats
@@ -23,10 +27,7 @@ charts for stats
 
 
 ---now
-sold, received or debt closed re fetch report list
 log out if self username/password update
-move 'Saqlash', 'Tozalash' buttons to navbar in report and product
-2 input date for client debt
 
 
 card wrapper edit scroll to top(one ready in good.jsx)
