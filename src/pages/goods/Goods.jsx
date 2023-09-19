@@ -167,13 +167,14 @@ export default function Goods() {
 	const updateGood = (id) => {
 		let divTop = document.querySelector(".content").scrollTop
 		let scrollTop = setInterval(() => {
-			divTop -= 10
+			divTop -= 20
 			document.querySelector(".content").scrollTop = divTop
 
 			if (divTop <= 0) {
 				clearInterval(scrollTop)
 			}
-		}, 1)
+		}, 10)
+
 		request("GET", `${process.env.REACT_APP_URL}/goods/goods-list/${id}`)
 			.then((data) => {
 				setNewGoodName(toggleClass ? "" : data[0]?.goods_name)
@@ -192,8 +193,6 @@ export default function Goods() {
 				}
 			})
 	}
-
-	// setAction({ url: "good/ fiter path", body: {} })
 
 	return (
 		<div id="cardWrapperTop">

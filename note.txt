@@ -27,10 +27,7 @@ charts for stats
 
 
 ---now
-log out if self username/password update
-
-
-card wrapper edit scroll to top(one ready in good.jsx)
-search of every page done(return)
-update requests done(currency, employees)
-check loading and btnLoading done(currency, employees)
+search of every page done(return, currency, employee, client, deliver)
+loading and btnLoading done(currency, employees, client, deliver)
+edit, scroll to top(good, currency, employee, client, deliver)
+update requests done(currency, employees, client, deliver)

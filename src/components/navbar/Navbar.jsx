@@ -1,6 +1,8 @@
 import { Button, Input } from "antd"
+import { useDispatch } from "react-redux"
 import { useLocation } from "react-router-dom"
 import user_image from "../../assets/img/admin.jpg"
+import { post } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import { employee_role } from "../../pages/employees/employee_role"
 import "./navbar.css"
@@ -16,20 +18,38 @@ export default function Navbar({
 }) {
 	const location = useLocation()
 	const request = useApiRequest()
+	const dispatch = useDispatch()
 
 	const submitSearch = () => {
-		request(
-			"POST",
-			`${process.env.REACT_APP_URL}/${action?.url}`,
-			action?.body
-		).then((data) => {
-			action?.res(data)
-			action?.submitted(true)
-		})
+		// for those with reducer
+		if (
+			action?.url === "/return/return-filter" ||
+			action?.url === "/users/users-search" ||
+			action?.url === "/clients/clients-search" ||
+			action?.url === "/deliver/deliver-search"
+		) {
+			dispatch(action?.setLoading(true))
+			post(action?.url, action?.body).then((data) => {
+				action?.res(data)
+				action?.submitted(true)
+				dispatch(action?.setLoading(false))
+			})
+		} else {
+			action?.setLoading(true)
+			request(
+				"POST",
+				`${process.env.REACT_APP_URL}${action?.url}`,
+				action?.body
+			).then((data) => {
+				action?.res(data)
+				action?.submitted(true)
+				action?.setLoading(false)
+			})
+		}
 	}
 
 	const clearSearch = () => {
-		if (action?.url === "return/return-filter") {
+		if (action?.url === "/return/return-filter") {
 			action?.clearValues.first("")
 			action?.clearValues.second("")
 			action?.clearValues.third("")

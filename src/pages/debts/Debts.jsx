@@ -125,6 +125,8 @@ function Debts() {
 			setNewCurrency({})
 			setNewCount(0)
 			setNewCost(0)
+			setDeliverDate("")
+			setDeliverDueDate("")
 
 			setTotalName("")
 			setTotalCost(0)

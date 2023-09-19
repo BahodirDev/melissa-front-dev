@@ -24,12 +24,16 @@ export default function MainPage() {
 			userToken: localStorage.getItem("user"),
 			role: localStorage.getItem("role"),
 			name: localStorage.getItem("name"),
+			id: localStorage.getItem("id"),
 		})
 		get("/currency/currency-list").then((data) => {
 			if (data?.response?.status === 401) {
 				localStorage.clear()
 				navigate("/login")
 				// window.location.reload(false)
+			} else if (!localStorage.getItem("user")) {
+				localStorage.clear()
+				navigate("/login")
 			}
 		})
 

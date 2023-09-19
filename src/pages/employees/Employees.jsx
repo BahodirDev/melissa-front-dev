@@ -2,7 +2,7 @@ import { Input, Select } from "antd"
 import { useEffect, useRef, useState } from "react"
 import { PatternFormat } from "react-number-format"
 import { useDispatch, useSelector } from "react-redux"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import {
@@ -14,13 +14,12 @@ import {
 } from "../../components/reducers/users"
 import { validation } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
-import useApiRequest from "../../customHook/useUrl"
 import EmployeeList from "./EmployeeList"
 import "./employee.css"
 const { Option } = Select
 
 export default function Employees() {
-	const request = useApiRequest()
+	const navigate = useNavigate()
 	const [filteredUsers, setFilteredUsers] = useState([])
 	const [btn_loading, setBtn_loading] = useState(false)
 	const [modal_msg, setModal_msg] = useState("")
@@ -35,17 +34,33 @@ export default function Employees() {
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
-	const [saerchInputValue] = useOutletContext()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
 	const state = useSelector((state) => state.users)
 	const dispatch = useDispatch()
 
 	useEffect(() => {
-		dispatch(setLoading(true))
-		let stores = state?.data.filter((item) =>
-			item?.user_name.toLowerCase().includes(saerchInputValue.toLowerCase())
-		)
-		setFilteredUsers(stores)
-		dispatch(setLoading(false))
+		setAction({
+			url: "/users/users-search",
+			body: {
+				user_name: saerchInputValue,
+			},
+			res: setFilteredUsers,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
+		// let stores = state?.data.filter((item) =>
+		// 	item?.user_name.toLowerCase().includes(saerchInputValue.toLowerCase())
+		// )
+		// setFilteredUsers(stores)
 	}, [saerchInputValue])
 
 	const getData = () => {
@@ -86,8 +101,6 @@ export default function Employees() {
 					if (data?.status === 200) {
 						dispatch(editData(data?.data))
 						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Hodim muvoffaqiyatli o'zgartirildi")
 						setNew_name("")
 						setNew_number("")
 						setNew_job(0)
@@ -95,6 +108,14 @@ export default function Employees() {
 						setNew_password("")
 						setObjId("")
 						setSubmitted(false)
+						setModal_alert("Xabar")
+						setModal_msg("Hodim muvoffaqiyatli o'zgartirildi")
+						setTimeout(() => {
+							if (objId === userInfo?.id) {
+								localStorage.clear()
+								navigate("/login")
+							}
+						}, 1000)
 					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
 						setModal_alert("Malumot o'zgartirilmadi")
 						setModal_msg("Bunday xodim allaqachon mavjud")
@@ -166,6 +187,16 @@ export default function Employees() {
 	}
 
 	const editEmp = (id) => {
+		let divTop = document.querySelector(".content").scrollTop
+		let scrollTop = setInterval(() => {
+			divTop -= 20
+			document.querySelector(".content").scrollTop = divTop
+
+			if (divTop <= 0) {
+				clearInterval(scrollTop)
+			}
+		}, 10)
+
 		const data = state?.data.find((item) => item?.user_id === id)
 		if (data.user_id) {
 			setNew_name(toggleClass ? "" : data?.user_name)
@@ -175,9 +206,6 @@ export default function Employees() {
 			setNew_job(toggleClass ? "" : data?.user_role)
 			setObjId(id)
 			buttonRef.current.click()
-		} else {
-			setModal_alert("Xatolik")
-			setModal_msg("Nomalum xatolik")
 		}
 	}
 
@@ -329,7 +357,7 @@ export default function Employees() {
 				<Loader />
 			) : (
 				<EmployeeList
-					users={saerchInputValue.length ? filteredUsers : state?.data}
+					users={searchSubmitted ? filteredUsers : state?.data}
 					user_id={user_id}
 					setUser_id={setUser_id}
 					deleteUser={deleteUser}
