@@ -12,7 +12,7 @@ import {
 	setQuantity,
 } from "../../components/reducers/store"
 import { validation } from "../../components/validation"
-import { patch, post } from "../../customHook/api"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import StoreList from "./StoreList"
 import "./store.css"
@@ -24,37 +24,47 @@ export default function Store() {
 	const [toggleClass, setToggleClass] = useState(false)
 	const [modal_msg, setModal_msg] = useState("")
 	const [modal_alert, setModal_alert] = useState("")
-	const [saerchInputValue] = useOutletContext()
 	const request = useApiRequest()
 	const buttonRef = useRef(null)
 	const [objId, setObjId] = useState("")
 	const [submitted, setSubmitted] = useState(false)
 	const state = useSelector((state) => state.store)
 	const dispatch = useDispatch()
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	useEffect(() => {
-		dispatch(setLoading(true))
-		let stores =
-			state?.data?.length &&
-			state?.data.filter((item) =>
-				item?.store_name.toLowerCase().includes(saerchInputValue.toLowerCase())
-			)
-		setFilteredStores(stores)
-		dispatch(setLoading(false))
+		setAction({
+			url: "/store/store-list",
+			body: {
+				store_name: saerchInputValue,
+			},
+			res: setFilteredStores,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
 	}, [saerchInputValue])
 
 	const getData = () => {
 		dispatch(setLoading(true))
-		request("GET", `${process.env.REACT_APP_URL}/store/store-list`)
-			.then((data) => {
-				dispatch(setData(data))
+		get("/store/store-list").then((data) => {
+			if (data?.status === 201) {
+				dispatch(setData(data?.data))
 				dispatch(setQuantity())
-			})
-			.catch((error) => {
-				console.log(error)
-			})
-
-		dispatch(setLoading(false))
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot topilmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	useEffect(getData, [])
@@ -64,80 +74,65 @@ export default function Store() {
 		if (newStoreName.length) {
 			setButtonLoader(true)
 			if (objId) {
-				// patch(`/store/store-patch/${objId}`, { store_name: newStoreName }).then(
-				// 	(data) => console.log(data)
-				// )
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/store/store-patch/${objId}`,
-					{
-						store_name: newStoreName,
+				patch(`/store/store-patch/${objId}`, { store_name: newStoreName }).then(
+					(data) => {
+						if (data?.status === 201) {
+							dispatch(editData(data?.data))
+							buttonRef.current.click()
+							setModal_alert("Xabar")
+							setModal_msg("Malumot muvoffaqiyatli o'zgartirildi")
+							setNewStoreName("")
+							setObjId("")
+							setSubmitted(false)
+						} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
+							setModal_alert("Xatolik")
+							setModal_msg("Bunday ombor allaqachon mavjud")
+						} else {
+							setModal_alert("Nomalum server xatolik")
+							setModal_msg("Malumot o'zgartirib bo'lmadi")
+						}
+						setButtonLoader(false)
 					}
 				)
-					.then((data) => {
-						dispatch(editData(data))
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Ombor muvoffaqiyatli o'zgartirildi")
-						setNewStoreName("")
-						setObjId("")
-						setSubmitted(false)
-					})
-					.catch((err) => {
-						if (err?.response?.data?.error === "STORE_ALREADY_EXIST") {
-							setModal_alert("Xatolik")
-							setModal_msg("Ombor allaqachon mavjud")
-						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Ombor o'zgartirishda xatolik")
-						}
-					})
 			} else {
-				// post("/store/store-post", { store_name: newStoreName }).then((data) =>
-				// 	console.log(data)
-				// )
-				request("POST", `${process.env.REACT_APP_URL}/store/store-post`, {
-					store_name: newStoreName,
-				})
-					.then((data) => {
-						dispatch(addData(data))
+				post("/store/store-post", { store_name: newStoreName }).then((data) => {
+					if (data?.status === 201) {
+						dispatch(addData(data?.data))
 						dispatch(setQuantity())
 						buttonRef.current.click()
 						setModal_alert("Xabar")
 						setModal_msg("Ombor muvoffaqiyatli qo'shildi")
 						setNewStoreName("")
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						if (err?.response?.data?.error === "STORE_ALREADY_EXIST") {
-							setModal_alert("Xatolik")
-							setModal_msg("Ombor allaqachon mavjud")
-						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Ombor qo'shishda xatolik")
-						}
-					})
+					} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
+						setModal_alert("Xatolik")
+						setModal_msg("Ombor allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Ombor qo'shib bo'lmadi")
+					}
+					setButtonLoader(false)
+				})
 			}
-			setButtonLoader(false)
 		}
 	}
 
 	const deleteStore = (id) => {
-		request("DELETE", `${process.env.REACT_APP_URL}/store/store-delete/${id}`)
-			.then((data) => {
-				if (data?.data?.error === "PRODUCT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Omborda maxsulot borligi uchun o'chirilmadi")
-				} else {
-					getData()
-					setModal_alert("Xabar")
-					setModal_msg("Ombor muvoffaqiyatli o'chirildi")
-				}
-			})
-			.catch((err) => {
+		dispatch(setLoading(true))
+		remove(`/store/store-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
+				getData()
+				setModal_alert("Xabar")
+				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
+			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
 				setModal_alert("Xatolik")
-				setModal_msg("Omborni o'chirishda xatolik")
-			})
+				setModal_msg("Omborda maxsulot borligi uchun o'chirilmadi")
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot o'chirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const collapse = (event) => {
@@ -154,23 +149,22 @@ export default function Store() {
 	}
 
 	const editStore = (id) => {
-		// const obj = store.find((item) => item.store_id === id)
-		request("GET", `${process.env.REACT_APP_URL}/store/store-list/${id}`)
-			.then((data) => {
-				setNewStoreName(toggleClass ? "" : data[0]?.store_name)
-				setObjId(id)
-				buttonRef.current.click()
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "STORE_NOT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Ombor topilmadi")
-				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Nomalum server xatolik")
-				}
-			})
+		let divTop = document.querySelector(".content").scrollTop
+		let scrollTop = setInterval(() => {
+			divTop -= 20
+			document.querySelector(".content").scrollTop = divTop
+
+			if (divTop <= 0) {
+				clearInterval(scrollTop)
+			}
+		}, 10)
+
+		const index = state?.data.findIndex((item) => item.store_id === id)
+		if (index !== -1) {
+			setNewStoreName(toggleClass ? "" : state?.data[index]?.store_name)
+			setObjId(id)
+			buttonRef.current.click()
+		}
 	}
 
 	return (
@@ -202,7 +196,7 @@ export default function Store() {
 					<div className="col">
 						<br />
 						<button
-							// disabled={!buttonValid}
+							disabled={buttonLoader}
 							className="btn btn-melissa"
 							onClick={addNewStore}
 							style={{ padding: "4px 10px" }}
@@ -225,12 +219,11 @@ export default function Store() {
 				<i className="fa-solid fa-warehouse"></i> Omborlar soni:{" "}
 				{state?.quantity ? state?.quantity : 0} ta
 			</div>
-			{/* <AntTable data={store} tableName="store" /> */}
 			{state?.loading ? (
 				<Loader />
 			) : (
 				<StoreList
-					store={saerchInputValue.length ? filteredStores : state?.data}
+					store={searchSubmitted ? filteredStores : state?.data}
 					deleteStore={deleteStore}
 					editStore={editStore}
 				/>

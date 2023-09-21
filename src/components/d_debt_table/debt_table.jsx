@@ -4,6 +4,7 @@ import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import { payConfirmModal } from "../pay_confirm_modal/pay_confirm_modal"
+import { payModal } from "../pay_modal/pay_modal"
 
 const DDebtTable = ({
 	data,
@@ -82,14 +83,14 @@ const DDebtTable = ({
 					>
 						<i className="fa-solid fa-check"></i>
 					</button>
-					{/* <button
+					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={(e) =>
 							payModal(e, payDeliverDebt, record?.id, record?.price_total)
 						}
 					>
 						<i className="fas fa-edit"></i>
-					</button> */}
+					</button>
 					<button
 						className="btn btn-sm btn-outline-danger"
 						onClick={(e) =>

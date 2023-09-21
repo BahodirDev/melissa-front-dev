@@ -18,7 +18,6 @@ export const debtSlice = createSlice({
 			state.quantity = action.payload
 		},
 		addData: (state, action) => {
-			
 			action.payload?.map((item) => {
 				state.data.unshift({
 					debts_id: item?.debts_id,
@@ -42,6 +41,7 @@ export const debtSlice = createSlice({
 					debts_currency_amount: item?.debts_currency_amount,
 					debts_createdat: item?.debts_selected_date,
 					debts_due_date: item?.debts_due_date,
+					debts_total_price: item?.debts_total_price,
 					// debts_due_date: "2023-08-08T12:15:23.614Z",
 					// debts_createdat: "2023-08-08T12:15:23.615Z",
 				})
@@ -55,7 +55,6 @@ export const debtSlice = createSlice({
 			// if (index !== -1) {
 			// 	state.data[index] = {
 			// 		...state.data[index],
-
 			// 		// deliver_name: action.payload?.deliver_name,
 			// 	}
 			// }

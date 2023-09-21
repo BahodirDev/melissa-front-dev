@@ -1,17 +1,15 @@
 ---at the end
-change values of 'currency.json'
 '?.' everywhere
 test report filter
-rewrite products table
-sms
 first close collapse then set setSubmitted(false) then emtpy // new data
-'Saqlash' on login form
-modal alert and messages
-addComma function is used
-debt section localstorage
+same message for info modal
+addComma function for every price
+save debt section state for localStorge
 move 'Saqlash', 'Tozalash' buttons to navbar in report and product
-fix css positioning of info alert
-hide page/functions based on user role
+fix css positioning of info badge on top right corner
+hide pages/functions based on user role
+filtered show different quantity/info
+same product with different currency at different places hard to understand
 
 
 charts for stats
@@ -27,7 +25,11 @@ charts for stats
 
 
 ---now
-search of every page done(return, currency, employee, client, deliver)
-loading and btnLoading done(currency, employees, client, deliver)
-edit, scroll to top(good, currency, employee, client, deliver)
-update requests done(currency, employees, client, deliver)
+sell modal product select hard to know which one
+divide debt's sections
+client debt post reducer(not receiving from backend)
+
+search(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
+scroll(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
+loading(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
+requests(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)

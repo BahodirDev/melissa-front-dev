@@ -18,6 +18,7 @@ import {
 } from "../../components/reducers/return"
 import ReturnTable from "../../components/return_table/ReturnTable"
 import { validation } from "../../components/validation"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import "./return.css"
 
@@ -76,27 +77,27 @@ function Return() {
 	}, [saerchInputValue, searchStoreId, searchGoodId, searchDeliverId])
 
 	const getData = (list, action) => {
-		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`).then(
-			(data) => {
-				dispatch(action(data))
+		dispatch(setLoading(true))
+		get(`/${list}/${list}-list`).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				dispatch(action(data?.data))
 				if (list === "return") {
 					dispatch(setQuantity())
 				}
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Malumot topilmadi")
 			}
-		)
-		// .catch((err) => console.error(err))
+			dispatch(setLoading(false))
+		})
 	}
 
 	useEffect(() => {
-		dispatch(setLoading(true))
-
 		getData("return", setDataReturn)
 		getData("clients", setDataClient)
 		getData("store", setDataStore)
 		getData("deliver", setDataDeliver)
 		getData("goods", setDataGoods)
-
-		dispatch(setLoading(false))
 	}, [])
 
 	const collapse = (event) => {
@@ -119,14 +120,7 @@ function Return() {
 
 	const addNewReturn = () => {
 		setSubmitted(true)
-		if (
-			name &&
-			client &&
-			store &&
-			count > 0 &&
-			cost > 0 &&
-			reason?.length > 4
-		) {
+		if (name && client && store && count > 0 && cost > 0 && reason?.length) {
 			setBtnLoading(true)
 			let newObj = {
 				return_name: name,
@@ -137,16 +131,12 @@ function Return() {
 				return_case: reason,
 			}
 			if (objId) {
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/return/return-patch/${objId}`,
-					newObj
-				)
-					.then((data) => {
-						dispatch(editData(data))
+				patch(`/return/return-patch/${objId}`, newObj).then((data) => {
+					if (data?.status === 201) {
+						dispatch(editData(data?.data))
 						buttonRef.current.click()
 						setModalAlert("Xabar")
-						setModalMsg("Mahsulot muvoffaqiyatli o'zgartirildi.")
+						setModalMsg("Malumot muvoffaqiyatli o'zgartirildi")
 						setName("")
 						setCount(0)
 						setCost(0)
@@ -154,29 +144,23 @@ function Return() {
 						setStore("")
 						setReason("")
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						if (err?.response?.data?.error === "CLIENTS_NOT_FOUND") {
-							setModalAlert("Xatolik")
-							setModalMsg("Mijoz topilmadi.")
-						} else {
-							setModalAlert("Xatolik")
-							setModalMsg("Mahsulot o'zgartirishda xatolik.")
-						}
-					})
+					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
+						setModalAlert("Xatolik")
+						setModalMsg("Mijoz topilmadi")
+					} else {
+						setModalAlert("Nomalum server xatolik")
+						setModalMsg("Mahsulot o'zgartirib bo'lmadi")
+					}
+					setBtnLoading(false)
+				})
 			} else {
-				request(
-					"POST",
-					`${process.env.REACT_APP_URL}/return/return-post`,
-					newObj
-				)
-					.then((data) => {
-						dispatch(addData(data))
+				post("/return/return-post", newObj).then((data) => {
+					if (data?.status === 200) {
+						dispatch(addData(data?.data))
 						dispatch(setQuantity())
 						buttonRef.current.click()
 						setModalAlert("Xabar")
-						setModalMsg("Mahsulot muvoffaqiyatli qaytarildi.")
+						setModalMsg("Mahsulot muvoffaqiyatli qaytarildi")
 						setName("")
 						setCount(0)
 						setCost(0)
@@ -184,61 +168,60 @@ function Return() {
 						setStore("")
 						setReason("")
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						if (err?.response?.data?.error === "CLIENTS_NOT_FOUND") {
-							setModalAlert("Xatolik")
-							setModalMsg("Mijoz topilmadi.")
-						} else {
-							setModalAlert("Xatolik")
-							setModalMsg("Mahsulot qaytarishda xatolik.")
-						}
-					})
+					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
+						setModalAlert("Xatolik")
+						setModalMsg("Mijoz topilmadi")
+					} else {
+						setModalAlert("Nomalum server xatolik")
+						setModalMsg("Malumot o'zgartirib bo'lmadi")
+					}
+					setBtnLoading(false)
+				})
 			}
-			setBtnLoading(false)
 		}
 	}
 
 	const deleteItem = (id) => {
-		request("DELETE", `${process.env.REACT_APP_URL}/return/return-delete/${id}`)
-			.then((data) => {
-				getData()
+		dispatch(setLoading(true))
+		remove(`/return/return-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
+				getData("return", setDataReturn)
 				setModalAlert("Xabar")
 				setModalMsg("Qaytgan mahsulot muvoffaqiyatli o'chirildi")
-			})
-			.catch((err) => {
-				console.log(err?.response?.data?.error)
-				setModalAlert("Xatolik")
-				setModalMsg("Qaytgan mahsulotni o'chirib bo'lmadi")
-			})
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Malumot o'chirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const editItem = (id) => {
-		request("GET", `${process.env.REACT_APP_URL}/return/return-list/${id}`)
-			.then((data) => {
-				setName(toggleClass ? "" : data?.return_name)
-				setCount(toggleClass ? "" : data?.return_count)
-				setCost(toggleClass ? "" : data?.return_cost)
+		let divTop = document.querySelector(".content").scrollTop
+		let scrollTop = setInterval(() => {
+			divTop -= 20
+			document.querySelector(".content").scrollTop = divTop
+
+			if (divTop <= 0) {
+				clearInterval(scrollTop)
+			}
+		}, 10)
+
+		get(`/return/return-list/${id}`).then((data) => {
+			if (data?.status === 200) {
+				setName(toggleClass ? "" : data?.data?.return_name)
+				setCount(toggleClass ? "" : data?.data?.return_count)
+				setCost(toggleClass ? "" : data?.data?.return_cost)
 				const index = state?.return?.dataClient.findIndex(
-					(item) => item.clients_id === data?.client_id
+					(item) => item.clients_id === data?.data?.client_id
 				)
 				setClient(toggleClass ? "" : state?.return?.dataClient[index])
-				setStore(toggleClass ? "" : data?.return_store)
-				setReason(toggleClass ? "" : data?.return_case)
+				setStore(toggleClass ? "" : data?.data?.return_store)
+				setReason(toggleClass ? "" : data?.data?.return_case)
 				setObjId(id)
 				buttonRef.current.click()
-			})
-			.catch((error) => {
-				console.log(error)
-				if (error?.response?.data?.error === "RETURN_ITEM_NOT_FOUND") {
-					setModalAlert("Xatolik")
-					setModalMsg("Qaytgan mahsuot topilmadi")
-				} else {
-					setModalAlert("Xatolik")
-					setModalMsg("Nomalum server xatolik")
-				}
-			})
+			}
+		})
 	}
 
 	return state?.return?.loading ? (
@@ -400,9 +383,6 @@ function Return() {
 						/>
 						<div className="validation-field-error">
 							{submitted && validation(!reason, "Izoh kiritish majburiy")}
-							{reason.length
-								? validation(reason.length < 5, "Kamida 5 ta harf kerak")
-								: null}
 						</div>
 					</div>
 					<div className="col p-0 mx-1">
@@ -411,6 +391,7 @@ function Return() {
 							className="btn btn-melissa"
 							onClick={addNewReturn}
 							style={{ padding: "3px 10px" }}
+							disabled={btnLoading}
 						>
 							<i className="fas fa-plus"></i>
 							{btnLoading && (

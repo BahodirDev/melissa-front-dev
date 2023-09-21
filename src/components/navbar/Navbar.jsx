@@ -26,7 +26,9 @@ export default function Navbar({
 			action?.url === "/return/return-filter" ||
 			action?.url === "/users/users-search" ||
 			action?.url === "/clients/clients-search" ||
-			action?.url === "/deliver/deliver-search"
+			action?.url === "/deliver/deliver-search" ||
+			action?.url === "/store/store-list" ||
+			action?.url === "/goods/goods-search"
 		) {
 			dispatch(action?.setLoading(true))
 			post(action?.url, action?.body).then((data) => {
