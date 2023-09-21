@@ -1,4 +1,4 @@
-import { Button, Input, Select } from "antd"
+import { Input, Select } from "antd"
 import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
@@ -7,7 +7,6 @@ import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
-	editData,
 	setAmount,
 	setDataCurrency,
 	setDataDeliver,
@@ -20,6 +19,7 @@ import {
 } from "../../components/reducers/product"
 import AntTable from "../../components/table/Table"
 import { validation } from "../../components/validation"
+import { get, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import { mapOptionList } from "./mapOptionList"
 import "./product.css"
@@ -33,8 +33,14 @@ export default function Products() {
 	const [sn, setSn] = useState("")
 	const [toggleClass, setToggleClass] = useState(false)
 	const request = useApiRequest()
-	const [searchInputValue, setSearchInputValue, sidebar, userInfo] =
-		useOutletContext()
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
@@ -45,6 +51,7 @@ export default function Products() {
 	const [buttonValid, setButtonValid] = useState(false)
 	const [deliverId, setDeliverId] = useState("")
 	const [goodId, setGoodId] = useState("")
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	// new data
 	const [newGoodsId, setNewGoodsId] = useState({})
@@ -57,45 +64,56 @@ export default function Products() {
 	const [newPercentId, setNewPercentId] = useState({})
 
 	useEffect(() => {
-		let isValid =
-			searchInputValue.length ||
-			productId?.length ||
-			goodId.length ||
-			deliverId.length
-		setButtonValid(isValid)
-	}, [productId, searchInputValue, goodId, deliverId])
+		setAction({
+			url: "/products/products-filter",
+			body: {
+				store_id: productId,
+				goods_name: saerchInputValue,
+				goods_code: saerchInputValue,
+				deliver_id: deliverId,
+				goods_id: goodId,
+			},
+			res: setFilteredProducts,
+			submitted: setSearchSubmitted,
+			clearValues: {
+				first: setFilteredProducts,
+				second: setProductId,
+				third: setDeliverId,
+				fourth: setGoodId,
+				fifth: setSearchInput,
+			},
+			setLoading: setLoading,
+		})
+	}, [productId, saerchInputValue, goodId, deliverId])
 
 	const getData = () => {
-		request("GET", `${process.env.REACT_APP_URL}/products/products-list`)
-			.then((data) => {
-				dispatch(setDataProduct(data?.data))
-				dispatch(setQuantity(data?.hisob?.kategoriya))
-				dispatch(setAmount(data?.hisob?.soni))
-				dispatch(setSum(data?.hisob?.umumiyQiymati))
-			})
-			.catch((error) => {
-				console.error(error)
-			})
+		dispatch(setLoading(true))
+		get("/products/products-list").then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				dispatch(setDataProduct(data?.data?.data))
+				dispatch(setQuantity(data?.data?.hisob?.kategoriya))
+				dispatch(setAmount(data?.data?.hisob?.soni))
+				dispatch(setSum(data?.data?.hisob?.umumiyQiymati))
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot topilmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const getData1 = (name, dispatch1) => {
-		request("GET", `${process.env.REACT_APP_URL}/${name}/${name}-list`)
-			.then((data) => {
-				dispatch(dispatch1(data))
-			})
-			.catch((error) => console.log(error))
+		get(`/${name}/${name}-list`).then((data) => {
+			dispatch(dispatch1(data?.data))
+		})
 	}
 
 	useEffect(() => {
-		dispatch(setLoading(true))
-
 		getData()
 		getData1("store", setDataStore)
 		getData1("goods", setDataGood)
 		getData1("deliver", setDataDeliver)
 		getData1("currency", setDataCurrency)
-
-		dispatch(setLoading(false))
 	}, [])
 
 	const addNewProduct = () => {
@@ -123,44 +141,42 @@ export default function Products() {
 				products_count_price: +newProductPrice,
 			}
 			if (objId) {
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/products/products-patch/${objId}`,
-					newProductObj
-				)
-					.then((data) => {
-						dispatch(
-							editData({ products_id: data?.products_id, ...newProductObj })
-						)
-						setNewGoodsId({})
-						setNewDeliverId({})
-						setNewStoreId({})
-						setNewBoxQ(0)
-						setNewProductQ(0)
-						setNewPercentId({})
-						setNewProductCost(0)
-						setNewProductPrice(0)
-						setModal_alert("Xabar")
-						setModal_msg("Maxsulot muvoffaqiyatli o'zgartirildi")
-						buttonRef.current.click()
-						setSubmitted(false)
-						setButtonLoader(false)
-					})
-					.catch((err) => {
-						console.log(err?.response?.data)
-						setModal_alert("Xatolik")
-						setModal_msg("Mahsulot o'zgartirishda xatolik")
-						setButtonLoader(false)
-					})
+				// patch(`/products/products-patch/${objId}`).then((data) => {
+				// 	console.log(data)
+				// })
+				// request(
+				// 	"PATCH",
+				// 	`${process.env.REACT_APP_URL}/products/products-patch/${objId}`,
+				// 	newProductObj
+				// )
+				// 	.then((data) => {
+				// 		dispatch(
+				// 			editData({ products_id: data?.products_id, ...newProductObj })
+				// 		)
+				// 		setNewGoodsId({})
+				// 		setNewDeliverId({})
+				// 		setNewStoreId({})
+				// 		setNewBoxQ(0)
+				// 		setNewProductQ(0)
+				// 		setNewPercentId({})
+				// 		setNewProductCost(0)
+				// 		setNewProductPrice(0)
+				// 		setModal_alert("Xabar")
+				// 		setModal_msg("Maxsulot muvoffaqiyatli o'zgartirildi")
+				// 		buttonRef.current.click()
+				// 		setSubmitted(false)
+				// 		setButtonLoader(false)
+				// 	})
+				// 	.catch((err) => {
+				// 		console.log(err?.response?.data)
+				// 		setModal_alert("Xatolik")
+				// 		setModal_msg("Mahsulot o'zgartirishda xatolik")
+				// 		setButtonLoader(false)
+				// 	})
 			} else {
-				// console.log(newProductObj)
-				request(
-					"POST",
-					`${process.env.REACT_APP_URL}/products/products-post`,
-					newProductObj
-				)
-					.then((dataP) => {
-						dispatch(addData(dataP))
+				post("/products/products-post", newProductObj).then((data) => {
+					if (data?.status === 200) {
+						dispatch(addData(data?.data))
 						dispatch(setQuantity())
 						getData()
 						setNewGoodsId({})
@@ -172,43 +188,35 @@ export default function Products() {
 						setNewProductCost(0)
 						setNewProductPrice(0)
 						setModal_alert("Xabar")
-						setModal_msg("Maxsulot muvoffaqiyatli qo'shildi")
+						setModal_msg("Mahsulot muvoffaqiyatli qo'shildi")
 						buttonRef.current.click()
-						setButtonLoader(false)
 						setSubmitted(false)
-					})
-					.catch((err) => {
-						setModal_alert("Xatolik")
+					} else {
+						setModal_alert("Nomalum server xatolik")
 						setModal_msg("Mahsulot qo'shib bo'lmadi")
-						setButtonLoader(false)
-					})
+					}
+					setButtonLoader(false)
+				})
 			}
 		}
 	}
 
 	const deleteProduct = (id) => {
-		request(
-			"DELETE",
-			`${process.env.REACT_APP_URL}/products/products-delete/${id}`
-		)
-			.then((data) => {
-				if (data?.data?.error === "PRODUCT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Mahsulot omborda mavjud")
-				} else if (data?.data?.error === "DEBTS_EXIST") {
-					setModal_alert("Xatolik")
-					setModal_msg("Mahsulotda qarzdorlik mavjud")
-				} else {
-					getData()
-					setModal_msg("Mahsulot muvoffaqiyatli o'chirildi")
-					setModal_alert("Xabar")
-					setSn("")
-				}
-			})
-			.catch((err) => {
+		remove(`/products/products-delete/${id}`).then((data) => {
+			console.log(data)
+			if (data?.status === 200 || data?.status === 201) {
+				getData()
+				setModal_msg("Mahsulot muvoffaqiyatli o'chirildi")
+				setModal_alert("Xabar")
+				setSn("")
+			} else if (data?.response?.data?.error === "DEBTS_EXIST") {
 				setModal_alert("Xatolik")
+				setModal_msg("Mahsulotda qarzdorlik mavjud")
+			} else {
+				setModal_alert("Nomalum server xatolik")
 				setModal_msg("Mahsulot o'chirib bo'lmadi")
-			})
+			}
+		})
 	}
 
 	const collapse = (event) => {
@@ -267,28 +275,6 @@ export default function Products() {
 					setModal_msg("Nomalum server xatolik")
 				}
 			})
-	}
-
-	const setFilters = () => {
-		request("post", `${process.env.REACT_APP_URL}/products/products-filter`, {
-			store_id: productId,
-			goods_name: searchInputValue,
-			goods_code: searchInputValue,
-			deliver_id: deliverId,
-			goods_id: goodId,
-		})
-			.then((data) => {
-				setFilteredProducts(data)
-			})
-			.catch((err) => console.log(err))
-	}
-
-	const clearFilters = () => {
-		setFilteredProducts([])
-		setProductId("")
-		setDeliverId("")
-		setGoodId("")
-		setSearchInputValue("")
 	}
 
 	return (
@@ -490,23 +476,35 @@ export default function Products() {
 					<div className="products-info" id="productsInfo">
 						<span>
 							<i className="fa-solid fa-tags"></i> Kategoriya:{" "}
-							{filteredProducts?.data
-								? filteredProducts?.hisob?.kategoriya
-								: state?.quantity}{" "}
+							{searchSubmitted
+								? filteredProducts?.hisob?.kategoriya >= 0
+									? filteredProducts?.hisob?.kategoriya
+									: 0
+								: state?.quantity >= 0
+								? state?.quantity
+								: 0}{" "}
 							ta
 						</span>
 						<span>
 							<i className="fa-solid fa-bookmark"></i> Soni:{" "}
-							{filteredProducts?.data
-								? filteredProducts?.hisob?.soni
-								: state?.amount}{" "}
+							{searchSubmitted
+								? filteredProducts?.hisob?.soni >= 0
+									? filteredProducts?.hisob?.soni
+									: 0
+								: state?.amount >= 0
+								? state?.amount
+								: 0}{" "}
 							ta
 						</span>
 						<span>
 							<i className="fa-solid fa-sack-dollar"></i> Summasi:{" "}
-							{filteredProducts?.data
-								? addComma(filteredProducts?.hisob?.umumiyQiymati)
-								: addComma(state?.sum)}{" "}
+							{searchSubmitted
+								? addComma(
+										filteredProducts?.hisob?.umumiyQiymati >= 0
+											? filteredProducts?.hisob?.umumiyQiymati
+											: 0
+								  )
+								: addComma(state?.sum >= 0 ? state?.sum : 0)}{" "}
 							so'm
 						</span>
 					</div>
@@ -578,21 +576,10 @@ export default function Products() {
 								  })
 								: null}
 						</Select>
-
-						<Button disabled={!buttonValid} onClick={clearFilters}>
-							Tozalash
-						</Button>
-						<Button onClick={setFilters} disabled={!buttonValid}>
-							Saqlash
-						</Button>
 					</div>
 
 					<AntTable
-						data={
-							filteredProducts?.data
-								? filteredProducts?.data
-								: state?.dataProduct
-						}
+						data={searchSubmitted ? filteredProducts?.data : state?.dataProduct}
 						deleteItem={deleteProduct}
 						editProduct={editProduct}
 						userRole={userInfo?.role}

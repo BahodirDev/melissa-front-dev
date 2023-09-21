@@ -1,4 +1,4 @@
-import { Button, DatePicker, Select, Space } from "antd"
+import { DatePicker, Select, Space } from "antd"
 import { Option } from "antd/es/mentions"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -15,6 +15,7 @@ import {
 	setOutcome,
 } from "../../components/reducers/report"
 import AntReportTable from "../../components/report_table/report_table"
+import { get } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import "./report.css"
 const { RangePicker } = DatePicker
@@ -25,65 +26,17 @@ export default function Reports() {
 	const request = useApiRequest()
 	const { report, store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	// filter
-	const [searchInput, setSearchInput] = useOutletContext()
+	const [searchInput, setSearchInput, sidebar, userInfo, action, setAction] =
+		useOutletContext()
 	const [selectedIncomeOutcome, setSelectedIncomeOutcome] = useState("all")
 	const [dateRange, setDateRange] = useState([])
 	const [storeId, setStoreId] = useState("")
 	const [clientId, setClientId] = useState("")
 
 	useEffect(() => {
-		let isValid =
-			dateRange.length ||
-			searchInput.length ||
-			storeId?.length ||
-			clientId?.length
-		setButtonValid(isValid)
-	}, [dateRange, searchInput, storeId, clientId])
-
-	const getData = (name, setter) => {
-		request("GET", `${process.env.REACT_APP_URL}/${name}/${name}-list`)
-			.then((data) => {
-				if (name === "reports") {
-					// console.log(data)
-					dispatch(setter(data?.data))
-					dispatch(setCapital(data?.hisob?.totalProductCost))
-					dispatch(setIncome(data?.hisob?.totalCostPilus))
-					dispatch(setOutcome(data?.hisob?.totalCostMinus))
-				} else {
-					dispatch(setter(data))
-				}
-			})
-			.catch((error) => {
-				console.log(error)
-			})
-	}
-
-	useEffect(() => {
-		dispatch(setLoading(true))
-		getData("reports", setData)
-		getData("deliver", setDataDeliver)
-		dispatch(setLoading(false))
-	}, [])
-
-	const clearFilters = () => {
-		dispatch(setLoading(true))
-
-		setSearchInput("")
-		setDateRange([])
-		setFilteredData([])
-		setStoreId("")
-		setClientId("")
-		setSelectedIncomeOutcome("all")
-
-		// window.location.reload(false) ---------------------------------------------last resort
-
-		dispatch(setLoading(false))
-	}
-
-	const setFilters = () => {
-		dispatch(setLoading(true))
 		let startDate = ""
 		let endDate = ""
 		if (dateRange.length) {
@@ -109,21 +62,43 @@ export default function Reports() {
 			filterObj.isEnter = false
 		}
 
-		request(
-			"POST",
-			`${process.env.REACT_APP_URL}/reports/reports-filter`,
-			filterObj
-		)
-			.then((data) => {
-				// console.log(data?.hisob)
-				setFilteredData(data)
-			})
-			.catch((error) => {
-				console.log(error?.response?.data?.error)
-			})
+		setAction({
+			url: "/reports/reports-filter",
+			body: filterObj,
+			res: setFilteredData,
+			submitted: setSearchSubmitted,
+			clearValues: {
+				second: setDateRange,
+				third: setFilteredData,
+				fourth: setStoreId,
+				fifth: setClientId,
+				sixth: setSelectedIncomeOutcome,
+			},
+			setLoading: setLoading,
+		})
+	}, [dateRange, searchInput, storeId, clientId, selectedIncomeOutcome])
 
-		dispatch(setLoading(false))
+	const getData = (name, setter) => {
+		dispatch(setLoading(true))
+		get(`/${name}/${name}-list`).then((data) => {
+			if (data?.status === 201 || data?.status === 200) {
+				if (name === "reports") {
+					dispatch(setter(data?.data?.data))
+					dispatch(setCapital(data?.data?.hisob?.totalProductCost))
+					dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
+					dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
+				} else {
+					dispatch(setter(data?.data))
+				}
+			}
+			dispatch(setLoading(false))
+		})
 	}
+
+	useEffect(() => {
+		getData("reports", setData)
+		getData("deliver", setDataDeliver)
+	}, [])
 
 	return (
 		<>
@@ -242,23 +217,11 @@ export default function Reports() {
 						/>
 					</Space>
 
-					<Button
-						disabled={!buttonValid}
-						onClick={clearFilters}
-						style={{ marginRight: "10px" }}
-					>
-						Tozalash
-					</Button>
-
-					<Button onClick={setFilters} disabled={!buttonValid}>
-						Saqlash
-					</Button>
-
 					<div className="reports-info">
 						<span>
 							<i className="fa-solid fa-tags"></i> Foyda:{" "}
 							{addComma(
-								filteredData?.data
+								searchSubmitted
 									? filteredData?.hisob?.totalProductCost >= 0
 										? filteredData?.hisob?.totalProductCost
 										: 0
@@ -271,7 +234,7 @@ export default function Reports() {
 						<span>
 							<i className="fa-solid fa-tags"></i> Kirim:{" "}
 							{addComma(
-								filteredData?.data
+								searchSubmitted
 									? filteredData?.hisob?.totalCostMinus >= 0
 										? filteredData?.hisob?.totalCostMinus
 										: 0
@@ -284,7 +247,7 @@ export default function Reports() {
 						<span>
 							<i className="fa-solid fa-tags"></i> Chiqim:{" "}
 							{addComma(
-								filteredData?.data
+								searchSubmitted
 									? filteredData?.hisob?.totalCostPilus >= 0
 										? filteredData?.hisob?.totalCostPilus
 										: 0
@@ -295,8 +258,9 @@ export default function Reports() {
 							so'm
 						</span>
 					</div>
+
 					<AntReportTable
-						data={filteredData?.data ? filteredData?.data : report?.data}
+						data={searchSubmitted ? filteredData?.data : report?.data}
 					/>
 				</div>
 			)}

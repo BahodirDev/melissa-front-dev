@@ -20,7 +20,8 @@
 }
 
 .return-item-filter-row {
-	display: flex;
+	display: grid;
+	grid-template-columns: 180px 180px 180px;
 	gap: 10px;
 	width: 500px;
 	position: fixed;
