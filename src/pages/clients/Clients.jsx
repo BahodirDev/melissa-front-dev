@@ -13,13 +13,21 @@ import {
 	setQuantity,
 } from "../../components/reducers/client"
 import { validation } from "../../components/validation"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import ClientList from "./ClientList"
 import "./client.css"
 
 export default function Employees() {
 	const request = useApiRequest()
-	const [saerchInputValue] = useOutletContext()
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
 	const [modal_alert, setModal_alert] = useState("")
 	const [modal_msg, setModal_msg] = useState("")
 	const [toggleClass, setToggleClass] = useState(false)
@@ -35,44 +43,41 @@ export default function Employees() {
 	const [submitted, setSubmitted] = useState(false)
 	const state = useSelector((state) => state.client)
 	const dispatch = useDispatch()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	// search by name or number. !!!should be moved to backend
 	useEffect(() => {
-		dispatch(setLoading(true))
-		let clients = state?.data?.filter(
-			(item) =>
-				item?.clients_name
-					.toLowerCase()
-					.includes(saerchInputValue.toLowerCase()) ||
-				item?.clients_nomer
-					.toLowerCase()
-					.includes(saerchInputValue.toLowerCase())
-		)
-		setFilteredData(clients)
-		dispatch(setLoading(false))
+		setAction({
+			url: "/clients/clients-search",
+			body: {
+				client_name: saerchInputValue,
+			},
+			res: setFilteredData,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
 	}, [saerchInputValue])
 
 	const getData = () => {
 		dispatch(setLoading(true))
-		request("GET", `${process.env.REACT_APP_URL}/clients/clients-list`)
-			.then((data) => {
-				dispatch(setData(data))
+		get("/clients/clients-list").then((data) => {
+			if (data?.status === 201) {
+				dispatch(setData(data?.data))
 				dispatch(setQuantity())
-			})
-			.catch((err) => console.error(err))
-			.finally(() => {
-				dispatch(setLoading(false))
-			})
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot topilmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
+
 	useEffect(getData, [])
 
 	const addNewClient = () => {
 		setSubmitted(true)
-		if (
-			new_name.length >= 3 &&
-			desc.length >= 5 &&
-			new_number.slice(18) !== "_"
-		) {
+		if (new_name.length >= 3 && desc && new_number.slice(18) !== "_") {
 			setBtn_loading(true)
 			let newClient = {
 				clients_name: new_name,
@@ -80,86 +85,66 @@ export default function Employees() {
 				clients_desc: desc,
 			}
 			if (objId) {
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/clients/clients-patch/${objId}`,
-					newClient
-				)
-					.then((data) => {
-						if (data?.data?.error === "CLIENTS_ALREADY_EXIST") {
-							setModal_alert("Xatolik")
-							setModal_msg("Mijoz allaqachon mavjud")
-						} else {
-							dispatch(editData(data))
-							buttonRef.current.click()
-							setModal_alert("Xabar")
-							setModal_msg("Mijoz muvoffaqiyatli o'zgartirildi")
-							setNew_name("")
-							setNew_number("")
-							setDesc("")
-							setObjId("")
-							setSubmitted(false)
-						}
-					})
-					.catch((err) => {
-						// console.log(err)
+				patch(`/clients/clients-patch/${objId}`, newClient).then((data) => {
+					if (data?.status === 201) {
+						dispatch(editData(data?.data))
+						buttonRef.current.click()
+						setModal_alert("Xabar")
+						setModal_msg("Mijoz muvoffaqiyatli o'zgartirildi")
+						setNew_name("")
+						setNew_number("")
+						setDesc("")
+						setObjId("")
+						setSubmitted(false)
+					} else if (data?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
 						setModal_alert("Xatolik")
-						setModal_msg("Mijoz o'zgartirishda xatolik")
-					})
+						setModal_msg("Mijoz allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Malumot o'zgartirib bo'lmadi")
+					}
+					setBtn_loading(false)
+				})
 			} else {
-				request(
-					"POST",
-					`${process.env.REACT_APP_URL}/clients/clients-post`,
-					newClient
-				)
-					.then((data) => {
-						if (data?.data?.error === "CLIENTS_ALREADY_EXIST") {
-							setModal_alert("Xatolik")
-							setModal_msg("Mijoz allaqachon mavjud")
-						} else {
-							dispatch(addData(data))
-							dispatch(setQuantity())
-							buttonRef.current.click()
-							setModal_alert("Xabar")
-							setModal_msg("Mijoz muvoffaqiyatli qo'shildi")
-							setNew_name("")
-							setNew_number("")
-							setDesc("")
-							setSubmitted(false)
-						}
-					})
-					.catch((err) => {
+				post("/clients/clients-post", newClient).then((data) => {
+					if (data?.status === 201) {
+						dispatch(addData(data?.data))
+						dispatch(setQuantity())
+						buttonRef.current.click()
+						setModal_alert("Xabar")
+						setModal_msg("Mijoz muvoffaqiyatli qo'shildi")
+						setNew_name("")
+						setNew_number("")
+						setDesc("")
+						setSubmitted(false)
+					} else if (data?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
 						setModal_alert("Xatolik")
-						setModal_msg("Mijoz qo'shib bo'lmadi")
-					})
+						setModal_msg("Mijoz allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Malumot qo'shib bo'lmadi")
+					}
+					setBtn_loading(false)
+				})
 			}
-			setBtn_loading(false)
 		}
 	}
 
 	const deleteClient = (id) => {
-		request(
-			"DELETE",
-			`${process.env.REACT_APP_URL}/clients/clients-delete/${id}`
-		)
-			.then((data) => {
+		dispatch(setLoading(true))
+		remove(`/clients/clients-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
 				getData()
 				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Mijoz muvoffaqiyatli o'chirildi")
 				setUserId(0)
-			})
-			.catch((err) => {
-				console.log(err?.response?.data)
-				// if (err.response.data.error === "") {
-				// 	setModal_alert("Xatolik")
-				// 	setModal_msg("Mijoz ...")
-				// } else {
-				setModal_alert("Xatolik")
-				setModal_msg("Mijoz o'chirishda xatolik")
-				setUserId(0)
-				// }
-			})
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot o'chirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const collapse = (event) => {
@@ -178,25 +163,24 @@ export default function Employees() {
 	}
 
 	const editClient = (id) => {
-		// const obj = data.find((item) => item?.clients_id === id)
-		request("GET", `${process.env.REACT_APP_URL}/clients/clients-list/${id}`)
-			.then((data) => {
-				setNew_name(data?.clients_name)
-				setNew_number(data?.clients_nomer.slice(3))
-				setDesc(data?.clients_desc)
-				setObjId(id)
-				buttonRef.current.click()
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "USERS_NOT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Mijoz topilmadi")
-				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Nomalum server xatolik")
-				}
-			})
+		let divTop = document.querySelector(".content").scrollTop
+		let scrollTop = setInterval(() => {
+			divTop -= 20
+			document.querySelector(".content").scrollTop = divTop
+
+			if (divTop <= 0) {
+				clearInterval(scrollTop)
+			}
+		}, 10)
+
+		const index = state?.data.findIndex((item) => item?.clients_id === id)
+		if (index !== -1) {
+			setNew_name(state?.data[index]?.clients_name)
+			setNew_number(state?.data[index]?.clients_nomer.slice(3))
+			setDesc(state?.data[index]?.clients_desc)
+			setObjId(id)
+			buttonRef.current.click()
+		}
 	}
 
 	return (
@@ -263,14 +247,15 @@ export default function Employees() {
 						<div className="validation-field-error">
 							{submitted && validation(!desc, "Izoh kiritish majburiy")}
 							{desc.length
-								? validation(desc.length < 5, "Kamida 5 ta harf kerak")
+								? validation(!desc.length, "Izoh kiritish majburiy")
 								: null}
 						</div>
 					</div>
+
 					<div className="col p-0 mx-1">
 						<br />
 						<button
-							// disabled={!btn_valid}
+							disabled={btn_loading}
 							className="btn btn-melissa"
 							onClick={addNewClient}
 							style={{ padding: "4px 10px" }}
@@ -296,7 +281,7 @@ export default function Employees() {
 				<Loader />
 			) : (
 				<ClientList
-					data={saerchInputValue.length ? filteredData : state?.data}
+					data={searchSubmitted ? filteredData : state?.data}
 					deleteClient={deleteClient}
 					toggleDesc={toggleDesc}
 					setToggleDesc={setToggleDesc}

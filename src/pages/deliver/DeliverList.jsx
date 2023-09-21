@@ -81,7 +81,7 @@ function DeliverList({
 												setToggleDesc(0)
 												productDeleteConfirm(
 													e,
-													"Diller",
+													"Ta'minotchi",
 													deleteDeliver,
 													item?.deliver_id
 												)

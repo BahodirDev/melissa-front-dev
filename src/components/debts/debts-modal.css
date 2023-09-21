@@ -151,12 +151,12 @@
 
 .debts-modal-wrapper {
 	display: grid;
-	grid-template-columns: auto auto auto auto 200px;
+	grid-template-columns: auto auto auto auto auto auto 200px;
 	height: 70px !important;
 }
 
 .debt-input-col {
-	width: 200px;
+	width: 150px;
 	padding: 0 2.5px;
 }
 

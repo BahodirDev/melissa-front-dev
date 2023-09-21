@@ -11,13 +11,11 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	deleteData as deleteDeliverData,
-	editData as editDeliverData,
 	setData as setDeliverDebt,
 	setQuantity as setQuantityD,
 } from "../../components/reducers/d-debt"
 import {
 	deleteData,
-	editData,
 	setData,
 	setLoading,
 	setQuantity,
@@ -26,6 +24,7 @@ import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { setData as setDataGood } from "../../components/reducers/good"
 import TotalDebtTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
+import { patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import "./debts.css"
 
@@ -40,8 +39,9 @@ function Debts() {
 	const [submitted, setSubmitted] = useState(false)
 	const [toggleClass, setToggleClass] = useState(false)
 	const [showDeliver, setShowDeliver] = useState("client")
-	const [beforeData, setBeforeData] = useState([])
+	const [beforeData, setBeforeData] = useState({})
 	const [objId, setObjId] = useState("")
+	const [debtNoteList, setDebtNoteList] = useState({})
 
 	// new data deliver
 	const [newDeliver, setNewDeliver] = useState({})
@@ -49,6 +49,8 @@ function Debts() {
 	const [newCurrency, setNewCurrency] = useState({})
 	const [newCount, setNewCount] = useState(0)
 	const [newCost, setNewCost] = useState(0)
+	const [deliverDate, setDeliverDate] = useState("")
+	const [deliverDueDate, setDeliverDueDate] = useState("")
 
 	// new data total
 	const [totalName, setTotalName] = useState("")
@@ -67,6 +69,7 @@ function Debts() {
 	const [beforeDueDate, setBeforeDueDate] = useState("")
 
 	const getData = (list, setList) => {
+		dispatch(setLoading(true))
 		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`)
 			.then((data) => {
 				// console.log(data)
@@ -77,12 +80,15 @@ function Debts() {
 					} else {
 						dispatch(setQuantityD(data.amount))
 					}
+				} else if (list === "debts-note") {
+					setList(data)
 				} else {
 					dispatch(setList(data))
 				}
+				dispatch(setLoading(false))
 			})
 			.catch((error) => {
-				// console.log(error)
+				dispatch(setLoading(false))
 			})
 	}
 
@@ -97,14 +103,12 @@ function Debts() {
 	}
 
 	useEffect(() => {
-		dispatch(setLoading(true))
 		getData("debts", setData)
 		getData("deliver", setDataDeliver)
 		getData("deliver-debts", setDeliverDebt)
 		getData("goods", setDataGood)
+		getData("debts-note", setDebtNoteList)
 		getBeforeData()
-
-		dispatch(setLoading(true))
 	}, [])
 
 	const collapse = (event) => {
@@ -119,6 +123,8 @@ function Debts() {
 			setNewCurrency({})
 			setNewCount(0)
 			setNewCost(0)
+			setDeliverDate("")
+			setDeliverDueDate("")
 
 			setTotalName("")
 			setTotalCost(0)
@@ -164,7 +170,19 @@ function Debts() {
 	}
 
 	const payDebt = (id, sum) => {
-		dispatch(editData({ id, sum }))
+		dispatch(setLoading(true))
+		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
+			console.log(data)
+			if (data?.status === 201) {
+				setModalAlert("Xabar")
+				setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+				getData("debts", setData)
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Qarzdorlik kiritib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const deleteDebt = (id) => {
@@ -188,47 +206,49 @@ function Debts() {
 			newDeliver?.deliver_name &&
 			newGood?.goods_name &&
 			newCurrency?.currency_name &&
-			newCount > 1 &&
-			newCost > 1
+			newCount > 0 &&
+			newCost > 0 &&
+			deliverDate &&
+			deliverDueDate &&
+			new Date(deliverDate) <= new Date(deliverDueDate)
 		) {
 			setButtonLoader(true)
 			let newObj = {
-				goods_name: newGood?.goods_name,
 				goods_id: newGood?.goods_id,
-				goods_code: newGood?.goods_code,
 				deliver_id: newDeliver?.deliver_id,
-				deliver_name: newDeliver?.deliver_name,
-				deliver_nomer: newDeliver?.deliver_nomer,
 				debts_cost: newCost,
 				debts_count: newCount,
 				debts_currency: newCurrency?.currency_symbol,
 				debts_currency_amount: newCurrency?.currency_amount,
+				debts_selected_date: new Date(deliverDate).toISOString(),
+				debts_due_date: new Date(deliverDueDate).toISOString(),
+
+				goods_name: newGood?.goods_name,
+				goods_code: newGood?.goods_code,
+				deliver_name: newDeliver?.deliver_name,
+				deliver_nomer: newDeliver?.deliver_nomer,
 			}
-			request(
-				"POST",
-				`${process.env.REACT_APP_URL}/deliver-debts/deliver-debts-post`,
-				newObj
-			)
-				.then((data) => {
-					buttonRef.current.click()
+
+			post("/deliver-debts/deliver-debts-post", newObj).then((data) => {
+				if (data?.status === 200) {
 					setModalAlert("Xabar")
 					setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
+					buttonRef.current.click()
 					dispatch(
 						addData({
-							...data,
+							...data?.data,
 							goods_name: newObj?.goods_name,
 							goods_code: newObj?.goods_code,
 							deliver_name: newObj?.deliver_name,
 							deliver_nomer: newObj?.deliver_nomer,
 						})
 					)
-				})
-				.catch((err) => {
-					console.log(err?.response?.data)
-					setModalAlert("Xatolik")
-					setModalMsg("Qarzdorlik qo'shishda xatolik")
-				})
-			setButtonLoader(false)
+				} else {
+					setModalAlert("Nomalum server xatolik")
+					setModalMsg("Qarzdorlik qo'shib bo'lmadi")
+				}
+				setButtonLoader(false)
+			})
 		}
 	}
 
@@ -272,12 +292,110 @@ function Debts() {
 	}
 
 	const payDeliverDebt = (id, sum) => {
-		dispatch(editDeliverData({ id, sum }))
+		// dispatch(setLoading(true))
+		// patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
+		// 	(data) => {
+		// 		console.log(data)
+		// 		if (data?.status === 201) {
+		// 			setModalAlert("Xabar")
+		// 			setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+		// 			getData("deliver-debts", setDeliverDebt)
+		// 		} else {
+		// 			setModalAlert("Nomalum server xatolik")
+		// 			setModalMsg("Qarzdorlik kiritib bo'lmadi")
+		// 		}
+		// 		dispatch(setLoading(false))
+		// 	}
+		// )
 	}
 
 	// total
 	const addNewTotalDebt = () => {
 		setSubmitted(true)
+		if (
+			totalName.length >= 3 &&
+			totalCost > 0 &&
+			totalComment.length &&
+			totalDate &&
+			totalDueDate &&
+			new Date(totalDate) <= new Date(totalDueDate)
+		) {
+			setButtonLoader(true)
+			let newTotalDebtObj = {
+				client_name: totalName,
+				price: totalCost,
+				description: totalComment,
+				debts_due_date: new Date(totalDate).toISOString(),
+				selectedDate: new Date(totalDueDate).toISOString(),
+			}
+			post("/debts-note/debts-note-post", newTotalDebtObj).then((data) => {
+				if (data?.status === 200) {
+					// console.log(data?.data)
+					debtNoteList.data.unshift(data?.data)
+					buttonRef.current.click()
+					setModalAlert("Xabar")
+					setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
+				} else {
+					setModalAlert("Nomalum server xatolik")
+					setModalMsg("Qarzdorlik qo'shib bo'lmadi")
+				}
+				setButtonLoader(false)
+			})
+		}
+	}
+
+	const deleteTotalDebt = (id) => {
+		dispatch(setLoading(true))
+		remove(`/debts-note/debts-note-delete/${id}`).then((data) => {
+			console.log(data)
+			if (data?.status === 200) {
+				setModalAlert("Xabar")
+				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
+				const index = debtNoteList?.data.findIndex(
+					(item) => item?.debts_id === data?.data?.debts_id
+				)
+				if (index !== -1) {
+					debtNoteList?.data.splice(index, 1)
+				}
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Qarzdorlik o'chirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
+	const totalDebtPart = (id, price) => {
+		dispatch(setLoading(true))
+		patch(`/debts-note/debts-note-change/${id}`, { price }).then((data) => {
+			if (data?.status === 200) {
+				getData("debts-note", setDebtNoteList)
+				setModalAlert("Xabar")
+				setModalMsg("To'lov muvoffaqiyatli kiritildi")
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("To'lov kiritib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
+	const totalDebtCloseAtOnce = (id) => {
+		patch(`/debts-note/debts-note-patch-done/${id}`).then((data) => {
+			if (data?.status === 200) {
+				let index = debtNoteList?.data.findIndex(
+					(item) => item?.debts_id === data?.data?.debts_id
+				)
+				if (index !== -1) {
+					debtNoteList?.data.splice(index, 1)
+				}
+				setModalAlert("Xabar")
+				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Qarzdorlikni yopib bo'lmadi")
+			}
+		})
 	}
 
 	// before
@@ -290,7 +408,8 @@ function Debts() {
 			beforeCount > 0 &&
 			beforeCurrency?.currency_name &&
 			beforeDate &&
-			beforeDueDate
+			beforeDueDate &&
+			new Date(beforeDate) <= new Date(beforeDueDate)
 		) {
 			setButtonLoader(true)
 			let newObj = {
@@ -303,120 +422,75 @@ function Debts() {
 				debts_due_date: new Date(beforeDueDate).toISOString(),
 				debts_selected_date: new Date(beforeDate).toISOString(),
 			}
-			// if (objId) {
-			// 	console.log(newObj)
-			// 	// request(
-			// 	// 	"POST",
-			// 	// 	`${process.env.REACT_APP_URL}/ordered/ordered-products-change/${objId}`,
-			// 	// 	newObj
-			// 	// )
-			// 	// 	.then((data) => console.log(data))
-			// 	// 	.catch((err) => console.log(err))
-			// } else {
-			request(
-				"POST",
-				`${process.env.REACT_APP_URL}/ordered/ordered-products-post`,
-				newObj
-			)
-				.then((data) => {
+			post("/ordered/ordered-products-post", newObj).then((data) => {
+				if (data?.status) {
 					buttonRef.current.click()
 					setModalAlert("Xabar")
 					setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
 					setBeforeData({
 						amount:
 							beforeData?.amount +
-							data?.debts_currency_amount *
-								data?.debts_cost *
-								data?.debts_count,
-						data: [...beforeData?.data, data],
+							data?.data?.debts_currency_amount *
+								data?.data?.debts_cost *
+								data?.data?.debts_count,
+						data: [...beforeData?.data, data?.data],
 					})
-				})
-				.catch((err) => {
-					console.log(err)
-					setModalAlert("Xatolik")
-					setModalMsg("Oldindan to'lov kiritishda xatolik")
-				})
+				} else {
+					setModalAlert("Nomalum server xatolik")
+					setModalMsg("Oldindan to'lov kiritib bo'lmadi")
+				}
+				setButtonLoader(false)
+			})
 		}
-		setButtonLoader(false)
-		// }
 	}
 
 	const deleteBeforeDebt = (id) => {
-		request(
-			"delete",
-			`${process.env.REACT_APP_URL}/ordered/ordered-products-delete/${id}`
-		)
-			.then((data) => {
-				setModalAlert("Xabar")
-				setModalMsg("Oldindan to'lov muvoffaqiyatli o'chirildi")
-				const index = beforeData?.data.findIndex(
-					(item) => item?.deliver_debt_id === data?.deliver_debt_id
-				)
-				beforeData?.data.splice(index, 1)
-
-				// setBeforeData({
-				// 	amount:
-				// 		beforeData?.amount +
-				// 		data?.debts_currency_amount * data?.debts_cost * data?.debts_count,
-				// 	data: [...beforeData?.data, data],
-				// })
-			})
-			.catch((error) => {
-				console.log(error)
-			})
-	}
-
-	// const openEditBeforeDebt = (id) => {
-	// 	setObjId(id)
-	// 	const index = beforeData?.data.findIndex(
-	// 		(item) => item?.deliver_debt_id === id
-	// 	)
-	// 	// console.log(beforeData?.data[index])
-	// 	let goodIndex = good?.data.findIndex(
-	// 		(item) => item?.goods_id === beforeData?.data[index]?.goods_id
-	// 	)
-	// 	let supplierIndex = deliver?.data?.findIndex(
-	// 		(item) => item?.deliver_id === beforeData?.data[index]?.deliver_id
-	// 	)
-	// 	let currencyIndex = currency?.data?.findIndex(
-	// 		(item) =>
-	// 			item?.currency_symbol === beforeData?.data[index]?.debts_currency
-	// 	)
-
-	// 	setBeforeDeliver(toggleClass ? {} : deliver?.data[supplierIndex])
-	// 	setBeforeGood(toggleClass ? {} : good?.data[goodIndex])
-	// 	setBeforeCount(toggleClass ? 0 : beforeData?.data[index]?.debts_count)
-	// 	setBeforeCurrency(toggleClass ? {} : currency?.data[currencyIndex])
-	// 	setBeforeCost(toggleClass ? 0 : beforeData?.data[index]?.debts_cost)
-	// 	setBeforeDate(
-	// 		moment(beforeData?.data[index]?.debts_createdat)
-	// 			.zone(+7)
-	// 			.format("YYYY-MM-DD")
-	// 	)
-	// 	setBeforeDueDate(
-	// 		moment(beforeData?.data[index]?.debts_due_date)
-	// 			.zone(+7)
-	// 			.format("YYYY-MM-DD")
-	// 	)
-	// 	buttonRef.current.click()
-	// }
-
-	const beforeDebtPart = (id, amount) => {
-		request(
-			"PATCH",
-			`${process.env.REACT_APP_URL}/ordered/ordered-products-change/${id}`,
-			{ amount }
-		)
-			.then((data) => {
+		dispatch(setLoading(true))
+		remove(`/ordered/ordered-products-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
 				getBeforeData()
 				setModalAlert("Xabar")
-				setModalMsg("To'lov muvoffaqiyatli o'zgartirildi")
-			})
-			.catch((err) => {
-				setModalAlert('Xatolik')
-				setModalMsg("To'lov o'zgartirishda xatolik")
-				console.log(err)
-			})
+				setModalMsg("Oldindan to'lov muvoffaqiyatli o'chirildi")
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Malumot o'chirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
+	const beforeDebtPart = (id, amount) => {
+		dispatch(setLoading(true))
+		patch(`/ordered/ordered-products-change/${id}`, { amount }).then((data) => {
+			console.log(data)
+			if (data?.status === 200) {
+				getBeforeData()
+				setModalAlert("Xabar")
+				setModalMsg("To'lov muvoffaqiyatli kiritildi")
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Malumot o'zgartirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
+	const beforeDebtCloseAtOnce = (id) => {
+		patch(`/ordered/ordered-products-patch-done/${id}`).then((data) => {
+			if (data?.status === 200) {
+				let index = beforeData?.data.findIndex(
+					(item) => item?.deliver_debt_id === data?.data?.deliver_debt_id
+				)
+				if (index !== -1) {
+					beforeData?.data.splice(index, 1)
+				}
+				setModalAlert("Xabar")
+				setModalMsg("To'lov muvoffaqiyatli yopildi")
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("To'lovni yopib bo'lmadi")
+			}
+		})
 	}
 
 	return (
@@ -426,13 +500,14 @@ function Debts() {
 				onChange={(e) => {
 					setSubmitted(false)
 					setShowDeliver(e.target.value)
+					// localStorage.setItem("debt", JSON.stringify(e.target.value))
 				}}
 				className="debt-page-toggle"
 			>
 				<Radio.Button value="client">Mijoz</Radio.Button>
 				<Radio.Button value="supplier">Ta'minotchi</Radio.Button>
 				<Radio.Button value="total">Umumiy qarzdorlik</Radio.Button>
-				<Radio.Button value="before">Oldindan to'lov</Radio.Button>
+				<Radio.Button value="order">Oldindan to'lov</Radio.Button>
 			</Radio.Group>
 
 			{showDeliver === "supplier" ? (
@@ -612,6 +687,36 @@ function Debts() {
 										: null}
 								</div>
 							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">Berilgan sana</label>
+								<Input
+									type="date"
+									value={deliverDate}
+									onChange={(e) => setDeliverDate(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted &&
+										validation(!deliverDate, "Sana belgilash majburiy")}
+								</div>
+							</div>
+							<div className="debt-input-col validation-field">
+								<label htmlFor="">To'lanadigan sana</label>
+								<Input
+									type="date"
+									value={deliverDueDate}
+									onChange={(e) => setDeliverDueDate(e.target.value)}
+								/>
+								<div className="validation-field-error">
+									{submitted
+										? deliverDueDate
+											? validation(
+													new Date(deliverDueDate) < new Date(deliverDate),
+													"Noto'g'ri sana"
+											  )
+											: validation(!deliverDueDate, "Sana belgilash majburiy")
+										: null}
+								</div>
+							</div>
 
 							<div className="col">
 								<br />
@@ -677,6 +782,7 @@ function Debts() {
 										: null}
 								</div>
 							</div>
+
 							<div className="debt-input-col validation-field">
 								<label htmlFor="">Izoh</label>
 								<Input
@@ -708,8 +814,14 @@ function Debts() {
 									onChange={(e) => setTotalDueDate(e.target.value)}
 								/>
 								<div className="validation-field-error">
-									{submitted &&
-										validation(!totalDueDate, "Sana belgilash majburiy")}
+									{submitted
+										? totalDueDate
+											? validation(
+													new Date(totalDueDate) < new Date(totalDate),
+													"Noto'g'ri sana"
+											  )
+											: validation(!totalDueDate, "Sana belgilash majburiy")
+										: null}
 								</div>
 							</div>
 
@@ -719,6 +831,7 @@ function Debts() {
 									className="btn btn-melissa mx-1"
 									onClick={addNewTotalDebt}
 									style={{ padding: "3px 10px" }}
+									disabled={buttonLoader}
 								>
 									<i className="fas fa-plus"></i>
 									{buttonLoader && (
@@ -734,7 +847,7 @@ function Debts() {
 						</div>
 					</div>
 				</>
-			) : showDeliver === "before" ? (
+			) : showDeliver === "order" ? (
 				<>
 					<button
 						className={`btn btn-melissa mb-1 mx-2 ${
@@ -986,14 +1099,14 @@ function Debts() {
 					: showDeliver === "supplier"
 					? dDebt.quantity
 					: showDeliver === "total"
-					? "0"
+					? debtNoteList?.amount
 					: beforeData?.amount}
 				so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
 
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
-			{debt.data.loading ? (
+			{debt.loading ? (
 				<Loader />
 			) : showDeliver === "client" ? (
 				<DebtTable
@@ -1010,13 +1123,19 @@ function Debts() {
 					payDeliverDebt={payDeliverDebt}
 				/>
 			) : showDeliver === "total" ? (
-				<TotalDebtTable data={[]} />
+				<TotalDebtTable
+					data={debtNoteList?.data}
+					deleteTotalDebt={deleteTotalDebt}
+					totalDebtPart={totalDebtPart}
+					totalDebtCloseAtOnce={totalDebtCloseAtOnce}
+				/>
 			) : (
 				<BeforeDebtTable
 					data={beforeData?.data}
 					deleteDebt={deleteBeforeDebt}
 					// editDebt={openEditBeforeDebt}
 					editDebt={beforeDebtPart}
+					beforeDebtCloseAtOnce={beforeDebtCloseAtOnce}
 				/>
 			)}
 		</>

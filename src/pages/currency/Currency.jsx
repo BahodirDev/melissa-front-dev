@@ -13,13 +13,12 @@ import {
 	setQuantity,
 } from "../../components/reducers/currency"
 import { validation } from "../../components/validation"
-import useApiRequest from "../../customHook/useUrl"
+import { get, patch, post, remove } from "../../customHook/api"
 import CurrencyList from "./CurrencyList"
 import "./currency.css"
 
 export default function Currency() {
 	const [filteredProducts, setFilteredProducts] = useState([])
-	const request = useApiRequest()
 	// new values
 	const [newName, setNewName] = useState({})
 	const [newAmount, setNewAmount] = useState(0)
@@ -35,26 +34,18 @@ export default function Currency() {
 	const state = useSelector((state) => state.currency)
 	const dispatch = useDispatch()
 
-	useEffect(() => {
-		dispatch(setLoading(true))
-		let stores = state?.data?.filter((item) =>
-			item?.currency_name.toLowerCase().includes(saerchInputValue.toLowerCase())
-		)
-		setFilteredProducts(stores)
-		dispatch(setLoading(false))
-	}, [saerchInputValue])
-
 	const getData = () => {
 		dispatch(setLoading(true))
-		request("GET", `${process.env.REACT_APP_URL}/currency/currency-list`)
-			.then((data) => {
-				dispatch(setData(data))
+		get("/currency/currency-list").then((data) => {
+			if (Array.isArray(data?.data)) {
+				dispatch(setData(data?.data))
 				dispatch(setQuantity())
-			})
-			.catch((error) => {
-				console.log(error)
-			})
-		dispatch(setLoading(false))
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot topilmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	useEffect(getData, [])
@@ -64,21 +55,16 @@ export default function Currency() {
 		if (newName.name && newAmount >= 0.01) {
 			setButtonLoader(true)
 			if (objId) {
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/currency/currency-patch/${objId}`,
-					{
-						currency_name: newName?.currency?.name,
-						currency_code: newName?.currency?.code,
-						currency_symbol: newName?.currency?.symbol,
-						currency_amount: newAmount,
-						name: newName?.name,
-						flag: newName?.flag,
-					}
-				)
-					.then((data) => {
-						// console.log(data);
-						dispatch(editData(data))
+				patch(`/currency/currency-patch/${objId}`, {
+					currency_name: newName?.currency?.name,
+					currency_code: newName?.currency?.code,
+					currency_symbol: newName?.currency?.symbol,
+					currency_amount: newAmount,
+					name: newName?.name,
+					flag: newName?.flag,
+				}).then((data) => {
+					if (data?.status === 201) {
+						dispatch(editData(data?.data))
 						setNewName({})
 						setNewAmount(0)
 						setModal_msg("Pul birligi muvoffaqiyatli o'zgartirildi")
@@ -87,19 +73,17 @@ export default function Currency() {
 						setObjId("")
 						setSubmitted(false)
 						buttonRef.current.click()
-					})
-					.catch((err) => {
-						// console.log(err)
-						if (err.response.data.error === "CURRENCY_ALREADY_EXIST") {
-							setModal_msg("Pul birligi allaqachon mavjud")
-							setModal_alert("Xatolik")
-							setUser_id("")
-						} else {
-							setModal_msg("Pul birligi o'zgartirishda xatolik")
-							setModal_alert("Xatolik")
-							setUser_id("")
-						}
-					})
+					} else if (data?.response?.data?.error === "CURRENCY_ALREADY_EXIST") {
+						setModal_alert("Pul birligi qo'shib bo'lmadi")
+						setModal_msg("Pul birligi allaqachon mavjud")
+						setUser_id("")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Pul birligi o'zgartirib bo'lmadi")
+						setUser_id("")
+					}
+					setButtonLoader(false)
+				})
 			} else {
 				let newCurrency = {
 					currency_name: newName?.currency?.name,
@@ -109,62 +93,52 @@ export default function Currency() {
 					name: newName?.name,
 					flag: newName?.flag,
 				}
-				request(
-					"POST",
-					`${process.env.REACT_APP_URL}/currency/currency-post`,
-					newCurrency
-				)
-					.then((data) => {
-						if (data?.response?.data?.error === "CURRENCY_ALREADY_EXIST") {
-							setModal_msg("Pul birligi allaqachon mavjud")
-							setModal_alert("Xatolik")
-							setUser_id("")
-						} else {
-							dispatch(addData(data))
-							dispatch(setQuantity())
-							setNewName({})
-							setNewAmount(0)
-							setModal_msg("Pul birligi muvoffaqiyatli qo'shildi")
-							setModal_alert("Xabar")
-							setUser_id("")
-							setSubmitted(false)
-							buttonRef.current.click()
-						}
-					})
-					.catch((err) => {
-						setModal_msg("Pul birligi qo'shib bo'lmadi")
-						setModal_alert("Xatolik")
+				post(`/currency/currency-post`, newCurrency).then((data) => {
+					if (data?.status === 201) {
+						dispatch(addData(data?.data))
+						dispatch(setQuantity())
+						setNewName({})
+						setNewAmount(0)
+						setModal_alert("Xabar")
+						setModal_msg("Pul birligi muvoffaqiyatli qo'shildi")
 						setUser_id("")
-					})
+						setSubmitted(false)
+						buttonRef.current.click()
+					} else if (data?.response?.data?.error === "CURRENCY_ALREADY_EXIST") {
+						setModal_alert("Pul birligi qo'shilmadi")
+						setModal_msg("Pul birligi allaqachon mavjud")
+						setUser_id("")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Pul birligi qo'shib bo'lmadi")
+						setUser_id("")
+					}
+					setButtonLoader(false)
+				})
 			}
-			setButtonLoader(false)
 		}
 	}
 
 	const deleteCurrency = (id) => {
-		request(
-			"DELETE",
-			`${process.env.REACT_APP_URL}/currency/currency-delete/${id}`
-		)
-			.then((data) => {
+		dispatch(setLoading(true))
+		remove(`/currency/currency-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
 				getData()
 				dispatch(setQuantity())
-				setModal_msg("Pul birligi o'chirildi")
 				setModal_alert("Xabar")
+				setModal_msg("Valyuta o'chirildi")
 				setUser_id("")
-			})
-			.catch((err) => {
-				// console.log(err.response.data)
-				if (err?.response?.data?.error === "PRODUCT_FOUND") {
-					setModal_msg("Bu valyutada mahsulot bor!")
-					setModal_alert("Xatolik")
-					setUser_id("")
-				} else {
-					setModal_msg("Pul birligi o'chirib bo'lmadi")
-					setModal_alert("Xatolik")
-					setUser_id("")
-				}
-			})
+			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
+				setModal_alert("Valyuta o'chirilmadi")
+				setModal_msg("Bu valyutada mahsulot bor")
+				setUser_id("")
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Valyuta o'chirib bo'lmadi")
+				setUser_id("")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const collapse = (event) => {
@@ -182,36 +156,28 @@ export default function Currency() {
 	}
 
 	const editCurrency = (id) => {
-		// const obj = products.find((item) => item?.currency_id === id)
-		request("GET", `${process.env.REACT_APP_URL}/currency/currency-list/${id}`)
-			.then((data) => {
-				setNewName(
-					toggleClass
-						? ""
-						: {
-								currency: {
-									name: data?.currency_name,
-									code: data?.currency_code,
-									symbol: data?.currency_symbol,
-								},
-								name: data?.name,
-								flag: data?.flag,
-						  }
-				)
-				setNewAmount(toggleClass ? "" : data?.currency_amount)
-				setObjId(id)
-				buttonRef.current.click()
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "CURRENCY_NOT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Valyuta topilmadi")
-				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Nomalum server xatolik")
-				}
-			})
+		const data = state?.data.find((item) => item?.currency_id === id)
+		if (data.currency_name) {
+			setNewName(
+				toggleClass
+					? ""
+					: {
+							currency: {
+								name: data?.currency_name,
+								code: data?.currency_code,
+								symbol: data?.currency_symbol,
+							},
+							name: data?.name,
+							flag: data?.flag,
+					  }
+			)
+			setNewAmount(toggleClass ? "" : data?.currency_amount)
+			setObjId(id)
+			buttonRef.current.click()
+		} else {
+			setModal_alert("Xatolik")
+			setModal_msg("Nomalum xatolik")
+		}
 	}
 
 	return (
@@ -279,6 +245,7 @@ export default function Currency() {
 					<div className="">
 						<br />
 						<button
+							disabled={buttonLoader}
 							className="btn btn-melissa"
 							onClick={addNewCurrency}
 							style={{ padding: "4px 10px" }}

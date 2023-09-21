@@ -39,20 +39,22 @@ export const debtSlice = createSlice({
 					isdone: false,
 					debts_currency: item?.debts_currency,
 					debts_currency_amount: item?.debts_currency_amount,
+					debts_createdat: item?.debts_selected_date,
+					debts_due_date: item?.debts_due_date,
+					debts_total_price: item?.debts_total_price,
 					// debts_due_date: "2023-08-08T12:15:23.614Z",
 					// debts_createdat: "2023-08-08T12:15:23.615Z",
 				})
 			})
 		},
 		editData: (state, action) => {
-			console.log(action.payload)
+			// console.log(action.payload)
 			// const index = state.data.findIndex(
 			// 	(item) => item.deliver_id === action.payload.deliver_id
 			// )
 			// if (index !== -1) {
 			// 	state.data[index] = {
 			// 		...state.data[index],
-
 			// 		// deliver_name: action.payload?.deliver_name,
 			// 	}
 			// }

@@ -1,6 +1,8 @@
 import { Button, Input } from "antd"
+import { useDispatch } from "react-redux"
 import { useLocation } from "react-router-dom"
 import user_image from "../../assets/img/admin.jpg"
+import { post } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import { employee_role } from "../../pages/employees/employee_role"
 import "./navbar.css"
@@ -16,20 +18,40 @@ export default function Navbar({
 }) {
 	const location = useLocation()
 	const request = useApiRequest()
+	const dispatch = useDispatch()
 
 	const submitSearch = () => {
-		request(
-			"POST",
-			`${process.env.REACT_APP_URL}/${action?.url}`,
-			action?.body
-		).then((data) => {
-			action?.res(data)
-			action?.submitted(true)
-		})
+		// for those with reducer
+		if (
+			action?.url === "/return/return-filter" ||
+			action?.url === "/users/users-search" ||
+			action?.url === "/clients/clients-search" ||
+			action?.url === "/deliver/deliver-search" ||
+			action?.url === "/store/store-list" ||
+			action?.url === "/goods/goods-search"
+		) {
+			dispatch(action?.setLoading(true))
+			post(action?.url, action?.body).then((data) => {
+				action?.res(data)
+				action?.submitted(true)
+				dispatch(action?.setLoading(false))
+			})
+		} else {
+			action?.setLoading(true)
+			request(
+				"POST",
+				`${process.env.REACT_APP_URL}${action?.url}`,
+				action?.body
+			).then((data) => {
+				action?.res(data)
+				action?.submitted(true)
+				action?.setLoading(false)
+			})
+		}
 	}
 
 	const clearSearch = () => {
-		if (action?.url === "return/return-filter") {
+		if (action?.url === "/return/return-filter") {
 			action?.clearValues.first("")
 			action?.clearValues.second("")
 			action?.clearValues.third("")
@@ -57,7 +79,7 @@ export default function Navbar({
 			</button>
 
 			{location.pathname !== "/" &&
-			"reports products goods return debts store deliver clients employees currency".includes(
+			"reports products goods return debts store deliver clients employees".includes(
 				location.pathname.slice(1)
 			) ? (
 				<div className="search-form">
@@ -72,7 +94,7 @@ export default function Navbar({
 						onChange={(e) => setSearchInput(e.target.value)}
 					/>
 					{location.pathname !== "/" &&
-					"goods return debts store deliver clients employees currency".includes(
+					"goods return debts store deliver clients employees".includes(
 						location.pathname.slice(1)
 					) ? (
 						<>

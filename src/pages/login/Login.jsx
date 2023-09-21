@@ -2,20 +2,17 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import login_img from "../../assets/img/Photoshop-Logo-Illustration-Mockup-Tutorial 1.png"
 import { error_modal } from "../../components/error_modal/error_modal"
-import getError from "../../config/errror_handler"
-import useApiRequest from "../../customHook/useUrl"
+import { post } from "../../customHook/api"
 import "./loading.css"
 import "./login.css"
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false)
-	const [save, setSave] = useState(false)
 	const [login, setLogin] = useState("")
 	const [password, setPassword] = useState("")
-	const [loginErrorMsg, setLoginErrorMsg] = useState("")
 	const [loading, setLoading] = useState(false)
 	const history = useNavigate()
-	const request = useApiRequest()
+	const [modalMsg, setModalMsg] = useState({})
 
 	useEffect(() => {
 		if (localStorage.getItem("user")) {
@@ -24,53 +21,45 @@ export default function Login() {
 	}, [])
 
 	function checkIsTrue() {
-		return login.length >= 1 && password.length >= 1
+		return login.length > 0 && password.length > 0
 	}
 
 	const sign_in = (e) => {
 		e.preventDefault()
 		setLoading(true)
 
-		const url = `${process.env.REACT_APP_URL}/auth/auth-user`
 		const data = {
 			user_login: login,
 			user_password: password,
 		}
 
-		fetch(url, {
-			method: "POST",
-			headers: {
-				"Content-type": "application/json",
-			},
-			body: JSON.stringify(data),
+		post("/auth/auth-user", data).then((data) => {
+			if (data?.status === 200) {
+				localStorage.setItem("user", data?.data?.token)
+				localStorage.setItem("role", data?.data?.user?.user_role)
+				localStorage.setItem("name", data?.data?.user?.user_name)
+				localStorage.setItem("id", data?.data?.user?.user_id)
+				window.location.reload(false)
+			} else if (data?.response?.data?.error === "USER_PASSWORD_NOTCORRECT") {
+				setModalMsg({ title: "Xatolik", msg: "Login yoki parol noto'g'ri" })
+			} else {
+				setModalMsg({
+					title: "Nomalum server xatolik",
+					msg: "Qayta urinib ko'ring",
+				})
+			}
+			setLoading(false)
 		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data?.status == 200) {
-					localStorage.setItem("user", data?.token)
-					localStorage.setItem("role", data?.user?.user_role)
-					localStorage.setItem("name", data?.user?.user_name)
-					localStorage.setItem("id", data?.user?.user_id)
-					window.location.reload(false)
-				} else {
-					setLoginErrorMsg(data?.error)
-				}
-			})
-			.catch((error) => {
-				console.log(error)
-			})
-
-		setLoading(false)
 	}
 
 	return (
 		<div className="login-wrapper">
 			<form className="login-form" onSubmit={sign_in}>
 				{error_modal(
-					"Xatolik",
-					getError(loginErrorMsg),
-					loginErrorMsg?.length,
-					setLoginErrorMsg
+					modalMsg?.title,
+					modalMsg?.msg,
+					modalMsg?.title?.length,
+					setModalMsg
 				)}
 				<img src={login_img} alt="" />
 				<h3>Tizimga kirish</h3>
@@ -139,14 +128,7 @@ export default function Login() {
 					</label> */}
 				</div>
 
-				<button
-					className="login_btn"
-					style={{
-						backgroundColor: checkIsTrue() && "#6601A6",
-						cursor: checkIsTrue() && "pointer",
-					}}
-					disabled={!checkIsTrue()}
-				>
+				<button className="login_btn" disabled={!checkIsTrue() || loading}>
 					{loading ? (
 						<div className="lds-ellipsis">
 							<div></div>

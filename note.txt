@@ -1,13 +1,15 @@
 ---at the end
-change values of 'currency.json'
 '?.' everywhere
 test report filter
-rewrite products table
-sms
 first close collapse then set setSubmitted(false) then emtpy // new data
-loading is not showing while data being loaded
-'Saqlash' on login form
-loading while requests
+same message for info modal
+addComma function for every price
+save debt section state for localStorge
+move 'Saqlash', 'Tozalash' buttons to navbar in report and product
+fix css positioning of info badge on top right corner
+hide pages/functions based on user role
+filtered show different quantity/info
+same product with different currency at different places hard to understand
 
 
 charts for stats
@@ -23,19 +25,11 @@ charts for stats
 
 
 ---now
-check button loading
-user info data to reports while perehod and sale
-sold, received or debt closed re fetch report list
-check every request validation errors(success modal when `else if(data.error.status === 200))---------------rewrite fetch from scrach
-date & due_date for client/supplier debt
-before data delete info(Umumiy summa) reducer
-product delete visible only to 
-log out if self username/password update
-card wrapper edit scroll to top(one ready in good.jsx)
-search of every page
+sell modal product select hard to know which one
+divide debt's sections
+client debt post reducer(not receiving from backend)
 
-
-after backend
-close before debt at once
-before debt deliver/good name instead of id
-before debt count 0 isdone true
+search(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
+scroll(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
+loading(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
+requests(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)

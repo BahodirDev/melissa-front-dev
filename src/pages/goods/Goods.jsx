@@ -12,6 +12,7 @@ import {
 	setQuantity,
 } from "../../components/reducers/good"
 import { validation } from "../../components/validation"
+import { get, patch, post } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import GoodsList from "./GoodsList"
 import "./goods.css"
@@ -26,43 +27,47 @@ export default function Goods() {
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
 	const request = useApiRequest()
-	const [saerchInputValue, setSearchInput, sidebar, userInfo, setAction] =
-		useOutletContext()
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
 	const state = useSelector((state) => state.good)
 	const dispatch = useDispatch()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	// form values
 	const [newGoodName, setNewGoodName] = useState("")
 	const [newGoodCode, setNewGoodCode] = useState("")
 
 	useEffect(() => {
-		dispatch(setLoading(true))
-		let stores =
-			state?.data?.length &&
-			state?.data?.filter(
-				(item) =>
-					item?.goods_name
-						.toLowerCase()
-						.includes(saerchInputValue.toLowerCase()) ||
-					item?.goods_code
-						.toLowerCase()
-						.includes(saerchInputValue.toLowerCase())
-			)
-		setFilteredProducts(stores)
-		dispatch(setLoading(false))
+		setAction({
+			url: "/goods/goods-search",
+			body: {
+				category_name: saerchInputValue,
+			},
+			res: setFilteredProducts,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
 	}, [saerchInputValue])
 
 	const getData = () => {
 		dispatch(setLoading(true))
-		request("GET", `${process.env.REACT_APP_URL}/goods/goods-list`)
-			.then((data) => {
-				dispatch(setData(data))
+		get("/goods/goods-list").then((data) => {
+			if (data?.status === 201) {
+				dispatch(setData(data?.data))
 				dispatch(setQuantity())
-			})
-			.catch((error) => {
-				console.log(error)
-			})
-		dispatch(setLoading(false))
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Malumot topilmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	useEffect(getData, [])
@@ -72,16 +77,12 @@ export default function Goods() {
 		if (newGoodName && newGoodCode) {
 			setButtonLoader(true)
 			if (objId) {
-				request(
-					"PATCH",
-					`${process.env.REACT_APP_URL}/goods/goods-patch/${objId}`,
-					{
-						goods_name: newGoodName,
-						goods_code: newGoodCode,
-					}
-				)
-					.then((data) => {
-						dispatch(editData(data))
+				patch(`/goods/goods-patch/${objId}`, {
+					goods_name: newGoodName,
+					goods_code: newGoodCode,
+				}).then((data) => {
+					if (data?.status === 201) {
+						dispatch(editData(data?.data))
 						buttonRef.current.click()
 						setModal_alert("Xabar")
 						setModal_msg("Kategoriya muvoffaqiyatli o'zgartirildi")
@@ -90,24 +91,22 @@ export default function Goods() {
 						setObjId("")
 						setSubmitted(false)
 						setButtonLoader(false)
-					})
-					.catch((error) => {
-						if (error?.response?.data?.error === "GOODS_ALREADY_EXIST") {
-							setModal_alert("Xatolik")
-							setModal_msg("Kategoriya allaqachon mavjud")
-						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Kategoriya o'zgartirishda xatolik")
-						}
-						setButtonLoader(false)
-					})
+					} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
+						setModal_alert("Xatolik")
+						setModal_msg("Bunday kategoriya allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Malumot o'zgartirib bo'lmadi")
+					}
+					setButtonLoader(false)
+				})
 			} else {
-				request("post", `${process.env.REACT_APP_URL}/goods/goods-post`, {
+				post("/goods/goods-post", {
 					goods_name: newGoodName,
 					goods_code: newGoodCode,
-				})
-					.then((data) => {
-						dispatch(addData(data))
+				}).then((data) => {
+					if (data?.status === 201) {
+						dispatch(addData(data?.data))
 						dispatch(setQuantity())
 						buttonRef.current.click()
 						setModal_alert("Xabar")
@@ -116,17 +115,15 @@ export default function Goods() {
 						setNewGoodCode("")
 						setSubmitted(false)
 						setButtonLoader(false)
-					})
-					.catch((error) => {
-						if (error?.response?.data?.error === "GOODS_ALREADY_EXIST") {
-							setModal_alert("Xatolik")
-							setModal_msg("Kategoriya allaqachon mavjud")
-						} else {
-							setModal_alert("Xatolik")
-							setModal_msg("Kategoriya qo'shib bo'lmadi")
-						}
-						setButtonLoader(false)
-					})
+					} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
+						setModal_alert("Xatolik")
+						setModal_msg("Bunday kategoriya allaqachon mavjud")
+					} else {
+						setModal_alert("Nomalum server xatolik")
+						setModal_msg("Kategoriya qo'shib bo'lmadi")
+					}
+					setButtonLoader(false)
+				})
 			}
 		}
 	}
@@ -167,33 +164,23 @@ export default function Goods() {
 	const updateGood = (id) => {
 		let divTop = document.querySelector(".content").scrollTop
 		let scrollTop = setInterval(() => {
-			divTop -= 10
+			divTop -= 20
 			document.querySelector(".content").scrollTop = divTop
 
 			if (divTop <= 0) {
 				clearInterval(scrollTop)
 			}
-		}, 1)
-		request("GET", `${process.env.REACT_APP_URL}/goods/goods-list/${id}`)
-			.then((data) => {
-				setNewGoodName(toggleClass ? "" : data[0]?.goods_name)
-				setNewGoodCode(toggleClass ? "" : data[0]?.goods_code)
+		}, 10)
+
+		get(`/goods/goods-list/${id}`).then((data) => {
+			if (data?.status === 201) {
+				setNewGoodName(toggleClass ? "" : data?.data[0]?.goods_name)
+				setNewGoodCode(toggleClass ? "" : data?.data[0]?.goods_code)
 				setObjId(id)
 				buttonRef.current.click()
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "GOODS_NOT_FOUND") {
-					setModal_alert("Xatolik")
-					setModal_msg("Kategoriya topilmadi")
-				} else {
-					setModal_alert("Xatolik")
-					setModal_msg("Nomalum server xatolik")
-				}
-			})
+			}
+		})
 	}
-
-	// setAction({ url: "good/ fiter path", body: {} })
 
 	return (
 		<div id="cardWrapperTop">
@@ -205,6 +192,7 @@ export default function Goods() {
 			>
 				Qo'shish
 			</button>
+
 			<div className="my-content px-2">
 				<div className="form-group row mb-2">
 					<div className="product-add__input good-input validation-field">
@@ -254,6 +242,7 @@ export default function Goods() {
 					</div>
 				</div>
 			</div>
+
 			<div className="goods-info">
 				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
 				{state?.quantity ? state?.quantity : 0} ta
@@ -262,7 +251,7 @@ export default function Goods() {
 				<Loader />
 			) : (
 				<GoodsList
-					goods={saerchInputValue.length ? filteredProducts : state?.data}
+					goods={searchSubmitted ? filteredProducts : state?.data}
 					deleteGood={deleteGood}
 					updateGood={updateGood}
 				/>
