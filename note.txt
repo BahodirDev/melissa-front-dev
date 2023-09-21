@@ -10,6 +10,7 @@ fix css positioning of info badge on top right corner
 hide pages/functions based on user role
 filtered show different quantity/info
 same product with different currency at different places hard to understand
+cursor not allowed disabled buttons
 
 
 charts for stats
@@ -28,8 +29,9 @@ charts for stats
 sell modal product select hard to know which one
 divide debt's sections
 client debt post reducer(not receiving from backend)
+product filter response is empty
 
-search(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
-scroll(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
-loading(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
-requests(currency, employee, client, deliver, store, return, good)     -----     (sell modal, debt modal, debts, reports, products)
+search(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)
+scroll(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)
+loading(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)
+requests(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)

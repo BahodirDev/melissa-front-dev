@@ -62,7 +62,7 @@ export default function Employees() {
 	const getData = () => {
 		dispatch(setLoading(true))
 		get("/clients/clients-list").then((data) => {
-			if (data?.status === 201) {
+			if (data?.status === 201 || data?.status === 200) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {

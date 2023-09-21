@@ -21,19 +21,22 @@ export default function Navbar({
 	const dispatch = useDispatch()
 
 	const submitSearch = () => {
-		// for those with reducer
 		if (
 			action?.url === "/return/return-filter" ||
 			action?.url === "/users/users-search" ||
 			action?.url === "/clients/clients-search" ||
 			action?.url === "/deliver/deliver-search" ||
 			action?.url === "/store/store-list" ||
-			action?.url === "/goods/goods-search"
+			action?.url === "/goods/goods-search" ||
+			action?.url === "/reports/reports-filter" ||
+			action?.url === "/products/products-filter"
 		) {
 			dispatch(action?.setLoading(true))
 			post(action?.url, action?.body).then((data) => {
-				action?.res(data)
-				action?.submitted(true)
+				if (data?.status === 200 || data?.status === 201) {
+					action?.res(data?.data)
+					action?.submitted(true)
+				}
 				dispatch(action?.setLoading(false))
 			})
 		} else {
@@ -43,8 +46,10 @@ export default function Navbar({
 				`${process.env.REACT_APP_URL}${action?.url}`,
 				action?.body
 			).then((data) => {
-				action?.res(data)
-				action?.submitted(true)
+				if (data?.status === 200 || data?.status === 201) {
+					action?.res(data?.data)
+					action?.submitted(true)
+				}
 				action?.setLoading(false)
 			})
 		}
@@ -55,6 +60,18 @@ export default function Navbar({
 			action?.clearValues.first("")
 			action?.clearValues.second("")
 			action?.clearValues.third("")
+		} else if (action?.url === "/reports/reports-filter") {
+			action?.clearValues.second([])
+			action?.clearValues.third([])
+			action?.clearValues.fourth("")
+			action?.clearValues.fifth("")
+			action?.clearValues.sixth("all")
+		} else if (action?.url === "/products/products-filter") {
+			action?.clearValues.first([])
+			action?.clearValues.second("")
+			action?.clearValues.third("")
+			action?.clearValues.fourth("")
+			action?.clearValues.fifth("")
 		}
 		setSearchInput("")
 		action?.submitted(false)
@@ -94,7 +111,7 @@ export default function Navbar({
 						onChange={(e) => setSearchInput(e.target.value)}
 					/>
 					{location.pathname !== "/" &&
-					"goods return debts store deliver clients employees".includes(
+					"reports products goods return debts store deliver clients employees".includes(
 						location.pathname.slice(1)
 					) ? (
 						<>
