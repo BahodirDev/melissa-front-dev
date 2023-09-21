@@ -28,10 +28,10 @@ charts for stats
 ---now
 sell modal product select hard to know which one
 divide debt's sections
-client debt post reducer(not receiving from backend)
-product filter response is empty
 
-search(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)
-scroll(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)
-loading(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)
-requests(currency, employee, client, deliver, store, return, good, reports, products)     -----     (sell modal, debt modal, debts)
+search(currency, employee, client, deliver, store, return, good, reports, products, sell modal)     -----     (debt modal, debts)
+scroll(currency, employee, client, deliver, store, return, good, reports, products, sell modal)     -----     (debt modal, debts)
+loading(currency, employee, client, deliver, store, return, good, reports, products, sell modal)     -----     (debt modal, debts)
+requests(currency, employee, client, deliver, store, return, good, reports, products, sell modal)     -----     (debt modal, debts)
+
+check when isEnter:true/false while debt
