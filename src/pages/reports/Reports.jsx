@@ -259,8 +259,12 @@ export default function Reports() {
 							<i className="fa-solid fa-tags"></i> Foyda:{" "}
 							{addComma(
 								filteredData?.data
-									? filteredData?.hisob?.totalProductCost
-									: report.capital
+									? filteredData?.hisob?.totalProductCost >= 0
+										? filteredData?.hisob?.totalProductCost
+										: 0
+									: report.capital >= 0
+									? report.capital
+									: 0
 							)}{" "}
 							so'm
 						</span>
@@ -268,8 +272,12 @@ export default function Reports() {
 							<i className="fa-solid fa-tags"></i> Kirim:{" "}
 							{addComma(
 								filteredData?.data
-									? filteredData?.hisob?.totalCostMinus
-									: report.outcome
+									? filteredData?.hisob?.totalCostMinus >= 0
+										? filteredData?.hisob?.totalCostMinus
+										: 0
+									: report.outcome >= 0
+									? report.outcome
+									: 0
 							)}{" "}
 							so'm
 						</span>
@@ -277,16 +285,18 @@ export default function Reports() {
 							<i className="fa-solid fa-tags"></i> Chiqim:{" "}
 							{addComma(
 								filteredData?.data
-									? filteredData?.hisob?.totalCostPilus
-									: report.income
+									? filteredData?.hisob?.totalCostPilus >= 0
+										? filteredData?.hisob?.totalCostPilus
+										: 0
+									: report.income >= 0
+									? report.income
+									: 0
 							)}{" "}
 							so'm
 						</span>
 					</div>
 					<AntReportTable
-						data={
-							filteredData?.data ? filteredData?.data : report?.data
-						}
+						data={filteredData?.data ? filteredData?.data : report?.data}
 					/>
 				</div>
 			)}

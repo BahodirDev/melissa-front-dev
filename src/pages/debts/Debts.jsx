@@ -11,13 +11,11 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	deleteData as deleteDeliverData,
-	editData as editDeliverData,
 	setData as setDeliverDebt,
 	setQuantity as setQuantityD,
 } from "../../components/reducers/d-debt"
 import {
 	deleteData,
-	editData,
 	setData,
 	setLoading,
 	setQuantity,
@@ -172,7 +170,19 @@ function Debts() {
 	}
 
 	const payDebt = (id, sum) => {
-		dispatch(editData({ id, sum }))
+		dispatch(setLoading(true))
+		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
+			console.log(data)
+			if (data?.status === 201) {
+				setModalAlert("Xabar")
+				setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+				getData("debts", setData)
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Qarzdorlik kiritib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const deleteDebt = (id) => {
@@ -282,7 +292,21 @@ function Debts() {
 	}
 
 	const payDeliverDebt = (id, sum) => {
-		dispatch(editDeliverData({ id, sum }))
+		// dispatch(setLoading(true))
+		// patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
+		// 	(data) => {
+		// 		console.log(data)
+		// 		if (data?.status === 201) {
+		// 			setModalAlert("Xabar")
+		// 			setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+		// 			getData("deliver-debts", setDeliverDebt)
+		// 		} else {
+		// 			setModalAlert("Nomalum server xatolik")
+		// 			setModalMsg("Qarzdorlik kiritib bo'lmadi")
+		// 		}
+		// 		dispatch(setLoading(false))
+		// 	}
+		// )
 	}
 
 	// total
@@ -476,13 +500,14 @@ function Debts() {
 				onChange={(e) => {
 					setSubmitted(false)
 					setShowDeliver(e.target.value)
+					// localStorage.setItem("debt", JSON.stringify(e.target.value))
 				}}
 				className="debt-page-toggle"
 			>
 				<Radio.Button value="client">Mijoz</Radio.Button>
 				<Radio.Button value="supplier">Ta'minotchi</Radio.Button>
 				<Radio.Button value="total">Umumiy qarzdorlik</Radio.Button>
-				<Radio.Button value="before">Oldindan to'lov</Radio.Button>
+				<Radio.Button value="order">Oldindan to'lov</Radio.Button>
 			</Radio.Group>
 
 			{showDeliver === "supplier" ? (
@@ -822,7 +847,7 @@ function Debts() {
 						</div>
 					</div>
 				</>
-			) : showDeliver === "before" ? (
+			) : showDeliver === "order" ? (
 				<>
 					<button
 						className={`btn btn-melissa mb-1 mx-2 ${
