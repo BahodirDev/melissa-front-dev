@@ -12,7 +12,7 @@ import {
 	setQuantity,
 } from "../../components/reducers/good"
 import { validation } from "../../components/validation"
-import { get, patch, post } from "../../customHook/api"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import GoodsList from "./GoodsList"
 import "./goods.css"
@@ -129,22 +129,21 @@ export default function Goods() {
 	}
 
 	const deleteGood = (id) => {
-		request("DELETE", `${process.env.REACT_APP_URL}/goods/goods-delete/${id}`)
-			.then((data) => {
-				console.log(data?.response?.data)
-				if (data?.data?.error === "GOODS_ALREADY_EXIST") {
-					setModal_alert("Xatolik")
-					setModal_msg("Kategoriyada mahsulot mavjud")
-				} else {
-					getData()
-					setModal_alert("Xabar")
-					setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
-				}
-			})
-			.catch((err) => {
-				setModal_alert("Xatolik")
-				setModal_msg("Kategoriyani o'chirib bo'lmadi")
-			})
+		dispatch(setLoading(true))
+		remove(`/goods/goods-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
+				getData()
+				setModal_alert("Xabar")
+				setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
+			} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
+				setModal_alert("Kategoriya o'chirilmadi")
+				setModal_msg("Bu kategoriyada mahsulot mavjud")
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Kategoriya o'chiril bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const collapse = (event) => {

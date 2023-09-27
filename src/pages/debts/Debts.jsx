@@ -172,8 +172,8 @@ function Debts() {
 	const payDebt = (id, sum) => {
 		dispatch(setLoading(true))
 		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
-			console.log(data)
-			if (data?.status === 201) {
+			// console.log(data)
+			if (data?.status === 200) {
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
 				getData("debts", setData)
