@@ -99,10 +99,11 @@ export default function MyModal({ myModal, setMyModal }) {
 		})
 
 		patch("/products/products-sale", { products: newArr }).then((data) => {
+			// console.log(data);
 			if (data?.status === 200 || data?.status === 201) {
 				getData("products", setDataProduct)
 				get("/reports/reports-list").then((data) => {
-					if (data?.status === 201) {
+					if (data?.status === 200) {
 						dispatch(setDataReport(data?.data?.data))
 						dispatch(setCapital(data?.data?.hisob?.totalProductCost))
 						dispatch(setIncome(data?.data?.hisob?.totalCostPilus))

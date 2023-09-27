@@ -132,6 +132,7 @@ function Return() {
 			}
 			if (objId) {
 				patch(`/return/return-patch/${objId}`, newObj).then((data) => {
+					// console.log(data)
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
 						buttonRef.current.click()

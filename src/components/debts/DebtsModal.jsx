@@ -135,13 +135,14 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				const updatedData = debtArr.map((obj, index) => ({
 					...obj,
 					debts_id: data?.data[index].debts_id,
+					debts_total_price: data?.data[index].debts_total_price,
 				}))
 				dispatch(addData(updatedData))
 				dispatch(addDebtToClient(updatedData))
 
 				get("/products/products-list").then((data) => {
 					if (data?.status === 201) {
-						dispatch(setDataProduct(data?.data))
+						dispatch(setDataProduct(data?.data?.data))
 						setDebtsModal(false)
 						setModalAlert("Xabar")
 						setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")

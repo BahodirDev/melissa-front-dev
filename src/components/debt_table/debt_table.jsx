@@ -24,7 +24,7 @@ const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 						item?.product?.product_details?.goods_name +
 						" - " +
 						item?.product?.product_details?.goods_code,
-					quantity: "x" + item?.debts_count,
+					quantity: "x" + Math.floor(item?.debts_count),
 					price_each: addComma(item?.debts_price) + item?.debts_currency,
 					price_total: addComma(item?.debts_total_price) + item?.debts_currency,
 					date: `${moment(item?.debts_createdat).format("YYYY/MM/DD")}`,
