@@ -22,26 +22,34 @@ import {
 } from "../../components/reducers/debt"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { setData as setDataGood } from "../../components/reducers/good"
+import {
+	setData as setDebtNote,
+	setQuantity as setQuantityN,
+} from "../../components/reducers/noteDebt"
+import {
+	setData as setDebtOrder,
+	setQuantity as setQuantityO,
+} from "../../components/reducers/orderDebt"
 import TotalDebtTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
-import { patch, post, remove } from "../../customHook/api"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import "./debts.css"
 
 function Debts() {
-	const { debt, deliver, currency, dDebt, good } = useSelector((state) => state)
+	const [showDeliver, setShowDeliver] = useState("client")
+	const { debt, dDebt, nDebt, oDebt, deliver, currency, good } = useSelector(
+		(state) => state
+	)
+	const dispatch = useDispatch()
+	const [submitted, setSubmitted] = useState(false)
+	const request = useApiRequest()
+
 	const [buttonLoader, setButtonLoader] = useState(false)
 	const buttonRef = useRef(null)
-	const dispatch = useDispatch()
-	const request = useApiRequest()
 	const [modalAlert, setModalAlert] = useState("")
 	const [modalMsg, setModalMsg] = useState("")
-	const [submitted, setSubmitted] = useState(false)
 	const [toggleClass, setToggleClass] = useState(false)
-	const [showDeliver, setShowDeliver] = useState("client")
-	const [beforeData, setBeforeData] = useState({})
-	const [objId, setObjId] = useState("")
-	const [debtNoteList, setDebtNoteList] = useState({})
 
 	// new data deliver
 	const [newDeliver, setNewDeliver] = useState({})
@@ -70,45 +78,40 @@ function Debts() {
 
 	const getData = (list, setList) => {
 		dispatch(setLoading(true))
-		request("GET", `${process.env.REACT_APP_URL}/${list}/${list}-list`)
-			.then((data) => {
-				// console.log(data)
-				if (list === "debts" || list === "deliver-debts") {
-					dispatch(setList(data.data))
+		get(`/${list}/${list}-list`).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				if (
+					list === "debts" ||
+					list === "deliver-debts" ||
+					list === "debts-note" ||
+					list === "ordered"
+				) {
+					dispatch(setList(data.data?.data))
 					if (list === "debts") {
-						dispatch(setQuantity(data.amount))
-					} else {
-						dispatch(setQuantityD(data.amount))
+						dispatch(setQuantity(data?.data.amount))
+					} else if (list === "deliver-debts") {
+						dispatch(setQuantityD(data?.data.amount))
+					} else if (list === "debts-note") {
+						dispatch(setQuantityN(data?.data.amount))
+					} else if (list === "ordered") {
+						dispatch(setQuantityO(data?.data.amount))
 					}
-				} else if (list === "debts-note") {
-					setList(data)
 				} else {
-					dispatch(setList(data))
+					dispatch(setList(data?.data))
 				}
-				dispatch(setLoading(false))
-			})
-			.catch((error) => {
-				dispatch(setLoading(false))
-			})
-	}
-
-	const getBeforeData = () => {
-		request("GET", `${process.env.REACT_APP_URL}/ordered/ordered-products-list`)
-			.then((data) => {
-				setBeforeData(data)
-			})
-			.catch((error) => {
-				console.log(error)
-			})
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	useEffect(() => {
 		getData("debts", setData)
-		getData("deliver", setDataDeliver)
 		getData("deliver-debts", setDeliverDebt)
+		getData("debts-note", setDebtNote)
+		getData("ordered", setDebtOrder)
+
+		getData("deliver", setDataDeliver)
 		getData("goods", setDataGood)
-		getData("debts-note", setDebtNoteList)
-		getBeforeData()
 	}, [])
 
 	const collapse = (event) => {
@@ -117,7 +120,6 @@ function Debts() {
 		let content = event.target.nextElementSibling
 		if (content.style.maxHeight) {
 			content.style.maxHeight = null
-			setObjId("")
 			setNewDeliver({})
 			setNewGood({})
 			setNewCurrency({})
@@ -146,37 +148,30 @@ function Debts() {
 
 	// client
 	const closeDebt = (id) => {
-		request(
-			"PATCH",
-			`${process.env.REACT_APP_URL}/debts/debts-patch-done/${id}`
-		)
-			.then((data) => {
+		dispatch(setLoading(true))
+		patch(`/debts/debts-patch-done/${id}`).then((data) => {
+			if (data?.status === 200) {
 				dispatch(deleteData(id))
-				// dispatch(removeDebt(id, ))
-				// console.log(data, id)
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "DEBTS_NOT_FOUND") {
-					setModalAlert("Xatolik")
-					setModalMsg("Qarzdorlik topilmadi")
-				} else {
-					setModalAlert("Xatolik")
-					setModalMsg("Qarzdorlik yopishda xatolik")
-				}
-			})
+			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
+				setModalAlert("Xatolik")
+				setModalMsg("Bunday qarzdorlik topilmadi")
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Qarzdorlik yopib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const payDebt = (id, sum) => {
 		dispatch(setLoading(true))
 		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
-			// console.log(data)
 			if (data?.status === 200) {
+				getData("debts", setData)
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
-				getData("debts", setData)
 			} else {
 				setModalAlert("Nomalum server xatolik")
 				setModalMsg("Qarzdorlik kiritib bo'lmadi")
@@ -186,17 +181,18 @@ function Debts() {
 	}
 
 	const deleteDebt = (id) => {
-		request("DELETE", `${process.env.REACT_APP_URL}/debts/debts-delete/${id}`)
-			.then((data) => {
+		dispatch(setLoading(true))
+		remove(`/debts/debts-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
 				dispatch(deleteData(data.debts_id))
-			})
-			.catch((err) => {
-				setModalAlert("Xatolik")
-				setModalMsg("Qarzdorlik o'chirishda xatolik")
-				console.log(err?.response?.data)
-			})
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Qarzdorlikni o'chirib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	// deliver
@@ -253,60 +249,53 @@ function Debts() {
 	}
 
 	const closeDeliverDebt = (id) => {
-		request(
-			"PATCH",
-			`${process.env.REACT_APP_URL}/deliver-debts/deliver-debts-patch-done/${id}`
-		)
-			.then((data) => {
+		dispatch(setLoading(true))
+		patch(`/deliver-debts/deliver-debts-patch-done/${id}`).then((data) => {
+			if (data?.status === 200) {
 				dispatch(deleteDeliverData(id))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
-			})
-			.catch((error) => {
-				console.log(error?.response?.data)
-				if (error?.response?.data?.error === "DEBTS_NOT_FOUND") {
-					setModalAlert("Xatolik")
-					setModalMsg("Qarzdorlik mavjud emas")
-				} else {
-					setModalAlert("Xatolik")
-					setModalMsg("Qarzdorlik yopishda xatolik")
-				}
-			})
+			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
+				setModalAlert("Xatolik")
+				setModalMsg("Bunday qarzdorlik mavjud emas")
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Qarzdorlikni yopib bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const deleteDeliverDebt = (id) => {
-		request(
-			"DELETE",
-			`${process.env.REACT_APP_URL}/deliver-debts/deliver-debts-delete/${id}`
-		)
-			.then((data) => {
+		dispatch(setLoading(true))
+		remove(`/deliver-debts/deliver-debts-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
+				dispatch(deleteDeliverData(id))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
-				dispatch(deleteDeliverData(id))
-			})
-			.catch((err) => {
+			} else {
 				setModalAlert("Xatolik")
 				setModalMsg("Qarzdorlik o'chirishda xatolik")
-				console.log(err?.response?.data)
-			})
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const payDeliverDebt = (id, sum) => {
-		// dispatch(setLoading(true))
-		// patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
-		// 	(data) => {
-		// 		console.log(data)
-		// 		if (data?.status === 201) {
-		// 			setModalAlert("Xabar")
-		// 			setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
-		// 			getData("deliver-debts", setDeliverDebt)
-		// 		} else {
-		// 			setModalAlert("Nomalum server xatolik")
-		// 			setModalMsg("Qarzdorlik kiritib bo'lmadi")
-		// 		}
-		// 		dispatch(setLoading(false))
-		// 	}
-		// )
+		dispatch(setLoading(true))
+		patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
+			(data) => {
+				if (data?.status === 200) {
+					getData("deliver-debts", setDeliverDebt)
+					setModalAlert("Xabar")
+					setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+				} else {
+					setModalAlert("Nomalum server xatolik")
+					setModalMsg("Qarzdorlik kiritib bo'lmadi")
+				}
+				dispatch(setLoading(false))
+			}
+		)
 	}
 
 	// total
@@ -330,8 +319,7 @@ function Debts() {
 			}
 			post("/debts-note/debts-note-post", newTotalDebtObj).then((data) => {
 				if (data?.status === 200) {
-					// console.log(data?.data)
-					debtNoteList.data.unshift(data?.data)
+					getData("debts-note", setDebtNote)
 					buttonRef.current.click()
 					setModalAlert("Xabar")
 					setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
@@ -347,16 +335,10 @@ function Debts() {
 	const deleteTotalDebt = (id) => {
 		dispatch(setLoading(true))
 		remove(`/debts-note/debts-note-delete/${id}`).then((data) => {
-			console.log(data)
 			if (data?.status === 200) {
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
-				const index = debtNoteList?.data.findIndex(
-					(item) => item?.debts_id === data?.data?.debts_id
-				)
-				if (index !== -1) {
-					debtNoteList?.data.splice(index, 1)
-				}
+				getData("debts-note", setDebtNote)
 			} else {
 				setModalAlert("Nomalum server xatolik")
 				setModalMsg("Qarzdorlik o'chirib bo'lmadi")
@@ -369,7 +351,7 @@ function Debts() {
 		dispatch(setLoading(true))
 		patch(`/debts-note/debts-note-change/${id}`, { price }).then((data) => {
 			if (data?.status === 200) {
-				getData("debts-note", setDebtNoteList)
+				getData("debts-note", setDebtNote)
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli kiritildi")
 			} else {
@@ -381,20 +363,17 @@ function Debts() {
 	}
 
 	const totalDebtCloseAtOnce = (id) => {
+		dispatch(setLoading(true))
 		patch(`/debts-note/debts-note-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				let index = debtNoteList?.data.findIndex(
-					(item) => item?.debts_id === data?.data?.debts_id
-				)
-				if (index !== -1) {
-					debtNoteList?.data.splice(index, 1)
-				}
+				getData("debts-note", setDebtNote)
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
 			} else {
 				setModalAlert("Nomalum server xatolik")
 				setModalMsg("Qarzdorlikni yopib bo'lmadi")
 			}
+			dispatch(setLoading(false))
 		})
 	}
 
@@ -422,19 +401,12 @@ function Debts() {
 				debts_due_date: new Date(beforeDueDate).toISOString(),
 				debts_selected_date: new Date(beforeDate).toISOString(),
 			}
-			post("/ordered/ordered-products-post", newObj).then((data) => {
-				if (data?.status) {
+			post("/ordered/ordered-post", newObj).then((data) => {
+				if (data?.status === 200) {
 					buttonRef.current.click()
+					getData("ordered", setDebtOrder)
 					setModalAlert("Xabar")
 					setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
-					setBeforeData({
-						amount:
-							beforeData?.amount +
-							data?.data?.debts_currency_amount *
-								data?.data?.debts_cost *
-								data?.data?.debts_count,
-						data: [...beforeData?.data, data?.data],
-					})
 				} else {
 					setModalAlert("Nomalum server xatolik")
 					setModalMsg("Oldindan to'lov kiritib bo'lmadi")
@@ -446,9 +418,9 @@ function Debts() {
 
 	const deleteBeforeDebt = (id) => {
 		dispatch(setLoading(true))
-		remove(`/ordered/ordered-products-delete/${id}`).then((data) => {
+		remove(`/ordered/ordered-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getBeforeData()
+				getData("ordered", setDebtOrder)
 				setModalAlert("Xabar")
 				setModalMsg("Oldindan to'lov muvoffaqiyatli o'chirildi")
 			} else {
@@ -461,10 +433,9 @@ function Debts() {
 
 	const beforeDebtPart = (id, amount) => {
 		dispatch(setLoading(true))
-		patch(`/ordered/ordered-products-change/${id}`, { amount }).then((data) => {
-			console.log(data)
+		patch(`/ordered/ordered-change/${id}`, { amount }).then((data) => {
 			if (data?.status === 200) {
-				getBeforeData()
+				getData("ordered", setDebtOrder)
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli kiritildi")
 			} else {
@@ -476,20 +447,17 @@ function Debts() {
 	}
 
 	const beforeDebtCloseAtOnce = (id) => {
-		patch(`/ordered/ordered-products-patch-done/${id}`).then((data) => {
+		dispatch(setLoading(true))
+		patch(`/ordered/ordered-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				let index = beforeData?.data.findIndex(
-					(item) => item?.deliver_debt_id === data?.data?.deliver_debt_id
-				)
-				if (index !== -1) {
-					beforeData?.data.splice(index, 1)
-				}
+				getData("ordered", setDebtOrder)
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli yopildi")
 			} else {
 				setModalAlert("Nomalum server xatolik")
 				setModalMsg("To'lovni yopib bo'lmadi")
 			}
+			dispatch(setLoading(false))
 		})
 	}
 
@@ -724,6 +692,7 @@ function Debts() {
 									className="btn btn-melissa mx-1"
 									onClick={addNewDebtDeliver}
 									style={{ padding: "3px 10px" }}
+									disabled={buttonLoader}
 								>
 									<i className="fas fa-plus"></i>
 									{buttonLoader && (
@@ -782,7 +751,6 @@ function Debts() {
 										: null}
 								</div>
 							</div>
-
 							<div className="debt-input-col validation-field">
 								<label htmlFor="">Izoh</label>
 								<Input
@@ -1075,6 +1043,7 @@ function Debts() {
 									className="btn btn-melissa mx-1"
 									onClick={addBeforeDebt}
 									style={{ padding: "3px 10px" }}
+									disabled={buttonLoader}
 								>
 									<i className="fas fa-plus"></i>
 									{buttonLoader && (
@@ -1099,8 +1068,8 @@ function Debts() {
 					: showDeliver === "supplier"
 					? dDebt.quantity
 					: showDeliver === "total"
-					? debtNoteList?.amount
-					: beforeData?.amount}
+					? nDebt?.quantity
+					: oDebt?.quantity}
 				so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
@@ -1124,14 +1093,14 @@ function Debts() {
 				/>
 			) : showDeliver === "total" ? (
 				<TotalDebtTable
-					data={debtNoteList?.data}
+					data={nDebt?.data}
 					deleteTotalDebt={deleteTotalDebt}
 					totalDebtPart={totalDebtPart}
 					totalDebtCloseAtOnce={totalDebtCloseAtOnce}
 				/>
 			) : (
 				<BeforeDebtTable
-					data={beforeData?.data}
+					data={oDebt?.data}
 					deleteDebt={deleteBeforeDebt}
 					// editDebt={openEditBeforeDebt}
 					editDebt={beforeDebtPart}
