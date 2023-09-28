@@ -27,3 +27,9 @@
 .debt-order-input-col {
 	width: 90% !important;
 }
+
+.sup-debt-form {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr auto;
+	column-gap: 10px;
+}

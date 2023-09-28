@@ -149,11 +149,11 @@ export default function MyModal({ myModal, setMyModal }) {
 				code: productId?.goods_id?.goods_code,
 			}
 			setProductList([newObj, ...productList])
-			setProductQ(0)
-			setProductPrice(0)
-			setPrice_bh(0)
-			setPrice_check(false)
-			setProductId({})
+			// setProductQ(0)
+			// setProductPrice(0)
+			// setPrice_bh(0)
+			// setPrice_check(false)
+			// setProductId({})
 			const index = filteredProducts.findIndex(
 				(item) => item?.products_id === productId?.products_id
 			)
@@ -179,7 +179,7 @@ export default function MyModal({ myModal, setMyModal }) {
 				width={1150}
 				footer={[]}
 			>
-				<div className="my-modal" onClick={(e) => e.stopPropagation()}>
+				<div className="my-modal my-product-modal" onClick={(e) => e.stopPropagation()}>
 					{/* form */}
 					<div className="row sell-modal">
 						<div className="col">
@@ -235,11 +235,11 @@ export default function MyModal({ myModal, setMyModal }) {
 												label={`${productId?.goods_id?.goods_name} - ${productId?.goods_id?.goods_code} - ${productId?.deliver_id?.deliver_name}`}
 											>
 												<div>
+													<span>{item?.goods_id?.goods_name} - </span>
 													<span>
-														{item?.goods_id?.goods_name} -{" "}
 														{item?.goods_id.goods_code} -{" "}
+														{`${item?.deliver_id?.deliver_name}`}
 													</span>
-													<span>{`${item?.deliver_id?.deliver_name}`}</span>
 												</div>
 											</Option>
 									  ))

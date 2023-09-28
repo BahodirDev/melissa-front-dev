@@ -82,7 +82,7 @@ const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={(e) =>
-							payModal(e, payDebt, record?.id, record?.price_total)
+							payModal(e, payDebt, record?.id, record?.price_total, 'Summa ')
 						}
 					>
 						<i className="fas fa-edit"></i>

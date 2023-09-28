@@ -2,7 +2,7 @@ import { Input, Modal } from "antd"
 import { addComma } from "../addComma"
 const { confirm } = Modal
 
-export const payModal = (e, action, id, max) => {
+export const payModal = (e, action, id, max, about = "") => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
@@ -11,7 +11,9 @@ export const payModal = (e, action, id, max) => {
 			<>
 				<Input
 					type="text"
-					placeholder={addComma(parseFloat(max.replace(/[^\d.]/g, "")))}
+					placeholder={
+						about + "" + addComma(parseFloat(max.replace(/[^\d.]/g, "")))
+					}
 					id="pay-modal-input"
 					pattern="[0-9]*"
 					onInput={(e) => {

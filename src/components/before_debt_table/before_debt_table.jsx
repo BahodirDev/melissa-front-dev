@@ -77,7 +77,7 @@ const BeforeDebtTable = ({
 					</button>
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						onClick={(e) => payModal(e, editDebt, record?.id, record?.count)}
+						onClick={(e) => payModal(e, editDebt, record?.id, record?.count, 'Miqdor ')}
 					>
 						<i className="fas fa-edit"></i>
 					</button>
