@@ -29,7 +29,8 @@ export default function Navbar({
 			action?.url === "/store/store-list" ||
 			action?.url === "/goods/goods-search" ||
 			action?.url === "/reports/reports-filter" ||
-			action?.url === "/products/products-filter"
+			action?.url === "/products/products-filter" ||
+			action?.url === "/debts-note/debts-note-filter"
 		) {
 			dispatch(action?.setLoading(true))
 			post(action?.url, action?.body).then((data) => {

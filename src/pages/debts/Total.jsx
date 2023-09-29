@@ -8,7 +8,7 @@ import AntTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
 import { patch, post, remove } from "../../customHook/api"
 
-const Total = ({ getData }) => {
+const Total = ({ getData, saerchInputValue, setAction }) => {
 	const state = useSelector((state) => state.nDebt)
 
 	const [toggleClass, setToggleClass] = useState(false)
@@ -18,12 +18,27 @@ const Total = ({ getData }) => {
 	const [modalAlert, setModalAlert] = useState("")
 	const [modalMsg, setModalMsg] = useState("")
 	const dispatch = useDispatch()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [filteredData, setFilteredData] = useState({})
 
 	const [totalName, setTotalName] = useState("")
 	const [totalCost, setTotalCost] = useState(0)
 	const [totalComment, setTotalComment] = useState("")
 	const [totalDate, setTotalDate] = useState("")
 	const [totalDueDate, setTotalDueDate] = useState("")
+
+	useEffect(() => {
+		setAction({
+			url: "/debts-note/debts-note-filter",
+			body: {
+				search: saerchInputValue,
+			},
+			res: setFilteredData,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
+	}, [saerchInputValue])
 
 	useEffect(() => {
 		getData("debts-note", setData, setLoading)
@@ -235,8 +250,8 @@ const Total = ({ getData }) => {
 			</>
 
 			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa: {state?.quantity}{" "}
-				so'm
+				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
+				{searchSubmitted ? filteredData?.amount : state?.quantity} so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
 
@@ -244,7 +259,7 @@ const Total = ({ getData }) => {
 				<Loader />
 			) : (
 				<AntTable
-					data={state?.data}
+					data={searchSubmitted ? filteredData?.data : state?.data}
 					deleteTotalDebt={deleteTotalDebt}
 					totalDebtPart={totalDebtPart}
 					totalDebtCloseAtOnce={totalDebtCloseAtOnce}

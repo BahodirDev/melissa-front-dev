@@ -2,6 +2,7 @@ import { Radio } from "antd"
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
+import { useOutletContext } from "react-router-dom"
 import { setQuantity as setQuantityD } from "../../components/reducers/d-debt"
 import { setQuantity } from "../../components/reducers/debt"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -22,6 +23,14 @@ function Debts() {
 	const { deliver, currency, good } = useSelector((state) => state)
 	const dispatch = useDispatch()
 	const [showDeliver, setShowDeliver] = useState("client")
+	const [
+		saerchInputValue,
+		setSearchInput,
+		sidebar,
+		userInfo,
+		action,
+		setAction,
+	] = useOutletContext()
 
 	const getData = (list, setList, setPreload) => {
 		dispatch(setPreload(true))
@@ -62,6 +71,7 @@ function Debts() {
 				value={showDeliver}
 				onChange={(e) => {
 					setShowDeliver(e.target.value)
+					setSearchInput("")
 					// localStorage.setItem("debt", JSON.stringify(e.target.value))
 				}}
 				className="debt-page-toggle"
@@ -82,7 +92,11 @@ function Debts() {
 					deliver={deliver}
 				/>
 			) : showDeliver === "total" ? (
-				<Total getData={getData} />
+				<Total
+					getData={getData}
+					saerchInputValue={saerchInputValue}
+					setAction={setAction}
+				/>
 			) : (
 				<Order
 					getData={getData}
