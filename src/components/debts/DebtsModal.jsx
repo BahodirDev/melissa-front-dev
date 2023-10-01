@@ -140,6 +140,8 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				dispatch(addData(updatedData))
 				dispatch(addDebtToClient(updatedData))
 				setDebtsModal(false)
+				setDebtList([])
+				setClientId("")
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
 
@@ -253,8 +255,8 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 								optionLabelProp="label"
 								// disabled={productList.length}
 							>
-								{product?.dataProduct?.length
-									? product?.dataProduct.map((item, idx) => {
+								{productsList?.length
+									? productsList.map((item, idx) => {
 											return (
 												<Option
 													className="client-option debt-modal-product-option"

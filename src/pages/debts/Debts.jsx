@@ -63,6 +63,7 @@ function Debts() {
 	useEffect(() => {
 		getData("deliver", setDataDeliver, fakeLoad)
 		getData("goods", setDataGood, fakeLoad)
+		setShowDeliver(localStorage.getItem("debt-section"))
 	}, [])
 
 	return (
@@ -72,7 +73,7 @@ function Debts() {
 				onChange={(e) => {
 					setShowDeliver(e.target.value)
 					setSearchInput("")
-					// localStorage.setItem("debt", JSON.stringify(e.target.value))
+					localStorage.setItem("debt-section", e.target.value)
 				}}
 				className="debt-page-toggle"
 			>
