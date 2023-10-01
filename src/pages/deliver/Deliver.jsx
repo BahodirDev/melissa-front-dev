@@ -49,7 +49,7 @@ function Deliver() {
 		setAction({
 			url: "/deliver/deliver-search",
 			body: {
-				delivery_name: saerchInputValue,
+				search: saerchInputValue,
 			},
 			res: setFilteredData,
 			submitted: setSearchSubmitted,
@@ -157,6 +157,9 @@ function Deliver() {
 				setUser_id("")
 				setModal_msg("Ta'minotchi o'chirildi")
 				setModal_alert("Xabar")
+			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
+				setModal_alert("Ta'minotchi o'chirilmadi")
+				setModal_msg("Bu ta'minotchida qarzdorlik mavjud")
 			} else {
 				setModal_alert("Nomalum server xatolik")
 				setModal_msg("Malumot o'chirib bo'lmadi")
@@ -189,6 +192,16 @@ function Deliver() {
 	return (
 		<>
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
+
+			<div className="deliverInfo">
+				<i className="fa-solid fa-truck"></i> Ta'minotchilar soni:{" "}
+				{searchSubmitted
+					? filteredData?.length
+					: state?.quantity
+					? state?.quantity
+					: 0}{" "}
+				ta
+			</div>
 
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
@@ -274,10 +287,6 @@ function Deliver() {
 						</button>
 					</div>
 				</div>
-			</div>
-			<div className="deliverInfo">
-				<i className="fa-solid fa-truck"></i> Ta'minotchilar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
 			</div>
 
 			{state?.loading ? (

@@ -142,6 +142,11 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 		<>
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
 
+			<div className="return-info">
+				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
+				{searchSubmitted ? filteredData?.amount : state?.quantity} so'm
+			</div>
+
 			<>
 				<button
 					className={`btn btn-melissa mb-1 mx-2 ${
@@ -249,10 +254,6 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 				</div>
 			</>
 
-			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
-				{searchSubmitted ? filteredData?.amount : state?.quantity} so'm
-			</div>
 			<div style={{ height: "10px" }}></div>
 
 			{state?.loading ? (

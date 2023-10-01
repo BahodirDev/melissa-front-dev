@@ -139,6 +139,9 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				}))
 				dispatch(addData(updatedData))
 				dispatch(addDebtToClient(updatedData))
+				setDebtsModal(false)
+				setModalAlert("Xabar")
+				setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
 
 				get("/products/products-list").then((data) => {
 					if (data?.status === 201) {

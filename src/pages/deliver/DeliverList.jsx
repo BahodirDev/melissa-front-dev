@@ -36,15 +36,18 @@ function DeliverList({
 										}`}
 										style={{
 											marginTop: loc
-												? "38px"
-												: `-${item?.deliver_debts?.length ? "223" : "47"}px`,
+												? "50px"
+												: `-${
+														item?.deliver_debts.filter((item) => !item?.isdone)
+															.length
+															? "230"
+															: "47"
+												  }px`,
 										}}
 									>
 										<div className="clients_desc-i">
 											{item?.deliver_debts?.length ? (
-												<div className="clients_desc-item">
-													<DeliverDebtList data={item?.deliver_debts} />
-												</div>
+												<DeliverDebtList data={item?.deliver_debts} />
 											) : (
 												"Qarzdorlik mavjud emas"
 											)}

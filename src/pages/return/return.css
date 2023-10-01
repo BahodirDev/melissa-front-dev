@@ -1,7 +1,8 @@
 .return-info {
-	position: fixed;
+	/* position: fixed;
 	top: 80px;
-	right: 20px;
+	right: 20px; */
+	float: right;
 	color: #fff;
 	padding: 7px 20px;
 	background-color: #7e258c;

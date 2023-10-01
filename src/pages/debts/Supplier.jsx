@@ -183,6 +183,11 @@ const Supplier = ({
 		<>
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
 
+			<div className="return-info">
+				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
+				{searchSubmitted ? filteredData?.amount : state.quantity} so'm
+			</div>
+
 			<>
 				<button
 					className={`btn btn-melissa mb-1 mx-2 ${
@@ -362,6 +367,12 @@ const Supplier = ({
 								type="date"
 								value={deliverDate}
 								onChange={(e) => setDeliverDate(e.target.value)}
+								onBlur={(e) => setDeliverDate(e.target.value)}
+								onKeyUp={(e) => {
+									if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+										setDeliverDate(e.target.value)
+									}
+								}}
 							/>
 							<div className="validation-field-error">
 								{submitted &&
@@ -410,10 +421,6 @@ const Supplier = ({
 				</div>
 			</>
 
-			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
-				{searchSubmitted ? filteredData?.amount : state.quantity} so'm
-			</div>
 			<div style={{ height: "10px" }}></div>
 
 			{state?.loading ? (

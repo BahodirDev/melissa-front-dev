@@ -45,7 +45,6 @@ export default function Employees() {
 	const dispatch = useDispatch()
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
-	// search by name or number. !!!should be moved to backend
 	useEffect(() => {
 		setAction({
 			url: "/clients/clients-search",
@@ -187,6 +186,11 @@ export default function Employees() {
 		<>
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
 
+			<div className="clients-info">
+				<i className="fa-solid fa-users"></i> Mijozlar soni:{" "}
+				{state?.quantity ? state?.quantity : 0} ta
+			</div>
+
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
@@ -273,10 +277,7 @@ export default function Employees() {
 					</div>
 				</div>
 			</div>
-			<div className="clients-info">
-				<i className="fa-solid fa-users"></i> Mijozlar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
+
 			{state?.loading ? (
 				<Loader />
 			) : (

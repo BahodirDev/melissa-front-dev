@@ -99,7 +99,6 @@ export default function MyModal({ myModal, setMyModal }) {
 		})
 
 		patch("/products/products-sale", { products: newArr }).then((data) => {
-			// console.log(data);
 			if (data?.status === 200 || data?.status === 201) {
 				getData("products", setDataProduct)
 				get("/reports/reports-list").then((data) => {
@@ -149,11 +148,11 @@ export default function MyModal({ myModal, setMyModal }) {
 				code: productId?.goods_id?.goods_code,
 			}
 			setProductList([newObj, ...productList])
-			// setProductQ(0)
-			// setProductPrice(0)
-			// setPrice_bh(0)
-			// setPrice_check(false)
-			// setProductId({})
+			setProductQ(0)
+			setProductPrice(0)
+			setPrice_bh(0)
+			setPrice_check(false)
+			setProductId({})
 			const index = filteredProducts.findIndex(
 				(item) => item?.products_id === productId?.products_id
 			)

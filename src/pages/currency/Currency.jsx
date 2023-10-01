@@ -184,6 +184,11 @@ export default function Currency() {
 		<div>
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
 
+			<div className="currency-info">
+				<i className="fa-solid fa-money-bill-transfer"></i> Valyutalar soni:{" "}
+				{state?.quantity ? state?.quantity : 0} ta
+			</div>
+
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
@@ -263,10 +268,7 @@ export default function Currency() {
 					</div>
 				</div>
 			</div>
-			<div className="currency-info">
-				<i className="fa-solid fa-money-bill-transfer"></i> Valyutalar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
+
 			{state?.loading ? (
 				<Loader />
 			) : (
