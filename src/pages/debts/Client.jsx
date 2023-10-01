@@ -6,11 +6,27 @@ import Loader from "../../components/loader/Loader"
 import { deleteData, setData, setLoading } from "../../components/reducers/debt"
 import { patch, remove } from "../../customHook/api"
 
-const Client = ({ getData }) => {
+const Client = ({ getData, saerchInputValue, setAction }) => {
 	const state = useSelector((state) => state.debt)
 	const dispatch = useDispatch()
 	const [modalAlert, setModalAlert] = useState("")
 	const [modalMsg, setModalMsg] = useState("")
+
+	const [filteredData, setFilteredData] = useState({})
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
+
+	useEffect(() => {
+		setAction({
+			url: "/debts/debts-filter",
+			body: {
+				search: saerchInputValue,
+			},
+			res: setFilteredData,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
+	}, [saerchInputValue])
 
 	useEffect(() => {
 		getData("debts", setData, setLoading)
@@ -68,8 +84,8 @@ const Client = ({ getData }) => {
 		<>
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
 			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa: {state.quantity}{" "}
-				so'm
+				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
+				{searchSubmitted ? filteredData?.amount : state.quantity} so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
 
@@ -77,7 +93,7 @@ const Client = ({ getData }) => {
 				<Loader />
 			) : (
 				<DebtTable
-					data={state.data}
+					data={searchSubmitted ? filteredData?.data : state.data}
 					closeDebt={closeDebt}
 					payDebt={payDebt}
 					deleteDebt={deleteDebt}

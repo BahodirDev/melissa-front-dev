@@ -14,7 +14,14 @@ import {
 import { validation } from "../../components/validation"
 import { patch, post, remove } from "../../customHook/api"
 
-const Supplier = ({ getData, good, currency, deliver }) => {
+const Supplier = ({
+	getData,
+	good,
+	currency,
+	deliver,
+	saerchInputValue,
+	setAction,
+}) => {
 	const state = useSelector((state) => state.dDebt)
 	const dispatch = useDispatch()
 
@@ -24,6 +31,8 @@ const Supplier = ({ getData, good, currency, deliver }) => {
 	const [modalMsg, setModalMsg] = useState("")
 	const buttonRef = useRef(null)
 	const [toggleClass, setToggleClass] = useState(false)
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [filteredData, setFilteredData] = useState({})
 
 	const [newDeliver, setNewDeliver] = useState({})
 	const [newGood, setNewGood] = useState({})
@@ -32,6 +41,19 @@ const Supplier = ({ getData, good, currency, deliver }) => {
 	const [newCost, setNewCost] = useState(0)
 	const [deliverDate, setDeliverDate] = useState("")
 	const [deliverDueDate, setDeliverDueDate] = useState("")
+
+	useEffect(() => {
+		setAction({
+			url: "/deliver-debts/deliver-debts-filter",
+			body: {
+				search: saerchInputValue,
+			},
+			res: setFilteredData,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
+	}, [saerchInputValue])
 
 	useEffect(() => {
 		getData("deliver-debts", setData, setLoading)
@@ -389,8 +411,8 @@ const Supplier = ({ getData, good, currency, deliver }) => {
 			</>
 
 			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa: {state.quantity}{" "}
-				so'm
+				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
+				{searchSubmitted ? filteredData?.amount : state.quantity} so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
 
@@ -398,7 +420,7 @@ const Supplier = ({ getData, good, currency, deliver }) => {
 				<Loader />
 			) : (
 				<DDebtTable
-					data={state.data}
+					data={searchSubmitted ? filteredData?.data : state.data}
 					closeDeliverDebt={closeDeliverDebt}
 					deleteDeliverDebt={deleteDeliverDebt}
 					payDeliverDebt={payDeliverDebt}

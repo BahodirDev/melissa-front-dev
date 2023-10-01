@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux"
 import { useLocation } from "react-router-dom"
 import user_image from "../../assets/img/admin.jpg"
 import { post } from "../../customHook/api"
-import useApiRequest from "../../customHook/useUrl"
 import { employee_role } from "../../pages/employees/employee_role"
 import "./navbar.css"
 
@@ -17,46 +16,23 @@ export default function Navbar({
 	action,
 }) {
 	const location = useLocation()
-	const request = useApiRequest()
 	const dispatch = useDispatch()
 
 	const submitSearch = () => {
-		if (
-			action?.url === "/return/return-filter" ||
-			action?.url === "/users/users-search" ||
-			action?.url === "/clients/clients-search" ||
-			action?.url === "/deliver/deliver-search" ||
-			action?.url === "/store/store-list" ||
-			action?.url === "/goods/goods-search" ||
-			action?.url === "/reports/reports-filter" ||
-			action?.url === "/products/products-filter" ||
-			action?.url === "/debts-note/debts-note-filter"
-		) {
-			dispatch(action?.setLoading(true))
-			post(action?.url, action?.body).then((data) => {
-				if (data?.status === 200 || data?.status === 201) {
-					action?.res(data?.data)
-					action?.submitted(true)
-				}
-				dispatch(action?.setLoading(false))
-			})
-		} else {
-			action?.setLoading(true)
-			request(
-				"POST",
-				`${process.env.REACT_APP_URL}${action?.url}`,
-				action?.body
-			).then((data) => {
-				if (data?.status === 200 || data?.status === 201) {
-					action?.res(data?.data)
-					action?.submitted(true)
-				}
-				action?.setLoading(false)
-			})
-		}
+		dispatch(action?.setLoading(true))
+		post(action?.url, action?.body).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				action?.res(data?.data)
+				action?.submitted(true)
+			}
+			dispatch(action?.setLoading(false))
+		})
 	}
 
 	const clearSearch = () => {
+		setSearchInput("")
+		action?.submitted(false)
+		dispatch(action?.setLoading(false))
 		if (action?.url === "/return/return-filter") {
 			action?.clearValues.first("")
 			action?.clearValues.second("")
@@ -74,8 +50,6 @@ export default function Navbar({
 			action?.clearValues.fourth("")
 			action?.clearValues.fifth("")
 		}
-		setSearchInput("")
-		action?.submitted(false)
 	}
 
 	return (

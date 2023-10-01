@@ -83,13 +83,14 @@ function Debts() {
 			</Radio.Group>
 
 			{showDeliver === "client" ? (
-				<Client getData={getData} />
+				<Client getData={getData} setAction={setAction} />
 			) : showDeliver === "supplier" ? (
 				<Supplier
 					getData={getData}
 					good={good}
 					currency={currency}
 					deliver={deliver}
+					setAction={setAction}
 				/>
 			) : showDeliver === "total" ? (
 				<Total
@@ -103,6 +104,7 @@ function Debts() {
 					good={good}
 					deliver={deliver}
 					currency={currency}
+					setAction={setAction}
 				/>
 			)}
 		</>
