@@ -213,6 +213,16 @@ export default function Employees() {
 		<>
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
 
+			<div className="emp-info">
+				<i className="fa-solid fa-user-tag"></i> Xodimlar soni:{" "}
+				{searchSubmitted
+					? filteredUsers?.length
+					: state?.quantity
+					? state?.quantity
+					: 0}{" "}
+				ta
+			</div>
+
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
@@ -349,10 +359,7 @@ export default function Employees() {
 					</div>
 				</div>
 			</div>
-			<div className="emp-info">
-				<i className="fa-solid fa-user-tag"></i> Xodimlar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
+
 			{state?.loading ? (
 				<Loader />
 			) : (

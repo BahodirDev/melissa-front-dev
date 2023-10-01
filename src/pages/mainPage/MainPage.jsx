@@ -43,9 +43,6 @@ export default function MainPage() {
 			if (e.key === "Escape") {
 				setDebtsModal(false)
 				setMyModal(!myModal)
-			} else if (e.key === "`") {
-				setMyModal(false)
-				setDebtsModal((prev) => !prev)
 			} else if (e.ctrlKey && e.key === "/") {
 				setMyModal(false)
 				setDebtsModal(false)
@@ -58,6 +55,10 @@ export default function MainPage() {
 				e.preventDefault()
 				setSidebar(true)
 			}
+			// else if (e.key === "`") {
+			// 	setMyModal(false)
+			// 	setDebtsModal((prev) => !prev)
+			// } 
 		})
 	}, [url])
 

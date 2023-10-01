@@ -184,6 +184,17 @@ export default function Goods() {
 	return (
 		<div id="cardWrapperTop">
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
+
+			<div className="goods-info">
+				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
+				{searchSubmitted
+					? filteredProducts?.length
+					: state?.quantity
+					? state?.quantity
+					: 0}{" "}
+				ta
+			</div>
+
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
@@ -242,10 +253,6 @@ export default function Goods() {
 				</div>
 			</div>
 
-			<div className="goods-info">
-				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
 			{state?.loading ? (
 				<Loader />
 			) : (

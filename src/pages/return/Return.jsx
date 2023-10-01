@@ -231,6 +231,16 @@ function Return() {
 		<>
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
 
+			<div className="return-info">
+				<i className="fa-solid fa-user-tag"></i> Qaytgan mahsulotlar soni:{" "}
+				{searchSubmitted
+					? filteredData?.length
+					: state?.return?.quantity
+					? state?.return?.quantity
+					: 0}{" "}
+				ta
+			</div>
+
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
@@ -406,11 +416,6 @@ function Return() {
 						</button>
 					</div>
 				</div>
-			</div>
-
-			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Qaytgan mahsulotlar soni:{" "}
-				{state?.return?.quantity ? state?.return?.quantity : 0} ta
 			</div>
 
 			<div

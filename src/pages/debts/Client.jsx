@@ -83,10 +83,12 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 	return (
 		<>
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
+
 			<div className="return-info">
 				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
 				{searchSubmitted ? filteredData?.amount : state.quantity} so'm
 			</div>
+
 			<div style={{ height: "10px" }}></div>
 
 			{state?.loading ? (
