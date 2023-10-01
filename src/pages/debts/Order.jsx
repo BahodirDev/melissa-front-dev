@@ -9,7 +9,14 @@ import { setData, setLoading } from "../../components/reducers/orderDebt"
 import { validation } from "../../components/validation"
 import { patch, post, remove } from "../../customHook/api"
 
-const Order = ({ getData, good, deliver, currency }) => {
+const Order = ({
+	getData,
+	good,
+	deliver,
+	currency,
+	saerchInputValue,
+	setAction,
+}) => {
 	const state = useSelector((state) => state.oDebt)
 
 	const [modalAlert, setModalAlert] = useState("")
@@ -19,6 +26,8 @@ const Order = ({ getData, good, deliver, currency }) => {
 	const buttonRef = useRef(null)
 	const [buttonLoader, setButtonLoader] = useState(false)
 	const dispatch = useDispatch()
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [filteredData, setFilteredData] = useState({})
 
 	const [beforeGood, setBeforeGood] = useState({})
 	const [beforeDeliver, setBeforeDeliver] = useState({})
@@ -27,6 +36,19 @@ const Order = ({ getData, good, deliver, currency }) => {
 	const [beforeCurrency, setBeforeCurrency] = useState({})
 	const [beforeDate, setBeforeDate] = useState("")
 	const [beforeDueDate, setBeforeDueDate] = useState("")
+
+	useEffect(() => {
+		setAction({
+			url: "/ordered/ordered-filter",
+			body: {
+				search: saerchInputValue,
+			},
+			res: setFilteredData,
+			submitted: setSearchSubmitted,
+			clearValues: {},
+			setLoading: setLoading,
+		})
+	}, [saerchInputValue])
 
 	useEffect(() => {
 		getData("ordered", setData, setLoading)
@@ -378,8 +400,8 @@ const Order = ({ getData, good, deliver, currency }) => {
 			</>
 
 			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa: {state?.quantity}{" "}
-				so'm
+				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
+				{searchSubmitted ? filteredData?.amount : state?.quantity} so'm
 			</div>
 			<div style={{ height: "10px" }}></div>
 
@@ -387,7 +409,7 @@ const Order = ({ getData, good, deliver, currency }) => {
 				<Loader />
 			) : (
 				<BeforeDebtTable
-					data={state?.data}
+					data={searchSubmitted ? filteredData?.data : state?.data}
 					deleteDebt={deleteBeforeDebt}
 					editDebt={beforeDebtPart}
 					beforeDebtCloseAtOnce={beforeDebtCloseAtOnce}
