@@ -3,7 +3,13 @@ import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
-import { setData, setLoading } from "../../components/reducers/noteDebt"
+import {
+	addData,
+	deleteData,
+	payNoteDebt,
+	setData,
+	setLoading,
+} from "../../components/reducers/noteDebt"
 import AntTable from "../../components/total_debt_table/total_debt_table"
 import { validation } from "../../components/validation"
 import { patch, post, remove } from "../../customHook/api"
@@ -80,7 +86,7 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 			}
 			post("/debts-note/debts-note-post", newTotalDebtObj).then((data) => {
 				if (data?.status === 200) {
-					getData("debts-note", setData, setLoading)
+					dispatch(addData(data?.data))
 					buttonRef.current.click()
 					setModalAlert("Xabar")
 					setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
@@ -97,9 +103,9 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		remove(`/debts-note/debts-note-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
+				dispatch(deleteData(id))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
-				getData("debts-note", setData, setLoading)
 			} else {
 				setModalAlert("Nomalum server xatolik")
 				setModalMsg("Qarzdorlik o'chirib bo'lmadi")
@@ -112,7 +118,7 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		patch(`/debts-note/debts-note-change/${id}`, { price }).then((data) => {
 			if (data?.status === 200) {
-				getData("debts-note", setData, setLoading)
+				dispatch(payNoteDebt({ id, price }))
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli kiritildi")
 			} else {
@@ -127,7 +133,7 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		patch(`/debts-note/debts-note-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData("debts-note", setData, setLoading)
+				dispatch(deleteData(id))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
 			} else {

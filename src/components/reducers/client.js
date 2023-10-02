@@ -52,7 +52,12 @@ export const clientSlice = createSlice({
 				})
 			})
 		},
-		removeDebt: (state, action) => {},
+		removeDebt: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.clients_id === action.payload
+			)
+			state.data.splice(index, 1)
+		},
 	},
 })
 

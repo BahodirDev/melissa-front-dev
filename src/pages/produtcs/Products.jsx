@@ -7,6 +7,7 @@ import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
+	removeProduct,
 	setAmount,
 	setDataCurrency,
 	setDataDeliver,
@@ -175,10 +176,13 @@ export default function Products() {
 				// 	})
 			} else {
 				post("/products/products-post", newProductObj).then((data) => {
-					if (data?.status === 200) {
-						dispatch(addData(data?.data))
-						dispatch(setQuantity())
-						getData()
+					if (data?.status === 201) {
+						dispatch(
+							addData({
+								...data?.data,
+								currency_amount: +newPercentId?.currency_amount,
+							})
+						)
 						setNewGoodsId({})
 						setNewDeliverId({})
 						setNewStoreId({})
@@ -203,9 +207,8 @@ export default function Products() {
 
 	const deleteProduct = (id) => {
 		remove(`/products/products-delete/${id}`).then((data) => {
-			console.log(data)
 			if (data?.status === 200 || data?.status === 201) {
-				getData()
+				dispatch(removeProduct(id))
 				setModal_msg("Mahsulot muvoffaqiyatli o'chirildi")
 				setModal_alert("Xabar")
 				setSn("")

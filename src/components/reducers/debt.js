@@ -63,7 +63,19 @@ export const debtSlice = createSlice({
 			const index = state.data.findIndex(
 				(item) => item.debts_id === action.payload
 			)
-			state.data.splice(index, 1)
+			if (index !== -1) {
+				state.data.splice(index, 1)
+			}
+		},
+		payClientDebt: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.debts_id === action.payload.id
+			)
+			if (index !== -1) {
+				state.data[index].debts_count -=
+					action.payload.sum / state.data[index].debts_price
+				state.data[index].debts_total_price -= action.payload.sum
+			}
 		},
 	},
 })
@@ -75,5 +87,6 @@ export const {
 	addData,
 	editData,
 	deleteData,
+	payClientDebt,
 } = debtSlice.actions
 export default debtSlice.reducer

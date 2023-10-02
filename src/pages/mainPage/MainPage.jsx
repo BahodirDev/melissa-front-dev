@@ -28,11 +28,19 @@ export default function MainPage() {
 		})
 		get("/currency/currency-list").then((data) => {
 			if (data?.response?.status === 401) {
-				localStorage.clear()
+				// localStorage.clear()
+				localStorage.removeItem("id")
+				localStorage.removeItem("name")
+				localStorage.removeItem("role")
+				localStorage.removeItem("user")
 				navigate("/login")
 				// window.location.reload(false)
 			} else if (!localStorage.getItem("user")) {
-				localStorage.clear()
+				// localStorage.clear()
+				localStorage.removeItem("id")
+				localStorage.removeItem("name")
+				localStorage.removeItem("role")
+				localStorage.removeItem("user")
 				navigate("/login")
 			}
 		})
@@ -58,7 +66,7 @@ export default function MainPage() {
 			// else if (e.key === "`") {
 			// 	setMyModal(false)
 			// 	setDebtsModal((prev) => !prev)
-			// } 
+			// }
 		})
 	}, [url])
 

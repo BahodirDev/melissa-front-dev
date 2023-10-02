@@ -64,6 +64,12 @@ export const returnSlice = createSlice({
 				}
 			}
 		},
+		removeReturn: (state, action) => {
+			const index = state.dataReturn.findIndex(
+				(item) => item.return_id === action.payload
+			)
+			state.dataReturn.splice(index, 1)
+		},
 	},
 })
 
@@ -75,5 +81,6 @@ export const {
 	setQuantity,
 	addData,
 	editData,
+	removeReturn,
 } = returnSlice.actions
 export default returnSlice.reducer

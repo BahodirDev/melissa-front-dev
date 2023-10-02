@@ -5,7 +5,13 @@ import { useDispatch, useSelector } from "react-redux"
 import BeforeDebtTable from "../../components/before_debt_table/before_debt_table"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
-import { setData, setLoading } from "../../components/reducers/orderDebt"
+import {
+	addData,
+	deleteData,
+	payOrderDebt,
+	setData,
+	setLoading,
+} from "../../components/reducers/orderDebt"
 import { validation } from "../../components/validation"
 import { patch, post, remove } from "../../customHook/api"
 
@@ -98,7 +104,7 @@ const Order = ({
 			post("/ordered/ordered-post", newObj).then((data) => {
 				if (data?.status === 200) {
 					buttonRef.current.click()
-					getData("ordered", setData, setLoading)
+					dispatch(addData(data?.data))
 					setModalAlert("Xabar")
 					setModalMsg("Oldindan to'lov muvoffaqiyatli kiritildi")
 				} else {
@@ -114,7 +120,7 @@ const Order = ({
 		dispatch(setLoading(true))
 		remove(`/ordered/ordered-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData("ordered", setData, setLoading)
+				dispatch(deleteData(id))
 				setModalAlert("Xabar")
 				setModalMsg("Oldindan to'lov muvoffaqiyatli o'chirildi")
 			} else {
@@ -129,7 +135,7 @@ const Order = ({
 		dispatch(setLoading(true))
 		patch(`/ordered/ordered-change/${id}`, { amount }).then((data) => {
 			if (data?.status === 200) {
-				getData("ordered", setData, setLoading)
+				dispatch(payOrderDebt({ id, amount }))
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli kiritildi")
 			} else {
@@ -144,7 +150,7 @@ const Order = ({
 		dispatch(setLoading(true))
 		patch(`/ordered/ordered-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData("ordered", setData, setLoading)
+				dispatch(deleteData(id))
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli yopildi")
 			} else {

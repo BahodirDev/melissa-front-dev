@@ -7,6 +7,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeStore,
 	setData,
 	setLoading,
 	setQuantity,
@@ -121,7 +122,7 @@ export default function Store() {
 		dispatch(setLoading(true))
 		remove(`/store/store-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData()
+				dispatch(removeStore(id))
 				setModal_alert("Xabar")
 				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
