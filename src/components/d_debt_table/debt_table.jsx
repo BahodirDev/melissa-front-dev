@@ -24,7 +24,7 @@ const DDebtTable = ({
 						"+$1 ($2) $3-$4-$5"
 					),
 				product: item?.goods?.goods_name + " - " + item?.goods?.goods_code,
-				quantity: "x" + item?.debts_count,
+				quantity: "x" + Math.floor(item?.debts_count),
 				price_each: addComma(item?.debts_cost) + item?.debts_currency,
 				price_total:
 					addComma(item?.debts_count * item?.debts_cost) + item?.debts_currency,

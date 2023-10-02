@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import DebtTable from "../../components/debt_table/debt_table"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
-import { deleteData, setData, setLoading } from "../../components/reducers/debt"
+import { deleteData, payClientDebt, setData, setLoading } from "../../components/reducers/debt"
 import { patch, remove } from "../../customHook/api"
 
 const Client = ({ getData, saerchInputValue, setAction }) => {
@@ -54,7 +54,7 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
 			if (data?.status === 200) {
-				getData("debts", setData)
+				dispatch(payClientDebt({id, sum}))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
 			} else {
@@ -69,9 +69,9 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		remove(`/debts/debts-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
+				dispatch(deleteData(data?.data?.debts_id))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
-				dispatch(deleteData(data.debts_id))
 			} else {
 				setModalAlert("Nomalum server xatolik")
 				setModalMsg("Qarzdorlikni o'chirib bo'lmadi")

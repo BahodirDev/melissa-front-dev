@@ -32,9 +32,15 @@ export const storeSlice = createSlice({
 				}
 			}
 		},
+		removeStore: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.store_id === action.payload
+			)
+			state.data.splice(index, 1)
+		},
 	},
 })
 
-export const { setData, setLoading, setQuantity, addData, editData } =
+export const { setData, setLoading, setQuantity, addData, editData, removeStore } =
 	storeSlice.actions
 export default storeSlice.reducer

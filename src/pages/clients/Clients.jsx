@@ -8,6 +8,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeDebt,
 	setData,
 	setLoading,
 	setQuantity,
@@ -133,11 +134,14 @@ export default function Employees() {
 		dispatch(setLoading(true))
 		remove(`/clients/clients-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData()
+				dispatch(removeDebt(id))
 				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Mijoz muvoffaqiyatli o'chirildi")
 				setUserId(0)
+			} else if (data?.response?.data?.error === "DEBTS_EXIST") {
+				setModal_alert("Qarzdorlik o'chirilmadi")
+				setModal_msg("Bu mijozda qarzdorlik mavjud")
 			} else {
 				setModal_alert("Nomalum server xatolik")
 				setModal_msg("Malumot o'chirib bo'lmadi")

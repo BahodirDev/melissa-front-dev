@@ -8,6 +8,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	deleteData,
+	payDDebt,
 	setData,
 	setLoading,
 } from "../../components/reducers/d-debt"
@@ -167,7 +168,7 @@ const Supplier = ({
 		patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
 			(data) => {
 				if (data?.status === 200) {
-					getData("deliver-debts", setData, setLoading)
+					dispatch(payDDebt({ id, sum }))
 					setModalAlert("Xabar")
 					setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
 				} else {

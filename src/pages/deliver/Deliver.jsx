@@ -8,6 +8,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeDeliver,
 	setData,
 	setLoading,
 	setQuantity,
@@ -152,7 +153,7 @@ function Deliver() {
 		dispatch(setLoading(true))
 		remove(`/deliver/deliver-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData()
+				dispatch(removeDeliver(id))
 				dispatch(setQuantity())
 				setUser_id("")
 				setModal_msg("Ta'minotchi o'chirildi")

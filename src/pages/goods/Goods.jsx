@@ -7,6 +7,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeGood,
 	setData,
 	setLoading,
 	setQuantity,
@@ -132,7 +133,8 @@ export default function Goods() {
 		dispatch(setLoading(true))
 		remove(`/goods/goods-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData()
+				dispatch(removeGood(id))
+				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
 			} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {

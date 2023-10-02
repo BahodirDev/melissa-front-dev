@@ -8,6 +8,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeEmp,
 	setData,
 	setLoading,
 	setQuantity,
@@ -112,7 +113,11 @@ export default function Employees() {
 						setModal_msg("Hodim muvoffaqiyatli o'zgartirildi")
 						setTimeout(() => {
 							if (objId === userInfo?.id) {
-								localStorage.clear()
+								// localStorage.clear()
+								localStorage.removeItem("id")
+								localStorage.removeItem("name")
+								localStorage.removeItem("role")
+								localStorage.removeItem("user")
 								navigate("/login")
 							}
 						}, 1000)
@@ -156,7 +161,7 @@ export default function Employees() {
 		dispatch(setLoading(true))
 		remove(`/users/users-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData()
+				dispatch(removeEmp(id))
 				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Hodim muvoffaqiyatli o'chirildi")

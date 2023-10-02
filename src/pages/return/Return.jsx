@@ -10,6 +10,7 @@ import { setData as setDataGoods } from "../../components/reducers/good"
 import {
 	addData,
 	editData,
+	removeReturn,
 	setDataClient,
 	setDataReturn,
 	setDataStore,
@@ -186,7 +187,8 @@ function Return() {
 		dispatch(setLoading(true))
 		remove(`/return/return-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData("return", setDataReturn)
+				dispatch(removeReturn(id))
+				dispatch(setQuantity())
 				setModalAlert("Xabar")
 				setModalMsg("Qaytgan mahsulot muvoffaqiyatli o'chirildi")
 			} else {

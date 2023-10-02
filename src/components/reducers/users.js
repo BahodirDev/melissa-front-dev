@@ -37,9 +37,15 @@ export const usersSlice = createSlice({
 				}
 			}
 		},
+		removeEmp: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.user_id === action.payload
+			)
+			state.data.splice(index, 1)
+		},
 	},
 })
 
-export const { setData, setLoading, setQuantity, addData, editData } =
+export const { setData, setLoading, setQuantity, addData, editData, removeEmp } =
 	usersSlice.actions
 export default usersSlice.reducer

@@ -68,6 +68,12 @@ export const productSlice = createSlice({
 				products_createdat: action.payload.products_createdat,
 			}
 
+			state.quantity += 1
+			state.amount += +newDataObj.products_count
+			state.sum +=
+				newDataObj.products_count *
+				newDataObj.products_count_cost *
+				action.payload?.currency_amount
 			state.dataProduct = [...state.dataProduct, newDataObj]
 		},
 		editData: (state, action) => {
@@ -102,7 +108,19 @@ export const productSlice = createSlice({
 				}
 			}
 		},
-		sellData: (state, action) => {},
+		removeProduct: (state, action) => {
+			const index = state.dataProduct.findIndex(
+				(item) => item.products_id === action.payload
+			)
+
+			state.quantity -= 1
+			state.amount -= state.dataProduct[index].products_count
+			state.sum -=
+				state.dataProduct[index].products_count *
+				state.dataProduct[index].products_count_cost *
+				state.dataProduct[index].currency_id.currency_amount
+			state.dataProduct.splice(index, 1)
+		},
 	},
 })
 
@@ -115,7 +133,7 @@ export const {
 	setLoading,
 	addData,
 	editData,
-	sellData,
+	removeProduct,
 	setQuantity,
 	setAmount,
 	setSum,
