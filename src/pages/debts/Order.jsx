@@ -120,7 +120,15 @@ const Order = ({
 		dispatch(setLoading(true))
 		remove(`/ordered/ordered-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(id))
+				dispatch(
+					deleteData({
+						id,
+						sum:
+							data?.data?.debts_cost *
+							data?.data?.debts_count *
+							data?.data?.debts_currency_amount,
+					})
+				)
 				setModalAlert("Xabar")
 				setModalMsg("Oldindan to'lov muvoffaqiyatli o'chirildi")
 			} else {
@@ -131,11 +139,11 @@ const Order = ({
 		})
 	}
 
-	const beforeDebtPart = (id, amount) => {
+	const beforeDebtPart = (id, amount, sum) => {
 		dispatch(setLoading(true))
 		patch(`/ordered/ordered-change/${id}`, { amount }).then((data) => {
 			if (data?.status === 200) {
-				dispatch(payOrderDebt({ id, amount }))
+				dispatch(payOrderDebt({ id, amount, sum }))
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli kiritildi")
 			} else {
@@ -150,7 +158,15 @@ const Order = ({
 		dispatch(setLoading(true))
 		patch(`/ordered/ordered-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(id))
+				dispatch(
+					deleteData({
+						id,
+						sum:
+							data?.data?.debts_cost *
+							data?.data?.debts_count *
+							data?.data?.debts_currency_amount,
+					})
+				)
 				setModalAlert("Xabar")
 				setModalMsg("To'lov muvoffaqiyatli yopildi")
 			} else {

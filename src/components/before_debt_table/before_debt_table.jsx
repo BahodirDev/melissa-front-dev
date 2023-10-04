@@ -18,9 +18,10 @@ const BeforeDebtTable = ({
 			return {
 				id: item?.deliver_debt_id,
 				cost: addComma(item?.debts_cost) + item?.debts_currency,
-				count: "x" + Math.floor(item?.debts_count),
+				count: "x" + (+item?.debts_count).toFixed(1),
 				currencyName: item?.debts_currency,
 				currencyAmount: item?.debts_currency_amount,
+				each: item?.debts_cost,
 				deliver: item?.deliver_id?.deliver_name,
 				good: item?.goods_id?.deliver_name,
 				totalCost:
@@ -76,7 +77,14 @@ const BeforeDebtTable = ({
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={(e) =>
-							payModal(e, editDebt, record?.id, record?.count, "Miqdor ")
+							payModal(
+								e,
+								editDebt,
+								record?.id,
+								record?.count,
+								"ta",
+								record?.currencyAmount * record?.each
+							)
 						}
 					>
 						<i className="fas fa-edit"></i>

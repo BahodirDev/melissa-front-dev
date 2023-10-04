@@ -134,7 +134,15 @@ const Supplier = ({
 		dispatch(setLoading(true))
 		patch(`/deliver-debts/deliver-debts-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(id))
+				dispatch(
+					deleteData({
+						id,
+						sum:
+							data?.data?.debts_count *
+							data?.data?.debts_cost *
+							data?.data?.debts_currency_amount,
+					})
+				)
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
 			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
@@ -152,7 +160,15 @@ const Supplier = ({
 		dispatch(setLoading(true))
 		remove(`/deliver-debts/deliver-debts-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(id))
+				dispatch(
+					deleteData({
+						id,
+						sum:
+							data?.data?.debts_count *
+							data?.data?.debts_cost *
+							data?.data?.debts_currency_amount,
+					})
+				)
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
 			} else {
@@ -163,12 +179,12 @@ const Supplier = ({
 		})
 	}
 
-	const payDeliverDebt = (id, sum) => {
+	const payDeliverDebt = (id, sum, value) => {
 		dispatch(setLoading(true))
 		patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
 			(data) => {
 				if (data?.status === 200) {
-					dispatch(payDDebt({ id, sum }))
+					dispatch(payDDebt({ id, sum, value }))
 					setModalAlert("Xabar")
 					setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
 				} else {

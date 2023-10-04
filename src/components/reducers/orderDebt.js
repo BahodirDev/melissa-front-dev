@@ -19,21 +19,27 @@ export const orderDebtSlice = createSlice({
 		},
 		addData: (state, action) => {
 			state.data.push(action.payload)
-		},
-		deleteData: (state, action) => {
-			const index = state.data.findIndex(
-				(item) => item.deliver_debt_id === action.payload
-			)
-			if (index !== -1) {
-				state.data.splice(index, 1)
-			}
+			state.quantity +=
+				action.payload?.debts_count *
+				action.payload?.debts_cost *
+				action.payload?.debts_currency_amount
 		},
 		payOrderDebt: (state, action) => {
 			const index = state.data.findIndex(
-				(item) => item.deliver_debt_id === action.payload.id
+				(item) => item.deliver_debt_id === action.payload?.id
 			)
 			if (index !== -1) {
-				state.data[index].debts_count -= action.payload.amount
+				state.data[index].debts_count -= action.payload?.amount
+				state.quantity -= action.payload?.amount * action.payload?.sum
+			}
+		},
+		deleteData: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.deliver_debt_id === action.payload?.id
+			)
+			if (index !== -1) {
+				state.data.splice(index, 1)
+				state.quantity -= action.payload?.sum
 			}
 		},
 	},

@@ -73,7 +73,7 @@ const AntTable = ({
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={(e) =>
-							payModal(e, totalDebtPart, record?.total_id, record?.price, 'Summa ')
+							payModal(e, totalDebtPart, record?.total_id, record?.price)
 						}
 					>
 						<i className="fas fa-edit"></i>

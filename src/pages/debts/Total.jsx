@@ -103,7 +103,7 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		remove(`/debts-note/debts-note-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(id))
+				dispatch(deleteData({ id, sum: data?.data?.price }))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
 			} else {
@@ -133,7 +133,7 @@ const Total = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		patch(`/debts-note/debts-note-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(id))
+				dispatch(deleteData({ id, sum: data?.data?.price }))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
 			} else {

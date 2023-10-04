@@ -24,7 +24,9 @@ const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 						item?.product?.product_details?.goods_name +
 						" - " +
 						item?.product?.product_details?.goods_code,
-					quantity: "x" + Math.floor(item?.debts_count),
+					quantity: "x" + (+item?.debts_count).toFixed(1),
+					currencyAmount: item?.debts_currency_amount,
+					currencyName: item?.debts_currency,
 					price_each: addComma(item?.debts_price) + item?.debts_currency,
 					price_total: addComma(item?.debts_total_price) + item?.debts_currency,
 					date: `${moment(item?.debts_createdat).format("YYYY/MM/DD")}`,
@@ -82,7 +84,14 @@ const DebtTable = ({ data, closeDebt, payDebt, deleteDebt }) => {
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={(e) =>
-							payModal(e, payDebt, record?.id, record?.price_total, 'Summa ')
+							payModal(
+								e,
+								payDebt,
+								record?.id,
+								record?.price_total,
+								record?.currencyName,
+								record?.currencyAmount
+							)
 						}
 					>
 						<i className="fas fa-edit"></i>
