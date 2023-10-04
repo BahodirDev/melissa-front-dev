@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from "react-redux"
 import DebtTable from "../../components/debt_table/debt_table"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
-import { deleteData, payClientDebt, setData, setLoading } from "../../components/reducers/debt"
+import {
+	deleteData,
+	payClientDebt,
+	setData,
+	setLoading,
+} from "../../components/reducers/debt"
 import { patch, remove } from "../../customHook/api"
 
 const Client = ({ getData, saerchInputValue, setAction }) => {
@@ -36,7 +41,15 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		patch(`/debts/debts-patch-done/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(id))
+				dispatch(
+					deleteData({
+						id,
+						sum:
+							data?.data?.reports_count *
+							data?.data?.reports_count_price *
+							data?.data?.currency_amount,
+					})
+				)
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
 			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
@@ -50,13 +63,16 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 		})
 	}
 
-	const payDebt = (id, sum) => {
+	const payDebt = (id, sum, value) => {
 		dispatch(setLoading(true))
 		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
 			if (data?.status === 200) {
-				dispatch(payClientDebt({id, sum}))
+				dispatch(payClientDebt({ id, sum, value }))
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+			} else if (data?.response?.data?.error === "DEBTS_COST_REQUIRED") {
+				setModalAlert("Xatolik")
+				setModalMsg("Kiritilgan summa mavjud summadan yuqori")
 			} else {
 				setModalAlert("Nomalum server xatolik")
 				setModalMsg("Qarzdorlik kiritib bo'lmadi")
@@ -69,7 +85,16 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		remove(`/debts/debts-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(deleteData(data?.data?.debts_id))
+				console.log(data?.data)
+				dispatch(
+					deleteData({
+						id: data?.data?.debts_id,
+						sum:
+							data?.data?.debts_count *
+							data?.data?.debts_price *
+							data?.data?.debts_currency_amount,
+					})
+				)
 				setModalAlert("Xabar")
 				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
 			} else {

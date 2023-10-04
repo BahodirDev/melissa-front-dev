@@ -123,6 +123,7 @@ export default function Store() {
 		remove(`/store/store-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
 				dispatch(removeStore(id))
+				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
