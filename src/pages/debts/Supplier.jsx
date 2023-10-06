@@ -187,6 +187,9 @@ const Supplier = ({
 					dispatch(payDDebt({ id, sum, value }))
 					setModalAlert("Xabar")
 					setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+				} else if (data?.response?.data?.error === "DEBTS_COST_REQUIRED") {
+					setModalAlert("Xatolik")
+					setModalMsg("Kiritilgan summa mavjud summadan yuqori")
 				} else {
 					setModalAlert("Nomalum server xatolik")
 					setModalMsg("Qarzdorlik kiritib bo'lmadi")
