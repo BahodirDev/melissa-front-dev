@@ -4,10 +4,6 @@ export const productSlice = createSlice({
 	name: "product",
 	initialState: {
 		dataProduct: [],
-		dataGood: [],
-		dataDeliver: [],
-		dataStore: [],
-		dataCurrency: [],
 		loading: false,
 		quantity: 0,
 		amount: 0,
@@ -16,18 +12,6 @@ export const productSlice = createSlice({
 	reducers: {
 		setDataProduct: (state, action) => {
 			state.dataProduct = action.payload
-		},
-		setDataGood: (state, action) => {
-			state.dataGood = action.payload
-		},
-		setDataDeliver: (state, action) => {
-			state.dataDeliver = action.payload
-		},
-		setDataStore: (state, action) => {
-			state.dataStore = action.payload
-		},
-		setDataCurrency: (state, action) => {
-			state.dataCurrency = action.payload
 		},
 		setLoading: (state, action) => {
 			state.loading = action.payload
@@ -42,25 +26,23 @@ export const productSlice = createSlice({
 			state.sum = action.payload
 		},
 		addData: (state, action) => {
-			const indexStore = state.dataStore.findIndex(
-				(item) => item.store_id === action.payload.store_id
-			)
-			const indexCurrency = state.dataCurrency.findIndex(
-				(item) => item.currency_id === action.payload.currency_id
-			)
-			const indexDeliver = state.dataDeliver.findIndex(
-				(item) => item.deliver_id === action.payload.deliver_id
-			)
-			const indexGood = state.dataGood.findIndex(
-				(item) => item.goods_id === action.payload.goods_id
-			)
-
 			let newDataObj = {
 				products_id: action.payload.products_id,
-				goods_id: state.dataGood[indexGood],
-				deliver_id: state.dataDeliver[indexDeliver],
-				store_id: state.dataStore[indexStore],
-				currency_id: state.dataCurrency[indexCurrency],
+				goods_id: {
+					goods_code: action.payload?.goods_code,
+					goods_name: action.payload?.goods_name,
+				},
+				deliver_id: {
+					deliver_name: action.payload?.deliver_name,
+					deliver_nomer: action.payload?.deliver_nomer,
+				},
+				store_id: { store_name: action.payload?.store_name },
+				currency_id: {
+					currency_symbol: action.payload?.currency_symbol,
+					currency_name: action.payload?.currency_name,
+					currency_code: action.payload?.currency_code,
+					currency_amount: action.payload?.currency_amount,
+				},
 				products_box_count: action.payload.products_box_count,
 				products_count: action.payload.products_count,
 				products_count_cost: action.payload.products_count_cost,
@@ -74,40 +56,40 @@ export const productSlice = createSlice({
 				newDataObj.products_count *
 				newDataObj.products_count_cost *
 				action.payload?.currency_amount
-			state.dataProduct = [...state.dataProduct, newDataObj]
+			state.dataProduct = [newDataObj, ...state.dataProduct]
 		},
-		editData: (state, action) => {
-			const index = state.dataProduct.findIndex(
-				(item) => item.products_id === action.payload?.products_id
-			)
-			const indexStore = state.dataStore.findIndex(
-				(item) => item.store_id === action.payload?.store_id
-			)
-			const indexCurrency = state.dataCurrency.findIndex(
-				(item) => item.currency_id === action.payload?.currency_id
-			)
-			const indexDeliver = state.dataDeliver.findIndex(
-				(item) => item.deliver_id === action.payload?.deliver_id
-			)
-			const indexGood = state.dataGood.findIndex(
-				(item) => item.goods_id === action.payload?.goods_id
-			)
+		// editData: (state, action) => {
+		// 	const index = state.dataProduct.findIndex(
+		// 		(item) => item.products_id === action.payload?.products_id
+		// 	)
+		// 	const indexStore = state.dataStore.findIndex(
+		// 		(item) => item.store_id === action.payload?.store_id
+		// 	)
+		// 	const indexCurrency = state.dataCurrency.findIndex(
+		// 		(item) => item.currency_id === action.payload?.currency_id
+		// 	)
+		// 	const indexDeliver = state.dataDeliver.findIndex(
+		// 		(item) => item.deliver_id === action.payload?.deliver_id
+		// 	)
+		// 	const indexGood = state.dataGood.findIndex(
+		// 		(item) => item.goods_id === action.payload?.goods_id
+		// 	)
 
-			if (index !== -1) {
-				state.dataProduct[index] = {
-					...state.dataProduct[index],
+		// 	if (index !== -1) {
+		// 		state.dataProduct[index] = {
+		// 			...state.dataProduct[index],
 
-					goods_id: state.dataGood[indexGood],
-					deliver_id: state.dataDeliver[indexDeliver],
-					store_id: state.dataStore[indexStore],
-					currency_id: state.dataCurrency[indexCurrency],
-					products_box_count: action.payload?.products_box_count,
-					products_count: action.payload?.products_count,
-					products_count_cost: action.payload?.products_count_cost,
-					products_count_price: action.payload?.products_count_price,
-				}
-			}
-		},
+		// 			goods_id: state.dataGood[indexGood],
+		// 			deliver_id: state.dataDeliver[indexDeliver],
+		// 			store_id: state.dataStore[indexStore],
+		// 			currency_id: state.dataCurrency[indexCurrency],
+		// 			products_box_count: action.payload?.products_box_count,
+		// 			products_count: action.payload?.products_count,
+		// 			products_count_cost: action.payload?.products_count_cost,
+		// 			products_count_price: action.payload?.products_count_price,
+		// 		}
+		// 	}
+		// },
 		removeProduct: (state, action) => {
 			const index = state.dataProduct.findIndex(
 				(item) => item.products_id === action.payload
@@ -126,16 +108,12 @@ export const productSlice = createSlice({
 
 export const {
 	setDataProduct,
-	setDataGood,
-	setDataDeliver,
-	setDataStore,
-	setDataCurrency,
 	setLoading,
-	addData,
-	editData,
-	removeProduct,
 	setQuantity,
 	setAmount,
 	setSum,
+	addData,
+	// editData,
+	removeProduct,
 } = productSlice.actions
 export default productSlice.reducer

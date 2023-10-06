@@ -5,15 +5,13 @@ import { useOutletContext } from "react-router-dom"
 import { addComma } from "../../components/addComma"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
+import { setData as setDataDeliver } from "../../components/reducers/deliver"
+import { setData as setDataGood } from "../../components/reducers/good"
 import {
 	addData,
 	removeProduct,
 	setAmount,
-	setDataCurrency,
-	setDataDeliver,
-	setDataGood,
 	setDataProduct,
-	setDataStore,
 	setLoading,
 	setQuantity,
 	setSum,
@@ -45,14 +43,15 @@ export default function Products() {
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
-	const state = useSelector((state) => state.product)
-	const { good, currency, deliver, store } = useSelector((state) => state)
 	const dispatch = useDispatch()
 	const [productId, setProductId] = useState("")
 	const [buttonValid, setButtonValid] = useState(false)
 	const [deliverId, setDeliverId] = useState("")
 	const [goodId, setGoodId] = useState("")
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const { product, good, currency, deliver, store } = useSelector(
+		(state) => state
+	)
 
 	// new data
 	const [newGoodsId, setNewGoodsId] = useState({})
@@ -68,11 +67,12 @@ export default function Products() {
 		setAction({
 			url: "/products/products-filter",
 			body: {
-				store_id: productId,
-				goods_name: saerchInputValue,
-				goods_code: saerchInputValue,
-				deliver_id: deliverId,
-				goods_id: goodId,
+				// store_id: productId,
+				// goods_name: saerchInputValue,
+				// goods_code: saerchInputValue,
+				// deliver_id: deliverId,
+				// goods_id: goodId,
+				search: saerchInputValue,
 			},
 			res: setFilteredProducts,
 			submitted: setSearchSubmitted,
@@ -111,10 +111,8 @@ export default function Products() {
 
 	useEffect(() => {
 		getData()
-		getData1("store", setDataStore)
-		getData1("goods", setDataGood)
 		getData1("deliver", setDataDeliver)
-		getData1("currency", setDataCurrency)
+		getData1("goods", setDataGood)
 	}, [])
 
 	const addNewProduct = () => {
@@ -180,7 +178,10 @@ export default function Products() {
 						dispatch(
 							addData({
 								...data?.data,
-								currency_amount: +newPercentId?.currency_amount,
+								...newGoodsId,
+								...newDeliverId,
+								...newStoreId,
+								...newPercentId,
 							})
 						)
 						setNewGoodsId({})
@@ -310,8 +311,8 @@ export default function Products() {
 							onChange={(e) => setNewGoodsId(JSON.parse(e))}
 							optionLabelProp="label"
 						>
-							{state?.dataGood?.length
-								? state?.dataGood.map((item) => (
+							{good?.data?.length
+								? good?.data.map((item) => (
 										<Option
 											className="client-option"
 											value={JSON.stringify(item)}
@@ -348,8 +349,8 @@ export default function Products() {
 							}
 							onChange={(e) => setNewDeliverId(JSON.parse(e))}
 						>
-							{state?.dataDeliver?.length
-								? mapOptionList("courier", state?.dataDeliver)
+							{deliver?.data?.length
+								? mapOptionList("courier", deliver?.data)
 								: null}
 						</Select>
 						<div className="validation-field-error">
@@ -472,7 +473,7 @@ export default function Products() {
 				</div>
 			</div>
 
-			{state?.loading ? (
+			{product?.loading ? (
 				<Loader />
 			) : (
 				<div>
@@ -483,8 +484,8 @@ export default function Products() {
 								? filteredProducts?.hisob?.kategoriya >= 0
 									? filteredProducts?.hisob?.kategoriya
 									: 0
-								: state?.quantity >= 0
-								? state?.quantity
+								: product?.quantity >= 0
+								? product?.quantity
 								: 0}{" "}
 							ta
 						</span>
@@ -494,8 +495,8 @@ export default function Products() {
 								? filteredProducts?.hisob?.soni >= 0
 									? filteredProducts?.hisob?.soni
 									: 0
-								: state?.amount >= 0
-								? state?.amount
+								: product?.amount >= 0
+								? product?.amount
 								: 0}{" "}
 							ta
 						</span>
@@ -507,7 +508,7 @@ export default function Products() {
 											? filteredProducts?.hisob?.umumiyQiymati
 											: 0
 								  )
-								: addComma(state?.sum >= 0 ? state?.sum : 0)}{" "}
+								: addComma(product?.sum >= 0 ? product?.sum : 0)}{" "}
 							so'm
 						</span>
 					</div>
@@ -542,24 +543,26 @@ export default function Products() {
 							onChange={(e) => setDeliverId(e)}
 							allowClear
 						>
-							{state?.dataDeliver?.length
-								? state?.dataDeliver.map((item) => {
-										return (
-											<Option
-												className="client-option"
-												value={item?.deliver_id}
-											>
-												<div>
-													<span>{item?.deliver_name} - </span>
-													<span>
-														{item?.deliver_nomer.replace(
-															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-															"+$1 ($2) $3-$4-$5"
-														)}
-													</span>
-												</div>
-											</Option>
-										)
+							{deliver?.data?.length
+								? deliver.data.map((item) => {
+										if (!item?.isdelete) {
+											return (
+												<Option
+													className="client-option"
+													value={item?.deliver_id}
+												>
+													<div>
+														<span>{item?.deliver_name} - </span>
+														<span>
+															{item?.deliver_nomer.replace(
+																/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+																"+$1 ($2) $3-$4-$5"
+															)}
+														</span>
+													</div>
+												</Option>
+											)
+										}
 								  })
 								: null}
 						</Select>
@@ -571,8 +574,8 @@ export default function Products() {
 							onChange={(e) => setGoodId(e)}
 							allowClear
 						>
-							{state?.dataGood?.length
-								? state?.dataGood.map((item) => {
+							{good?.data?.length
+								? good?.data.map((item) => {
 										return (
 											<Option value={item?.goods_id}>{item?.goods_name}</Option>
 										)
@@ -582,7 +585,9 @@ export default function Products() {
 					</div>
 
 					<AntTable
-						data={searchSubmitted ? filteredProducts?.data : state?.dataProduct}
+						data={
+							searchSubmitted ? filteredProducts?.data : product?.dataProduct
+						}
 						deleteItem={deleteProduct}
 						editProduct={editProduct}
 						userRole={userInfo?.role}
