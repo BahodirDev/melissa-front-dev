@@ -35,9 +35,15 @@ export const deliverSlice = createSlice({
 				}
 			}
 		},
+		removeDeliver: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.deliver_id === action.payload
+			)
+			state.data.splice(index, 1)
+		},
 	},
 })
 
-export const { setData, setLoading, setQuantity, addData, editData } =
+export const { setData, setLoading, setQuantity, addData, editData, removeDeliver } =
 	deliverSlice.actions
 export default deliverSlice.reducer

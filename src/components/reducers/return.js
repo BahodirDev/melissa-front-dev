@@ -4,20 +4,12 @@ export const returnSlice = createSlice({
 	name: "return",
 	initialState: {
 		dataReturn: [],
-		dataClient: [],
-		dataStore: [],
 		loading: false,
 		quantity: 0,
 	},
 	reducers: {
 		setDataReturn: (state, action) => {
 			state.dataReturn = action.payload
-		},
-		setDataClient: (state, action) => {
-			state.dataClient = action.payload
-		},
-		setDataStore: (state, action) => {
-			state.dataStore = action.payload
 		},
 		setLoading: (state, action) => {
 			state.loading = action.payload
@@ -26,10 +18,6 @@ export const returnSlice = createSlice({
 			state.quantity = state.dataReturn.length
 		},
 		addData: (state, action) => {
-			const index = state.dataClient.findIndex(
-				(item) => item.clients_id === action.payload.client_id
-			)
-
 			let newDataObj = {
 				return_id: action.payload.return_id,
 				return_name: action.payload.return_name,
@@ -38,7 +26,12 @@ export const returnSlice = createSlice({
 				return_cost: action.payload.return_cost,
 				return_case: action.payload.return_case,
 				return_createdat: action.payload.return_createdat,
-				clients: state.dataClient[index],
+				clients: {
+					client_id: action.payload?.client_id,
+					clients_desc: action.payload?.clients_desc,
+					clients_name: action.payload?.clients_name,
+					clients_nomer: action.payload?.clients_nomer,
+				},
 			}
 
 			state.dataReturn = [...state.dataReturn, newDataObj]
@@ -46,9 +39,6 @@ export const returnSlice = createSlice({
 		editData: (state, action) => {
 			const index = state.dataReturn.findIndex(
 				(item) => item.return_id === action.payload?.return_id
-			)
-			const indexC = state.dataClient.findIndex(
-				(item) => item.clients_id === action.payload?.client_id
 			)
 
 			if (index !== -1) {
@@ -60,20 +50,30 @@ export const returnSlice = createSlice({
 					return_count: action.payload?.return_count,
 					return_cost: action.payload?.return_cost,
 					return_case: action.payload?.return_case,
-					clients: state.dataClient[indexC],
+					clients: {
+						client_id: action.payload?.client_id,
+						clients_desc: action.payload?.clients_desc,
+						clients_name: action.payload?.clients_name,
+						clients_nomer: action.payload?.clients_nomer,
+					},
 				}
 			}
+		},
+		removeReturn: (state, action) => {
+			const index = state.dataReturn.findIndex(
+				(item) => item.return_id === action.payload
+			)
+			state.dataReturn.splice(index, 1)
 		},
 	},
 })
 
 export const {
 	setDataReturn,
-	setDataClient,
-	setDataStore,
 	setLoading,
 	setQuantity,
 	addData,
 	editData,
+	removeReturn,
 } = returnSlice.actions
 export default returnSlice.reducer

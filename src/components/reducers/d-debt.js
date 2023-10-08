@@ -41,24 +41,31 @@ export const dDebtSlice = createSlice({
 				},
 				...state.data,
 			]
+
+			state.quantity +=
+				action.payload?.debts_count *
+				action.payload?.debts_cost *
+				action.payload?.debts_currency_amount
 		},
-		editData: (state, action) => {
-			console.log(action.payload)
-			// const index = state.data.findIndex(
-			// 	(item) => item.deliver_id === action.payload.deliver_id
-			// )
-			// if (index !== -1) {
-			// 	state.data[index] = {
-			// 		...state.data[index],
-			// 		// deliver_name: action.payload?.deliver_name,
-			// 	}
-			// }
+		payDDebt: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.deliver_debt_id === action.payload.id
+			)
+			if (index !== -1) {
+				state.data[index].debts_count -=
+					action.payload.sum / state.data[index].debts_cost
+				state.data[index].debts_total_price -= action.payload.sum
+				state.quantity -= action.payload?.sum * action.payload?.value
+			}
 		},
 		deleteData: (state, action) => {
 			const index = state.data.findIndex(
-				(item) => item.deliver_debt_id === action.payload
+				(item) => item.deliver_debt_id === action.payload?.id
 			)
-			state.data.splice(index, 1)
+			if (index !== -1) {
+				state.data.splice(index, 1)
+				state.quantity -= action.payload?.sum
+			}
 		},
 	},
 })
@@ -68,7 +75,7 @@ export const {
 	setLoading,
 	setQuantity,
 	addData,
-	editData,
 	deleteData,
+	payDDebt,
 } = dDebtSlice.actions
 export default dDebtSlice.reducer

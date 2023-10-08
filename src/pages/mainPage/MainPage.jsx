@@ -28,11 +28,19 @@ export default function MainPage() {
 		})
 		get("/currency/currency-list").then((data) => {
 			if (data?.response?.status === 401) {
-				localStorage.clear()
+				// localStorage.clear()
+				localStorage.removeItem("id")
+				localStorage.removeItem("name")
+				localStorage.removeItem("role")
+				localStorage.removeItem("user")
 				navigate("/login")
 				// window.location.reload(false)
 			} else if (!localStorage.getItem("user")) {
-				localStorage.clear()
+				// localStorage.clear()
+				localStorage.removeItem("id")
+				localStorage.removeItem("name")
+				localStorage.removeItem("role")
+				localStorage.removeItem("user")
 				navigate("/login")
 			}
 		})
@@ -43,9 +51,6 @@ export default function MainPage() {
 			if (e.key === "Escape") {
 				setDebtsModal(false)
 				setMyModal(!myModal)
-			} else if (e.key === "`") {
-				setMyModal(false)
-				setDebtsModal((prev) => !prev)
 			} else if (e.ctrlKey && e.key === "/") {
 				setMyModal(false)
 				setDebtsModal(false)
@@ -58,6 +63,10 @@ export default function MainPage() {
 				e.preventDefault()
 				setSidebar(true)
 			}
+			// else if (e.key === "`") {
+			// 	setMyModal(false)
+			// 	setDebtsModal((prev) => !prev)
+			// }
 		})
 	}, [url])
 

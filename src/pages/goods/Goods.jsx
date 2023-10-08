@@ -7,12 +7,13 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeGood,
 	setData,
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/good"
 import { validation } from "../../components/validation"
-import { get, patch, post } from "../../customHook/api"
+import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import GoodsList from "./GoodsList"
 import "./goods.css"
@@ -129,22 +130,22 @@ export default function Goods() {
 	}
 
 	const deleteGood = (id) => {
-		request("DELETE", `${process.env.REACT_APP_URL}/goods/goods-delete/${id}`)
-			.then((data) => {
-				console.log(data?.response?.data)
-				if (data?.data?.error === "GOODS_ALREADY_EXIST") {
-					setModal_alert("Xatolik")
-					setModal_msg("Kategoriyada mahsulot mavjud")
-				} else {
-					getData()
-					setModal_alert("Xabar")
-					setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
-				}
-			})
-			.catch((err) => {
-				setModal_alert("Xatolik")
-				setModal_msg("Kategoriyani o'chirib bo'lmadi")
-			})
+		dispatch(setLoading(true))
+		remove(`/goods/goods-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
+				dispatch(removeGood(id))
+				dispatch(setQuantity())
+				setModal_alert("Xabar")
+				setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
+			} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
+				setModal_alert("Kategoriya o'chirilmadi")
+				setModal_msg("Bu kategoriyada mahsulot mavjud")
+			} else {
+				setModal_alert("Nomalum server xatolik")
+				setModal_msg("Kategoriya o'chiril bo'lmadi")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const collapse = (event) => {
@@ -185,6 +186,17 @@ export default function Goods() {
 	return (
 		<div id="cardWrapperTop">
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
+
+			<div className="goods-info">
+				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
+				{searchSubmitted
+					? filteredProducts?.length
+					: state?.quantity
+					? state?.quantity
+					: 0}{" "}
+				ta
+			</div>
+
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
@@ -243,10 +255,6 @@ export default function Goods() {
 				</div>
 			</div>
 
-			<div className="goods-info">
-				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
 			{state?.loading ? (
 				<Loader />
 			) : (

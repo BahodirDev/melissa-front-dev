@@ -69,6 +69,9 @@
 	color: #fff !important;
 	border: none;
 }
+.product-add__btn:disabled {
+	cursor: not-allowed !important;
+}
 .form-control__search {
 	border: 1px solid #7e258c;
 	border-radius: 7px;
@@ -102,7 +105,8 @@
 }
 
 .product-filter-row {
-	display: flex;
+	display: grid;
+	grid-template-columns: 150px 150px 150px;
 	gap: 10px;
 	width: 400px;
 	position: fixed;

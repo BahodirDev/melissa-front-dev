@@ -151,13 +151,9 @@
 
 .debts-modal-wrapper {
 	display: grid;
-	grid-template-columns: auto auto auto auto auto auto 200px;
+	grid-template-columns: auto auto auto auto;
 	height: 70px !important;
-}
-
-.debt-input-col {
-	width: 150px;
-	padding: 0 2.5px;
+	column-gap: 15px;
 }
 
 .debt-input-col-btn button {
@@ -169,6 +165,8 @@
 }
 
 .debts-list-wrapper {
+	margin-top: 50px;
 	overflow-y: auto;
-	height: 410px;
+	height: 350px;
 }
+

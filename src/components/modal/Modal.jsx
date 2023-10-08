@@ -1,7 +1,7 @@
 import { Input, Modal, Select } from "antd"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { get } from "../../customHook/api"
+import { get, patch } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import { addComma } from "../addComma"
 import { error_modal } from "../error_modal/error_modal"
@@ -40,11 +40,11 @@ export default function MyModal({ myModal, setMyModal }) {
 	const dispatch = useDispatch()
 
 	const getData = (name, dispatch1) => {
-		request("GET", `${process.env.REACT_APP_URL}/${name}/${name}-list`)
-			.then((data) => {
-				dispatch(dispatch1(name === "products" ? data?.data : data))
-			})
-			.catch((error) => console.log(error?.response?.data))
+		get(`/${name}/${name}-list`).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				dispatch(dispatch1(name === "products" ? data?.data?.data : data?.data))
+			}
+		})
 	}
 
 	useEffect(() => {
@@ -75,14 +75,11 @@ export default function MyModal({ myModal, setMyModal }) {
 		setProductId({})
 		setStore_id(e)
 
-		request(
-			"GET",
-			`${process.env.REACT_APP_URL}/products/products-by-storeid/${e}`
-		)
-			.then((data) => {
-				setFilteredProducts(data)
-			})
-			.catch((error) => console.log(error?.response?.data))
+		get(`/products/products-by-storeid/${e}`).then((data) => {
+			if (data?.status === 200) {
+				setFilteredProducts(data?.data)
+			}
+		})
 	}
 
 	const postSale = () => {
@@ -101,15 +98,11 @@ export default function MyModal({ myModal, setMyModal }) {
 			}
 		})
 
-		request("PATCH", `${process.env.REACT_APP_URL}/products/products-sale`, {
-			products: newArr,
-		})
-			.then((dataP) => {
-				request("get", `${process.env.REACT_APP_URL}/products/products-list`)
-					.then((data) => dispatch(setDataProduct(data?.data)))
-					.catch((err) => console.log(err?.response?.data))
+		patch("/products/products-sale", { products: newArr }).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				getData("products", setDataProduct)
 				get("/reports/reports-list").then((data) => {
-					if (data?.status === 201) {
+					if (data?.status === 200) {
 						dispatch(setDataReport(data?.data?.data))
 						dispatch(setCapital(data?.data?.hisob?.totalProductCost))
 						dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
@@ -128,14 +121,12 @@ export default function MyModal({ myModal, setMyModal }) {
 				setPrice_bh(0)
 				setProductPrice(0)
 				setProductQ(0)
-				setBtnloading(false)
-			})
-			.catch((error) => {
-				console.error(error?.response?.data)
-				setModalAlert("Xatolik")
-				setModalMsg("Mahsulot sotishda xatolik")
-				setBtnloading(false)
-			})
+			} else {
+				setModalAlert("Nomalum server xatolik")
+				setModalMsg("Mahsulot sotib bo'lmadi")
+			}
+			setBtnloading(false)
+		})
 	}
 
 	const sellProduct = () => {
@@ -187,7 +178,7 @@ export default function MyModal({ myModal, setMyModal }) {
 				width={1150}
 				footer={[]}
 			>
-				<div className="my-modal" onClick={(e) => e.stopPropagation()}>
+				<div className="my-modal my-product-modal" onClick={(e) => e.stopPropagation()}>
 					{/* form */}
 					<div className="row sell-modal">
 						<div className="col">
@@ -243,11 +234,11 @@ export default function MyModal({ myModal, setMyModal }) {
 												label={`${productId?.goods_id?.goods_name} - ${productId?.goods_id?.goods_code} - ${productId?.deliver_id?.deliver_name}`}
 											>
 												<div>
+													<span>{item?.goods_id?.goods_name} - </span>
 													<span>
-														{item?.goods_id?.goods_name} -{" "}
 														{item?.goods_id.goods_code} -{" "}
+														{`${item?.deliver_id?.deliver_name}`}
 													</span>
-													<span>{`${item?.deliver_id?.deliver_name}`}</span>
 												</div>
 											</Option>
 									  ))
@@ -396,8 +387,9 @@ export default function MyModal({ myModal, setMyModal }) {
 							</button>
 						</div>
 						<button
+							// btnLoading
 							className="btn btn-sell__modal"
-							disabled={productList.length ? false : true}
+							disabled={!productList.length || btnLoading}
 							onClick={postSale}
 						>
 							Sotish

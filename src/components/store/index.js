@@ -10,6 +10,8 @@ import reportReducer from "../reducers/report"
 import returnReducer from "../reducers/return"
 import storeReducer from "../reducers/store"
 import userReducer from "../reducers/users"
+import noteDebtReducer from "../reducers/noteDebt"
+import orderDebtReducer from "../reducers/orderDebt"
 
 export default configureStore({
 	reducer: {
@@ -21,8 +23,10 @@ export default configureStore({
 		return: returnReducer,
 		good: goodReducer,
 		product: productReducer,
+		report: reportReducer,
 		debt: debtReducer,
 		dDebt: dDebtReducer,
-		report: reportReducer,
+		nDebt: noteDebtReducer, 
+		oDebt: orderDebtReducer
 	},
 })

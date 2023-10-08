@@ -5,6 +5,10 @@
 	background-color: #fff;
 }
 
+.my-product-modal {
+	padding-bottom: 90px;
+}
+
 .modal-float__btn {
 	float: right;
 	background-color: #7e258c !important;
@@ -86,7 +90,7 @@
 
 .modal-product__list {
 	width: 100%;
-	height: 250px;
+	height: 100%;
 	overflow-y: auto;
 	margin-top: 10px;
 }

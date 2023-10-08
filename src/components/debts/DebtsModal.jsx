@@ -135,13 +135,19 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 				const updatedData = debtArr.map((obj, index) => ({
 					...obj,
 					debts_id: data?.data[index].debts_id,
+					debts_total_price: data?.data[index].debts_total_price,
 				}))
 				dispatch(addData(updatedData))
 				dispatch(addDebtToClient(updatedData))
+				setDebtsModal(false)
+				setDebtList([])
+				setClientId("")
+				setModalAlert("Xabar")
+				setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
 
 				get("/products/products-list").then((data) => {
 					if (data?.status === 201) {
-						dispatch(setDataProduct(data?.data))
+						dispatch(setDataProduct(data?.data?.data))
 						setDebtsModal(false)
 						setModalAlert("Xabar")
 						setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
@@ -245,26 +251,29 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 									)
 									setProductObj(JSON.parse(e))
 								}}
+								className="debt-modal-product-select"
 								optionLabelProp="label"
 								// disabled={productList.length}
 							>
-								{product?.dataProduct?.length
-									? product?.dataProduct.map((item, idx) => {
+								{productsList?.length
+									? productsList.map((item, idx) => {
 											return (
 												<Option
-													className="client-option"
+													className="client-option debt-modal-product-option"
 													value={JSON.stringify(item)}
 													label={`${item?.goods_id?.goods_name} - ${item?.goods_id?.goods_code} - ${item?.deliver_id?.deliver_name}`}
 												>
-													<div>
+													<div className="">
+														{/* <marquee behavior="" direction=""> */}
 														<span>
-															{item?.goods_id?.goods_name} -{" "}
+															{item?.goods_id?.goods_name} -
 															{item?.goods_id?.goods_code} -{" "}
 														</span>
 														<span>
 															{item?.deliver_id?.deliver_name} -{" "}
 															{item?.store_id?.store_name}
 														</span>
+														{/* </marquee> */}
 													</div>
 												</Option>
 											)
