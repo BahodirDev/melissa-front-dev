@@ -16,6 +16,7 @@ import { validation } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
 import CurrencyList from "./CurrencyList"
 import "./currency.css"
+import { CurrencyDollar } from "@phosphor-icons/react/dist/ssr"
 
 export default function Currency() {
 	const [filteredProducts, setFilteredProducts] = useState([])
@@ -181,103 +182,32 @@ export default function Currency() {
 	}
 
 	return (
-		<div>
-			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
-
-			<div className="currency-info">
-				<i className="fa-solid fa-money-bill-transfer"></i> Valyutalar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
-
-			<button
-				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
-				onClick={collapse}
-				ref={buttonRef}
-			>
-				Qo'shish
-			</button>
-			<div className="my-content" id="my-content currency-content">
-				<div className="form-group d-flex mb-3">
-					<div className="validation-field" style={{ width: "210px" }}>
-						<label htmlFor="currency">Valyuta nomi</label>
-						<Select
-							showSearch
-							id="currency"
-							className="form-control__search currency-content-select"
-							style={{ width: "100%" }}
-							value={
-								newName.currency
-									? `${newName?.currency?.name} - ${newName?.name}`
-									: null
-							}
-							placeholder="Qidiruv..."
-							onChange={(e) => setNewName(JSON.parse(e))}
-							optionLabelProp="label"
-						>
-							{currency.list.length
-								? currency.list.map((item) => (
-										<option
-											value={JSON.stringify(item)}
-											className="currency-option"
-										>
-											<div>
-												<span>{item?.currency?.name} - </span>
-												<span>{item?.name}</span>
-											</div>
-										</option>
-								  ))
-								: null}
-						</Select>
-						<div className="validation-field-error">
-							{submitted &&
-								validation(!newName.name, "Valyuta tanlash majburiy")}
-						</div>
+		<>
+			<div className="info-wrapper">
+				<div className="info-item">
+					<div>
+						<h3>2</h3>
+						<h4>Valyutalar soni</h4>
 					</div>
-					<div className="validation-field" style={{ width: "210px" }}>
-						<label htmlFor="">Qiymat</label>
-						<Input
-							type="number"
-							placeholder="10 000"
-							className="currency-content-input"
-							value={newAmount ? newAmount : ""}
-							onChange={(e) => setNewAmount(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted &&
-								validation(newAmount < 0.01, "Qiymat kiritish majburiy")}
-						</div>
-					</div>
-					<div className="">
-						<br />
-						<button
-							disabled={buttonLoader}
-							className="btn btn-melissa"
-							onClick={addNewCurrency}
-							style={{ padding: "4px 10px" }}
-						>
-							<i className="fas fa-plus"></i>
-							{buttonLoader ? (
-								<span
-									className="spinner-grow spinner-grow-sm"
-									role="status"
-									aria-hidden="true"
-									style={{ marginLeft: "5px" }}
-								></span>
-							) : null}
-						</button>
+					<div>
+						<span>
+							<CurrencyDollar size={24} />
+						</span>
 					</div>
 				</div>
 			</div>
 
-			{state?.loading ? (
-				<Loader />
-			) : (
-				<CurrencyList
-					products={saerchInputValue.length ? filteredProducts : state?.data}
-					deleteCurrency={deleteCurrency}
-					editCurrency={editCurrency}
-				/>
-			)}
-		</div>
+			<div className="search-wrapper">
+				<div>
+					<div className="input-wrapper">
+						<input type="text" placeholder="Izlash..." />
+					</div>
+					<button className="primary-btn">Izlash</button>
+				</div>
+				<div>
+					<button className="primary-btn">Qo'shish</button>
+				</div>
+			</div>
+		</>
 	)
 }

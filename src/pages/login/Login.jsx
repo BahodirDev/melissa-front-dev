@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import login_img from "../../assets/img/Photoshop-Logo-Illustration-Mockup-Tutorial 1.png"
-import { error_modal } from "../../components/error_modal/error_modal"
+import login_img from "../../assets/img/login.png"
 import { post } from "../../customHook/api"
 import "./loading.css"
 import "./login.css"
+import { toast } from "react-toastify"
 
 export default function Login() {
-	const [showPassword, setShowPassword] = useState(false)
-	const [login, setLogin] = useState("")
+	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
+	const [showPassword, setShowPassword] = useState(false)
 	const [loading, setLoading] = useState(false)
-	const history = useNavigate()
 	const [modalMsg, setModalMsg] = useState({})
+	const history = useNavigate()
 
 	useEffect(() => {
 		if (localStorage.getItem("user")) {
@@ -20,16 +20,14 @@ export default function Login() {
 		}
 	}, [])
 
-	function checkIsTrue() {
-		return login.length > 0 && password.length > 0
-	}
+	const checkIsTrue = () => username.length > 0 && password.length > 0
 
 	const sign_in = (e) => {
 		e.preventDefault()
 		setLoading(true)
 
 		const data = {
-			user_login: login,
+			user_login: username,
 			user_password: password,
 		}
 
@@ -41,12 +39,11 @@ export default function Login() {
 				localStorage.setItem("id", data?.data?.user?.user_id)
 				window.location.reload(false)
 			} else if (data?.response?.data?.error === "USER_PASSWORD_NOTCORRECT") {
-				setModalMsg({ title: "Xatolik", msg: "Login yoki parol noto'g'ri" })
+				toast.error("Login yoki parol noto'g'ri")
+			} else if (data?.response?.data?.error === "USER_NOT_FOUND") {
+				toast.error("Foydalanuvchi topilmadi")
 			} else {
-				setModalMsg({
-					title: "Nomalum server xatolik",
-					msg: "Qayta urinib ko'ring",
-				})
+				toast.error("Nomalum server xatolik")
 			}
 			setLoading(false)
 		})
@@ -54,45 +51,45 @@ export default function Login() {
 
 	return (
 		<div className="login-wrapper">
-			<form className="login-form" onSubmit={sign_in}>
-				{error_modal(
-					modalMsg?.title,
-					modalMsg?.msg,
-					modalMsg?.title?.length,
-					setModalMsg
-				)}
-				<img src={login_img} alt="" />
-				<h3>Tizimga kirish</h3>
-				<div className="input-form">
-					<label htmlFor="login">Login</label>
-					<input
-						type="text"
-						id="login"
-						placeholder="Loginni kiriting"
-						onChange={(e) => {
-							setLogin(e.target.value)
-						}}
-						value={login}
-					/>
-				</div>
-				<div className="input-form">
-					<label htmlFor="parol">Parol</label>
-					<div className="parol-input">
+			{/* left */}
+			<div className="login-left">
+				<h1>Melissa-store</h1>
+				<img src={login_img} alt="login_image" />
+			</div>
+
+			{/* right */}
+			<div className="login-right">
+				<form className="login-form" onSubmit={sign_in}>
+					<div>
+						<h2>Tizimga kirish</h2>
+						<h4>Lorem ipsum dolor sit amet.</h4>
+					</div>
+
+					<div className="input-wrapper">
+						<label>Log in</label>
+						<input
+							type="text"
+							placeholder="Loginingizni kiriting"
+							required
+							value={username}
+							onChange={(e) => setUsername(e.target.value)}
+						/>
+					</div>
+
+					<div className="input-wrapper password-input">
+						<label>Parol</label>
 						<input
 							type={showPassword ? "text" : "password"}
-							id="parol"
-							placeholder="Parolni kiriting"
-							onChange={(e) => {
-								setPassword(e.target.value)
-							}}
+							placeholder="Parolingizni kiriting"
+							required
 							value={password}
+							onChange={(e) => setPassword(e.target.value)}
 						/>
-
 						{showPassword ? (
 							<svg
-								onClick={() => setShowPassword(!showPassword)}
-								width="22"
-								height="14"
+								onClick={() => setShowPassword((prev) => !prev)}
+								width="18"
+								height="16"
 								viewBox="0 0 22 14"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
@@ -104,11 +101,11 @@ export default function Login() {
 							</svg>
 						) : (
 							<svg
-								onClick={() => {
-									password.length && setShowPassword(!showPassword)
-								}}
-								width="22"
-								height="19"
+								onClick={() =>
+									password.length && setShowPassword((prev) => !prev)
+								}
+								width="18"
+								height="16"
 								viewBox="0 0 22 19"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
@@ -120,27 +117,27 @@ export default function Login() {
 							</svg>
 						)}
 					</div>
-				</div>
-				<div className="save-check">
-					{/* <input id="save" onChange={() => setSave(!save)} type="checkbox" />
-					<label htmlFor="save" style={{ color: save && "#000" }}>
-						Saqlash
-					</label> */}
-				</div>
 
-				<button className="login_btn" disabled={!checkIsTrue() || loading}>
-					{loading ? (
-						<div className="lds-ellipsis">
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-						</div>
-					) : (
-						"Davom etish"
-					)}
-				</button>
-			</form>
+					{/* <div className="save-check">
+						<input id="save" onChange={() => setSave(!save)} type="checkbox" />
+						<label htmlFor="save" style={{ color: save && "#000" }}>
+							Saqlash
+						</label>
+					</div> */}
+
+					<button className="login-btn" disabled={loading}>
+						Kirish{" "}
+						{loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+				</form>
+			</div>
 		</div>
 	)
 }

@@ -1,91 +1,90 @@
 import { NavLink, useNavigate } from "react-router-dom"
-import icon from "../../assets/img/Photoshop-Logo-Illustration-Mockup-Tutorial 1.png"
 import { log_out } from "../log_out/delete_modal"
 import "./sidebar.css"
+import {
+	ChartBar,
+	Cube,
+	CurrencyDollar,
+	FileText,
+	HandCoins,
+	Recycle,
+	SignOut,
+	SquaresFour,
+	Truck,
+	Users,
+	UsersFour,
+	Warehouse,
+} from "@phosphor-icons/react"
 
 export default function Sidebar() {
 	const navigate = useNavigate()
 
 	return (
 		<div className="sidebar">
-			<div className="icon">
-				<NavLink to="/">
-					<img src={icon} alt="Logo icon image" />
-				</NavLink>
+			<div className="sicon">
+				<h1>Melissa</h1>
 			</div>
 
 			{/* links */}
 			<ul>
 				<li>
 					<NavLink to="/stats">
-						<i className="fa-solid fa-square-poll-vertical"></i>
-						<span className="link-name">Statistika</span>
+						<ChartBar size={24} /> Statistika
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/reports">
-						<i className="fa-solid fa-list-check"></i>
-						<span className="link-name">Hisobotlar</span>
+						<FileText size={24} /> Hisoborlar
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/products">
-						<i className="fa-regular fa-rectangle-list"></i>{" "}
-						<span className="link-name">Mahsulotlar</span>
+						<Cube size={24} /> Mahsulotlar
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/goods">
-						<i className="fa-solid fa-tags"></i>
-						<span className="link-name">Kategoriyalar</span>
+						<SquaresFour size={24} /> Kategoriyalar
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/return">
-						<i className="fa-solid fa-box-archive"></i>
-						<span className="link-name">Qaytgan mahsulotlar</span>
+						<Recycle size={24} /> Qaytgan mahsulotlar
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/debts">
-						<i className="fa-solid fa-hand-holding-dollar"></i>
-						<span className="link-name">Qarzdorlik</span>
+						<HandCoins size={24} /> Qarzdorlik
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/store">
-						<i className="fa-solid fa-warehouse"></i>
-						<span className="link-name">Ombor</span>
+						<Warehouse size={24} /> Ombor
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/deliver">
-						<i className="fa-solid fa-truck"></i>
-						<span className="link-name">Ta'minotchi</span>
+						<Truck size={24} /> Ta'minotchi
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/clients">
-						<i className="fa-solid fa-users"></i>
-						<span className="link-name">Mijozlar</span>
+						<UsersFour size={24} /> Mijozlar
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/employees">
-						<i className="fa-solid fa-user-tag"></i>
-						<span className="link-name">Xodimlar</span>
+						<Users size={24} /> Hodimlar
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/currency">
-						<i className="fa-solid fa-money-bill-transfer"></i>
-						<span className="link-name">Pul birliklari</span>
+						<CurrencyDollar size={24} /> Pul birliklari
 					</NavLink>
 				</li>
 				{/* <li>
 					<NavLink to="/settings">
 						<i className="fa-solid fa-gear"></i>
-						<span className="link-name">Sozlamalar</span>
 					</NavLink>
 				</li> */}
 
@@ -96,8 +95,7 @@ export default function Sidebar() {
 							log_out(e, navigate)
 						}}
 					>
-						<i className="fa-solid fa-right-from-bracket"></i>{" "}
-						<span className="">Chiqish</span>
+						<SignOut size={24} /> Hisobdan chiqish
 					</a>
 				</li>
 			</ul>
