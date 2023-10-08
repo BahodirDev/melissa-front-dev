@@ -1,7 +1,20 @@
 import { NavLink, useNavigate } from "react-router-dom"
-import icon from "../../assets/img/Photoshop-Logo-Illustration-Mockup-Tutorial 1.png"
 import { log_out } from "../log_out/delete_modal"
 import "./ssidebar.css"
+import {
+	ChartBar,
+	Cube,
+	CurrencyDollar,
+	FileText,
+	HandCoins,
+	Recycle,
+	SignOut,
+	SquaresFour,
+	Truck,
+	Users,
+	UsersFour,
+	Warehouse,
+} from "@phosphor-icons/react"
 
 export default function SSidebar() {
 	const navigate = useNavigate()
@@ -9,66 +22,64 @@ export default function SSidebar() {
 	return (
 		<div className="ssidebar">
 			<div className="sicon">
-				<NavLink to="/">
-					<img src={icon} alt="Logo icon image" />
-				</NavLink>
+				<h1>M</h1>
 			</div>
 
 			{/* links */}
 			<ul>
 				<li>
 					<NavLink to="/stats">
-						<i className="fa-solid fa-square-poll-vertical"></i>
+						<ChartBar size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/reports">
-						<i className="fa-solid fa-list-check"></i>
+						<FileText size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/products">
-						<i className="fa-regular fa-rectangle-list"></i>
+						<Cube size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/goods">
-						<i className="fa-solid fa-tags"></i>
+						<SquaresFour size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/return">
-						<i className="fa-solid fa-box-archive"></i>
+						<Recycle size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/debts">
-						<i className="fa-solid fa-hand-holding-dollar"></i>
+						<HandCoins size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/store">
-						<i className="fa-solid fa-warehouse"></i>
+						<Warehouse size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/deliver">
-						<i className="fa-solid fa-truck"></i>
+						<Truck size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/clients">
-						<i className="fa-solid fa-users"></i>
+						<UsersFour size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/employees">
-						<i className="fa-solid fa-user-tag"></i>
+						<Users size={24} />
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/currency">
-						<i className="fa-solid fa-money-bill-transfer"></i>
+						<CurrencyDollar size={24} />
 					</NavLink>
 				</li>
 				{/* <li>
@@ -84,7 +95,7 @@ export default function SSidebar() {
 							log_out(e, navigate)
 						}}
 					>
-						<i className="fa-solid fa-right-from-bracket"></i>
+						<SignOut size={24} />
 					</a>
 				</li>
 			</ul>

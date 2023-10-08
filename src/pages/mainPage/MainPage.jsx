@@ -7,6 +7,8 @@ import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
 import { get } from "../../customHook/api"
 import "./main.css"
+import "./old.css"
+import "./components.css"
 
 export default function MainPage() {
 	const [debtsModal, setDebtsModal] = useState(false)
@@ -103,7 +105,7 @@ export default function MainPage() {
 				/>
 				<div
 					className="content"
-					style={{ width: sidebar && "calc(100vw - 250px)" }}
+					// style={{ width: sidebar && "calc(100dvw - 282px)" }}
 				>
 					<MyModal myModal={myModal} setMyModal={setMyModal} />
 					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} />

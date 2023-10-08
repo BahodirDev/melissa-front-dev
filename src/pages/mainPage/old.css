@@ -1,0 +1,115 @@
+.modal-toggle__button {
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	z-index: 9999;
+	color: #fff;
+	background-color: #7d258b;
+	border: none;
+}
+.modal-toggle__button:hover {
+	color: #fff;
+	background-color: #8d4897;
+}
+.modal-toggle__button:active {
+	color: #fff !important;
+	background-color: #88119a !important;
+}
+
+.debts-modal-toggle__button {
+	position: fixed;
+	bottom: 1rem;
+	right: 4rem;
+	z-index: 9999;
+	color: #fff;
+	background-color: #7d258b;
+	border: none;
+}
+.debts-modal-toggle__button:hover {
+	color: #fff;
+	background-color: #8d4897;
+}
+.debts-modal-toggle__button:active {
+	color: #fff !important;
+	background-color: #88119a !important;
+}
+
+.input-purple {
+	font-weight: 600;
+	width: 150px;
+	border: 1px solid #7d258b;
+	margin: 0;
+	padding: 4.3px;
+	font-size: 14px;
+}
+
+.no-data__con {
+	display: grid;
+	place-items: center;
+	opacity: 0.6;
+	width: 100%;
+	grid-column: 1/5;
+}
+.no-data__con img {
+	width: 70px;
+}
+
+/* collapse */
+.my-content {
+	padding: 0;
+	background: transparent;
+	max-height: 0;
+	transition: max-height 0.2s ease-out;
+}
+.ant-pagination {
+	margin: 0 !important;
+	margin-top: 10px !important;
+}
+
+/* validation */
+.validation-field {
+	position: relative;
+	height: 75px;
+}
+.validation-field-error {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	color: red;
+	font-size: 14px;
+}
+.modal-validation-error {
+	color: red;
+	margin-top: -4px;
+}
+
+/*  */
+.phone-number-input {
+	padding: 4px 11px;
+	border-inline-end-width: 1px;
+	color: rgba(0, 0, 0, 0.88);
+	font-size: 14px;
+	line-height: 1.5;
+	width: 100%;
+	background-color: #fff;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #d9d9d9;
+	border-radius: 6px;
+	transition: 0.2s;
+}
+
+.phone-number-input::placeholder {
+	color: #c6c6c6;
+}
+
+.phone-number-input:hover {
+	border-color: #4096ff;
+}
+
+.phone-number-input:focus {
+	border-color: #4096ff;
+	box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+	outline: none;
+}
