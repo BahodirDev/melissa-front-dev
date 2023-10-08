@@ -24,10 +24,12 @@ const DDebtTable = ({
 						"+$1 ($2) $3-$4-$5"
 					),
 				product: item?.goods?.goods_name + " - " + item?.goods?.goods_code,
-				quantity: "x" + item?.debts_count,
+				quantity: "x" + (+item?.debts_count).toFixed(1),
 				price_each: addComma(item?.debts_cost) + item?.debts_currency,
 				price_total:
-					addComma(item?.debts_count * item?.debts_cost) + item?.debts_currency,
+				addComma(item?.debts_count * item?.debts_cost) + item?.debts_currency,
+				currencyName: item?.debts_currency,
+				currencyAmount: item?.debts_currency_amount,
 				duedate: `${moment(item?.debts_due_date).format("YYYY/MM/DD HH:MM")}`,
 				date: `${moment(item?.debts_createdat).format("YYYY/MM/DD HH:MM")}`,
 			}
@@ -86,7 +88,14 @@ const DDebtTable = ({
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
 						onClick={(e) =>
-							payModal(e, payDeliverDebt, record?.id, record?.price_total)
+							payModal(
+								e,
+								payDeliverDebt,
+								record?.id,
+								record?.price_total,
+								record?.currencyName,
+								record?.currencyAmount
+							)
 						}
 					>
 						<i className="fas fa-edit"></i>

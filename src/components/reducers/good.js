@@ -20,6 +20,7 @@ export const goodSlice = createSlice({
 		addData: (state, action) => {
 			state.data = [...state.data, action.payload]
 		},
+		fakeLoad: (state, action) => {},
 		editData: (state, action) => {
 			const index = state.data.findIndex(
 				(item) => item.goods_id === action.payload.goods_id
@@ -33,9 +34,22 @@ export const goodSlice = createSlice({
 				}
 			}
 		},
+		removeGood: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.goods_id === action.payload
+			)
+			state.data.splice(index, 1)
+		},
 	},
 })
 
-export const { setData, setLoading, setQuantity, addData, editData } =
-	goodSlice.actions
+export const {
+	setData,
+	setLoading,
+	setQuantity,
+	addData,
+	editData,
+	fakeLoad,
+	removeGood,
+} = goodSlice.actions
 export default goodSlice.reducer

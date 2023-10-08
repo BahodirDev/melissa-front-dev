@@ -28,24 +28,30 @@ function ClientList({
 									)}
 								</h6>
 								<h6>Izoh: {item?.clients_desc}</h6>
+
 								<div
 									className={`clients-desc ${
 										toggleDesc === item?.clients_id || "hide-client-desc"
 									}`}
 									style={{
-										marginTop: loc ? "38px" : `-${item?.debts?.length ? '223' : '47'}px`,
+										marginTop: loc
+											? "50px"
+											: `-${
+													item?.debts.filter((item) => !item?.isdone).length
+														? "230"
+														: "47"
+											  }px`,
 									}}
 								>
 									<div className="clients_desc-i">
 										{item?.debts?.length ? (
-											<div className="clients_desc-item">
-												<ClientDebtList data={item?.debts} />
-											</div>
+											<ClientDebtList data={item?.debts} />
 										) : (
 											"Qarzdorlik mavjud emas"
 										)}
 									</div>
 								</div>
+
 								<button
 									className="btn btn-melissa btn-desc"
 									onClick={(e) => {

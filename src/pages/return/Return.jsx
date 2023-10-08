@@ -10,9 +10,8 @@ import { setData as setDataGoods } from "../../components/reducers/good"
 import {
 	addData,
 	editData,
-	setDataClient,
+	removeReturn,
 	setDataReturn,
-	setDataStore,
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/return"
@@ -94,8 +93,6 @@ function Return() {
 
 	useEffect(() => {
 		getData("return", setDataReturn)
-		getData("clients", setDataClient)
-		getData("store", setDataStore)
 		getData("deliver", setDataDeliver)
 		getData("goods", setDataGoods)
 	}, [])
@@ -133,7 +130,7 @@ function Return() {
 			if (objId) {
 				patch(`/return/return-patch/${objId}`, newObj).then((data) => {
 					if (data?.status === 201) {
-						dispatch(editData(data?.data))
+						dispatch(editData({ ...data?.data, ...client }))
 						buttonRef.current.click()
 						setModalAlert("Xabar")
 						setModalMsg("Malumot muvoffaqiyatli o'zgartirildi")
@@ -156,7 +153,7 @@ function Return() {
 			} else {
 				post("/return/return-post", newObj).then((data) => {
 					if (data?.status === 200) {
-						dispatch(addData(data?.data))
+						dispatch(addData({ ...data?.data, ...client }))
 						dispatch(setQuantity())
 						buttonRef.current.click()
 						setModalAlert("Xabar")
@@ -185,7 +182,8 @@ function Return() {
 		dispatch(setLoading(true))
 		remove(`/return/return-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData("return", setDataReturn)
+				dispatch(removeReturn(id))
+				dispatch(setQuantity())
 				setModalAlert("Xabar")
 				setModalMsg("Qaytgan mahsulot muvoffaqiyatli o'chirildi")
 			} else {
@@ -212,10 +210,10 @@ function Return() {
 				setName(toggleClass ? "" : data?.data?.return_name)
 				setCount(toggleClass ? "" : data?.data?.return_count)
 				setCost(toggleClass ? "" : data?.data?.return_cost)
-				const index = state?.return?.dataClient.findIndex(
+				const index = state?.client?.data.findIndex(
 					(item) => item.clients_id === data?.data?.client_id
 				)
-				setClient(toggleClass ? "" : state?.return?.dataClient[index])
+				setClient(toggleClass ? "" : state?.client?.data[index])
 				setStore(toggleClass ? "" : data?.data?.return_store)
 				setReason(toggleClass ? "" : data?.data?.return_case)
 				setObjId(id)
@@ -229,6 +227,16 @@ function Return() {
 	) : (
 		<>
 			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
+
+			<div className="return-info">
+				<i className="fa-solid fa-user-tag"></i> Qaytgan mahsulotlar soni:{" "}
+				{searchSubmitted
+					? filteredData?.length
+					: state?.return?.quantity
+					? state?.return?.quantity
+					: 0}{" "}
+				ta
+			</div>
 
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
@@ -277,8 +285,8 @@ function Return() {
 							onChange={(e) => setClient(JSON.parse(e))}
 							optionLabelProp="label"
 						>
-							{state?.return?.dataClient?.length
-								? state?.return?.dataClient.map((item) => {
+							{state?.client?.data?.length
+								? state?.client?.data.map((item) => {
 										if (!item?.isdelete) {
 											return (
 												<Option
@@ -327,8 +335,8 @@ function Return() {
 							optionLabelProp="label"
 							style={{ width: "100%" }}
 						>
-							{state?.return?.dataStore?.length
-								? state?.return?.dataStore.map((item) => {
+							{state?.store?.data?.length
+								? state?.store?.data.map((item) => {
 										return (
 											<Option value={item?.store_name} label={item?.store_name}>
 												{item?.store_name}
@@ -407,11 +415,6 @@ function Return() {
 				</div>
 			</div>
 
-			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Qaytgan mahsulotlar soni:{" "}
-				{state?.return?.quantity ? state?.return?.quantity : 0} ta
-			</div>
-
 			<div
 				className="return-item-filter-row"
 				style={{
@@ -439,25 +442,27 @@ function Return() {
 					style={{ width: "100%" }}
 					id="store"
 					value={searchDeliverId ? searchDeliverId : null}
-					placeholder="Ta'minotchi"
+					placeholder="Mijoz"
 					onChange={(e) => setSearchDeliverId(e)}
 					allowClear
 				>
 					{state?.client?.data?.length
 						? state?.client?.data.map((item) => {
-								return (
-									<Option className="client-option" value={item?.clients_id}>
-										<div>
-											<span>{item?.clients_name} - </span>
-											<span>
-												{item?.clients_nomer.replace(
-													/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-													"+$1 ($2) $3-$4-$5"
-												)}
-											</span>
-										</div>
-									</Option>
-								)
+								if (!item?.isdelete) {
+									return (
+										<Option className="client-option" value={item?.clients_id}>
+											<div>
+												<span>{item?.clients_name} - </span>
+												<span>
+													{item?.clients_nomer.replace(
+														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+														"+$1 ($2) $3-$4-$5"
+													)}
+												</span>
+											</div>
+										</Option>
+									)
+								}
 						  })
 						: null}
 				</Select>

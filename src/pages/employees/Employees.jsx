@@ -8,6 +8,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeEmp,
 	setData,
 	setLoading,
 	setQuantity,
@@ -112,7 +113,11 @@ export default function Employees() {
 						setModal_msg("Hodim muvoffaqiyatli o'zgartirildi")
 						setTimeout(() => {
 							if (objId === userInfo?.id) {
-								localStorage.clear()
+								// localStorage.clear()
+								localStorage.removeItem("id")
+								localStorage.removeItem("name")
+								localStorage.removeItem("role")
+								localStorage.removeItem("user")
 								navigate("/login")
 							}
 						}, 1000)
@@ -156,7 +161,7 @@ export default function Employees() {
 		dispatch(setLoading(true))
 		remove(`/users/users-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData()
+				dispatch(removeEmp(id))
 				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Hodim muvoffaqiyatli o'chirildi")
@@ -212,6 +217,16 @@ export default function Employees() {
 	return (
 		<>
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
+
+			<div className="emp-info">
+				<i className="fa-solid fa-user-tag"></i> Xodimlar soni:{" "}
+				{searchSubmitted
+					? filteredUsers?.length
+					: state?.quantity
+					? state?.quantity
+					: 0}{" "}
+				ta
+			</div>
 
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
@@ -349,10 +364,7 @@ export default function Employees() {
 					</div>
 				</div>
 			</div>
-			<div className="emp-info">
-				<i className="fa-solid fa-user-tag"></i> Xodimlar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
+
 			{state?.loading ? (
 				<Loader />
 			) : (

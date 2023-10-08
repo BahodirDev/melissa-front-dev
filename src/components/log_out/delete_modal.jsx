@@ -13,7 +13,11 @@ export const log_out = (e, action) => {
 		cancelText: "Yo'q",
 		width: 300,
 		onOk() {
-			localStorage.clear()
+			// localStorage.clear()
+			localStorage.removeItem("id")
+			localStorage.removeItem("name")
+			localStorage.removeItem("role")
+			localStorage.removeItem("user")
 			action("/login")
 		},
 		onCancel() {},

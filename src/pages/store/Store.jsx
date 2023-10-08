@@ -7,6 +7,7 @@ import Loader from "../../components/loader/Loader"
 import {
 	addData,
 	editData,
+	removeStore,
 	setData,
 	setLoading,
 	setQuantity,
@@ -42,7 +43,7 @@ export default function Store() {
 
 	useEffect(() => {
 		setAction({
-			url: "/store/store-list",
+			url: "/store/store-search",
 			body: {
 				store_name: saerchInputValue,
 			},
@@ -121,7 +122,8 @@ export default function Store() {
 		dispatch(setLoading(true))
 		remove(`/store/store-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				getData()
+				dispatch(removeStore(id))
+				dispatch(setQuantity())
 				setModal_alert("Xabar")
 				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
@@ -171,6 +173,16 @@ export default function Store() {
 		<div>
 			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
 
+			<div className="store-info">
+				<i className="fa-solid fa-warehouse"></i> Omborlar soni:{" "}
+				{searchSubmitted
+					? filteredStores?.length
+					: state?.quantity
+					? state?.quantity
+					: 0}{" "}
+				ta
+			</div>
+
 			<button
 				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
 				onClick={collapse}
@@ -215,10 +227,6 @@ export default function Store() {
 				</div>
 			</div>
 
-			<div className="store-info">
-				<i className="fa-solid fa-warehouse"></i> Omborlar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
 			{state?.loading ? (
 				<Loader />
 			) : (

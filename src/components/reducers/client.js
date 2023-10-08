@@ -45,14 +45,19 @@ export const clientSlice = createSlice({
 
 				state.data[index]?.debts.unshift({
 					isdone: false,
-					product_name: itemPayload?.product_name,
+					products: { goods_name: itemPayload?.product_name },
 					debts_count: itemPayload?.debts_count,
 					debts_price: itemPayload?.debts_price,
 					debts_currency: itemPayload?.debts_currency,
 				})
 			})
 		},
-		removeDebt: (state, action) => {},
+		removeDebt: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.clients_id === action.payload
+			)
+			state.data.splice(index, 1)
+		},
 	},
 })
 

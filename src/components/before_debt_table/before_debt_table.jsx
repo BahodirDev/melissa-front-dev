@@ -1,10 +1,10 @@
 import { Table } from "antd"
 import moment from "moment"
 import noDataImg from "../../assets/img/no data.png"
+import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import { payConfirmModal } from "../pay_confirm_modal/pay_confirm_modal"
 import { payModal } from "../pay_modal/pay_modal"
-import { addComma } from "../addComma"
 
 const BeforeDebtTable = ({
 	data,
@@ -17,16 +17,15 @@ const BeforeDebtTable = ({
 		data.map((item) => {
 			return {
 				id: item?.deliver_debt_id,
-				cost:
-					addComma(item?.debts_cost * item?.debts_currency_amount) +
-					"so'm",
-				count: "x" + item?.debts_count,
+				cost: addComma(item?.debts_cost) + item?.debts_currency,
+				count: "x" + (+item?.debts_count).toFixed(1),
 				currencyName: item?.debts_currency,
 				currencyAmount: item?.debts_currency_amount,
+				each: item?.debts_cost,
 				deliver: item?.deliver_id?.deliver_name,
 				good: item?.goods_id?.deliver_name,
 				totalCost:
-					addComma(item?.debts_count * item?.debts_cost * item?.debts_currency_amount) + item?.debts_currency,
+					addComma(item?.debts_count * item?.debts_cost) + item?.debts_currency,
 				date: `${moment(item?.debts_createdat).zone(+7).format("YYYY/MM/DD")}`,
 				dueDate: `${moment(item?.debts_due_date)
 					.zone(+7)
@@ -77,7 +76,16 @@ const BeforeDebtTable = ({
 					</button>
 					<button
 						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						onClick={(e) => payModal(e, editDebt, record?.id, record?.count)}
+						onClick={(e) =>
+							payModal(
+								e,
+								editDebt,
+								record?.id,
+								record?.count,
+								"ta",
+								record?.currencyAmount * record?.each
+							)
+						}
 					>
 						<i className="fas fa-edit"></i>
 					</button>

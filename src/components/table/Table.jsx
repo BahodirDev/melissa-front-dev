@@ -14,8 +14,8 @@ const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 				product_id: item?.products_id,
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
-				products_box_count: 'x'+Math.ceil(item?.products_box_count),
-				products_count: 'x'+item?.products_count,
+				products_box_count: "x" + Math.ceil(item?.products_box_count),
+				products_count: "x" + item?.products_count,
 				products_count_cost:
 					addComma(item?.products_count_cost) +
 					item?.currency_id?.currency_symbol,
@@ -27,9 +27,9 @@ const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 						(item?.products_count * item?.products_count_cost).toFixed(2)
 					) + item?.currency_id?.currency_symbol,
 				// product_date: item?.products_createdat,
-				product_date: `${moment(item?.products_createdat)
-					.zone(+7)
-					.format("YYYY/MM/DD HH:MM:SS")}`,
+				product_date: `${moment(item?.products_createdat).format(
+					"YYYY/MM/DD HH:MM:SS"
+				)}`,
 				kurs: item?.currency_id?.currency_amount,
 			}
 		})

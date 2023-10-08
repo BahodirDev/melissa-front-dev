@@ -33,9 +33,7 @@
 }
 
 .store-info {
-	position: fixed;
-	top: 80px;
-	right: 20px;
+	float: right;
 	color: #fff;
 	padding: 7px 20px;
 	background-color: #7e258c;
@@ -45,30 +43,3 @@
 .store-info span {
 	padding: 0 20px;
 }
-
-/* .store-item {
-	border: ;
-} */
-
-/* .my-card__item {
-	max-width: 300px;
-	height: 150px;
-	border-radius: 12px;
-	box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
-	padding: 1rem;
-	position: relative;
-	background-image: linear-gradient(to right, #ece9e6, #ffffff);
-}
-
-.my-card__item span {
-	position: absolute;
-	right: 1rem;
-	bottom: 1rem;
-}
-
-.btn-purple {
-	background-color: #7e258c !important;
-	color: #fff !important;
-	border: none;
-	padding: 3.5px 10px;
-} */

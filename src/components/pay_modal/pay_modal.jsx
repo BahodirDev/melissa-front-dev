@@ -2,7 +2,7 @@ import { Input, Modal } from "antd"
 import { addComma } from "../addComma"
 const { confirm } = Modal
 
-export const payModal = (e, action, id, max) => {
+export const payModal = (e, action, id, max, about = "", value = 1) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
@@ -11,7 +11,9 @@ export const payModal = (e, action, id, max) => {
 			<>
 				<Input
 					type="text"
-					placeholder={addComma(parseFloat(max.replace(/[^\d.]/g, "")))}
+					placeholder={
+						addComma(parseFloat(max.replace(/[^\d.]/g, ""))) + " " + about
+					}
 					id="pay-modal-input"
 					pattern="[0-9]*"
 					onInput={(e) => {
@@ -32,7 +34,7 @@ export const payModal = (e, action, id, max) => {
 		cancelText: "Bekor qilish",
 		width: 300,
 		onOk() {
-			action(id, document.querySelector("#pay-modal-input").value)
+			action(id, document.querySelector("#pay-modal-input").value, value)
 		},
 		onCancel() {},
 		style: {
