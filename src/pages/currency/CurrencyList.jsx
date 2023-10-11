@@ -12,11 +12,11 @@ export default function CurrencyList({
 	products,
 	deleteCurrency,
 	editCurrency,
-	toggleModal,
-	setToggleModal,
+	showDropdown,
+	setshowDropdown,
 }) {
 	const handleClick = (e, id) => {
-		toggleModal === id ? setToggleModal("") : setToggleModal(id)
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
 		e.stopPropagation()
 	}
 
@@ -38,7 +38,7 @@ export default function CurrencyList({
 								</button>
 								<div
 									className={`card-item-edit-wrapper ${
-										toggleModal === item?.currency_id || "hidden"
+										showDropdown === item?.currency_id || "hidden"
 									}`}
 								>
 									<button
@@ -46,6 +46,7 @@ export default function CurrencyList({
 										className="card-item-edit-item"
 										onClick={(e) => {
 											e.stopPropagation()
+											setshowDropdown("")
 											editCurrency(item?.currency_id)
 										}}
 									>

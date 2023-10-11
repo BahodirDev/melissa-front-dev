@@ -52,9 +52,7 @@ export default function Login() {
 		<div className="login-wrapper">
 			{/* left */}
 			<div className="login-left">
-				<h1>
-					<nobr>Melissa Kids</nobr>
-				</h1>
+				<h1>Melissa Kids</h1>
 				<img src={login_img} alt="login_image" />
 			</div>
 
