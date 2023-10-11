@@ -67,7 +67,7 @@
 }
 
 /* validation */
-.validation-field {
+/* .validation-field {
 	position: relative;
 	height: 75px;
 }
@@ -82,7 +82,7 @@
 .modal-validation-error {
 	color: red;
 	margin-top: -4px;
-}
+} */
 
 /*  */
 .phone-number-input {

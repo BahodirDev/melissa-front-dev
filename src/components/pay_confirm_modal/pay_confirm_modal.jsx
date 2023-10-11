@@ -5,7 +5,7 @@ export const payConfirmModal = (e, action, id) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
-		icon: <></>,
+		icon: " ",
 		title: "Qarzni yopishni hohlaysizmi?",
 		okText: "Yopish",
 		okType: "danger",

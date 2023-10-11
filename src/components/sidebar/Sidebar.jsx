@@ -22,7 +22,7 @@ export default function Sidebar() {
 	return (
 		<div className="sidebar">
 			<div className="sicon">
-				<h1>Melissa</h1>
+				<h1>Melissa Kids</h1>
 			</div>
 
 			{/* links */}

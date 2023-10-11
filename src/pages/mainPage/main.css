@@ -4,7 +4,7 @@
 	width: 100dvw;
 	height: 100dvh;
 	gap: 16px;
-	padding: 16px 16px 0 16px;
+	padding: 16px 0 0 16px;
 	background-color: var(--bg-neutral);
 }
 
@@ -20,6 +20,38 @@
 	overflow: hidden;
 	overflow-y: auto;
 	margin-top: 20px;
+	padding-right: 20px;
 	/* padding-bottom: var(--padding-md);
 	padding-right: var(--padding-md); */
+}
+::-webkit-scrollbar {
+	width: 7px;
+}
+::-webkit-scrollbar-track {
+	background: #eee;
+	border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+	border-radius: 3px;
+	background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.modal-toggle-btn {
+	position: fixed;
+	right: 32px;
+	bottom: 32px;
+	z-index: 9;
+	padding: 8px !important;
+	background-color: var(--color-primary) !important;
+	transition: 0.1s;
+}
+.modal-toggle-btn:hover {
+	background-color: var(--bg-primary) !important;
+}
+
+.hidden {
+	display: none !important;
 }

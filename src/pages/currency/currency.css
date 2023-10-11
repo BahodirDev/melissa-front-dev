@@ -1,1 +1,26 @@
+.card-wrapper.currency {
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
 
+.card-item.currency {
+	height: 140px;
+}
+
+.currency .card-item-top-row img {
+	width: 50px;
+	height: 32px;
+	border-radius: 2px;
+}
+
+.card-item-bottom.currency h6 {
+	font-size: var(--text-md);
+	color: var(--color-accent);
+	text-transform: uppercase;
+}
+.card-item-bottom.currency h6 svg {
+	margin-bottom: 3px;
+}
+.card-item-bottom.currency h5 {
+	font-size: var(--text-modal);
+	color: var(--color-secondary);
+}

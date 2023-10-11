@@ -37,12 +37,13 @@ export default function Employees() {
 	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
 		userInfo,
 		action,
 		setAction,
+		showDropdown,
+		setshowDropdown,
+		setAddModalVisible,
+		inputRef,
 	] = useOutletContext()
 	const state = useSelector((state) => state.users)
 	const dispatch = useDispatch()
@@ -51,7 +52,7 @@ export default function Employees() {
 		setAction({
 			url: "/users/users-search",
 			body: {
-				user_name: saerchInputValue,
+				user_name: inputRef,
 			},
 			res: setFilteredUsers,
 			submitted: setSearchSubmitted,
@@ -62,7 +63,7 @@ export default function Employees() {
 		// 	item?.user_name.toLowerCase().includes(saerchInputValue.toLowerCase())
 		// )
 		// setFilteredUsers(stores)
-	}, [saerchInputValue])
+	}, [inputRef.current?.value])
 
 	const getData = () => {
 		dispatch(setLoading(true))

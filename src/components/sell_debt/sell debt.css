@@ -1,0 +1,45 @@
+.add-modal-wrapper {
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 9;
+	width: 100dvw;
+	height: 100dvh;
+	background-color: var(--bg-opacity);
+	/* disable body scroll */
+}
+
+.add-modal {
+	float: right;
+	width: 0;
+	height: 100%;
+	background-color: var(--bg-light);
+}
+
+.fade-in {
+	animation: fade-in 0.3s ease-out;
+	width: 350px;
+}
+
+.fade-out {
+	animation: fade-out 0.3s ease-out;
+	width: 0;
+}
+
+@keyframes fade-in {
+	0% {
+		width: 0;
+	}
+	100% {
+		width: 350px;
+	}
+}
+
+@keyframes fade-out {
+	0% {
+		width: 350px;
+	}
+	100% {
+		width: 0;
+	}
+}

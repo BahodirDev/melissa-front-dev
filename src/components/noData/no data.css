@@ -1,0 +1,9 @@
+.no-data-wrapper {
+	margin-top: 100px;
+	text-align: center;
+}
+.no-data-wrapper h4 {
+	font-size: var(--text-modal);
+	margin-top: var(--padding-xl);
+	color: var(--color-accent);
+}

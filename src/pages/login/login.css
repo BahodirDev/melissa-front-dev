@@ -1,6 +1,6 @@
 .login-wrapper {
 	width: 100dvw;
-	height: 100dvh;
+	min-height: 100dvh;
 	overflow: hidden;
 	display: grid;
 	grid-template-columns: auto 460px;
@@ -14,6 +14,7 @@
 }
 
 .login-left h1 {
+	display: inline;
 	color: var(--color-primary);
 	font-size: var(--text-xxl);
 }
@@ -47,13 +48,18 @@
 
 .login-form h2 {
 	font-size: var(--text-xl);
-	color: var(--color-secondary);
+	color: var(--color-dark);
 }
 
 .login-form h4 {
 	font-size: var(--text-md);
 	color: var(--color-accent);
-	font-weight: 400;
+	font-weight: var(--weight-thin);
+	margin-top: var(--padding-md);
+}
+
+.input-wrapper label {
+	color: #616161;
 }
 
 .password-input {
@@ -76,11 +82,10 @@
 	border: none;
 	outline: none;
 	background-image: linear-gradient(to right, #1e88e5, #42a5f5);
-	/* position: relative;
-	z-index: 2; */
+	position: relative;
 }
 
-/* .login-btn::after {
+.login-btn::after {
 	width: 100%;
 	height: 44px;
 	border-radius: 6px;
@@ -96,12 +101,12 @@
 	background-image: linear-gradient(to left, #1e88e5, #42a5f5);
 	z-index: 1;
 	opacity: 0;
-	transition: opacity 0.25s linear;
-} */
+	transition: opacity 0.2s linear;
+}
 
-/* .login-btn:hover::after {
+.login-btn:hover::after {
 	opacity: 1;
-} */
+}
 
 .login-btn:disabled {
 	background: var(--bg-disabled);

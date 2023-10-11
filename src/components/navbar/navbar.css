@@ -1,12 +1,12 @@
 .top-bar {
-	width: 100%;
+	width: calc(100% - 20px);
 	height: 64px;
 	position: static;
 	z-index: 1;
 	background-color: var(--bg-light);
 	display: flex;
 	align-items: center;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-md);
 }
 
