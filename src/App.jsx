@@ -42,8 +42,8 @@ export default function App() {
 					<Route path="/clients" element={<Clients />} />
 					<Route path="/return" element={<Return />} />
 					<Route path="/debts" element={<Debts />} />
-					<Route path="*" element={<PageNotFound />} />
 				</Route>
+				<Route path="*" element={<PageNotFound />} />
 			</Routes>
 		</BrowserRouter>
 	)

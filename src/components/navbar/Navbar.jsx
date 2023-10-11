@@ -10,8 +10,6 @@ export default function Navbar({
 	setSidebar,
 	inputRef,
 	sidebar,
-	setSearchInput,
-	searchInput,
 	userInfo,
 	action,
 }) {
@@ -30,7 +28,6 @@ export default function Navbar({
 	}
 
 	const clearSearch = () => {
-		setSearchInput("")
 		action?.submitted(false)
 		dispatch(action?.setLoading(false))
 		if (action?.url === "/return/return-filter") {

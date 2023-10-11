@@ -16,7 +16,7 @@
 }
 .delete__modal h4 {
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: var(--weight-bold);
 }
 .delete__modal__bottom {
 	position: absolute;

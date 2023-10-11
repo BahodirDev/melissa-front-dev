@@ -1,65 +1,87 @@
-import noDataImg from "../../assets/img/no data.png"
+import {
+	ArrowRight,
+	DotsThreeVertical,
+	PencilSimple,
+	Trash,
+} from "@phosphor-icons/react"
 import { addComma } from "../../components/addComma"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
+import NoData from "../../components/noData/NoData"
 
 export default function CurrencyList({
 	products,
 	deleteCurrency,
 	editCurrency,
+	toggleModal,
+	setToggleModal,
 }) {
-	return (
-		<div className="currency-wrapper">
-			{products?.length ? (
-				products.map((item) => {
-					return (
-						<div className="currency-item">
-							<div className="currency-item-top">
-								<h3>
-									{item?.currency_name}
-									<span>
-										{addComma(item?.currency_amount)} {item?.currency_symbol}
-									</span>
-								</h3>
-								<img
-									src={`data:image/png;base64,${item?.flag}`}
-									width="30px"
-									height="20px"
-								/>
+	const handleClick = (e, id) => {
+		toggleModal === id ? setToggleModal("") : setToggleModal(id)
+		e.stopPropagation()
+	}
+
+	return products?.length ? (
+		<div className="card-wrapper currency">
+			{products.map((item, idx) => {
+				return (
+					<div key={idx} className="card-item currency">
+						<div className="card-item-top">
+							<div>
+								<img src={`data:image/png;base64,${item?.flag}`} />
 							</div>
-							<div className="currency-item-bottom">
-								<span>
-									{item?.name} - {item?.currency_code}
-								</span>
+							<div className="card-item-edit-holder">
 								<button
-									className="btn btn-my__danger"
-									onClick={(e) =>
-										productDeleteConfirm(
-											e,
-											"Pul birligi",
-											deleteCurrency,
-											item?.currency_id
-										)
-									}
+									type="button"
+									onClick={(e) => handleClick(e, item?.currency_id)}
 								>
-									<i className="fa-solid fa-trash-can"></i>
+									<DotsThreeVertical size={24} />
 								</button>
-								<button
-									className="btn btn-melissa"
-									style={{ marginRight: "5px" }}
-									onClick={() => editCurrency(item?.currency_id)}
+								<div
+									className={`card-item-edit-wrapper ${
+										toggleModal === item?.currency_id || "hidden"
+									}`}
 								>
-									<i className="fas fa-edit"></i>
-								</button>
+									<button
+										type="button"
+										className="card-item-edit-item"
+										onClick={(e) => {
+											e.stopPropagation()
+											editCurrency(item?.currency_id)
+										}}
+									>
+										Tahrirlash <PencilSimple size={20} />
+									</button>
+									<button
+										type="button"
+										className="card-item-edit-item"
+										onClick={(e) =>
+											productDeleteConfirm(
+												e,
+												`"${item?.currency_name}" pul birligi`,
+												deleteCurrency,
+												item?.currency_id
+											)
+										}
+									>
+										O'chirish <Trash size={20} />
+									</button>
+								</div>
 							</div>
 						</div>
-					)
-				})
-			) : (
-				<div className="no-data__con">
-					<img src={noDataImg} alt="" />
-					<span>Pul birligi mavjud emas</span>
-				</div>
-			)}
+
+						<div className="card-item-bottom currency">
+							<h6>
+								{item?.currency_name} &nbsp;&nbsp;
+								<ArrowRight size={12} />
+								&nbsp;&nbsp; SUM
+							</h6>
+							<h5>{addComma(item?.currency_amount)} so'm</h5>
+						</div>
+					</div>
+				)
+			})}
 		</div>
+	) : (
+		<NoData />
 	)
 }

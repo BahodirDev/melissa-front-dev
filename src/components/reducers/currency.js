@@ -37,9 +37,15 @@ export const currencySlice = createSlice({
 				}
 			}
 		},
+		removeCurrency: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.currency_id === action.payload
+			)
+			state.data.splice(index, 1)
+		},
 	},
 })
 
-export const { setData, setLoading, setQuantity, addData, editData } =
+export const { setData, setLoading, setQuantity, addData, editData, removeCurrency } =
 	currencySlice.actions
 export default currencySlice.reducer

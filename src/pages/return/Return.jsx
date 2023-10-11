@@ -417,9 +417,9 @@ function Return() {
 
 			<div
 				className="return-item-filter-row"
-				style={{
-					left: sidebar ? 370 : 200 + "px",
-				}}
+				// style={{
+				// 	left: sidebar ? 370 : 200 + "px",
+				// }}
 			>
 				<Select
 					style={{ width: "100%" }}

@@ -7,19 +7,22 @@ import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
 import { get } from "../../customHook/api"
 import "./main.css"
-import "./old.css"
-import "./components.css"
+// import "./old.css"
+import { Plus } from "@phosphor-icons/react"
+import SellDebt from "../../components/sell_debt/SellDebt"
 
 export default function MainPage() {
-	const [debtsModal, setDebtsModal] = useState(false)
-	const [myModal, setMyModal] = useState(false)
 	const [sidebar, setSidebar] = useState(false)
-	const [searchInput, setSearchInput] = useState("")
 	const inputRef = useRef(null)
 	const url = useLocation()
 	const navigate = useNavigate()
 	const [userInfo, setUserInfo] = useState(0)
 	const [action, setAction] = useState({})
+	const [showDropdown, setshowDropdown] = useState("")
+	const [addModalVisible, setAddModalVisible] = useState(false)
+	const [addModalDisplay, setAddModalDisplay] = useState("none")
+	const [SDModalVisible, setSDModalVisible] = useState(false)
+	const [SDModalDisplay, setSDModalDisplay] = useState("none")
 
 	useEffect(() => {
 		setUserInfo({
@@ -28,6 +31,7 @@ export default function MainPage() {
 			name: localStorage.getItem("name"),
 			id: localStorage.getItem("id"),
 		})
+
 		get("/currency/currency-list").then((data) => {
 			if (data?.response?.status === 401) {
 				// localStorage.clear()
@@ -46,77 +50,103 @@ export default function MainPage() {
 				navigate("/login")
 			}
 		})
-
-		setSearchInput("")
-
-		window.addEventListener("keydown", (e) => {
-			if (e.key === "Escape") {
-				setDebtsModal(false)
-				setMyModal(!myModal)
-			} else if (e.ctrlKey && e.key === "/") {
-				setMyModal(false)
-				setDebtsModal(false)
-				e.preventDefault()
-				inputRef.current.focus()
-			} else if (e.ctrlKey && e.key === ",") {
-				e.preventDefault()
-				setSidebar(false)
-			} else if (e.ctrlKey && e.key === ".") {
-				e.preventDefault()
-				setSidebar(true)
-			}
-			// else if (e.key === "`") {
-			// 	setMyModal(false)
-			// 	setDebtsModal((prev) => !prev)
-			// }
-		})
 	}, [url])
 
+	useEffect(() => {
+		document.addEventListener(
+			"keydown",
+			(e) => {
+				if (e.key === "Escape") {
+					setshowDropdown("")
+					setAddModalVisible(false)
+					setAddModalDisplay("none")
+					setSDModalVisible((prevVisible) => {
+						if (prevVisible) {
+							setTimeout(() => {
+								setSDModalDisplay("none")
+							}, 300)
+						} else {
+							setSDModalDisplay("block")
+						}
+						return !prevVisible
+					})
+				} else if (e.ctrlKey && e.key === "k") {
+					e.preventDefault()
+					setshowDropdown("")
+					setAddModalVisible(false)
+					setSDModalVisible(false)
+					setTimeout(() => {
+						setAddModalDisplay("none")
+						setSDModalDisplay("none")
+					}, 300)
+					inputRef.current?.focus()
+				} else if (e.ctrlKey && e.key === ",") {
+					e.preventDefault()
+					setSidebar(false)
+				} else if (e.ctrlKey && e.key === ".") {
+					e.preventDefault()
+					setSidebar(true)
+				}
+			},
+			true
+		)
+	}, [])
+
+	const closeAllModals = () => {
+		setshowDropdown("")
+		setAddModalVisible(false)
+		setSDModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+			setSDModalDisplay("none")
+		}, 300)
+	}
+
 	return (
-		<div className="home-con">
+		<div className="home-con" onClick={closeAllModals}>
 			<button
-				onClick={() => {
-					setDebtsModal(false)
-					setMyModal(!myModal)
+				className="primary-btn modal-toggle-btn"
+				onClick={(e) => {
+					e.stopPropagation()
+					setshowDropdown("")
+					setSDModalVisible(true)
+					setSDModalDisplay("block")
 				}}
-				className="btn btn-primary modal-toggle__button"
 			>
-				<i className="fa-solid fa-weight-scale"></i>
-			</button>
-			<button
-				onClick={() => {
-					setMyModal(false)
-					setDebtsModal(!debtsModal)
-				}}
-				className="btn btn-primary debts-modal-toggle__button"
-			>
-				<i className="fas fa-hand-holding-usd"></i>
+				<Plus size={24} />
 			</button>
 			{sidebar ? <Sidebar /> : <SSidebar />}
 			<div className="main-div">
 				<Navbar
 					setSidebar={setSidebar}
-					inputRef={inputRef}
 					sidebar={sidebar}
-					searchInput={searchInput}
-					setSearchInput={setSearchInput}
 					userInfo={userInfo}
 					action={action}
 				/>
 				<div
 					className="content"
-					// style={{ width: sidebar && "calc(100dvw - 282px)" }}
+					style={{ overflowY: (addModalVisible || SDModalVisible) && "hidden" }}
 				>
-					<MyModal myModal={myModal} setMyModal={setMyModal} />
-					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} />
+					{/* <MyModal myModal={myModal} setMyModal={setMyModal} />
+					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} /> */}
+					<SellDebt
+						SDModalVisible={SDModalVisible}
+						setSDModalVisible={setSDModalVisible}
+						SDModalDisplay={SDModalDisplay}
+						setSDModalDisplay={setSDModalDisplay}
+					/>
 					<Outlet
 						context={[
-							searchInput,
-							setSearchInput,
-							sidebar,
 							userInfo,
+							inputRef,
 							action,
 							setAction,
+							showDropdown,
+							setshowDropdown,
+							addModalVisible,
+							setAddModalVisible,
+							addModalDisplay,
+							setAddModalDisplay,
 						]}
 					/>
 				</div>
