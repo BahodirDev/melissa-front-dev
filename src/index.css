@@ -38,6 +38,8 @@
 	--border-secondary: 1px solid #bdbdbd;
 	--border-dark: 1px solid #424242;
 	--border-danger: 1px solid #f44336;
+	--border-info: 1px solid #2196f3;
+	--border-info-hover: 1px solid #64b5f6;
 
 	/* fonts */
 	--text-xxl: 28px;

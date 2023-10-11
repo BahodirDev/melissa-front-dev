@@ -1,0 +1,112 @@
+.not-found-wrapper {
+	width: 100dvw;
+	min-height: 100dvh;
+	overflow: hidden;
+	padding: 50px 100px;
+}
+
+.not-found-wrapper h1 {
+	color: var(--color-primary);
+	font-size: var(--text-xxl);
+}
+
+.not-found-lar {
+	margin-top: 80px;
+	display: flex;
+	justify-content: space-evenly;
+	/* display: grid;
+  grid-template-columns: 1fr auto; */
+}
+
+/* left */
+.not-found-left {
+	display: flex;
+	align-items: center;
+}
+
+.not-found-info {
+	width: calc(100% - 200px);
+}
+
+.not-found-info h2 {
+	font-size: var(--text-xxl);
+	color: var(--color-secondary);
+}
+
+.not-found-info h4 {
+	font-size: var(--text-lg);
+	color: var(--color-accent);
+	font-weight: var(--weight-thin);
+	margin-top: 20px;
+}
+
+.not-found-info div {
+	display: flex;
+	flex-direction: row;
+	margin-top: 50px;
+}
+
+.not-found-info div a {
+	text-align: center;
+	margin-right: 24px;
+	text-decoration: none;
+	min-width: 230px;
+	width: 230px;
+}
+
+.not-found-info div a:hover {
+	color: var(--color-light);
+}
+
+.not-found-info div button {
+	min-width: 150px;
+	width: 150px;
+	color: var(--color-primary);
+	border: var(--border-info);
+}
+
+.not-found-info div button:hover {
+	border: var(--border-info-hover);
+}
+
+/* right */
+.not-found-right {
+	width: 100%;
+	display: grid;
+	place-items: center;
+}
+
+.not-found-right img {
+	height: auto;
+	object-fit: contain;
+}
+
+@media (max-width: 980px) {
+	.not-found-wrapper {
+		padding: 20px 40px;
+	}
+
+	.not-found-lar {
+		align-items: center;
+		flex-direction: column-reverse;
+		margin: 0;
+	}
+
+	.not-found-left {
+		width: 100%;
+		margin-top: 20px;
+	}
+
+	.not-found-info div {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.not-found-right {
+		max-width: 300px;
+	}
+
+	.not-found-right img {
+		width: 100%;
+	}
+}

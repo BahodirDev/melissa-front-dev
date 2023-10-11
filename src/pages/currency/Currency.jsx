@@ -276,7 +276,10 @@ export default function Currency() {
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Valyutalar soni"
 					icon={
-						<CurrencyDollar size={24} style={{ color: "var(--color-primary)" }} />
+						<CurrencyDollar
+							size={24}
+							style={{ color: "var(--color-primary)" }}
+						/>
 					}
 					iconBgColor={"var(--bg-icon)"}
 				/>
@@ -291,8 +294,8 @@ export default function Currency() {
 					products={searchSubmitted ? filteredData : state.data}
 					deleteCurrency={deleteCurrency}
 					editCurrency={editCurrency}
-					toggleModal={showDropdown}
-					setToggleModal={setshowDropdown}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
 				/>
 			)}
 		</>
