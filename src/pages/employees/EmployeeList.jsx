@@ -1,62 +1,88 @@
-import noDataImg from "../../assets/img/no data.png"
+import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import user from "../../assets/img/user.png"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
+import NoData from "../../components/noData/NoData"
 import { employee_role } from "./employee_role"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import { useState } from "react"
 
 export default function EmployeeList({
-	users,
-	user_id,
-	setUser_id,
-	deleteUser,
+	data,
+	deleteEmp,
 	editEmp,
+	showDropdown,
+	setshowDropdown,
 }) {
-	const setUserId = (id) => {
-		if (id == user_id) {
-			setUser_id("")
-		} else {
-			setUser_id(id)
-		}
+	const [loc, setLoc] = useState(true)
+	const handleClick = (e, id) => {
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
 	}
 
-	return (
-		<div className="emp-wrapper">
-			{users?.length ? (
-				users.map((user) => {
-					return (
-						<div className="emp-item">
-							<i className="fa-solid fa-user"></i>
-							<h5>
-								{user?.user_name} | {employee_role(user?.user_role)}
-							</h5>
-							<h6>
-								Tel:{" "}
-								{user?.user_nomer.replace(
-									/^(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})$/,
-									"+$1 ($2) $3-$4-$5"
-								)}
-							</h6>
-							<button
-								className="btn btn-melissa mx-2"
-								onClick={() => editEmp(user?.user_id)}
-							>
-								<i className="fas fa-edit"></i>
-							</button>
-							<button
-								className="btn btn-my__danger mx-2"
-								onClick={(e) =>
-									productDeleteConfirm(e, "Hodim", deleteUser, user?.user_id)
-								}
-							>
-								<i className="fa-solid fa-trash-can"></i>
-							</button>
+	return data?.length ? (
+		<div className="card-wrapper grid">
+			{data.map((item, idx) => {
+				return (
+					<div key={idx} className="card-item emp">
+						<div className="card-item-top">
+							<div>
+								<img src={user} alt="user-image" />
+							</div>
+
+							<div className="card-item-edit-holder">
+								<button
+									type="button"
+									onClick={(e) => handleClick(e, item?.user_id)}
+								>
+									<DotsThreeVertical size={24} />
+								</button>
+								<div
+									className={`card-item-edit-wrapper ${
+										showDropdown === item?.user_id || "hidden"
+									} ${loc && "top"}`}
+								>
+									<button
+										type="button"
+										className="card-item-edit-item"
+										onClick={(e) => {
+											e.stopPropagation()
+											setshowDropdown("")
+											editEmp(item?.user_id)
+										}}
+									>
+										Tahrirlash <PencilSimple size={20} />
+									</button>
+									<button
+										type="button"
+										className="card-item-edit-item"
+										onClick={(e) =>
+											productDeleteConfirm(
+												e,
+												<>
+													Xodim <span>{item?.user_name}</span>ni
+												</>,
+												deleteEmp,
+												item?.user_id
+											)
+										}
+									>
+										O'chirish <Trash size={20} />
+									</button>
+								</div>
+							</div>
 						</div>
-					)
-				})
-			) : (
-				<div className="no-data__con">
-					<img src={noDataImg} alt="" />
-					<span>Hodim mavjud emas</span>
-				</div>
-			)}
+
+						<div className="card-item-bottom emp">
+							<h4>{item?.user_name}</h4>
+							<h5>{format_phone_number(item?.user_nomer)}</h5>
+						</div>
+					</div>
+				)
+			})}
 		</div>
+	) : (
+		<NoData />
 	)
 }

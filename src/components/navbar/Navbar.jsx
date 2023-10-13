@@ -6,48 +6,42 @@ import { post } from "../../customHook/api"
 import { employee_role } from "../../pages/employees/employee_role"
 import "./navbar.css"
 
-export default function Navbar({
-	setSidebar,
-	inputRef,
-	sidebar,
-	userInfo,
-	action,
-}) {
+export default function Navbar({ setSidebar, inputRef, sidebar, userInfo }) {
 	const location = useLocation()
 	const dispatch = useDispatch()
 
-	const submitSearch = () => {
-		dispatch(action?.setLoading(true))
-		post(action?.url, action?.body).then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
-				action?.res(data?.data)
-				action?.submitted(true)
-			}
-			dispatch(action?.setLoading(false))
-		})
-	}
+	// const submitSearch = () => {
+	// 	dispatch(action?.setLoading(true))
+	// 	post(action?.url, action?.body).then((data) => {
+	// 		if (data?.status === 200 || data?.status === 201) {
+	// 			action?.res(data?.data)
+	// 			action?.submitted(true)
+	// 		}
+	// 		dispatch(action?.setLoading(false))
+	// 	})
+	// }
 
-	const clearSearch = () => {
-		action?.submitted(false)
-		dispatch(action?.setLoading(false))
-		if (action?.url === "/return/return-filter") {
-			action?.clearValues.first("")
-			action?.clearValues.second("")
-			action?.clearValues.third("")
-		} else if (action?.url === "/reports/reports-filter") {
-			action?.clearValues.second([])
-			action?.clearValues.third([])
-			action?.clearValues.fourth("")
-			action?.clearValues.fifth("")
-			action?.clearValues.sixth("all")
-		} else if (action?.url === "/products/products-filter") {
-			action?.clearValues.first([])
-			action?.clearValues.second("")
-			action?.clearValues.third("")
-			action?.clearValues.fourth("")
-			action?.clearValues.fifth("")
-		}
-	}
+	// const clearSearch = () => {
+	// 	action?.submitted(false)
+	// 	dispatch(action?.setLoading(false))
+	// 	if (action?.url === "/return/return-filter") {
+	// 		action?.clearValues.first("")
+	// 		action?.clearValues.second("")
+	// 		action?.clearValues.third("")
+	// 	} else if (action?.url === "/reports/reports-filter") {
+	// 		action?.clearValues.second([])
+	// 		action?.clearValues.third([])
+	// 		action?.clearValues.fourth("")
+	// 		action?.clearValues.fifth("")
+	// 		action?.clearValues.sixth("all")
+	// 	} else if (action?.url === "/products/products-filter") {
+	// 		action?.clearValues.first([])
+	// 		action?.clearValues.second("")
+	// 		action?.clearValues.third("")
+	// 		action?.clearValues.fourth("")
+	// 		action?.clearValues.fifth("")
+	// 	}
+	// }
 
 	return (
 		<div className="top-bar">

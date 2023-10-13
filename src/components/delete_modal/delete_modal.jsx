@@ -5,7 +5,10 @@ export const productDeleteConfirm = (e, name, action, id) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
-		title: `${name}ni o'chirishni hohlaysizmi?`,
+		// title: `${name} o'chirishni hohlaysizmi?`,
+		title: (
+			<span className="delete-modal-span">{name} o'chirishni hohlaysizmi?</span>
+		),
 		icon: " ",
 		okText: "Ha, o'chirish",
 		okType: "danger",

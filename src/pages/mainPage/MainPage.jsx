@@ -17,7 +17,6 @@ export default function MainPage() {
 	const url = useLocation()
 	const navigate = useNavigate()
 	const [userInfo, setUserInfo] = useState(0)
-	const [action, setAction] = useState({})
 	const [showDropdown, setshowDropdown] = useState("")
 	const [addModalVisible, setAddModalVisible] = useState(false)
 	const [addModalDisplay, setAddModalDisplay] = useState("none")
@@ -121,7 +120,6 @@ export default function MainPage() {
 					setSidebar={setSidebar}
 					sidebar={sidebar}
 					userInfo={userInfo}
-					action={action}
 				/>
 				<div
 					className="content"
@@ -137,10 +135,7 @@ export default function MainPage() {
 					/>
 					<Outlet
 						context={[
-							userInfo,
 							inputRef,
-							action,
-							setAction,
 							showDropdown,
 							setshowDropdown,
 							addModalVisible,

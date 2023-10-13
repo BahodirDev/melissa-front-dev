@@ -38,7 +38,9 @@
 
 /* bottom */
 .modal-bottom {
+	height: calc(100% - 110px);
 	padding: 24px 32px;
+	overflow-y: auto;
 }
 
 .input-wrapper.modal-form {
@@ -57,6 +59,7 @@
 }
 .input-wrapper.modal-form .select .ant-select-selection-placeholder {
 	color: var(--color-modal-placeholder);
+	opacity: 0.5;
 }
 /* input */
 .input-wrapper.modal-form .input {
@@ -65,6 +68,10 @@
 	border: var(--border-secondary);
 	border-radius: var(--radius-md);
 	padding: 8px, 16px, 8px, 16px;
+}
+.input-wrapper.modal-form .input::placeholder {
+	color: var(--color-modal-placeholder);
+	opacity: 0.5;
 }
 
 /* button group */
