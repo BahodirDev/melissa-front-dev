@@ -15,9 +15,15 @@ import {
 	UsersFour,
 	Warehouse,
 } from "@phosphor-icons/react"
+import { useEffect, useState } from "react"
 
 export default function SSidebar() {
 	const navigate = useNavigate()
+	const [userRole, setUserRole] = useState(0)
+
+	useEffect(() => {
+		setUserRole(localStorage.getItem("role"))
+	}, [])
 
 	return (
 		<div className="ssidebar">
@@ -72,11 +78,13 @@ export default function SSidebar() {
 						<UsersFour size={24} />
 					</NavLink>
 				</li>
-				<li>
-					<NavLink to="/employees">
-						<Users size={24} />
-					</NavLink>
-				</li>
+				{userRole === "1" && (
+					<li>
+						<NavLink to="/employees">
+							<Users size={24} />
+						</NavLink>
+					</li>
+				)}
 				<li>
 					<NavLink to="/currency">
 						<CurrencyDollar size={24} />

@@ -3,10 +3,7 @@ import { useOutletContext } from "react-router-dom"
 
 const Search = ({ handleSearch, clearSearch }) => {
 	const [
-		userInfo,
 		inputRef,
-		action,
-		setAction,
 		showDropdown,
 		setshowDropdown,
 		addModalVisible,

@@ -7,27 +7,34 @@ import {
 import { addComma } from "../../components/addComma"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
 import NoData from "../../components/noData/NoData"
+import { useState } from "react"
 
 export default function CurrencyList({
-	products,
+	data,
 	deleteCurrency,
 	editCurrency,
 	showDropdown,
 	setshowDropdown,
 }) {
+	const [loc, setLoc] = useState(true)
 	const handleClick = (e, id) => {
 		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
 		e.stopPropagation()
+
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
 	}
 
-	return products?.length ? (
-		<div className="card-wrapper currency">
-			{products.map((item, idx) => {
+	return data?.length ? (
+		<div className="card-wrapper currency grid">
+			{data.map((item, idx) => {
 				return (
 					<div key={idx} className="card-item currency">
 						<div className="card-item-top">
 							<div>
-								<img src={`data:image/png;base64,${item?.flag}`} />
+								<img
+									src={`data:image/png;base64,${item?.flag}`}
+									alt="flag-image"
+								/>
 							</div>
 							<div className="card-item-edit-holder">
 								<button
@@ -39,7 +46,7 @@ export default function CurrencyList({
 								<div
 									className={`card-item-edit-wrapper ${
 										showDropdown === item?.currency_id || "hidden"
-									}`}
+									} ${loc && "top"}`}
 								>
 									<button
 										type="button"
@@ -58,7 +65,9 @@ export default function CurrencyList({
 										onClick={(e) =>
 											productDeleteConfirm(
 												e,
-												`"${item?.currency_name}" pul birligi`,
+												<>
+													<span>{item?.currency_name}</span> pul birligini
+												</>,
 												deleteCurrency,
 												item?.currency_id
 											)

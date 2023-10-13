@@ -38,6 +38,7 @@ function DeliverList({
 											marginTop: loc
 												? "50px"
 												: `-${
+														item?.deliver_debts.length &&
 														item?.deliver_debts.filter((item) => !item?.isdone)
 															.length
 															? "230"

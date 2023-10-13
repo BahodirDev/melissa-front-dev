@@ -32,14 +32,8 @@ export default function Products() {
 	const [sn, setSn] = useState("")
 	const [toggleClass, setToggleClass] = useState(false)
 	const request = useApiRequest()
-	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
-		userInfo,
-		action,
-		setAction,
-	] = useOutletContext()
+	const [saerchInputValue, setSearchInput, sidebar, action, setAction] =
+		useOutletContext()
 	const [objId, setObjId] = useState("")
 	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
@@ -52,6 +46,7 @@ export default function Products() {
 	const { product, good, currency, deliver, store } = useSelector(
 		(state) => state
 	)
+	const [userInfo, setUserInfo] = useState()
 
 	// new data
 	const [newGoodsId, setNewGoodsId] = useState({})
@@ -110,6 +105,7 @@ export default function Products() {
 	}
 
 	useEffect(() => {
+		setUserInfo(localStorage.getItem("role"))
 		getData()
 		getData1("deliver", setDataDeliver)
 		getData1("goods", setDataGood)
@@ -590,7 +586,7 @@ export default function Products() {
 						}
 						deleteItem={deleteProduct}
 						editProduct={editProduct}
-						userRole={userInfo?.role}
+						userRole={userInfo}
 					/>
 				</div>
 			)}

@@ -29,10 +29,7 @@ export default function Currency() {
 	const [newAmount, setNewAmount] = useState(0)
 	const [buttonLoader, setButtonLoader] = useState(false)
 	const [
-		userInfo,
 		inputRef,
-		action,
-		setAction,
 		showDropdown,
 		setshowDropdown,
 		addModalVisible,
@@ -291,7 +288,7 @@ export default function Currency() {
 				<Loader />
 			) : (
 				<CurrencyList
-					products={searchSubmitted ? filteredData : state.data}
+					data={searchSubmitted ? filteredData : state.data}
 					deleteCurrency={deleteCurrency}
 					editCurrency={editCurrency}
 					showDropdown={showDropdown}
