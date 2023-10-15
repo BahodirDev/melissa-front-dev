@@ -14,10 +14,10 @@ export default function EmployeeList({
 	setshowDropdown,
 }) {
 	const [loc, setLoc] = useState(true)
+
 	const handleClick = (e, id) => {
 		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
 		e.stopPropagation()
-
 		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
 	}
 

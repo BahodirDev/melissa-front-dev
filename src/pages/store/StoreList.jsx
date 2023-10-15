@@ -36,7 +36,7 @@ export default function StoreList({ store, deleteStore, editStore }) {
 
 							<div className="store-item-bottom">
 								<span>
-									{moment(item?.store_createdat).zone(+7).format("YYYY/MM/DD")}
+									{moment(item?.store_createdat).format("YYYY/MM/DD")}
 								</span>
 								<div>
 									<button

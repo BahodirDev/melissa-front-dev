@@ -18,6 +18,7 @@ export default function MainPage() {
 	const navigate = useNavigate()
 	const [userInfo, setUserInfo] = useState(0)
 	const [showDropdown, setshowDropdown] = useState("")
+	const [miniModal, setMiniModal] = useState("")
 	const [addModalVisible, setAddModalVisible] = useState(false)
 	const [addModalDisplay, setAddModalDisplay] = useState("none")
 	const [SDModalVisible, setSDModalVisible] = useState(false)
@@ -93,6 +94,7 @@ export default function MainPage() {
 
 	const closeAllModals = () => {
 		setshowDropdown("")
+		setMiniModal("")
 		setAddModalVisible(false)
 		setSDModalVisible(false)
 		setTimeout(() => {
@@ -108,6 +110,7 @@ export default function MainPage() {
 				onClick={(e) => {
 					e.stopPropagation()
 					setshowDropdown("")
+					setMiniModal("")
 					setSDModalVisible(true)
 					setSDModalDisplay("block")
 				}}
@@ -116,11 +119,7 @@ export default function MainPage() {
 			</button>
 			{sidebar ? <Sidebar /> : <SSidebar />}
 			<div className="main-div">
-				<Navbar
-					setSidebar={setSidebar}
-					sidebar={sidebar}
-					userInfo={userInfo}
-				/>
+				<Navbar setSidebar={setSidebar} sidebar={sidebar} userInfo={userInfo} />
 				<div
 					className="content"
 					style={{ overflowY: (addModalVisible || SDModalVisible) && "hidden" }}
@@ -142,6 +141,8 @@ export default function MainPage() {
 							setAddModalVisible,
 							addModalDisplay,
 							setAddModalDisplay,
+							miniModal,
+							setMiniModal,
 						]}
 					/>
 				</div>
