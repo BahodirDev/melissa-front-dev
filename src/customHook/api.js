@@ -1,6 +1,7 @@
 import axios from "axios"
 
 const apiRequest = async (method, endpoint, data) => {
+	console.log('token=>',process.env.REACT_APP_URL);
 	try {
 		const response = await axios({
 			method,
