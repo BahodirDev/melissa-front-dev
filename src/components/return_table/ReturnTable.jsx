@@ -12,7 +12,7 @@ const ReturnTable = ({ data, deleteItem, editItem }) => {
 				id: item?.return_id,
 				name: item?.return_name,
 				store: item?.return_store,
-				count: 'x'+item?.return_count,
+				count: "x" + item?.return_count,
 				cost_each: addComma(item?.return_cost) + " so'm",
 				cost_total: addComma(item?.return_cost * item?.return_count) + " so'm",
 				reason: item?.return_case,
@@ -23,7 +23,7 @@ const ReturnTable = ({ data, deleteItem, editItem }) => {
 						/^(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})$/,
 						"+$1 ($2) $3-$4-$5"
 					),
-				data: moment(item?.return_createdat).zone(+7).format("YYYY/MM/DD"),
+				data: moment(item?.return_createdat).format("YYYY/MM/DD"),
 			}
 		})
 

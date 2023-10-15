@@ -17,9 +17,9 @@ const AntReportTable = ({ data }) => {
 			data_price_each: addComma(item?.reports_count_price) + item?.currency,
 			data_price_total: addComma(item?.reports_total_cost) + item?.currency,
 			// data_kurs: addComma(item?.currency_amount) + "лв",
-			data_date: `${moment(item?.reports_createdat)
-				.zone(+7)
-				.format("YYYY/MM/DD HH:MM:SS")}`,
+			data_date: `${moment(item?.reports_createdat).format(
+				"YYYY/MM/DD HH:MM:SS"
+			)}`,
 		}
 	})
 
@@ -79,7 +79,7 @@ const AntReportTable = ({ data }) => {
 			defaultSortOrder: "descend",
 			sorter: (a, b) => moment(a.data_date).unix() - moment(b.data_date).unix(),
 			render: (text) => {
-				return <>{text.slice(0,10)}</>
+				return <>{text.slice(0, 10)}</>
 			},
 		},
 	]

@@ -3,12 +3,14 @@
 	display: flex;
 	flex-direction: column;
 }
+
 /* label */
 .input-wrapper label {
 	color: var(--color-secondary);
 	font-size: var(--text-lg);
 	margin-bottom: var(--padding-sm);
 }
+
 /* input */
 .input-wrapper input {
 	width: 100%;
@@ -20,9 +22,25 @@
 	font-size: var(--text-md);
 	color: var(--color-secondary);
 }
-.input-wrapper input::placeholder {
+.input-wrapper input::placeholder,
+.input-wrapper .desc-input::placeholder {
 	color: var(--color-modal-placeholder);
 }
+
+/* textarea */
+.input-wrapper .desc-input {
+	width: 100%;
+	min-height: 100px;
+	/* height: 100px !important; */
+	max-height: 200px;
+	border-radius: var(--radius-sm);
+	border: var(--border-primary);
+	padding: var(--padding-lg);
+	font-weight: var(--weight-thin);
+	font-size: var(--text-md);
+	color: var(--color-secondary);
+}
+
 /* select */
 .input-wrapper .select .ant-select-selector {
 	border-radius: var(--radius-sm);
@@ -132,6 +150,7 @@
 /* saerch */
 .search-wrapper {
 	position: sticky;
+	z-index: 2;
 	top: -1px;
 	display: flex;
 	justify-content: space-between;
@@ -171,7 +190,6 @@
 	display: flex;
 	justify-content: center;
 	margin-top: 20px;
-	/* background-color: var(--bg-neutral); */
 }
 .ant-modal-confirm-body-wrapper button.ant-btn-dangerous {
 	background-color: var(--bg-danger);
@@ -199,6 +217,7 @@
 	justify-content: space-between;
 }
 .card-item-bottom {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -213,6 +232,7 @@
 }
 .card-item-edit-wrapper {
 	position: absolute;
+	z-index: 1;
 	top: 32px;
 	right: -20px;
 	width: 130px;
@@ -253,4 +273,41 @@
 /* ant delete confirm modal */
 .ant-modal-confirm-title .delete-modal-span span {
 	color: var(--color-danger);
+}
+
+/* mini modal */
+.mini-modal {
+	position: absolute;
+	top: 90px;
+	left: 20px;
+	z-index: 1;
+	width: 100%;
+	height: auto;
+	max-height: 200px;
+	padding: 10px;
+	overflow-y: auto;
+	border: var(--border-secondary);
+	background-color: var(--bg-light);
+	border-radius: var(--radius-lg);
+	border-top-left-radius: 0;
+	color: var(--color-accent);
+	font-size: var(--text-md);
+}
+.mini-modal h5 {
+	font-size: var(--text-md) !important;
+	border-bottom: var(--border-secondary);
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+}
+.mini-modal h5:last-child {
+	border-bottom: none;
+}
+.mini-modal h4 {
+	font-size: var(--text-lg) !important;
+}
+.mini-modal.top {
+	top: 50px;
+	transform: translateY(-100%);
+	border-radius: var(--radius-lg);
+	border-bottom-left-radius: 0;
 }

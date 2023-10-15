@@ -13,7 +13,7 @@ export default function GoodsList({ goods, deleteGood, updateGood }) {
 							<h5>Code: &nbsp;{item?.goods_code}</h5>
 							<div className="good-item-bottom">
 								<span>
-									{moment(item?.goods_createdat).zone(+7).format("YYYY/MM/DD")}
+									{moment(item?.goods_createdat).format("YYYY/MM/DD")}
 								</span>
 								<div>
 									<button

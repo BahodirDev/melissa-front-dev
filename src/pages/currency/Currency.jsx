@@ -65,7 +65,7 @@ export default function Currency() {
 	useEffect(() => {
 		dispatch(setLoading(true))
 		get("/currency/currency-list").then((data) => {
-			if (Array.isArray(data?.data)) {
+			if (data?.status === 201) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {
@@ -142,6 +142,7 @@ export default function Currency() {
 			}
 			dispatch(setLoading(false))
 		})
+		clearAndClose()
 	}
 
 	const editCurrency = (id) => {
@@ -168,6 +169,7 @@ export default function Currency() {
 	const clearAndClose = () => {
 		setNewName({})
 		setNewAmount("")
+		setObjId("")
 		setSubmitted(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
@@ -182,7 +184,7 @@ export default function Currency() {
 				setAddModalVisible={setAddModalVisible}
 				addModalDisplay={addModalDisplay}
 				setAddModalDisplay={setAddModalDisplay}
-				name="Pul birligi qo'shish"
+				name={objId ? "Pul birligi tahrirlash" : "Pul birligi qo'shish"}
 			>
 				<div
 					className={`input-wrapper modal-form ${

@@ -53,10 +53,12 @@ export default function Employees() {
 	const dispatch = useDispatch()
 	const [userId, setUserId] = useState()
 
-	const getData = () => {
+	useEffect(() => {
+		if (localStorage.getItem("role") !== "1") navigate("/*")
+		setUserId(localStorage.getItem("id"))
 		dispatch(setLoading(true))
 		get("/users/users-list").then((data) => {
-			if (Array.isArray(data?.data)) {
+			if (data?.status === 201) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {
@@ -64,12 +66,6 @@ export default function Employees() {
 			}
 			dispatch(setLoading(false))
 		})
-	}
-
-	useEffect(() => {
-		if (localStorage.getItem("role") !== "1") navigate("/*")
-		setUserId(localStorage.getItem("id"))
-		getData()
 	}, [])
 
 	const addNewUser = () => {
@@ -143,6 +139,7 @@ export default function Employees() {
 			}
 			dispatch(setLoading(false))
 		})
+		clearAndClose()
 	}
 
 	const editEmp = (id) => {
@@ -191,6 +188,7 @@ export default function Employees() {
 		setNew_job(0)
 		setNew_login("")
 		setNew_password("")
+		setObjId("")
 		setSubmitted(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
@@ -205,7 +203,7 @@ export default function Employees() {
 				setAddModalVisible={setAddModalVisible}
 				addModalDisplay={addModalDisplay}
 				setAddModalDisplay={setAddModalDisplay}
-				name="Xodim qo'shish"
+				name={objId ? "Xodim tahrirlash" : "Xodim qo'shish"}
 			>
 				<div
 					className={`input-wrapper modal-form regular 
@@ -232,7 +230,7 @@ export default function Employees() {
 					${submitted && phoneNumberCheck(new_number) !== null && "error"}
 					`}
 				>
-					<label>Xodim ismi</label>
+					<label>Telefon raqam kiriting</label>
 					<PatternFormat
 						type="text"
 						placeholder="+998(__) ___-__-__"

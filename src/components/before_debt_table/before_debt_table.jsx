@@ -26,10 +26,8 @@ const BeforeDebtTable = ({
 				good: item?.goods_id?.deliver_name,
 				totalCost:
 					addComma(item?.debts_count * item?.debts_cost) + item?.debts_currency,
-				date: `${moment(item?.debts_createdat).zone(+7).format("YYYY/MM/DD")}`,
-				dueDate: `${moment(item?.debts_due_date)
-					.zone(+7)
-					.format("YYYY/MM/DD")}`,
+				date: `${moment(item?.debts_createdat).format("YYYY/MM/DD")}`,
+				dueDate: `${moment(item?.debts_due_date).format("YYYY/MM/DD")}`,
 			}
 		})
 

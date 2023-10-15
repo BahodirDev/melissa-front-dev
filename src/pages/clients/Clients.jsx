@@ -13,71 +13,86 @@ import {
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/client"
-import { validation } from "../../components/validation"
+import {
+	phoneNumberCheck,
+	stringCheck,
+	validation,
+} from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import ClientList from "./ClientList"
 import "./client.css"
+import { toast } from "react-toastify"
+import Search from "../../components/search/Search"
+import InfoItem from "../../components/info_item/InfoItem"
+import { Info, UsersFour } from "@phosphor-icons/react"
+import AddModal from "../../components/add/AddModal"
 
 export default function Employees() {
-	const request = useApiRequest()
 	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
-		userInfo,
-		action,
-		setAction,
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
 	] = useOutletContext()
-	const [modal_alert, setModal_alert] = useState("")
-	const [modal_msg, setModal_msg] = useState("")
-	const [toggleClass, setToggleClass] = useState(false)
+
 	const [new_name, setNew_name] = useState("")
 	const [new_number, setNew_number] = useState("")
 	const [desc, setDesc] = useState("")
 	const [btn_loading, setBtn_loading] = useState(false)
-	const [userId, setUserId] = useState(0)
 	const [filteredData, setFilteredData] = useState([])
-	const [toggleDesc, setToggleDesc] = useState(0)
 	const [objId, setObjId] = useState("")
-	const buttonRef = useRef(null)
 	const [submitted, setSubmitted] = useState(false)
 	const state = useSelector((state) => state.client)
 	const dispatch = useDispatch()
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	useEffect(() => {
-		setAction({
-			url: "/clients/clients-search",
-			body: {
-				client_name: saerchInputValue,
-			},
-			res: setFilteredData,
-			submitted: setSearchSubmitted,
-			clearValues: {},
-			setLoading: setLoading,
-		})
-	}, [saerchInputValue])
-
-	const getData = () => {
 		dispatch(setLoading(true))
 		get("/clients/clients-list").then((data) => {
 			if (data?.status === 201 || data?.status === 200) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Malumot topilmadi")
+				toast.error("Nomalur server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
+	}, [])
+
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/clients/clients-search", {
+				client_name: inputRef.current?.value,
+			}).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
 	}
 
-	useEffect(getData, [])
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
 
+	// add, edit
 	const addNewClient = () => {
 		setSubmitted(true)
-		if (new_name.length >= 3 && desc && new_number.slice(18) !== "_") {
+		if (new_name.length && new_number.slice(18) !== "_") {
 			setBtn_loading(true)
 			let newClient = {
 				clients_name: new_name,
@@ -88,20 +103,13 @@ export default function Employees() {
 				patch(`/clients/clients-patch/${objId}`, newClient).then((data) => {
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Mijoz muvoffaqiyatli o'zgartirildi")
-						setNew_name("")
-						setNew_number("")
-						setDesc("")
-						setObjId("")
+						clearAndClose()
 						setSubmitted(false)
+						toast.success("Mijoz muvoffaqiyatli o'zgartirildi")
 					} else if (data?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
-						setModal_alert("Xatolik")
-						setModal_msg("Mijoz allaqachon mavjud")
+						toast.warn("Bunday mijoz allaqachon mavjud")
 					} else {
-						setModal_alert("Nomalum server xatolik")
-						setModal_msg("Malumot o'zgartirib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
 					setBtn_loading(false)
 				})
@@ -110,24 +118,43 @@ export default function Employees() {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data))
 						dispatch(setQuantity())
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Mijoz muvoffaqiyatli qo'shildi")
-						setNew_name("")
-						setNew_number("")
-						setDesc("")
-						setSubmitted(false)
+						toast.success("Mijoz muvoffaqiyatli qo'shildi")
+						clearAndClose()
 					} else if (data?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
-						setModal_alert("Xatolik")
-						setModal_msg("Mijoz allaqachon mavjud")
+						toast.warn("Bunday mijoz allaqachon mavjud")
 					} else {
-						setModal_alert("Nomalum server xatolik")
-						setModal_msg("Malumot qo'shib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
 					setBtn_loading(false)
 				})
 			}
 		}
+	}
+
+	const editClient = (id) => {
+		const index = state?.data.findIndex((item) => item?.clients_id === id)
+		if (index !== -1) {
+			setNew_name(state?.data[index]?.clients_name)
+			setNew_number(state?.data[index]?.clients_nomer.slice(3))
+			setDesc(state?.data[index]?.clients_desc)
+			setObjId(id)
+			setAddModalDisplay("block")
+			setAddModalVisible(true)
+		} else {
+			toast.error("Nomalum server xatolik")
+		}
+	}
+
+	const clearAndClose = () => {
+		setNew_name("")
+		setNew_number("")
+		setDesc("")
+		setObjId("")
+		setSubmitted(false)
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
 	}
 
 	const deleteClient = (id) => {
@@ -136,151 +163,111 @@ export default function Employees() {
 			if (data?.status === 200) {
 				dispatch(removeDebt(id))
 				dispatch(setQuantity())
-				setModal_alert("Xabar")
-				setModal_msg("Mijoz muvoffaqiyatli o'chirildi")
-				setUserId(0)
+				toast.success("Mijoz muvoffaqiyatli o'chirildi")
 			} else if (data?.response?.data?.error === "DEBTS_EXIST") {
-				setModal_alert("Qarzdorlik o'chirilmadi")
-				setModal_msg("Bu mijozda qarzdorlik mavjud")
+				toast.warn("Bu mijozda qarzdorlik mavjud")
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Malumot o'chirib bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
-	}
-
-	const collapse = (event) => {
-		setSubmitted(false)
-		setToggleClass(!toggleClass)
-		let content = event.target.nextElementSibling
-		if (content.style.maxHeight) {
-			content.style.maxHeight = null
-			setNew_name("")
-			setNew_number("")
-			setDesc("")
-			setObjId("")
-		} else {
-			content.style.maxHeight = content.scrollHeight + "px"
-		}
-	}
-
-	const editClient = (id) => {
-		let divTop = document.querySelector(".content").scrollTop
-		let scrollTop = setInterval(() => {
-			divTop -= 20
-			document.querySelector(".content").scrollTop = divTop
-
-			if (divTop <= 0) {
-				clearInterval(scrollTop)
-			}
-		}, 10)
-
-		const index = state?.data.findIndex((item) => item?.clients_id === id)
-		if (index !== -1) {
-			setNew_name(state?.data[index]?.clients_name)
-			setNew_number(state?.data[index]?.clients_nomer.slice(3))
-			setDesc(state?.data[index]?.clients_desc)
-			setObjId(id)
-			buttonRef.current.click()
-		}
+		clearAndClose()
 	}
 
 	return (
 		<>
-			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
-
-			<div className="clients-info">
-				<i className="fa-solid fa-users"></i> Mijozlar soni:{" "}
-				{state?.quantity ? state?.quantity : 0} ta
-			</div>
-
-			<button
-				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
-				onClick={collapse}
-				ref={buttonRef}
+			<AddModal
+				addModalVisible={addModalVisible}
+				setAddModalVisible={setAddModalVisible}
+				addModalDisplay={addModalDisplay}
+				setAddModalDisplay={setAddModalDisplay}
+				name={objId ? "Mijoz tahrirlash" : "Mijoz qo'shish"}
 			>
-				Qo'shish
-			</button>
-			<div className="my-content">
-				<div className="row mb-3 px-2">
-					<div className="col-2 p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Ism
-						</label>
-						<Input
-							type="text"
-							placeholder="Ism"
-							value={new_name}
-							onChange={(e) => setNew_name(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(!new_name, "Ism kiritish majburiy")}
-							{new_name.length
-								? validation(new_name.length < 3, "Kamida 3 ta harf kerak")
-								: null}
-						</div>
-					</div>
-					<div className="col-2 p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="">
-							Tel nomer
-						</label>
-						<PatternFormat
-							className="phone-number-input"
-							placeholder="+998(__) ___-__-__"
-							type="tel"
-							format="+998 (##) ###-##-##"
-							mask="_"
-							value={new_number}
-							onValueChange={(value) => setNew_number(value.formattedValue)}
-							required
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(!new_number, "Raqam kiritish majburiy")}
-							{new_number.length
-								? validation(new_number.slice(-1) === "_", "Noto'g'ri raqam")
-								: null}
-						</div>
-					</div>
-					<div className="col-2 p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="">
-							Izoh
-						</label>
-						<Input
-							type="text"
-							placeholder="Izoh"
-							value={desc}
-							onChange={(e) => setDesc(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(!desc, "Izoh kiritish majburiy")}
-							{desc.length
-								? validation(!desc.length, "Izoh kiritish majburiy")
-								: null}
-						</div>
-					</div>
-
-					<div className="col p-0 mx-1">
-						<br />
-						<button
-							disabled={btn_loading}
-							className="btn btn-melissa"
-							onClick={addNewClient}
-							style={{ padding: "4px 10px" }}
-						>
-							<i className="fas fa-plus"></i>
-							{btn_loading && (
-								<span
-									className="spinner-grow spinner-grow-sm"
-									role="status"
-									aria-hidden="true"
-									style={{ marginLeft: "5px" }}
-								></span>
-							)}
-						</button>
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && stringCheck(new_name) !== null && "error"}
+					`}
+				>
+					<label>Mijoz ismi</label>
+					<input
+						type="text"
+						placeholder="Mijoz ismini kiriting"
+						className="input"
+						value={new_name}
+						onChange={(e) => setNew_name(e.target.value)}
+					/>
+					{submitted && stringCheck(new_name) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>
+							{submitted && stringCheck(new_name, "Ism kiritish majburiy")}
+						</span>
 					</div>
 				</div>
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && phoneNumberCheck(new_number) !== null && "error"}
+					`}
+				>
+					<label>Telefon raqam kiriting</label>
+					<PatternFormat
+						type="text"
+						placeholder="+998(__) ___-__-__"
+						className="input"
+						format="+998 (##) ###-##-##"
+						mask="_"
+						value={new_number}
+						onValueChange={(value) => setNew_number(value.formattedValue)}
+					/>
+					{submitted && phoneNumberCheck(new_number) !== null && (
+						<Info size={20} />
+					)}
+					<div className="validation-field">
+						<span>{submitted && phoneNumberCheck(new_number)}</span>
+					</div>
+				</div>
+				<div className="input-wrapper modal-form regular">
+					<label>Izoh</label>
+					<textarea
+						placeholder="Izoh"
+						className="desc-input"
+						value={desc}
+						onChange={(e) => setDesc(e.target.value)}
+					></textarea>
+				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btn_loading}
+						onClick={addNewClient}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btn_loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
+			</AddModal>
+
+			<div className="info-wrapper">
+				<InfoItem
+					value={searchSubmitted ? filteredData.length : state?.quantity}
+					name="Mijozlar soni"
+					icon={
+						<UsersFour size={24} style={{ color: "var(--color-primary)" }} />
+					}
+					iconBgColor={"var(--bg-icon)"}
+				/>
 			</div>
+
+			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
 
 			{state?.loading ? (
 				<Loader />
@@ -288,9 +275,11 @@ export default function Employees() {
 				<ClientList
 					data={searchSubmitted ? filteredData : state?.data}
 					deleteClient={deleteClient}
-					toggleDesc={toggleDesc}
-					setToggleDesc={setToggleDesc}
 					editClient={editClient}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
+					miniModal={miniModal}
+					setMiniModal={setMiniModal}
 				/>
 			)}
 		</>
