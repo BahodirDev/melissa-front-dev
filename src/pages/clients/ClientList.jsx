@@ -1,5 +1,4 @@
 import { useState } from "react"
-import noDataImg from "../../assets/img/no data.png"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
 import ClientDebtList from "./ClientDebtList"
 import NoData from "../../components/noData/NoData"
@@ -9,7 +8,6 @@ import {
 	PencilSimple,
 	Trash,
 } from "@phosphor-icons/react"
-import { formatNumber } from "../../components/addComma"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 function ClientList({

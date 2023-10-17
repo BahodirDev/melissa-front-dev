@@ -1,9 +1,7 @@
-import { Input } from "antd"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { PatternFormat } from "react-number-format"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
@@ -13,135 +11,111 @@ import {
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/deliver"
-import { validation } from "../../components/validation"
+import { phoneNumberCheck, stringCheck } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
-import useApiRequest from "../../customHook/useUrl"
 import DeliverList from "./DeliverList"
 import "./deliver.css"
+import AddModal from "../../components/add/AddModal"
+import InfoItem from "../../components/info_item/InfoItem"
+import { Info, Truck } from "@phosphor-icons/react"
+import Search from "../../components/search/Search"
+import { toast } from "react-toastify"
 
 function Deliver() {
-	const [toggleClass, setToggleClass] = useState(false)
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+	] = useOutletContext()
+	const state = useSelector((state) => state.deliver)
+	const dispatch = useDispatch()
+
+	const [filteredData, setFilteredData] = useState([])
 	const [btn_loading, setBtn_loading] = useState(false)
-	const request = useApiRequest()
+	const [objId, setObjId] = useState("")
+	const [submitted, setSubmitted] = useState(false)
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	// new data
 	const [name, setName] = useState("")
 	const [phone, setPhone] = useState("")
 	const [loc, setLoc] = useState("")
-	const [modal_msg, setModal_msg] = useState("")
-	const [modal_alert, setModal_alert] = useState("")
-	const [user_id, setUser_id] = useState("")
-	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
-		userInfo,
-		action,
-		setAction,
-	] = useOutletContext()
-	const [filteredData, setFilteredData] = useState([])
-	const [objId, setObjId] = useState("")
-	const buttonRef = useRef(null)
-	const [toggleDesc, setToggleDesc] = useState(0)
-	const [submitted, setSubmitted] = useState(false)
-	const state = useSelector((state) => state.deliver)
-	const dispatch = useDispatch()
-	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	useEffect(() => {
-		setAction({
-			url: "/deliver/deliver-search",
-			body: {
-				search: saerchInputValue,
-			},
-			res: setFilteredData,
-			submitted: setSearchSubmitted,
-			clearValues: {},
-			setLoading: setLoading,
-		})
-	}, [saerchInputValue])
-
-	const getData = () => {
 		dispatch(setLoading(true))
 		get("/deliver/deliver-list").then((data) => {
 			if (data?.status === 201) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Malumot topilmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
+	}, [])
+
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/deliver/deliver-search", {
+				search: inputRef.current?.value,
+			}).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
 	}
 
-	useEffect(getData, [])
-
-	const collapse = (event) => {
-		setSubmitted(false)
-		setToggleClass(!toggleClass)
-		let content = event.target.nextElementSibling
-		if (content.style.maxHeight) {
-			content.style.maxHeight = null
-			setName("")
-			setPhone("")
-			setLoc("")
-			setObjId("")
-		} else {
-			content.style.maxHeight = content.scrollHeight + "px"
-		}
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
 	}
 
 	const addNewDeliver = () => {
 		setSubmitted(true)
-		if (name.length >= 3 && phone.slice(18) !== "_" && loc) {
+		if (name.length && phone.slice(18) !== "_") {
 			setBtn_loading(true)
+			let obj = {
+				deliver_name: name,
+				deliver_nomer: phone.replace(/\D/g, ""),
+				deliver_place: loc,
+			}
 			if (objId) {
-				patch(`/deliver/deliver-patch/${objId}`, {
-					deliver_name: name,
-					deliver_nomer: phone.replace(/\D/g, ""),
-					deliver_place: loc,
-				}).then((data) => {
+				patch(`/deliver/deliver-patch/${objId}`, obj).then((data) => {
 					if (data?.status === 200) {
 						dispatch(editData(data?.data?.data))
-						buttonRef.current.click()
-						setName("")
-						setPhone("")
-						setLoc("")
-						setObjId("")
-						setSubmitted(false)
-						setModal_msg("Malumot muvoffaqiyatli o'zgartirildi")
-						setModal_alert("Xabar")
+						toast.success("Malumot muvoffaqiyatli o'zgartirildi")
+						clearAndClose()
 					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
-						setModal_alert("Malumot o'zgartirilmadi")
-						setModal_msg("Bunday ta'minotchi allaqachon mavjud")
+						toast.warn("Bunday ta'minotchi allaqachon mavjud")
 					} else {
-						setModal_alert("Nomalum server xatolik")
-						setModal_msg("Malumot o'zgartirib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
 					setBtn_loading(false)
 				})
 			} else {
-				let newDeliver = {
-					deliver_name: name,
-					deliver_nomer: phone.replace(/\D/g, ""),
-					deliver_place: loc,
-				}
-				post("/deliver/deliver-post", newDeliver).then((data) => {
+				post("/deliver/deliver-post", obj).then((data) => {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data?.data))
 						dispatch(setQuantity())
-						buttonRef.current.click()
-						setName("")
-						setPhone("")
-						setLoc("")
-						setSubmitted(false)
-						setModal_msg("Ta'minotchi muvoffaqiyatli qo'shildi")
-						setModal_alert("Xabar")
+						toast.success("Ta'minotchi muvoffaqiyatli qo'shildi")
+						clearAndClose()
 					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
-						setModal_alert("Malumot o'zgartirilmadi")
-						setModal_msg("Bunday ta'minotchi allaqachon mavjud")
+						toast.warn("Bunday ta'minotchi allaqachon mavjud")
 					} else {
-						setModal_alert("Nomalum server xatolik")
-						setModal_msg("Malumot o'zgartirib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
 					setBtn_loading(false)
 				})
@@ -149,156 +123,151 @@ function Deliver() {
 		}
 	}
 
-	const deleteDeliver = (id) => {
+	const deleteSup = (id) => {
 		dispatch(setLoading(true))
 		remove(`/deliver/deliver-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
 				dispatch(removeDeliver(id))
 				dispatch(setQuantity())
-				setUser_id("")
-				setModal_msg("Ta'minotchi o'chirildi")
-				setModal_alert("Xabar")
+				toast.success("Ta'minotchi muvoffaqiyatli o'chirildi")
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
-				setModal_alert("Ta'minotchi o'chirilmadi")
-				setModal_msg("Bu ta'minotchida qarzdorlik mavjud")
+				toast.warn("Bu ta'minotchida qarzdorlik mavjud")
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Malumot o'chirib bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
+		clearAndClose()
 	}
 
-	const editDeliver = (id) => {
-		let divTop = document.querySelector(".content").scrollTop
-		let scrollTop = setInterval(() => {
-			divTop -= 20
-			document.querySelector(".content").scrollTop = divTop
-
-			if (divTop <= 0) {
-				clearInterval(scrollTop)
-			}
-		}, 10)
-
+	const editSup = (id) => {
 		const index = state?.data.findIndex((item) => item.deliver_id === id)
 		if (index !== -1) {
-			setName(toggleClass ? "" : state?.data[index]?.deliver_name)
-			setPhone(toggleClass ? "" : state?.data[index]?.deliver_nomer.slice(3))
-			setLoc(toggleClass ? "" : state?.data[index]?.deliver_place)
+			setName(state?.data[index]?.deliver_name)
+			setPhone(state?.data[index]?.deliver_nomer.slice(3))
+			setLoc(state?.data[index]?.deliver_place)
 			setObjId(id)
-			buttonRef.current.click()
+			setAddModalDisplay("block")
+			setAddModalVisible(true)
+		} else {
+			toast.error("Nomalum server xatolik")
 		}
+	}
+
+	const clearAndClose = () => {
+		setName("")
+		setPhone("")
+		setLoc("")
+		setObjId("")
+		setSubmitted(false)
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
 	}
 
 	return (
 		<>
-			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
-
-			<div className="deliverInfo">
-				<i className="fa-solid fa-truck"></i> Ta'minotchilar soni:{" "}
-				{searchSubmitted
-					? filteredData?.length
-					: state?.quantity
-					? state?.quantity
-					: 0}{" "}
-				ta
-			</div>
-
-			<button
-				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
-				onClick={collapse}
-				ref={buttonRef}
+			<AddModal
+				addModalVisible={addModalVisible}
+				setAddModalVisible={setAddModalVisible}
+				addModalDisplay={addModalDisplay}
+				setAddModalDisplay={setAddModalDisplay}
+				name={objId ? "Ta'minotchi tahrirlash" : "Ta'minotchi qo'shish"}
 			>
-				Qo'shish
-			</button>
-			<div className="my-content">
-				<div className="row mb-3 px-2">
-					<div className="col-2 p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Ism
-						</label>
-						<Input
-							type="text"
-							placeholder="Alisher"
-							value={name}
-							onChange={(e) => setName(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(!name, "Ism kiritish majburiy")}
-							{name.length
-								? validation(name.length < 3, "Kamida 3 ta harf kerak")
-								: null}
-						</div>
-					</div>
-					<div className="col-2 p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Tel nomer
-						</label>
-						<PatternFormat
-							className="phone-number-input"
-							placeholder="+998(__) ___-__-__"
-							type="tel"
-							format="+998 (##) ###-##-##"
-							mask="_"
-							value={phone}
-							onValueChange={(value) => setPhone(value.formattedValue)}
-							required
-						/>
-						<div className="validation-field-error">
-							{submitted &&
-								validation(!phone, "Telefon raqam kiritish majburiy")}
-							{phone.length
-								? validation(phone.slice(-1) === "_", "Noto'g'ri telefon raqam")
-								: null}
-						</div>
-					</div>
-					<div className="col-2 p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Manzil
-						</label>
-						<Input
-							type="text"
-							placeholder="Toshkent 1"
-							value={loc}
-							onChange={(e) => setLoc(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(!loc, "Manzil kiritish majburiy")}
-							{loc.length ? validation(!loc, "Manzil kiritish majburiy") : null}
-						</div>
-					</div>
-
-					<div className="col p-0 mx-1">
-						<br />
-						<button
-							className="btn btn-melissa"
-							onClick={addNewDeliver}
-							style={{ padding: "4px 10px" }}
-							disabled={btn_loading}
-						>
-							<i className="fas fa-plus"></i>
-							{btn_loading && (
-								<span
-									className="spinner-grow spinner-grow-sm"
-									role="status"
-									aria-hidden="true"
-									style={{ marginLeft: "5px" }}
-								></span>
-							)}
-						</button>
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && stringCheck(name) !== null && "error"}
+					`}
+				>
+					<label>Ta'minotchi ismi</label>
+					<input
+						type="text"
+						placeholder="Ta'minotchi ismini kiriting"
+						className="input"
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+					/>
+					{submitted && stringCheck(name) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>
+							{submitted && stringCheck(name, "Ism kiritish majburiy")}
+						</span>
 					</div>
 				</div>
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && phoneNumberCheck(phone) !== null && "error"}
+					`}
+				>
+					<label>Telefon raqam kiriting</label>
+					<PatternFormat
+						type="text"
+						placeholder="+998(__) ___-__-__"
+						className="input"
+						format="+998 (##) ###-##-##"
+						mask="_"
+						value={phone}
+						onValueChange={(value) => setPhone(value.formattedValue)}
+					/>
+					{submitted && phoneNumberCheck(phone) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && phoneNumberCheck(phone)}</span>
+					</div>
+				</div>
+				<div className="input-wrapper modal-form regular">
+					<label>Manzil kiriting</label>
+					<textarea
+						placeholder="Manzil"
+						className="desc-input"
+						value={loc}
+						onChange={(e) => setLoc(e.target.value)}
+					></textarea>
+				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btn_loading}
+						onClick={addNewDeliver}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btn_loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
+			</AddModal>
+
+			<div className="info-wrapper">
+				<InfoItem
+					value={searchSubmitted ? filteredData.length : state?.quantity}
+					name="Ta'minotchilar soni"
+					icon={<Truck size={24} style={{ color: "var(--color-primary)" }} />}
+					iconBgColor={"var(--bg-icon)"}
+				/>
 			</div>
+
+			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
 
 			{state?.loading ? (
 				<Loader />
 			) : (
 				<DeliverList
 					data={searchSubmitted ? filteredData : state?.data}
-					deleteDeliver={deleteDeliver}
-					editDeliver={editDeliver}
-					toggleDesc={toggleDesc}
-					setToggleDesc={setToggleDesc}
+					deleteSup={deleteSup}
+					editSup={editSup}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
+					miniModal={miniModal}
+					setMiniModal={setMiniModal}
 				/>
 			)}
 		</>

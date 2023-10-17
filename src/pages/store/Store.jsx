@@ -12,107 +12,110 @@ import {
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/store"
-import { validation } from "../../components/validation"
+import { stringCheck, validation } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import StoreList from "./StoreList"
 import "./store.css"
+import { toast } from "react-toastify"
+import AddModal from "../../components/add/AddModal"
+import { Factory, Info } from "@phosphor-icons/react"
+import InfoItem from "../../components/info_item/InfoItem"
+import Search from "../../components/search/Search"
 
 export default function Store() {
-	const [filteredStores, setFilteredStores] = useState([])
-	const [newStoreName, setNewStoreName] = useState("")
-	const [buttonLoader, setButtonLoader] = useState(false)
-	const [toggleClass, setToggleClass] = useState(false)
-	const [modal_msg, setModal_msg] = useState("")
-	const [modal_alert, setModal_alert] = useState("")
-	const request = useApiRequest()
-	const buttonRef = useRef(null)
-	const [objId, setObjId] = useState("")
-	const [submitted, setSubmitted] = useState(false)
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+	] = useOutletContext()
 	const state = useSelector((state) => state.store)
 	const dispatch = useDispatch()
-	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
-		userInfo,
-		action,
-		setAction,
-	] = useOutletContext()
+
+	const [filteredData, setFilteredData] = useState([])
+	const [btn_loading, setBtn_loading] = useState(false)
+	const [objId, setObjId] = useState("")
+	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
-	useEffect(() => {
-		setAction({
-			url: "/store/store-search",
-			body: {
-				store_name: saerchInputValue,
-			},
-			res: setFilteredStores,
-			submitted: setSearchSubmitted,
-			clearValues: {},
-			setLoading: setLoading,
-		})
-	}, [saerchInputValue])
+	// new data
+	const [storeName, setStoreName] = useState("")
 
-	const getData = () => {
+	useEffect(() => {
 		dispatch(setLoading(true))
 		get("/store/store-list").then((data) => {
 			if (data?.status === 201) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Malumot topilmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
+	}, [])
+
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/store/store-search", {
+				store_name: inputRef.current?.value,
+			}).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
 	}
 
-	useEffect(getData, [])
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
 
 	const addNewStore = () => {
 		setSubmitted(true)
-		if (newStoreName.length) {
-			setButtonLoader(true)
+		if (storeName.length) {
+			setBtn_loading(true)
 			if (objId) {
-				patch(`/store/store-patch/${objId}`, { store_name: newStoreName }).then(
+				patch(`/store/store-patch/${objId}`, { store_name: storeName }).then(
 					(data) => {
 						if (data?.status === 201) {
 							dispatch(editData(data?.data))
-							buttonRef.current.click()
-							setModal_alert("Xabar")
-							setModal_msg("Malumot muvoffaqiyatli o'zgartirildi")
-							setNewStoreName("")
-							setObjId("")
-							setSubmitted(false)
+							toast.success("Malumot muvoffaqiyatli o'zgartirildi")
+							clearAndClose()
 						} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
-							setModal_alert("Xatolik")
-							setModal_msg("Bunday ombor allaqachon mavjud")
+							toast.warn("Bunday ombor allaqachon mavjud")
 						} else {
-							setModal_alert("Nomalum server xatolik")
-							setModal_msg("Malumot o'zgartirib bo'lmadi")
+							toast.error("Nomalum server xatolik")
 						}
-						setButtonLoader(false)
+						setBtn_loading(false)
 					}
 				)
 			} else {
-				post("/store/store-post", { store_name: newStoreName }).then((data) => {
+				post("/store/store-post", { store_name: storeName }).then((data) => {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data))
 						dispatch(setQuantity())
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Ombor muvoffaqiyatli qo'shildi")
-						setNewStoreName("")
-						setSubmitted(false)
+						toast.success("Ombor muvoffaqiyatli qo'shildi")
+						clearAndClose()
 					} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
-						setModal_alert("Xatolik")
-						setModal_msg("Ombor allaqachon mavjud")
+						toast.warn("Bunday ombor allaqachon mavjud")
 					} else {
-						setModal_alert("Nomalum server xatolik")
-						setModal_msg("Ombor qo'shib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
-					setButtonLoader(false)
+					setBtn_loading(false)
 				})
 			}
 		}
@@ -124,118 +127,112 @@ export default function Store() {
 			if (data?.status === 200) {
 				dispatch(removeStore(id))
 				dispatch(setQuantity())
-				setModal_alert("Xabar")
-				setModal_msg("Ombor muvoffaqiyatli o'chirildi")
+				toast.success("Ombor muvoffaqiyatli o'chirildi")
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
-				setModal_alert("Xatolik")
-				setModal_msg("Omborda maxsulot borligi uchun o'chirilmadi")
+				toast.warn("Omborda maxsulot borligi uchun o'chirilmadi")
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Malumot o'chirib bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
-	}
-
-	const collapse = (event) => {
-		setSubmitted(false)
-		setToggleClass(!toggleClass)
-		let content = event.target.nextElementSibling
-		if (content.style.maxHeight) {
-			content.style.maxHeight = null
-			setNewStoreName("")
-			setObjId("")
-		} else {
-			content.style.maxHeight = content.scrollHeight + "px"
-		}
+		clearAndClose()
 	}
 
 	const editStore = (id) => {
-		let divTop = document.querySelector(".content").scrollTop
-		let scrollTop = setInterval(() => {
-			divTop -= 20
-			document.querySelector(".content").scrollTop = divTop
-
-			if (divTop <= 0) {
-				clearInterval(scrollTop)
-			}
-		}, 10)
-
 		const index = state?.data.findIndex((item) => item.store_id === id)
 		if (index !== -1) {
-			setNewStoreName(toggleClass ? "" : state?.data[index]?.store_name)
+			setStoreName(state?.data[index]?.store_name)
 			setObjId(id)
-			buttonRef.current.click()
+			setAddModalDisplay("block")
+			setAddModalVisible(true)
+		} else {
+			toast.error("Nomalum server xatolik")
 		}
 	}
 
+	const clearAndClose = () => {
+		setStoreName("")
+		setObjId("")
+		setSubmitted(false)
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
+	}
+
 	return (
-		<div>
-			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
-
-			<div className="store-info">
-				<i className="fa-solid fa-warehouse"></i> Omborlar soni:{" "}
-				{searchSubmitted
-					? filteredStores?.length
-					: state?.quantity
-					? state?.quantity
-					: 0}{" "}
-				ta
-			</div>
-
-			<button
-				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
-				onClick={collapse}
-				ref={buttonRef}
+		<>
+			<AddModal
+				addModalVisible={addModalVisible}
+				setAddModalVisible={setAddModalVisible}
+				addModalDisplay={addModalDisplay}
+				setAddModalDisplay={setAddModalDisplay}
+				name={objId ? "Ombor tahrirlash" : "Ombor qo'shish"}
 			>
-				Qo'shish
-			</button>
-			<div className="my-content">
-				<div className="form-group d-flex mb-3">
-					<div className="col-2 mx-1 validation-field">
-						<label htmlFor="">Ombor nomi</label>
-						<Input
-							type="text"
-							className=""
-							placeholder="Ombor 1"
-							value={newStoreName}
-							onChange={(e) => setNewStoreName(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(!newStoreName, "Nom kiritish majburiy")}
-						</div>
-					</div>
-					<div className="col">
-						<br />
-						<button
-							disabled={buttonLoader}
-							className="btn btn-melissa"
-							onClick={addNewStore}
-							style={{ padding: "4px 10px" }}
-						>
-							<i className="fas fa-plus"></i>
-							{buttonLoader && (
-								<span
-									className="spinner-grow spinner-grow-sm"
-									role="status"
-									aria-hidden="true"
-									style={{ marginLeft: "5px" }}
-								></span>
-							)}
-						</button>
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && stringCheck(storeName) !== null && "error"}
+					`}
+				>
+					<label>Ombor nomi</label>
+					<input
+						type="text"
+						placeholder="Ombor nomini kiriting"
+						className="input"
+						value={storeName}
+						onChange={(e) => setStoreName(e.target.value)}
+					/>
+					{submitted && stringCheck(storeName) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>
+							{submitted && stringCheck(storeName, "Nom kiritish majburiy")}
+						</span>
 					</div>
 				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btn_loading}
+						onClick={addNewStore}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btn_loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
+			</AddModal>
+
+			<div className="info-wrapper">
+				<InfoItem
+					value={searchSubmitted ? filteredData.length : state?.quantity}
+					name="Omborlar soni"
+					icon={<Factory size={24} style={{ color: "var(--color-primary)" }} />}
+					iconBgColor={"var(--bg-icon)"}
+				/>
 			</div>
+
+			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
 
 			{state?.loading ? (
 				<Loader />
 			) : (
 				<StoreList
-					store={searchSubmitted ? filteredStores : state?.data}
+					data={searchSubmitted ? filteredData : state?.data}
 					deleteStore={deleteStore}
 					editStore={editStore}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
 				/>
 			)}
-		</div>
+		</>
 	)
 }

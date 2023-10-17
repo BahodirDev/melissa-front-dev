@@ -202,7 +202,6 @@
 	padding: 20px 0;
 	display: grid;
 	gap: 20px;
-	overflow: hidden;
 }
 .card-item {
 	padding: 20px;
