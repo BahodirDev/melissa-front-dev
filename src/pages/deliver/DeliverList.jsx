@@ -1,111 +1,130 @@
 import { useState } from "react"
-import noDataImg from "../../assets/img/no data.png"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
+import NoData from "../../components/noData/NoData"
+import {
+	CheckCircle,
+	DotsThreeVertical,
+	PencilSimple,
+	Trash,
+} from "@phosphor-icons/react"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import DeliverDebtList from "./DeliverDebtList"
 
 function DeliverList({
 	data,
-	deleteDeliver,
-	editDeliver,
-	toggleDesc,
-	setToggleDesc,
+	deleteSup,
+	editSup,
+	showDropdown,
+	setshowDropdown,
+	miniModal,
+	setMiniModal,
 }) {
 	const [loc, setLoc] = useState(true)
+	const [loc2, setLoc2] = useState(true)
 
-	return (
-		<div className="deliver-wrapper">
-			{data.length ? (
-				data.map((item) => {
-					if (!item?.isdelete) {
-						return (
-							<div className="deliver-item">
-								<i className="fas fa-user deliver-user-icon"></i>
-								<div className="deliver-info">
-									<h5>Ism: {item?.deliver_name}</h5>
-									<p>
-										Tel:{" "}
-										{item?.deliver_nomer.replace(
-											/^(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})$/,
-											"+$1 ($2) $3-$4-$5"
-										)}
-									</p>
-									<span>Manzil: {item?.deliver_place}</span>
-									<div
-										className={`clients-desc ${
-											toggleDesc === item?.deliver_id || "hide-client-desc"
-										}`}
-										style={{
-											marginTop: loc
-												? "50px"
-												: `-${
-														item?.deliver_debts.length &&
-														item?.deliver_debts.filter((item) => !item?.isdone)
-															.length
-															? "230"
-															: "47"
-												  }px`,
-										}}
+	const handleClick = (e, id) => {
+		setMiniModal("")
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
+	return data?.length ? (
+		<div className="card-wrapper deliver grid">
+			{data.map((item, idx) => {
+				if (!item?.isdelete) {
+					return (
+						<div key={idx} className="card-item deliver">
+							<div className="card-item-top">
+								<div>
+									<h3>{item?.deliver_name}</h3>
+								</div>
+								<div className="card-item-edit-holder">
+									<button
+										type="button"
+										onClick={(e) => handleClick(e, item?.deliver_id)}
 									>
-										<div className="clients_desc-i">
-											{item?.deliver_debts?.length ? (
-												<DeliverDebtList data={item?.deliver_debts} />
-											) : (
-												"Qarzdorlik mavjud emas"
-											)}
-										</div>
-									</div>
-
-									<div className="deliver-btn-group">
+										<DotsThreeVertical size={24} />
+									</button>
+									<div
+										className={`card-item-edit-wrapper ${
+											showDropdown === item?.deliver_id || "hidden"
+										} ${loc && "top"}`}
+									>
 										<button
-											className="btn btn-melissa btn-desc-deliver"
+											type="button"
+											className="card-item-edit-item"
 											onClick={(e) => {
-												toggleDesc === item?.deliver_id
-													? setToggleDesc(0)
-													: setToggleDesc(item?.deliver_id)
-
-												setLoc(
-													window.innerHeight - e.clientY > 220 ? true : false
-												)
+												e.stopPropagation()
+												setshowDropdown("")
+												editSup(item?.deliver_id)
 											}}
 										>
-											<i className="fa-solid fa-message"></i>
+											Tahrirlash <PencilSimple size={20} />
 										</button>
 										<button
-											className="btn btn-melissa mx-2"
-											onClick={() => {
-												setToggleDesc(0)
-												editDeliver(item?.deliver_id)
-											}}
-										>
-											<i className="fas fa-edit"></i>
-										</button>
-										<button
-											className="btn btn-my__danger"
-											onClick={(e) => {
-												setToggleDesc(0)
+											type="button"
+											className="card-item-edit-item"
+											onClick={(e) =>
 												productDeleteConfirm(
 													e,
-													"Ta'minotchi",
-													deleteDeliver,
+													<>
+														Ta'minotchi <span>{item?.deliver_name}</span>ni
+													</>,
+													deleteSup,
 													item?.deliver_id
 												)
-											}}
+											}
 										>
-											<i className="fa-solid fa-trash-can"></i>
+											O'chirish <Trash size={20} />
 										</button>
 									</div>
 								</div>
 							</div>
-						)
-					}
-				})
-			) : (
-				<div className="no-data__con">
-					<img src={noDataImg} alt="" />
-					<span>Ta'minotchi mavjud emas</span>
-				</div>
-			)}
+
+							<div className="card-item-bottom deliver">
+								<h4>{format_phone_number(item?.deliver_nomer)}</h4>
+								<h5>
+									Manzil: &nbsp;{" "}
+									{item?.deliver_place ? item?.deliver_place : "Nomalum"}
+								</h5>
+								<button
+									type="button"
+									onClick={(e) => {
+										setshowDropdown("")
+										e.stopPropagation()
+										miniModal === item?.deliver_id
+											? setMiniModal("")
+											: setMiniModal(item?.deliver_id)
+
+										setLoc2(window.innerHeight - e.clientY < 230 ? true : false)
+									}}
+								>
+									<CheckCircle size={20} /> Qarzdorlikni tekshirish
+								</button>
+
+								{/* debts mini modal */}
+								<div
+									className={`mini-modal  ${
+										miniModal === item?.deliver_id || "hidden"
+									} ${loc2 && "top"}`}
+									onClick={(e) => e.stopPropagation()}
+								>
+									{item?.deliver_debts?.length ? (
+										<DeliverDebtList data={item?.deliver_debts} />
+									) : (
+										<h4>Qarzdorlik mavjud emas</h4>
+									)}
+								</div>
+							</div>
+						</div>
+					)
+				}
+			})}
 		</div>
+	) : (
+		<NoData />
 	)
 }
+
 export default DeliverList

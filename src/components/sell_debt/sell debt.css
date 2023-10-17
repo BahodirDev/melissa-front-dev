@@ -1,4 +1,4 @@
-.add-modal-wrapper {
+.sell-modal-wrapper {
 	position: fixed;
 	left: 0;
 	top: 0;
@@ -9,19 +9,19 @@
 	/* disable body scroll */
 }
 
-.add-modal {
+.sell-modal {
 	float: right;
 	width: 0;
 	height: 100%;
 	background-color: var(--bg-light);
 }
 
-.fade-in {
+.fade-in-sd {
 	animation: fade-in 0.3s ease-out;
 	width: 350px;
 }
 
-.fade-out {
+.fade-out-sd {
 	animation: fade-out 0.3s ease-out;
 	width: 0;
 }

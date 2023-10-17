@@ -1,3 +1,5 @@
+import "./sell debt.css"
+
 const SellDebt = ({
 	SDModalVisible,
 	setSDModalVisible,
@@ -5,9 +7,11 @@ const SellDebt = ({
 	setSDModalDisplay,
 }) => {
 	return (
-		<div className="add-modal-wrapper" style={{ display: SDModalDisplay }}>
+		<div className="sell-modal-wrapper" style={{ display: SDModalDisplay }}>
 			<div
-				className={`add-modal ${SDModalVisible ? "fade-in" : "fade-out"}`}
+				className={`sell-modal ${
+					SDModalVisible ? "fade-in-sd" : "fade-out-sd"
+				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
 				<h4>Sell and Debt Modal</h4>

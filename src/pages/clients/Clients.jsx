@@ -1,9 +1,7 @@
-import { Input } from "antd"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { PatternFormat } from "react-number-format"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
@@ -16,10 +14,8 @@ import {
 import {
 	phoneNumberCheck,
 	stringCheck,
-	validation,
 } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
-import useApiRequest from "../../customHook/useUrl"
 import ClientList from "./ClientList"
 import "./client.css"
 import { toast } from "react-toastify"
