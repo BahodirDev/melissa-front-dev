@@ -9,33 +9,68 @@ import {
 	setData,
 	setLoading,
 } from "../../components/reducers/debt"
-import { patch, remove } from "../../customHook/api"
+import { patch, post, remove } from "../../customHook/api"
+import { useOutletContext } from "react-router-dom"
+import { toast } from "react-toastify"
+import InfoItem from "../../components/info_item/InfoItem"
+import { CurrencyDollar } from "@phosphor-icons/react"
+import { Select } from "antd"
+import Search from "../../components/search/Search"
 
-const Client = ({ getData, saerchInputValue, setAction }) => {
-	const state = useSelector((state) => state.debt)
+const Client = ({ getData }) => {
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+	] = useOutletContext()
+	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
-	const [modalAlert, setModalAlert] = useState("")
-	const [modalMsg, setModalMsg] = useState("")
 
 	const [filteredData, setFilteredData] = useState({})
+	const [btn_loading, setBtn_loading] = useState(false)
+	const [objId, setObjId] = useState("")
+	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
-	useEffect(() => {
-		setAction({
-			url: "/debts/debts-filter",
-			body: {
-				search: saerchInputValue,
-			},
-			res: setFilteredData,
-			submitted: setSearchSubmitted,
-			clearValues: {},
-			setLoading: setLoading,
-		})
-	}, [saerchInputValue])
+	// filter
+	const [store, setStore] = useState("")
+	const [supplier, setSupplier] = useState("")
+	const [category, setCategory] = useState("")
 
 	useEffect(() => {
 		getData("debts", setData, setLoading)
 	}, [])
+
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/debts/debts-filter", {
+				search: inputRef.current?.value,
+			}).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
+	}
+
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
 
 	const closeDebt = (id) => {
 		dispatch(setLoading(true))
@@ -50,14 +85,11 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 							data?.data?.currency_amount,
 					})
 				)
-				setModalAlert("Xabar")
-				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
+				toast.success("Qarzdorlik muvoffaqiyatli yopildi")
 			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
-				setModalAlert("Xatolik")
-				setModalMsg("Bunday qarzdorlik topilmadi")
+				toast.warn("Bunday qarzdorlik topilmadi")
 			} else {
-				setModalAlert("Nomalum server xatolik")
-				setModalMsg("Qarzdorlik yopib bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
@@ -68,14 +100,11 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
 			if (data?.status === 200) {
 				dispatch(payClientDebt({ id, sum, value }))
-				setModalAlert("Xabar")
-				setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
+				toast.success("Qarzdorlik muvoffaqiyatli kiritildi")
 			} else if (data?.response?.data?.error === "DEBTS_COST_REQUIRED") {
-				setModalAlert("Xatolik")
-				setModalMsg("Kiritilgan summa mavjud summadan yuqori")
+				toast.warn("Kiritilgan summa mavjud summadan yuqori")
 			} else {
-				setModalAlert("Nomalum server xatolik")
-				setModalMsg("Qarzdorlik kiritib bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
@@ -85,7 +114,6 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 		dispatch(setLoading(true))
 		remove(`/debts/debts-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				console.log(data?.data)
 				dispatch(
 					deleteData({
 						id: data?.data?.debts_id,
@@ -95,11 +123,9 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 							data?.data?.debts_currency_amount,
 					})
 				)
-				setModalAlert("Xabar")
-				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
+				toast.success("Qarzdorlik muvoffaqiyatli o'chirildi")
 			} else {
-				setModalAlert("Nomalum server xatolik")
-				setModalMsg("Qarzdorlikni o'chirib bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
@@ -107,26 +133,129 @@ const Client = ({ getData, saerchInputValue, setAction }) => {
 
 	return (
 		<>
-			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
-
-			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
-				{searchSubmitted ? filteredData?.amount : state.quantity} so'm
+			<div className="info-wrapper">
+				<InfoItem
+					value={
+						searchSubmitted
+							? +filteredData.amount?.toFixed(2)
+							: +state?.debt?.quantity.toFixed(2)
+					}
+					name="Umumiy summa"
+					icon={
+						<CurrencyDollar
+							size={24}
+							style={{ color: "var(--color-warning)" }}
+						/>
+					}
+					iconBgColor={"var(--bg-icon-warning)"}
+				/>
 			</div>
 
-			<div style={{ height: "10px" }}></div>
+			<div className="filter-wrapper">
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ombor"
+						className="select"
+						value={store ? store : null}
+						onChange={(e) => setStore(e)}
+						disabled
+					>
+						{state.store?.data.length
+							? state.store?.data.map((item, idx) => (
+									<Select.Option key={idx} value={item.store_id}>
+										<div>
+											<span>{item?.store_name}</span>
+										</div>
+									</Select.Option>
+							  ))
+							: null}
+					</Select>
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ta'minotchi"
+						className="select"
+						value={supplier ? supplier : null}
+						onChange={(e) => setSupplier(e)}
+						disabled
+					>
+						{state.deliver?.data.length
+							? state.deliver?.data.map((item, idx) => {
+									if (!item?.isdelete)
+										return (
+											<Select.Option key={idx} value={item.deliver_id}>
+												<div>
+													<span>{item?.deliver_name}</span>
+												</div>
+											</Select.Option>
+										)
+							  })
+							: null}
+					</Select>
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Kategoriya"
+						className="select"
+						value={category ? category : null}
+						onChange={(e) => setCategory(e)}
+						disabled
+					>
+						{state.good?.data.length
+							? state.good?.data.map((item, idx) => (
+									<Select.Option
+										className="option-shrink"
+										key={idx}
+										value={item.goods_id}
+									>
+										<div>
+											<span>{item?.goods_name} - </span>
+											<span>{item?.goods_code}</span>
+										</div>
+									</Select.Option>
+							  ))
+							: null}
+					</Select>
+				</div>
+				<div className="filter-btn-group">
+					<button type="button" className="filter-btn" disabled>
+						Tozalash
+					</button>
+					<button type="button" className="filter-btn" disabled>
+						Saqlash
+					</button>
+				</div>
+			</div>
 
-			{state?.loading ? (
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				showAddBtn={false}
+			/>
+
+			{state.debt?.loading ? (
 				<Loader />
 			) : (
 				<DebtTable
-					data={searchSubmitted ? filteredData?.data : state.data}
+					data={searchSubmitted ? filteredData?.data : state.debt.data}
 					closeDebt={closeDebt}
 					payDebt={payDebt}
 					deleteDebt={deleteDebt}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
+					miniModal={miniModal}
+					setMiniModal={setMiniModal}
+					sidebar={sidebar}
 				/>
 			)}
 		</>
 	)
 }
+
 export default Client

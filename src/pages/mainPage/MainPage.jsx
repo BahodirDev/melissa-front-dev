@@ -7,7 +7,6 @@ import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
 import { get } from "../../customHook/api"
 import "./main.css"
-// import "./old.css"
 import { Plus } from "@phosphor-icons/react"
 import SellDebt from "../../components/sell_debt/SellDebt"
 
@@ -143,6 +142,7 @@ export default function MainPage() {
 							setAddModalDisplay,
 							miniModal,
 							setMiniModal,
+							sidebar,
 						]}
 					/>
 				</div>

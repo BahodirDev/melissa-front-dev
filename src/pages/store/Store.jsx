@@ -1,8 +1,6 @@
-import { Input } from "antd"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
@@ -12,9 +10,8 @@ import {
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/store"
-import { stringCheck, validation } from "../../components/validation"
+import { stringCheck } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
-import useApiRequest from "../../customHook/useUrl"
 import StoreList from "./StoreList"
 import "./store.css"
 import { toast } from "react-toastify"

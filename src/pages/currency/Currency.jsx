@@ -46,8 +46,12 @@ export default function Currency() {
 	const handleSearch = () => {
 		if (inputRef.current?.value.length > 0) {
 			setSearchSubmitted(true)
-			let newArr = state.data.filter((item) =>
-				item?.currency_name.toLowerCase().includes(inputRef.current?.value)
+			let newArr = state.data.filter(
+				(item) =>
+					item?.currency_name.toLowerCase().includes(inputRef.current?.value) ||
+					item?.currency_code.toLowerCase().includes(inputRef.current?.value) ||
+					item?.name.toLowerCase().includes(inputRef.current?.value) ||
+					item?.currency_symbol.toLowerCase().includes(inputRef.current?.value)
 			)
 			setFilteredData(newArr)
 		} else {
