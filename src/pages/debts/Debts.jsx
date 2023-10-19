@@ -1,8 +1,5 @@
-import { Radio } from "antd"
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-
-import { useOutletContext } from "react-router-dom"
 import { setQuantity as setQuantityD } from "../../components/reducers/d-debt"
 import { setQuantity } from "../../components/reducers/debt"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -18,19 +15,12 @@ import Order from "./Order"
 import Supplier from "./Supplier"
 import Total from "./Total"
 import "./debts.css"
+import { toast } from "react-toastify"
 
 function Debts() {
 	const { deliver, currency, good } = useSelector((state) => state)
 	const dispatch = useDispatch()
-	const [showDeliver, setShowDeliver] = useState("client")
-	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
-		userInfo,
-		action,
-		setAction,
-	] = useOutletContext()
+	const [show, setShow] = useState("client")
 
 	const getData = (list, setList, setPreload) => {
 		dispatch(setPreload(true))
@@ -55,6 +45,8 @@ function Debts() {
 				} else {
 					dispatch(setList(data?.data))
 				}
+			} else {
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setPreload(false))
 		})
@@ -63,49 +55,68 @@ function Debts() {
 	useEffect(() => {
 		getData("deliver", setDataDeliver, fakeLoad)
 		getData("goods", setDataGood, fakeLoad)
-		setShowDeliver(localStorage.getItem("debt-section"))
+		setShow(localStorage.getItem("debt-section"))
 	}, [])
+
+	const handleSectionSwitch = (e) => {
+		// setShow(e.target.value)
+		// localStorage.setItem("debt-section", e.target.value)
+	}
 
 	return (
 		<>
-			<Radio.Group
-				value={showDeliver}
-				onChange={(e) => {
-					setShowDeliver(e.target.value)
-					setSearchInput("")
-					localStorage.setItem("debt-section", e.target.value)
-				}}
-				className="debt-page-toggle"
-			>
-				<Radio.Button value="client">Mijoz</Radio.Button>
-				<Radio.Button value="supplier">Ta'minotchi</Radio.Button>
-				<Radio.Button value="total">Umumiy qarzdorlik</Radio.Button>
-				<Radio.Button value="order">Oldindan to'lov</Radio.Button>
-			</Radio.Group>
+			<div className="debt-switch">
+				<button
+					type="button"
+					onClick={handleSectionSwitch}
+					value="client"
+					className={show === "client" ? "active" : null}
+				>
+					Mijoz
+				</button>
+				<button
+					type="button"
+					onClick={handleSectionSwitch}
+					value="supplier"
+					className={show === "supplier" ? "active" : null}
+				>
+					Ta'minotchi
+				</button>
+				<button
+					type="button"
+					onClick={handleSectionSwitch}
+					value="total"
+					className={show === "total" ? "active" : null}
+				>
+					Umumiy qarzdorlik
+				</button>
+				<button
+					type="button"
+					onClick={handleSectionSwitch}
+					value="order"
+					className={show === "order" ? "active" : null}
+				>
+					Oldindan to'lov
+				</button>
+			</div>
 
-			{showDeliver === "client" ? (
-				<Client getData={getData} setAction={setAction} />
-			) : showDeliver === "supplier" ? (
+			{show === "client" ? (
+				<Client getData={getData} />
+			) : show === "supplier" ? (
 				<Supplier
 					getData={getData}
 					good={good}
 					currency={currency}
 					deliver={deliver}
-					setAction={setAction}
 				/>
-			) : showDeliver === "total" ? (
-				<Total
-					getData={getData}
-					saerchInputValue={saerchInputValue}
-					setAction={setAction}
-				/>
+			) : show === "total" ? (
+				<Total getData={getData} />
 			) : (
 				<Order
 					getData={getData}
 					good={good}
 					deliver={deliver}
 					currency={currency}
-					setAction={setAction}
 				/>
 			)}
 		</>

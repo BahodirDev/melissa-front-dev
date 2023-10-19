@@ -8,13 +8,13 @@ import { error_modal } from "../error_modal/error_modal"
 import { setData as setDataClient } from "../reducers/client"
 import { setData as setDataCurrency } from "../reducers/currency"
 import { setDataProduct } from "../reducers/product"
+import { setData } from "../reducers/store"
 import {
 	setCapital,
 	setData as setDataReport,
 	setIncome,
 	setOutcome,
 } from "../reducers/report"
-import { setData } from "../reducers/store"
 import ProductModalList from "./ProductModalList"
 import "./modal.css"
 const { Option } = Select

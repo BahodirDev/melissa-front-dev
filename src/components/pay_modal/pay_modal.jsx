@@ -6,9 +6,10 @@ export const payModal = (e, action, id, max, about = "", value = 1) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
-		icon: <></>,
+		icon: " ",
 		title: (
 			<>
+				{/* <span>Jamoldin: {max}</span> */}
 				<Input
 					type="text"
 					placeholder={
@@ -29,24 +30,39 @@ export const payModal = (e, action, id, max, about = "", value = 1) => {
 				/>
 			</>
 		),
-		okText: "Saqlash",
-		okType: "danger",
+		okText: "Kiritish",
+		okType: "success",
 		cancelText: "Bekor qilish",
 		width: 300,
 		onOk() {
 			action(id, document.querySelector("#pay-modal-input").value, value)
 		},
 		onCancel() {},
+		width: 350,
 		style: {
 			position: "absolute",
-			top: rect.top - 150,
-			left: rect.left - 250,
+			top: rect.top - 170,
+			left: rect.right - 350,
+			textAlign: "center",
+			padding: 0,
+			borderRadius: "var(--radius-lg)",
+		},
+		bodyStyle: {
+			display: "flex",
+			justifyContent: "center",
+		},
+		cancelButtonProps: {
+			style: {
+				color: "var(--color-secondary)",
+				border: "var(--border-primary)",
+				borderRadius: "var(--radius-sm)",
+			},
 		},
 		okButtonProps: {
 			style: {
-				backgroundColor: "#30af25",
-				color: "white",
-				borderColor: "#30af25",
+				borderRadius: "var(--radius-sm)",
+				backgroundColor: "var(--bg-success)",
+				color: "var(--color-light)",
 			},
 		},
 	})

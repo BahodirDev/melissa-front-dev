@@ -59,18 +59,24 @@
 }
 .input-wrapper .select input {
 	margin-top: 4px !important;
-	padding-left: 2px !important;
-	margin-left: 2px !important;
+	padding-left: 2.5px !important;
+	margin-left: 2.5px !important;
 }
 .input-wrapper .select .ant-select-selection-placeholder {
 	height: 40px;
 	line-height: 40px;
-	color: var(--color-accent);
+	color: var(--color-modal-placeholder);
 }
 .input-wrapper .select .ant-select-selection-item {
 	height: 40px;
 	line-height: 40px;
 	color: var(--color-secondary);
+}
+.option-shrink div span {
+	transition: 0.1s;
+}
+.option-shrink:hover span:first-child {
+	font-size: 0;
 }
 
 /* button */
@@ -147,6 +153,65 @@
 	color: var(--color-primary);
 }
 
+/* filter */
+.filter-wrapper {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 12px;
+	padding-right: 50px;
+
+	.input-wrapper .select .ant-select-selector {
+		border-radius: var(--radius-sm);
+		border: var(--border-primary);
+		font-size: var(--text-md) !important;
+		font-weight: var(--weight-thin) !important;
+		height: 35px;
+		font-family: SFProRegular;
+		padding-left: 16px !important;
+		line-height: 1 !important;
+	}
+	.input-wrapper .select .anticon-close-circle {
+		margin-left: -5px !important;
+		margin-top: -5px !important;
+		background: #fff !important;
+	}
+	.input-wrapper .select input {
+		margin-top: 4px !important;
+		padding-left: 2.5px !important;
+		margin-left: 2.5px !important;
+	}
+	.input-wrapper .select .ant-select-selection-placeholder {
+		color: var(--color-modal-placeholder);
+		height: 35px;
+		line-height: 35px;
+	}
+	.input-wrapper .select .ant-select-selection-item {
+		height: 35px;
+		line-height: 35px;
+		color: var(--color-secondary);
+	}
+
+	.filter-btn-group {
+		display: flex;
+		gap: 12px;
+
+		.filter-btn {
+			padding: 4px 16px;
+			border-radius: var(--radius-lg);
+			border: var(--border-primary);
+			background-color: var(--bg-light);
+			color: var(--color-accent);
+			font-weight: var(--weight-thin);
+		}
+
+		.filter-btn:disabled {
+			background: var(--bg-disabled);
+			cursor: not-allowed;
+		}
+	}
+}
+
 /* saerch */
 .search-wrapper {
 	position: sticky;
@@ -175,6 +240,11 @@
 	transform: translateY(-50%);
 	color: var(--color-secondary);
 	cursor: pointer;
+}
+.search-wrapper.table-m {
+	border-radius: 0;
+	border-top-left-radius: var(--radius-lg);
+	border-top-right-radius: var(--radius-lg);
 }
 
 /* confirm modal */
@@ -273,6 +343,9 @@
 .ant-modal-confirm-title .delete-modal-span span {
 	color: var(--color-danger);
 }
+.ant-modal-confirm-title .confirm-modal-span span {
+	color: var(--color-success);
+}
 
 /* mini modal */
 .mini-modal {
@@ -309,4 +382,144 @@
 	transform: translateY(-100%);
 	border-radius: var(--radius-lg);
 	border-bottom-left-radius: 0;
+}
+
+/* table */
+div.ant-d-table {
+	width: calc(100dvw - 122px);
+
+	/* head */
+	.ant-table-thead .ant-table-cell {
+		background-color: #eee;
+		border-radius: 0 !important;
+	}
+
+	/* body */
+	.ant-table-cell {
+		color: var(--color-secondary);
+		font-weight: var(--weight-bold);
+		border: none !important;
+	}
+
+	.ant-table-column-sort {
+		background-color: transparent;
+	}
+
+	tr:nth-child(odd) {
+		background-color: var(--bg-neutral);
+	}
+	tr:nth-child(even) {
+		background-color: #fff;
+	}
+}
+.table-item-edit-holder {
+	position: relative;
+}
+.table-item-edit-holder button {
+	border: none;
+	background: none;
+	cursor: pointer;
+}
+.table-item-edit-wrapper {
+	position: absolute;
+	z-index: 1;
+	top: -70px;
+	right: 40px;
+	width: 160px;
+	height: 110px;
+	background-color: var(--bg-light);
+	border: var(--border-primary);
+	border-radius: var(--radius-lg);
+	display: grid;
+	grid-template-rows: auto auto auto;
+	/* overflow: hidden; */
+}
+.table-item-edit-wrapper::after {
+	content: "";
+	width: 15px;
+	height: 15px;
+	background-color: var(--bg-light);
+	border: var(--border-primary);
+	border-left: transparent;
+	border-bottom: transparent;
+	position: absolute;
+	bottom: 20px;
+	right: -7.5px;
+	transform: rotate(45deg);
+	z-index: -1;
+}
+.table-item-edit-wrapper.top {
+	/* top: -90px; */
+}
+.table-item-edit-wrapper button {
+	display: flex;
+	justify-content: space-between;
+	place-items: center;
+	padding: 6px 12px;
+	width: 100%;
+	text-align: left;
+	border: none;
+	outline: none;
+	background-color: transparent;
+	font-weight: var(--weight-thin);
+	font-size: var(--text-md);
+	color: var(--color-secondary);
+	transition: 0.1s;
+}
+.table-item-edit-wrapper button:first-child {
+	border-top-left-radius: var(--radius-btn);
+	border-top-right-radius: var(--radius-btn);
+}
+.table-item-edit-wrapper button:last-child {
+	border-bottom-left-radius: var(--radius-btn);
+	border-bottom-right-radius: var(--radius-btn);
+}
+.table-item-edit-wrapper button:hover {
+	background-color: var(--bg-opacity);
+}
+.ant-pagination.ant-table-pagination li {
+	height: 30px;
+}
+.ant-pagination.ant-table-pagination .ant-pagination-next button,
+.ant-pagination.ant-table-pagination .ant-pagination-prev button {
+	color: var(--color-primary);
+	line-height: 0.5;
+	font-size: var(--text-md);
+	background-color: var(--bg-pagination-btn);
+	border-radius: 50%;
+	padding: 0;
+}
+.ant-pagination-prev {
+	margin-right: 10px;
+}
+.ant-pagination-next {
+	margin-left: 10px;
+}
+.ant-pagination.ant-table-pagination button:disabled {
+	color: var(--bg-accent);
+}
+.ant-pagination.ant-table-pagination .ant-pagination-item {
+	color: var(--color-secondary);
+	background-color: var(--bg-pagination-btn);
+	font-weight: var(--weight-thin);
+	font-size: var(--text-md);
+	margin: 0;
+	border-radius: 0;
+	border: none;
+	padding: 0;
+}
+.ant-pagination.ant-table-pagination li:nth-child(1 of li.ant-pagination-item) {
+	border-top-left-radius: 50%;
+	border-bottom-left-radius: 50%;
+}
+.ant-pagination.ant-table-pagination
+	li:nth-last-child(-n + 1 of li.ant-pagination-item) {
+	border-top-right-radius: 50%;
+	border-bottom-right-radius: 50%;
+}
+.ant-pagination.ant-table-pagination .ant-pagination-item-active a {
+	color: var(--color-light);
+	background-color: var(--bg-primary);
+	border-radius: 50%;
+	border: none;
 }

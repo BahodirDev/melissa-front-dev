@@ -1,4 +1,4 @@
-.ant-table-thead .ant-table-cell {
+/* .ant-table-thead .ant-table-cell {
 	color: #fff !important;
 }
 .ant-table-thead .ant-table-cell {
@@ -14,17 +14,17 @@
 }
 .ant-table-column-sorter-full {
 	color: #fff !important;
-}
+} */
 /* / */
 
-.ant-table-cell {
+/* .ant-table-cell {
 	font-weight: 600 !important;
 	font-size: 16px;
-}
+} */
 
 /*  */
 
-.table-edit__btn {
+/* .table-edit__btn {
 	color: #7e258c;
 	border: 1px solid #7e258c;
 }
@@ -37,9 +37,10 @@
 	background-color: #7e258c !important;
 	border: 1px solid #7e258c !important;
 	color: #fff !important;
-}
+} */
 
 /*  */
+/* 
 .product-add__input {
 	border-radius: 7px;
 	padding: 0;
@@ -57,7 +58,6 @@
 .product-add__input select,
 .product-add__input input {
 	font-weight: 600;
-	/* border: 1px solid #7D258B; */
 	margin: 0;
 	padding: 5px;
 	padding-left: 7px;
@@ -111,4 +111,4 @@
 	width: 400px;
 	position: fixed;
 	top: 80px;
-}
+} */

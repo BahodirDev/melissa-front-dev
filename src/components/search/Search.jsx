@@ -1,7 +1,7 @@
 import { X } from "@phosphor-icons/react"
 import { useOutletContext } from "react-router-dom"
 
-const Search = ({ handleSearch, clearSearch }) => {
+const Search = ({ handleSearch, clearSearch, showAddBtn = true }) => {
 	const [
 		inputRef,
 		showDropdown,
@@ -13,7 +13,7 @@ const Search = ({ handleSearch, clearSearch }) => {
 	] = useOutletContext()
 
 	return (
-		<div className="search-wrapper">
+		<div className={`search-wrapper ${showAddBtn ? null : "table-m"}`}>
 			<div>
 				<div className="input-wrapper">
 					<input type="text" placeholder="Izlash..." ref={inputRef} />
@@ -24,17 +24,19 @@ const Search = ({ handleSearch, clearSearch }) => {
 				<X size={18} onClick={clearSearch} />
 			</div>
 			<div>
-				<button
-					className="primary-btn"
-					onClick={(e) => {
-						e.stopPropagation()
-						setshowDropdown("")
-						setAddModalVisible(true)
-						setAddModalDisplay("block")
-					}}
-				>
-					Qo'shish
-				</button>
+				{showAddBtn && (
+					<button
+						className="primary-btn"
+						onClick={(e) => {
+							e.stopPropagation()
+							setshowDropdown("")
+							setAddModalVisible(true)
+							setAddModalDisplay("block")
+						}}
+					>
+						Qo'shish
+					</button>
+				)}
 			</div>
 		</div>
 	)
