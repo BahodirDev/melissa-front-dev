@@ -16,6 +16,7 @@ import InfoItem from "../../components/info_item/InfoItem"
 import { CurrencyDollar } from "@phosphor-icons/react"
 import { Select } from "antd"
 import Search from "../../components/search/Search"
+import { addComma } from "../../components/addComma"
 
 const Client = ({ getData }) => {
 	const [
@@ -101,7 +102,7 @@ const Client = ({ getData }) => {
 		dispatch(setLoading(true))
 		patch(`/debts/debts-patch-change/${id}`, { price: sum }).then((data) => {
 			if (data?.status === 200) {
-				dispatch(payClientDebt({ id, sum, value }))
+				dispatch(payClientDebt({ id, amount: sum, currency: value }))
 				toast.success("Qarzdorlik muvoffaqiyatli kiritildi")
 			} else if (data?.response?.data?.error === "DEBTS_COST_REQUIRED") {
 				toast.warn("Kiritilgan summa mavjud summadan yuqori")
@@ -139,8 +140,8 @@ const Client = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? +filteredData.amount?.toFixed(2)
-							: +state?.debt?.quantity.toFixed(2)
+							? addComma(filteredData.amount) + " so'm"
+							: addComma(state?.debt?.quantity) + " so'm"
 					}
 					name="Umumiy summa"
 					icon={

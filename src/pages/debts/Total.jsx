@@ -22,6 +22,7 @@ import {
 	setLoading,
 } from "../../components/reducers/noteDebt"
 import NDebtTable from "../../components/total_debt_table/total_debt_table"
+import { addComma } from "../../components/addComma"
 
 const Total = ({ getData }) => {
 	const [
@@ -302,8 +303,8 @@ const Total = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? +filteredData.amount?.toFixed(2)
-							: +state?.nDebt?.quantity.toFixed(2)
+							? addComma(filteredData.amount) + " so'm"
+							: addComma(state?.nDebt?.quantity) + " so'm"
 					}
 					name="Umumiy summa"
 					icon={
