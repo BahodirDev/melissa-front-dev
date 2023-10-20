@@ -2,7 +2,7 @@ const InfoItem = ({ value, name, icon, iconBgColor }) => {
 	return (
 		<div className="info-item">
 			<div>
-				<h3>{value > 0 ? value : 0}</h3>
+				<h3>{isNaN(parseFloat(value)) ? 0 : value}</h3>
 				<h4>{name}</h4>
 			</div>
 			<div>

@@ -24,7 +24,7 @@ import {
 	numberCheck,
 	stringCheck,
 } from "../../components/validation"
-import { formatNumber } from "../../components/addComma"
+import { addComma, formatNumber } from "../../components/addComma"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 const Supplier = ({ getData }) => {
@@ -121,7 +121,7 @@ const Supplier = ({ getData }) => {
 		patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
 			(data) => {
 				if (data?.status === 200) {
-					dispatch(payDDebt({ id, sum, value }))
+					dispatch(payDDebt({ id, amount: sum, currency: value }))
 					toast.success("Qarzdorlik muvoffaqiyatli kiritildi")
 				} else if (data?.response?.data?.error === "DEBTS_COST_REQUIRED") {
 					toast.warn("Kiritilgan summa mavjud summadan yuqori")
@@ -491,8 +491,8 @@ const Supplier = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? +filteredData.amount?.toFixed(2)
-							: +state?.dDebt?.quantity.toFixed(2)
+							? addComma(filteredData.amount) + " so'm"
+							: addComma(state?.dDebt?.quantity) + " so'm"
 					}
 					name="Umumiy summa"
 					icon={

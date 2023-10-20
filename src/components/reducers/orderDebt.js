@@ -30,7 +30,10 @@ export const orderDebtSlice = createSlice({
 			)
 			if (index !== -1) {
 				state.data[index].debts_count -= action.payload?.amount
-				state.quantity -= action.payload?.amount * action.payload?.sum
+				state.quantity -=
+					action.payload?.amount *
+					action.payload?.currency *
+					action.payload?.cost
 			}
 		},
 		deleteData: (state, action) => {

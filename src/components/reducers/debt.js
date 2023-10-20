@@ -55,9 +55,9 @@ export const debtSlice = createSlice({
 			)
 			if (index !== -1) {
 				state.data[index].debts_count -=
-					action.payload.sum / state.data[index].debts_price
-				state.data[index].debts_total_price -= action.payload.sum
-				state.quantity -= action.payload.sum * action.payload?.value
+					action.payload.amount / state.data[index].debts_price
+				state.data[index].debts_total_price -= action.payload.amount
+				state.quantity -= action.payload.amount * action.payload?.currency
 			}
 		},
 		deleteData: (state, action) => {

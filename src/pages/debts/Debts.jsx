@@ -90,34 +90,24 @@ function Debts() {
 				>
 					Umumiy qarzdorlik
 				</button>
-				{/* <button
+				<button
 					type="button"
 					onClick={handleSectionSwitch}
 					value="order"
 					className={show === "order" ? "active" : null}
 				>
 					Oldindan to'lov
-				</button> */}
+				</button>
 			</div>
 
 			{show === "client" ? (
 				<Client getData={getData} />
 			) : show === "supplier" ? (
-				<Supplier
-					getData={getData}
-					good={good}
-					currency={currency}
-					deliver={deliver}
-				/>
+				<Supplier getData={getData} />
 			) : show === "total" ? (
 				<Total getData={getData} />
 			) : (
-				<Order
-					getData={getData}
-					good={good}
-					deliver={deliver}
-					currency={currency}
-				/>
+				<Order getData={getData} />
 			)}
 		</>
 	)
