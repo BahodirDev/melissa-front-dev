@@ -57,6 +57,8 @@ const Client = ({ getData }) => {
 			}).then((data) => {
 				if (data.status === 200) {
 					setFilteredData(data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
 				}
 				dispatch(setLoading(false))
 			})
@@ -249,8 +251,6 @@ const Client = ({ getData }) => {
 					deleteDebt={deleteDebt}
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
-					miniModal={miniModal}
-					setMiniModal={setMiniModal}
 					sidebar={sidebar}
 				/>
 			)}

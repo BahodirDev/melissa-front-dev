@@ -36,6 +36,8 @@ export const dDebtSlice = createSlice({
 					isdone: false,
 					debts_currency: action.payload?.debts_currency,
 					debts_currency_amount: action.payload?.debts_currency_amount,
+					debts_total_price:
+						action.payload?.debts_count * action.payload?.debts_cost,
 					debts_due_date: action.payload?.debts_due_date,
 					debts_createdat: action.payload?.debts_createdat,
 				},

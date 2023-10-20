@@ -2,19 +2,22 @@ import { Input, Modal } from "antd"
 import { addComma } from "../addComma"
 const { confirm } = Modal
 
-export const payModal = (e, action, id, max, about = "", value = 1) => {
+export const payModal = (e, action, id, max, value = 1, name) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
 		icon: " ",
 		title: (
 			<>
-				{/* <span>Jamoldin: {max}</span> */}
+				<span style={{ float: "left" }}>
+					{name}: {max}
+				</span>
 				<Input
 					type="text"
-					placeholder={
-						addComma(parseFloat(max.replace(/[^\d.]/g, ""))) + " " + about
-					}
+					// placeholder={
+					// 	addComma(parseFloat(max.replace(/[^\d.]/g, "")))
+					// }
+					placeholder={max}
 					id="pay-modal-input"
 					pattern="[0-9]*"
 					onInput={(e) => {
@@ -43,7 +46,6 @@ export const payModal = (e, action, id, max, about = "", value = 1) => {
 			position: "absolute",
 			top: rect.top - 170,
 			left: rect.right - 350,
-			textAlign: "center",
 			padding: 0,
 			borderRadius: "var(--radius-lg)",
 		},

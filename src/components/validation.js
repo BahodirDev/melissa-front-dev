@@ -3,21 +3,19 @@ const validation = (show, text) => {
 }
 
 const stringCheck = (string, msg = "") => {
-	if (!string) {
-		return msg
-	} else {
-		return null
-	}
+	if (!string) return msg
+	else return null
+}
+
+const dateCompare = (date1, date2) => {
+	if (new Date(date1) > new Date(date2)) return "Noto'g'ri sana"
+	else return null
 }
 
 const numberCheck = (number) => {
-	if (!number) {
-		return "Qiymat kiritish majburiy"
-	} else if (number <= 0 || isNaN(number * 1)) {
-		return "Noto'g'ri qiymat"
-	} else {
-		return null
-	}
+	if (!number) return "Qiymat kiritish majburiy"
+	else if (number <= 0 || isNaN(number * 1)) return "Noto'g'ri qiymat"
+	else return null
 }
 
 const phoneNumberCheck = (number) => {
@@ -34,4 +32,4 @@ const passwordCheck = (password, name = "") => {
 	else return null
 }
 
-export { validation, stringCheck, numberCheck, phoneNumberCheck, passwordCheck }
+export { validation, stringCheck, numberCheck, phoneNumberCheck, passwordCheck, dateCompare }

@@ -70,6 +70,8 @@ export default function Employees() {
 			}).then((data) => {
 				if (data.status === 200) {
 					setFilteredData(data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
 				}
 				dispatch(setLoading(false))
 			})

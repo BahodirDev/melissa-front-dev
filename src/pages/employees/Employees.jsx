@@ -166,6 +166,8 @@ export default function Employees() {
 				(data) => {
 					if (data.status === 200) {
 						setFilteredUsers(data?.data)
+					} else {
+						toast.error("Nomalum server xatolik")
 					}
 					dispatch(setLoading(false))
 				}
