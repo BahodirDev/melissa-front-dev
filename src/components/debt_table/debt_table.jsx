@@ -11,6 +11,7 @@ import {
 	DotsThree,
 	DotsThreeVertical,
 	PencilSimple,
+	PlusMinus,
 	Trash,
 } from "@phosphor-icons/react"
 import { useState } from "react"
@@ -22,8 +23,6 @@ const DebtTable = ({
 	deleteDebt,
 	showDropdown,
 	setshowDropdown,
-	miniModal,
-	setMiniModal,
 	sidebar,
 }) => {
 	const [loc, setLoc] = useState(true)
@@ -78,11 +77,11 @@ const DebtTable = ({
 			dataIndex: "quantity",
 		},
 		{
-			title: "Narx(har biri)",
+			title: "Narx",
 			dataIndex: "price_each",
 		},
 		{
-			title: "Narx(umumiy)",
+			title: "Umumiy narx",
 			dataIndex: "price_total",
 		},
 		{
@@ -120,13 +119,13 @@ const DebtTable = ({
 									payDebt,
 									record?.id,
 									record?.price_total,
-									record?.currencyName,
-									record?.currencyAmount
+									record?.currencyAmount,
+									record?.client.split(" ")[0]
 								)
 							}
 						>
 							<nobr>Qisman to'lash</nobr>
-							<PencilSimple size={20} />
+							<PlusMinus size={20} />
 						</button>
 						<button
 							type="button"

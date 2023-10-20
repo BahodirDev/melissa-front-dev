@@ -1,40 +1,60 @@
-import { Input, Select } from "antd"
-import { Option } from "antd/es/mentions"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import DDebtTable from "../../components/d_debt_table/debt_table"
-import { error_modal } from "../../components/error_modal/error_modal"
+import DebtTable from "../../components/debt_table/debt_table"
 import Loader from "../../components/loader/Loader"
+import { patch, post, remove } from "../../customHook/api"
+import { useOutletContext } from "react-router-dom"
+import { toast } from "react-toastify"
+import InfoItem from "../../components/info_item/InfoItem"
+import { CaretDown, CurrencyDollar, Info } from "@phosphor-icons/react"
+import { Input, Select } from "antd"
+import Search from "../../components/search/Search"
 import {
 	addData,
 	deleteData,
 	payDDebt,
 	setData,
 	setLoading,
+	setQuantity,
 } from "../../components/reducers/d-debt"
-import { validation } from "../../components/validation"
-import { patch, post, remove } from "../../customHook/api"
+import DDebtTable from "../../components/d_debt_table/debt_table"
+import AddModal from "../../components/add/AddModal"
+import {
+	dateCompare,
+	numberCheck,
+	stringCheck,
+} from "../../components/validation"
+import { formatNumber } from "../../components/addComma"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
-const Supplier = ({
-	getData,
-	good,
-	currency,
-	deliver,
-	saerchInputValue,
-	setAction,
-}) => {
-	const state = useSelector((state) => state.dDebt)
+const Supplier = ({ getData }) => {
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+	] = useOutletContext()
+	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
 
-	const [submitted, setSubmitted] = useState(false)
-	const [buttonLoader, setButtonLoader] = useState(false)
-	const [modalAlert, setModalAlert] = useState("")
-	const [modalMsg, setModalMsg] = useState("")
-	const buttonRef = useRef(null)
-	const [toggleClass, setToggleClass] = useState(false)
-	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [filteredData, setFilteredData] = useState({})
+	const [btn_loading, setBtn_loading] = useState(false)
+	const [objId, setObjId] = useState("")
+	const [submitted, setSubmitted] = useState(false)
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
+	// filter
+	const [store, setStore] = useState("")
+	const [supplier, setSupplier] = useState("")
+	const [category, setCategory] = useState("")
+
+	// new data
 	const [newDeliver, setNewDeliver] = useState({})
 	const [newGood, setNewGood] = useState({})
 	const [newCurrency, setNewCurrency] = useState({})
@@ -44,41 +64,97 @@ const Supplier = ({
 	const [deliverDueDate, setDeliverDueDate] = useState("")
 
 	useEffect(() => {
-		setAction({
-			url: "/deliver-debts/deliver-debts-filter",
-			body: {
-				search: saerchInputValue,
-			},
-			res: setFilteredData,
-			submitted: setSearchSubmitted,
-			clearValues: {},
-			setLoading: setLoading,
-		})
-	}, [saerchInputValue])
-
-	useEffect(() => {
 		getData("deliver-debts", setData, setLoading)
 	}, [])
 
-	const collapse = (event) => {
-		setSubmitted(false)
-		setToggleClass(!toggleClass)
-		let content = event.target.nextElementSibling
-		if (content.style.maxHeight) {
-			content.style.maxHeight = null
-			setNewDeliver({})
-			setNewGood({})
-			setNewCurrency({})
-			setNewCount(0)
-			setNewCost(0)
-			setDeliverDate("")
-			setDeliverDueDate("")
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/deliver-debts/deliver-debts-filter", {
+				search: inputRef.current?.value,
+			}).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				dispatch(setLoading(false))
+			})
 		} else {
-			content.style.maxHeight = content.scrollHeight + "px"
+			setSearchSubmitted(false)
+			setFilteredData([])
 		}
 	}
 
-	const addNewDebtDeliver = () => {
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
+
+	const closeDebt = (id) => {
+		dispatch(setLoading(true))
+		patch(`/deliver-debts/deliver-debts-patch-done/${id}`).then((data) => {
+			if (data?.status === 200) {
+				dispatch(
+					deleteData({
+						id,
+						sum:
+							data?.data?.debts_count *
+							data?.data?.debts_cost *
+							data?.data?.debts_currency_amount,
+					})
+				)
+				toast.success("Qarzdorlik muvoffaqiyatli yopildi")
+			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
+				toast.warn("Bunday qarzdorlik topilmadi")
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
+	const payDebt = (id, sum, value) => {
+		dispatch(setLoading(true))
+		patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
+			(data) => {
+				if (data?.status === 200) {
+					dispatch(payDDebt({ id, sum, value }))
+					toast.success("Qarzdorlik muvoffaqiyatli kiritildi")
+				} else if (data?.response?.data?.error === "DEBTS_COST_REQUIRED") {
+					toast.warn("Kiritilgan summa mavjud summadan yuqori")
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				dispatch(setLoading(false))
+			}
+		)
+	}
+
+	const deleteDebt = (id) => {
+		dispatch(setLoading(true))
+		remove(`/deliver-debts/deliver-debts-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
+				dispatch(
+					deleteData({
+						id,
+						sum:
+							data?.data?.debts_count *
+							data?.data?.debts_cost *
+							data?.data?.debts_currency_amount,
+					})
+				)
+				toast.success("Qarzdorlik muvoffaqiyatli o'chirildi")
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
+	const addNewDebt = () => {
 		setSubmitted(true)
 		if (
 			newDeliver?.deliver_name &&
@@ -90,7 +166,7 @@ const Supplier = ({
 			deliverDueDate &&
 			new Date(deliverDate) <= new Date(deliverDueDate)
 		) {
-			setButtonLoader(true)
+			setBtn_loading(true)
 			let newObj = {
 				goods_id: newGood?.goods_id,
 				deliver_id: newDeliver?.deliver_id,
@@ -109,9 +185,6 @@ const Supplier = ({
 
 			post("/deliver-debts/deliver-debts-post", newObj).then((data) => {
 				if (data?.status === 200) {
-					setModalAlert("Xabar")
-					setModalMsg("Qarzdorlik muvoffaqiyatli qo'shildi")
-					buttonRef.current.click()
 					dispatch(
 						addData({
 							...data?.data,
@@ -121,339 +194,416 @@ const Supplier = ({
 							deliver_nomer: newObj?.deliver_nomer,
 						})
 					)
+					toast.success("Qarzdorlik muvoffaqiyatli qo'shildi")
+					clearAndClose()
 				} else {
-					setModalAlert("Nomalum server xatolik")
-					setModalMsg("Qarzdorlik qo'shib bo'lmadi")
+					toast.error("Nomalum server xatolik")
 				}
-				setButtonLoader(false)
+				setBtn_loading(false)
 			})
 		}
 	}
 
-	const closeDeliverDebt = (id) => {
-		dispatch(setLoading(true))
-		patch(`/deliver-debts/deliver-debts-patch-done/${id}`).then((data) => {
-			if (data?.status === 200) {
-				dispatch(
-					deleteData({
-						id,
-						sum:
-							data?.data?.debts_count *
-							data?.data?.debts_cost *
-							data?.data?.debts_currency_amount,
-					})
-				)
-				setModalAlert("Xabar")
-				setModalMsg("Qarzdorlik muvoffaqiyatli yopildi")
-			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
-				setModalAlert("Xatolik")
-				setModalMsg("Bunday qarzdorlik mavjud emas")
-			} else {
-				setModalAlert("Nomalum server xatolik")
-				setModalMsg("Qarzdorlikni yopib bo'lmadi")
-			}
-			dispatch(setLoading(false))
-		})
-	}
-
-	const deleteDeliverDebt = (id) => {
-		dispatch(setLoading(true))
-		remove(`/deliver-debts/deliver-debts-delete/${id}`).then((data) => {
-			if (data?.status === 200) {
-				dispatch(
-					deleteData({
-						id,
-						sum:
-							data?.data?.debts_count *
-							data?.data?.debts_cost *
-							data?.data?.debts_currency_amount,
-					})
-				)
-				setModalAlert("Xabar")
-				setModalMsg("Qarzdorlik muvoffaqiyatli o'chirildi")
-			} else {
-				setModalAlert("Xatolik")
-				setModalMsg("Qarzdorlik o'chirishda xatolik")
-			}
-			dispatch(setLoading(false))
-		})
-	}
-
-	const payDeliverDebt = (id, sum, value) => {
-		dispatch(setLoading(true))
-		patch(`/deliver-debts/deliver-debts-change/${id}`, { price: sum }).then(
-			(data) => {
-				if (data?.status === 200) {
-					dispatch(payDDebt({ id, sum, value }))
-					setModalAlert("Xabar")
-					setModalMsg("Qarzdorlik muvoffaqiyatli kiritildi")
-				} else if (data?.response?.data?.error === "DEBTS_COST_REQUIRED") {
-					setModalAlert("Xatolik")
-					setModalMsg("Kiritilgan summa mavjud summadan yuqori")
-				} else {
-					setModalAlert("Nomalum server xatolik")
-					setModalMsg("Qarzdorlik kiritib bo'lmadi")
-				}
-				dispatch(setLoading(false))
-			}
-		)
+	const clearAndClose = () => {
+		setNewDeliver({})
+		setNewGood({})
+		setNewCurrency({})
+		setNewCount(0)
+		setNewCost(0)
+		setDeliverDate("")
+		setDeliverDueDate("")
+		// clear new data
+		setObjId("")
+		setSubmitted(false)
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
 	}
 
 	return (
 		<>
-			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
-
-			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Umumiy summa:{" "}
-				{searchSubmitted ? filteredData?.amount : state.quantity} so'm
-			</div>
-
-			<>
-				<button
-					className={`btn btn-melissa mb-1 mx-2 ${
-						toggleClass && "collapseActive"
+			<AddModal
+				addModalVisible={addModalVisible}
+				setAddModalVisible={setAddModalVisible}
+				addModalDisplay={addModalDisplay}
+				setAddModalDisplay={setAddModalDisplay}
+				name={objId ? "Qarzdorlik tahrirlash" : "Qarzdorlik kiritish"}
+			>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(newDeliver?.deliver_name) !== null &&
+						"error"
 					}`}
-					style={{ padding: "3px 10px" }}
-					onClick={collapse}
-					ref={buttonRef}
 				>
-					Qo'shish
-				</button>
-				<div className="my-content">
-					<div className="sup-debt-form">
-						<div className="validation-field">
-							<label htmlFor="">Ta'minotchi</label>
-							<Select
-								showSearch
-								style={{ width: "100%" }}
-								placeholder="Qidiruv..."
-								value={
-									newDeliver?.deliver_name ? newDeliver?.deliver_name : null
-								}
-								onChange={(e) => {
-									setNewDeliver(JSON.parse(e))
-								}}
-								optionLabelProp="label"
-							>
-								{deliver?.data.length
-									? deliver?.data.map((item, idx) => {
-											if (!item?.isdelete) {
-												return (
-													<Option
-														className="client-option"
-														value={JSON.stringify(item)}
-														label={`${
-															item?.deliver_name
-														} - ${item?.deliver_nomer.replace(
-															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-															"+$1 ($2) $3-$4-$5"
-														)}`}
-													>
-														<div>
-															<span>{item?.deliver_name} - </span>
-															<span>
-																{item?.deliver_nomer.replace(
-																	/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-																	"+$1 ($2) $3-$4-$5"
-																)}
-															</span>
-														</div>
-													</Option>
-												)
-											}
-									  })
-									: null}
-							</Select>
-							<div className="validation-field-error">
-								{submitted &&
-									validation(!newDeliver.deliver_name, "...tanlash majburiy")}
-							</div>
-						</div>
-						<div className="validation-field">
-							<label htmlFor="">Kategoriya</label>
-							<Select
-								showSearch
-								style={{ width: "100%" }}
-								placeholder="Qidiruv..."
-								value={
-									newGood?.goods_name
-										? `${newGood?.goods_name} - ${newGood?.goods_code}`
-										: null
-								}
-								onChange={(e) => {
-									setNewGood(JSON.parse(e))
-								}}
-								optionLabelProp="label"
-							>
-								{good?.data.length
-									? good?.data.map((item, idx) => {
-											return (
-												<Option
-													className="client-option"
-													value={JSON.stringify(item)}
-													label={item?.goods_name}
-												>
-													<div>
-														<span>{item?.goods_name} - </span>
-														<span>{item?.goods_code}</span>
-													</div>
-												</Option>
-											)
-									  })
-									: null}
-							</Select>
-							<div className="validation-field-error">
-								{submitted &&
-									validation(!newGood.goods_name, "...tanlash majburiy")}
-							</div>
-						</div>
-						<div className="validation-field">
-							<label htmlFor="">Pul birligi</label>
-							<Select
-								showSearch
-								style={{ width: "100%" }}
-								placeholder="Qidiruv..."
-								value={
-									newCurrency?.currency_name
-										? `${newCurrency.currency_name} - ${newCurrency.currency_amount}`
-										: null
-								}
-								onChange={(e) => setNewCurrency(JSON.parse(e))}
-								optionLabelProp="label"
-							>
-								{currency.data.length
-									? currency.data.map((item, idx) => {
-											return (
-												<Option
-													className="client-option"
-													value={JSON.stringify(item)}
-													label={item?.currency_name}
-												>
-													<div>
-														<span></span>
-														<span>
-															{item?.currency_name} - {item?.currency_amount}
-														</span>
-													</div>
-												</Option>
-											)
-									  })
-									: null}
-							</Select>
-							<div className="validation-field-error">
-								{submitted &&
-									validation(!newCurrency.currency_name, "...tanlash majburiy")}
-							</div>
-						</div>
-						<div className="validation-field">
-							<label htmlFor="">Miqdor</label>
-							<Input
-								style={{ width: "100%" }}
-								placeholder="200"
-								value={newCount ? newCount : null}
-								onChange={(e) => setNewCount(e.target.value)}
-								optionLabelProp="label"
-								type="number"
-							/>
-							<div className="validation-field-error">
-								{submitted
-									? newCount.length
-										? validation(newCount < 0.01, "Noto'g'ri qiymat")
-										: validation(!newCount.length, "Miqdor kiritish majburiy")
-									: null}
-							</div>
-						</div>
-						<div className="validation-field">
-							<label htmlFor="">Narx</label>
-							<Input
-								style={{ width: "100%" }}
-								placeholder="20,000.00	"
-								value={newCost ? newCost : null}
-								onChange={(e) => setNewCost(e.target.value)}
-								optionLabelProp="label"
-								type="number"
-							/>
-							<div className="validation-field-error">
-								{submitted
-									? newCost.length
-										? validation(newCost < 0.01, "Noto'g'ri qiymat")
-										: validation(!newCost.length, "Miqdor kiritish majburiy")
-									: null}
-							</div>
-						</div>
-						<div className="validation-field">
-							<label htmlFor="">Berilgan sana</label>
-							<Input
-								type="date"
-								value={deliverDate}
-								onChange={(e) => setDeliverDate(e.target.value)}
-								onBlur={(e) => setDeliverDate(e.target.value)}
-								onKeyUp={(e) => {
-									if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-										setDeliverDate(e.target.value)
+					<label>Ta'minotchi</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ta'minotchi tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newDeliver?.deliver_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={newDeliver?.deliver_name ? newDeliver?.deliver_name : null}
+						onChange={(e) =>
+							e ? setNewDeliver(JSON.parse(e)) : setNewDeliver({})
+						}
+					>
+						{state.deliver?.data.length
+							? state.deliver?.data.map((item, idx) => {
+									if (!item?.isdelete) {
+										return (
+											<Select.Option
+												key={idx}
+												className="option-shrink"
+												value={JSON.stringify(item)}
+											>
+												<div>
+													<span>{item?.deliver_name} - </span>
+													<span>
+														{format_phone_number(item?.deliver_nomer)}
+													</span>
+												</div>
+											</Select.Option>
+										)
 									}
-								}}
-							/>
-							<div className="validation-field-error">
-								{submitted &&
-									validation(!deliverDate, "Sana belgilash majburiy")}
-							</div>
-						</div>
-						<div className="validation-field">
-							<label htmlFor="">To'lanadigan sana</label>
-							<Input
-								type="date"
-								value={deliverDueDate}
-								onChange={(e) => setDeliverDueDate(e.target.value)}
-							/>
-							<div className="validation-field-error">
-								{submitted
-									? deliverDueDate
-										? validation(
-												new Date(deliverDueDate) < new Date(deliverDate),
-												"Noto'g'ri sana"
-										  )
-										: validation(!deliverDueDate, "Sana belgilash majburiy")
-									: null}
-							</div>
-						</div>
-
-						<div className="col">
-							<br />
-							<button
-								className="btn btn-melissa mx-1"
-								onClick={addNewDebtDeliver}
-								style={{ padding: "3px 10px" }}
-								disabled={buttonLoader}
-							>
-								<i className="fas fa-plus"></i>
-								{buttonLoader && (
-									<span
-										className="spinner-grow spinner-grow-sm"
-										role="status"
-										aria-hidden="true"
-										style={{ marginLeft: "5px" }}
-									></span>
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newDeliver.deliver_name,
+									"Ta'minotchi tanlash majburiy"
 								)}
-							</button>
-						</div>
+						</span>
 					</div>
 				</div>
-			</>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted && stringCheck(newGood.goods_name) !== null && "error"
+					}`}
+				>
+					<label>Kategoriya</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Kategoriya tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newGood.goods_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							newGood.goods_name
+								? `${newGood.goods_name} - ${newGood.goods_code}`
+								: null
+						}
+						onChange={(e) => (e ? setNewGood(JSON.parse(e)) : setNewGood({}))}
+					>
+						{state.good?.data.length
+							? state.good?.data.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											className="option-shrink"
+											value={JSON.stringify(item)}
+										>
+											<div>
+												<span>{item?.goods_name} - </span>
+												<span>{item?.goods_code}</span>
+											</div>
+										</Select.Option>
+									)
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(newGood.goods_name, "Kategoriya tanlash majburiy")}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(newCurrency.currency_name) !== null &&
+						"error"
+					}`}
+				>
+					<label>Pul birligi</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Pul birligi tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newCurrency.currency_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							newCurrency.currency_name
+								? `${newCurrency.currency_name} - ${newCurrency.currency_amount}`
+								: null
+						}
+						onChange={(e) =>
+							e ? setNewCurrency(JSON.parse(e)) : setNewCurrency({})
+						}
+					>
+						{state.currency?.data.length
+							? state.currency?.data.map((item, idx) => {
+									return (
+										<Select.Option key={idx} value={JSON.stringify(item)}>
+											<div>
+												<span>{item?.currency_name} - </span>
+												<span>{item?.currency_amount}</span>
+											</div>
+										</Select.Option>
+									)
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newCurrency.currency_amount,
+									"Pul birligi tanlash majburiy"
+								)}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && numberCheck(newCount) !== null && "error"
+					}`}
+				>
+					<label>Miqdor</label>
+					<input
+						type="text"
+						placeholder="Son kiriting"
+						className="input"
+						value={newCount ? newCount : ""}
+						onChange={(e) => setNewCount(e.target.value)}
+					/>
+					{submitted && numberCheck(newCount) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && numberCheck(newCount)}</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && numberCheck(newCost) !== null && "error"
+					}`}
+				>
+					<label>Narx</label>
+					<input
+						type="text"
+						placeholder="Narx kiriting"
+						className="input"
+						value={newCost ? newCost : ""}
+						onChange={(e) => setNewCost(e.target.value)}
+					/>
+					{submitted && numberCheck(newCost) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && numberCheck(newCost)}</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && stringCheck(deliverDate) !== null && "error"
+					}`}
+				>
+					<label>Berilgan sana</label>
+					<input
+						type="date"
+						placeholder="Sana kiriting"
+						className="input date"
+						value={deliverDate ? deliverDate : ""}
+						onChange={(e) => setDeliverDate(e.target.value)}
+					/>
+					{/* {submitted && stringCheck(deliverDate) !== null && <Info size={20} />} */}
+					<div className="validation-field">
+						<span>
+							{submitted && stringCheck(deliverDate, "Sana kiriting majburiy")}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						(submitted && stringCheck(deliverDueDate) !== null && "error") ||
+						(dateCompare(deliverDate, deliverDueDate) !== null && "error")
+					}`}
+				>
+					<label>To'lanadigan sana</label>
+					<input
+						type="date"
+						placeholder="Sana kiriting"
+						className="input date"
+						value={deliverDueDate ? deliverDueDate : ""}
+						onChange={(e) => setDeliverDueDate(e.target.value)}
+					/>
+					<div className="validation-field">
+						<span>
+							{(submitted &&
+								stringCheck(deliverDueDate, "Sana kiriting majburiy")) ||
+								dateCompare(deliverDate, deliverDueDate)}
+						</span>
+					</div>
+				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btn_loading}
+						onClick={addNewDebt}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btn_loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
+			</AddModal>
 
-			<div style={{ height: "10px" }}></div>
+			<div className="info-wrapper">
+				<InfoItem
+					value={
+						searchSubmitted
+							? +filteredData.amount?.toFixed(2)
+							: +state?.dDebt?.quantity.toFixed(2)
+					}
+					name="Umumiy summa"
+					icon={
+						<CurrencyDollar
+							size={24}
+							style={{ color: "var(--color-warning)" }}
+						/>
+					}
+					iconBgColor={"var(--bg-icon-warning)"}
+				/>
+			</div>
 
-			{state?.loading ? (
+			<div className="filter-wrapper">
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ombor"
+						className="select"
+						value={store ? store : null}
+						onChange={(e) => setStore(e)}
+						disabled
+					>
+						{state.store?.data.length
+							? state.store?.data.map((item, idx) => (
+									<Select.Option key={idx} value={item.store_id}>
+										<div>
+											<span>{item?.store_name}</span>
+										</div>
+									</Select.Option>
+							  ))
+							: null}
+					</Select>
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ta'minotchi"
+						className="select"
+						value={supplier ? supplier : null}
+						onChange={(e) => setSupplier(e)}
+						disabled
+					>
+						{state.deliver?.data.length
+							? state.deliver?.data.map((item, idx) => {
+									if (!item?.isdelete)
+										return (
+											<Select.Option key={idx} value={item.deliver_id}>
+												<div>
+													<span>{item?.deliver_name}</span>
+												</div>
+											</Select.Option>
+										)
+							  })
+							: null}
+					</Select>
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Kategoriya"
+						className="select"
+						value={category ? category : null}
+						onChange={(e) => setCategory(e)}
+						disabled
+					>
+						{state.good?.data.length
+							? state.good?.data.map((item, idx) => (
+									<Select.Option
+										className="option-shrink"
+										key={idx}
+										value={item.goods_id}
+									>
+										<div>
+											<span>{item?.goods_name} - </span>
+											<span>{item?.goods_code}</span>
+										</div>
+									</Select.Option>
+							  ))
+							: null}
+					</Select>
+				</div>
+				<div className="filter-btn-group">
+					<button type="button" className="filter-btn" disabled>
+						Tozalash
+					</button>
+					<button type="button" className="filter-btn" disabled>
+						Saqlash
+					</button>
+				</div>
+			</div>
+
+			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+
+			{state.dDebt?.loading ? (
 				<Loader />
 			) : (
 				<DDebtTable
-					data={searchSubmitted ? filteredData?.data : state.data}
-					closeDeliverDebt={closeDeliverDebt}
-					deleteDeliverDebt={deleteDeliverDebt}
-					payDeliverDebt={payDeliverDebt}
+					data={searchSubmitted ? filteredData?.data : state.dDebt.data}
+					closeDebt={closeDebt}
+					payDebt={payDebt}
+					deleteDebt={deleteDebt}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
+					sidebar={sidebar}
 				/>
 			)}
 		</>
 	)
 }
+
 export default Supplier

@@ -59,8 +59,8 @@ function Debts() {
 	}, [])
 
 	const handleSectionSwitch = (e) => {
-		// setShow(e.target.value)
-		// localStorage.setItem("debt-section", e.target.value)
+		setShow(e.target.value)
+		localStorage.setItem("debt-section", e.target.value)
 	}
 
 	return (
@@ -82,7 +82,7 @@ function Debts() {
 				>
 					Ta'minotchi
 				</button>
-				<button
+				{/* <button
 					type="button"
 					onClick={handleSectionSwitch}
 					value="total"
@@ -97,7 +97,7 @@ function Debts() {
 					className={show === "order" ? "active" : null}
 				>
 					Oldindan to'lov
-				</button>
+				</button> */}
 			</div>
 
 			{show === "client" ? (
