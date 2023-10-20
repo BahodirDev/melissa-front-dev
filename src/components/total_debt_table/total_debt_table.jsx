@@ -5,13 +5,34 @@ import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import { payConfirmModal } from "../pay_confirm_modal/pay_confirm_modal"
 import { payModal } from "../pay_modal/pay_modal"
+import NoData from "../noData/NoData"
+import {
+	CheckCircle,
+	DotsThree,
+	DotsThreeVertical,
+	PencilSimple,
+	PlusMinus,
+	Trash,
+} from "@phosphor-icons/react"
+import { useState } from "react"
 
-const AntTable = ({
+const NDebtTable = ({
 	data,
-	deleteTotalDebt,
-	totalDebtPart,
-	totalDebtCloseAtOnce,
+	closeDebt,
+	payDebt,
+	deleteDebt,
+	showDropdown,
+	setshowDropdown,
+	sidebar,
 }) => {
+	const [loc, setLoc] = useState(true)
+
+	const handleClick = (e, id) => {
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
 	let arr = []
 	data?.length &&
 		data?.map((item) => {
@@ -20,7 +41,7 @@ const AntTable = ({
 					total_id: item?.debts_id,
 					client: item?.client_name,
 					price: addComma(item?.price),
-					desc: item?.description,
+					desc: item?.description ? item?.description : "Qo'shimcha ma`lumot",
 					date: `${moment(item?.debts_due_date).format("YYYY/MM/DD HH:MM")}`,
 					duedate: `${moment(item?.debts_createdat).format(
 						"YYYY/MM/DD HH:MM"
@@ -59,61 +80,98 @@ const AntTable = ({
 			},
 		},
 		{
-			title: "Tahrirlash",
+			title: "",
+			width: "50px",
 			render: (text, record) => (
-				<nobr>
+				<div className="table-item-edit-holder">
 					<button
-						className="btn btn-sm btn-table-success mx-1"
-						onClick={(e) =>
-							payConfirmModal(e, totalDebtCloseAtOnce, record?.total_id)
-						}
+						type="button"
+						onClick={(e) => handleClick(e, record?.total_id)}
 					>
-						<i className="fa-solid fa-check"></i>
+						<DotsThreeVertical size={24} />
 					</button>
-					<button
-						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						onClick={(e) =>
-							payModal(e, totalDebtPart, record?.total_id, record?.price)
-						}
+					<div
+						className={`table-item-edit-wrapper ${
+							showDropdown === record?.total_id || "hidden"
+						} ${loc && "top"}`}
 					>
-						<i className="fas fa-edit"></i>
-					</button>
-					<button
-						className="btn btn-sm btn-outline-danger"
-						onClick={(e) =>
-							productDeleteConfirm(
-								e,
-								"Qarzdorlik",
-								deleteTotalDebt,
-								record?.total_id
-							)
-						}
-					>
-						<i className="fa-solid fa-trash-can"></i>
-					</button>
-				</nobr>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								payModal(
+									e,
+									payDebt,
+									record?.total_id,
+									record?.price,
+									1,
+									record?.client.split(" ")[0]
+								)
+							}
+						>
+							<nobr>Qisman to'lash</nobr>
+							<PlusMinus size={20} />
+						</button>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								payConfirmModal(
+									e,
+									<>
+										<span>{record?.client}</span> qarzni
+									</>,
+									closeDebt,
+									record?.total_id
+								)
+							}
+						>
+							<nobr>Qarzni yopish</nobr>
+							<CheckCircle size={20} />
+						</button>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								productDeleteConfirm(
+									e,
+									<>
+										<span>{record?.client}</span> qarzni
+									</>,
+									deleteDebt,
+									record?.total_id
+								)
+							}
+						>
+							O'chirish <Trash size={20} />
+						</button>
+					</div>
+				</div>
 			),
 		},
 	]
 
 	return (
-		<Table
-			columns={columns}
-			locale={{
-				emptyText: (
-					<div className="no-data__con">
-						<img src={noDataImg} alt="" />
-						<span>Qarzdorlik mavjud emas</span>
-					</div>
-				),
+		<div
+			className="ant-d-table"
+			style={{
+				width: sidebar && "calc(100dvw - 302px)",
 			}}
-			dataSource={arr}
-			pagination={{
-				position: ["bottomLeft"],
-				pageSize: 20,
-			}}
-		/>
+		>
+			<Table
+				scroll={{ x: "max-content" }}
+				columns={columns}
+				locale={{
+					emptyText: <NoData />,
+				}}
+				dataSource={arr}
+				pagination={{
+					position: ["bottomLeft"],
+					pageSize: 20,
+				}}
+			/>
+		</div>
 	)
 }
 
-export default AntTable
+export default NDebtTable

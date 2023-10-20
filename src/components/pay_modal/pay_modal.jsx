@@ -2,7 +2,7 @@ import { Input, Modal } from "antd"
 import { addComma } from "../addComma"
 const { confirm } = Modal
 
-export const payModal = (e, action, id, max, value = 1, name) => {
+export const payModal = (e, action, id, max, value, name) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
