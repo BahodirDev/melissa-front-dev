@@ -439,7 +439,7 @@ const Supplier = ({ getData }) => {
 					{/* {submitted && stringCheck(deliverDate) !== null && <Info size={20} />} */}
 					<div className="validation-field">
 						<span>
-							{submitted && stringCheck(deliverDate, "Sana kiriting majburiy")}
+							{submitted && stringCheck(deliverDate, "Sana kiritish majburiy")}
 						</span>
 					</div>
 				</div>
@@ -460,7 +460,7 @@ const Supplier = ({ getData }) => {
 					<div className="validation-field">
 						<span>
 							{(submitted &&
-								stringCheck(deliverDueDate, "Sana kiriting majburiy")) ||
+								stringCheck(deliverDueDate, "Sana kiritish majburiy")) ||
 								dateCompare(deliverDate, deliverDueDate)}
 						</span>
 					</div>

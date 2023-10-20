@@ -82,7 +82,7 @@ function Debts() {
 				>
 					Ta'minotchi
 				</button>
-				{/* <button
+				<button
 					type="button"
 					onClick={handleSectionSwitch}
 					value="total"
@@ -90,7 +90,7 @@ function Debts() {
 				>
 					Umumiy qarzdorlik
 				</button>
-				<button
+				{/* <button
 					type="button"
 					onClick={handleSectionSwitch}
 					value="order"
