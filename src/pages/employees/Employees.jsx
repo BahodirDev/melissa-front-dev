@@ -90,7 +90,6 @@ export default function Employees() {
 					if (data?.status === 200) {
 						dispatch(editData(data?.data))
 						clearAndClose()
-						setSubmitted(false)
 						toast.success("Hodim muvoffaqiyatli o'zgartirildi")
 						setTimeout(() => {
 							if (objId === userId) {
@@ -114,8 +113,8 @@ export default function Employees() {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data?.data))
 						dispatch(setQuantity())
-						toast.success("Hodim muvoffaqiyatli qo'shildi")
 						clearAndClose()
+						toast.success("Hodim muvoffaqiyatli qo'shildi")
 					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
 						toast.warn("Bunday xodim allaqachon mavjud")
 					} else {

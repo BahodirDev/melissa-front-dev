@@ -38,7 +38,7 @@
 	max-height: 200px;
 	border-radius: var(--radius-sm);
 	border: var(--border-primary);
-	padding: var(--padding-lg);
+	padding: var(--padding-sm) var(--padding-lg);
 	font-weight: var(--weight-thin);
 	font-size: var(--text-md);
 	color: var(--color-secondary);
@@ -163,6 +163,7 @@
 	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 	gap: 12px;
 	padding-right: 50px;
+	margin-bottom: 20px;
 
 	.input-wrapper .select .ant-select-selector {
 		border-radius: var(--radius-sm);
@@ -435,7 +436,11 @@ div.ant-d-table {
 	border-radius: var(--radius-lg);
 	display: grid;
 	grid-template-rows: auto auto auto;
-	/* overflow: hidden; */
+}
+.table-item-edit-wrapper.small {
+	height: 80px !important;
+	top: -40px;
+	grid-template-rows: auto auto;
 }
 .table-item-edit-wrapper::after {
 	content: "";

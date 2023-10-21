@@ -40,6 +40,7 @@ const DDebtTable = ({
 				arr.push({
 					key: idx,
 					id: item?.deliver_debt_id,
+					name: item?.deliver?.deliver_name,
 					client:
 						item?.deliver?.deliver_name +
 						" " +
@@ -117,7 +118,7 @@ const DDebtTable = ({
 									record?.id,
 									record?.price_total,
 									record?.currencyAmount,
-									record?.client.split(" ")[0]
+									record?.name
 								)
 							}
 						>
@@ -131,7 +132,7 @@ const DDebtTable = ({
 								payConfirmModal(
 									e,
 									<>
-										<span>{record?.client.split(" ")[0]}</span> qarzni
+										<span>{record?.name}</span> qarzni
 									</>,
 									closeDebt,
 									record?.id
@@ -148,7 +149,7 @@ const DDebtTable = ({
 								productDeleteConfirm(
 									e,
 									<>
-										<span>{record?.client.split(" ")[0]}</span> qarzni
+										<span>{record?.name}</span> qarzni
 									</>,
 									deleteDebt,
 									record?.id

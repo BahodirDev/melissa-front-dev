@@ -155,8 +155,8 @@ const Total = ({ getData }) => {
 			post("/debts-note/debts-note-post", newObj).then((data) => {
 				if (data?.status === 200) {
 					dispatch(addData(data?.data))
-					toast.success("Qarzdorlik muvoffaqiyatli qo'shildi")
 					clearAndClose()
+					toast.success("Qarzdorlik muvoffaqiyatli qo'shildi")
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
@@ -299,25 +299,7 @@ const Total = ({ getData }) => {
 				</div>
 			</AddModal>
 
-			<div className="info-wrapper">
-				<InfoItem
-					value={
-						searchSubmitted
-							? addComma(filteredData.amount) + " so'm"
-							: addComma(state?.nDebt?.quantity) + " so'm"
-					}
-					name="Umumiy summa"
-					icon={
-						<CurrencyDollar
-							size={24}
-							style={{ color: "var(--color-warning)" }}
-						/>
-					}
-					iconBgColor={"var(--bg-icon-warning)"}
-				/>
-			</div>
-
-			<div className="filter-wrapper">
+			{/* <div className="filter-wrapper">
 				<div className="input-wrapper">
 					<Select
 						showSearch
@@ -397,9 +379,31 @@ const Total = ({ getData }) => {
 						Saqlash
 					</button>
 				</div>
+			</div> */}
+
+			<div className="info-wrapper">
+				<InfoItem
+					value={
+						searchSubmitted
+							? addComma(filteredData.amount) + " so'm"
+							: addComma(state?.nDebt?.quantity) + " so'm"
+					}
+					name="Umumiy summa"
+					icon={
+						<CurrencyDollar
+							size={24}
+							style={{ color: "var(--color-warning)" }}
+						/>
+					}
+					iconBgColor={"var(--bg-icon-warning)"}
+				/>
 			</div>
 
-			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				className={"table-m"}
+			/>
 
 			{state.nDebt?.loading ? (
 				<Loader />

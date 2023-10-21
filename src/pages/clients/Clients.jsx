@@ -87,7 +87,6 @@ export default function Employees() {
 		inputRef.current.value = ""
 	}
 
-	// add, edit
 	const addNewClient = () => {
 		setSubmitted(true)
 		if (new_name.length && new_number.slice(18) !== "_") {
@@ -102,7 +101,6 @@ export default function Employees() {
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
 						clearAndClose()
-						setSubmitted(false)
 						toast.success("Mijoz muvoffaqiyatli o'zgartirildi")
 					} else if (data?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
 						toast.warn("Bunday mijoz allaqachon mavjud")
@@ -116,8 +114,8 @@ export default function Employees() {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data))
 						dispatch(setQuantity())
-						toast.success("Mijoz muvoffaqiyatli qo'shildi")
 						clearAndClose()
+						toast.success("Mijoz muvoffaqiyatli qo'shildi")
 					} else if (data?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
 						toast.warn("Bunday mijoz allaqachon mavjud")
 					} else {

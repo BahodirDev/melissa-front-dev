@@ -106,7 +106,7 @@ const NDebtTable = ({
 									record?.total_id,
 									record?.price,
 									1,
-									record?.client.split(" ")[0]
+									record?.client
 								)
 							}
 						>

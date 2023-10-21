@@ -1,7 +1,12 @@
 import { X } from "@phosphor-icons/react"
 import { useOutletContext } from "react-router-dom"
 
-const Search = ({ handleSearch, clearSearch, showAddBtn = true }) => {
+const Search = ({
+	handleSearch,
+	clearSearch,
+	showAddBtn = true,
+	className,
+}) => {
 	const [
 		inputRef,
 		showDropdown,
@@ -13,7 +18,7 @@ const Search = ({ handleSearch, clearSearch, showAddBtn = true }) => {
 	] = useOutletContext()
 
 	return (
-		<div className={`search-wrapper ${showAddBtn ? null : "table-m"}`}>
+		<div className={`search-wrapper ${className}`}>
 			<div>
 				<div className="input-wrapper">
 					<input type="text" placeholder="Izlash..." ref={inputRef} />

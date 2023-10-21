@@ -96,8 +96,6 @@ export default function Currency() {
 						dispatch(editData(data?.data))
 						clearAndClose()
 						toast.success("Pul birligi muvoffaqiyatli o'zgartirildi")
-						setObjId("")
-						setSubmitted(false)
 					} else if (data?.response?.data?.error === "CURRENCY_ALREADY_EXIST") {
 						toast.warn("Bunday pul birligi allaqachon mavjud")
 					} else {
@@ -120,7 +118,6 @@ export default function Currency() {
 						dispatch(setQuantity())
 						clearAndClose()
 						toast.success("Pul birligi muvoffaqiyatli qo'shildi")
-						setSubmitted(false)
 					} else if (data?.response?.data?.error === "CURRENCY_ALREADY_EXIST") {
 						toast.warn("Pul birligi allaqachon mavjud")
 					} else {

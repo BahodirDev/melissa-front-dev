@@ -88,7 +88,7 @@ function Debts() {
 					value="total"
 					className={show === "total" ? "active" : null}
 				>
-					Umumiy qarzdorlik
+					Umumiy
 				</button>
 				<button
 					type="button"
