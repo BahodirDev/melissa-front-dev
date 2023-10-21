@@ -14,7 +14,7 @@ import {
 } from "chart.js"
 import { useState } from "react"
 import { Bar, Doughnut, Line } from "react-chartjs-2"
-import { formatNumber } from "../../components/addComma"
+import { formatSumma } from "../../components/addComma"
 import "./home.css"
 
 ChartJs.register(
@@ -203,7 +203,7 @@ export default function Home() {
 			ctx.textAlign = "center"
 			ctx.textBaseline = "middle"
 			ctx.fillText(
-				`${formatNumber(totalDebt)}`,
+				`${formatSumma(totalDebt)}`,
 				chart.getDatasetMeta(0).data[0].x,
 				chart.getDatasetMeta(0).data[0].y
 			)
@@ -271,11 +271,11 @@ export default function Home() {
 					<h5>Balans</h5>
 					<div className="stat-item-wrapper stat-balance">
 						<h6>
-							{formatNumber(1200000000)} <span>so'm</span>
+							{formatSumma(1200000000)} <span>so'm</span>
 						</h6>
 						<h5>Soft balans</h5>
 						<h6>
-							{formatNumber(1200000000)} <span>so'm</span>
+							{formatSumma(1200000000)} <span>so'm</span>
 						</h6>
 					</div>
 				</div>

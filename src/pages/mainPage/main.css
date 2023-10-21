@@ -2,7 +2,6 @@
 	display: grid;
 	grid-template-columns: auto 1fr;
 	width: 100dvw;
-	height: 100dvh;
 	gap: 16px;
 	padding: 16px 0 0 16px;
 	background-color: var(--bg-neutral);

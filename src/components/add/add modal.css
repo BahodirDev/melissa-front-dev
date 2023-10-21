@@ -81,6 +81,10 @@
 	display: flex;
 	justify-content: space-between;
 }
+.modal-btn-group .primary-btn {
+	width: 130px;
+	padding: 8px 24px;
+}
 
 /* error */
 .input-wrapper.modal-form.regular.error {

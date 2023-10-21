@@ -1,5 +1,6 @@
 .ssidebar {
 	width: 70px;
+	/* it was 32 */
 	height: calc(100dvh - 32px);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-md);
