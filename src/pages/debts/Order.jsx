@@ -152,6 +152,7 @@ const Order = ({ getData }) => {
 					})
 				)
 				toast.success("Qarzdorlik muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else {
 				toast.error("Nomalum server xatolik")
 			}

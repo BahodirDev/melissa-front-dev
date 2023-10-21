@@ -35,9 +35,6 @@ const Client = ({ getData }) => {
 	const dispatch = useDispatch()
 
 	const [filteredData, setFilteredData] = useState({})
-	const [btn_loading, setBtn_loading] = useState(false)
-	const [objId, setObjId] = useState("")
-	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
 	// filter

@@ -92,7 +92,7 @@ export default function Employees() {
 		if (new_name.length && new_number.slice(18) !== "_") {
 			setBtn_loading(true)
 			let newClient = {
-				clients_name: new_name,
+				clients_name: new_name.trim(),
 				clients_nomer: new_number.replace(/\D/g, ""),
 				clients_desc: desc,
 			}
@@ -160,6 +160,7 @@ export default function Employees() {
 				dispatch(removeDebt(id))
 				dispatch(setQuantity())
 				toast.success("Mijoz muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else if (data?.response?.data?.error === "DEBTS_EXIST") {
 				toast.warn("Bu mijozda qarzdorlik mavjud")
 			} else {
@@ -167,7 +168,6 @@ export default function Employees() {
 			}
 			dispatch(setLoading(false))
 		})
-		clearAndClose()
 	}
 
 	return (
@@ -181,7 +181,7 @@ export default function Employees() {
 			>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(new_name) !== null && "error"}
+					${submitted && stringCheck(new_name.trim()) !== null && "error"}
 					`}
 				>
 					<label>Mijoz ismi</label>
@@ -192,10 +192,13 @@ export default function Employees() {
 						value={new_name}
 						onChange={(e) => setNew_name(e.target.value)}
 					/>
-					{submitted && stringCheck(new_name) !== null && <Info size={20} />}
+					{submitted && stringCheck(new_name.trim()) !== null && (
+						<Info size={20} />
+					)}
 					<div className="validation-field">
 						<span>
-							{submitted && stringCheck(new_name, "Ism kiritish majburiy")}
+							{submitted &&
+								stringCheck(new_name.trim(), "Ism kiritish majburiy")}
 						</span>
 					</div>
 				</div>

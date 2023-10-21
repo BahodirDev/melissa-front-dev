@@ -79,11 +79,11 @@ export default function Employees() {
 		) {
 			setBtn_loading(true)
 			let newUser = {
-				user_name: new_name,
+				user_name: new_name.trim(),
 				user_nomer: new_number.replace(/\D/g, ""),
 				user_role: new_job,
-				user_login: new_login,
-				user_password: new_password,
+				user_login: new_login.trim(),
+				user_password: new_password.trim(),
 			}
 			if (objId) {
 				patch(`/users/users-patch/${objId}`, newUser).then((data) => {
@@ -133,12 +133,12 @@ export default function Employees() {
 				dispatch(removeEmp(id))
 				dispatch(setQuantity())
 				toast.success("Hodim muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
-		clearAndClose()
 	}
 
 	const editEmp = (id) => {
@@ -208,7 +208,7 @@ export default function Employees() {
 			>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(new_name) !== null && "error"}
+					${submitted && stringCheck(new_name.trim()) !== null && "error"}
 					`}
 				>
 					<label>Xodim ismi</label>
@@ -219,10 +219,13 @@ export default function Employees() {
 						value={new_name}
 						onChange={(e) => setNew_name(e.target.value)}
 					/>
-					{submitted && stringCheck(new_name) !== null && <Info size={20} />}
+					{submitted && stringCheck(new_name.trim()) !== null && (
+						<Info size={20} />
+					)}
 					<div className="validation-field">
 						<span>
-							{submitted && stringCheck(new_name, "Ism kiritish majburiy")}
+							{submitted &&
+								stringCheck(new_name.trim(), "Ism kiritish majburiy")}
 						</span>
 					</div>
 				</div>
@@ -280,7 +283,7 @@ export default function Employees() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && passwordCheck(new_login) !== null && "error"}
+					${submitted && passwordCheck(new_login.trim()) !== null && "error"}
 					`}
 				>
 					<label>Login</label>
@@ -291,14 +294,16 @@ export default function Employees() {
 						value={new_login}
 						onChange={(e) => setNew_login(e.target.value)}
 					/>
-					{submitted && passwordCheck(new_login) !== null && <Info size={20} />}
+					{submitted && passwordCheck(new_login.trim()) !== null && (
+						<Info size={20} />
+					)}
 					<div className="validation-field">
-						<span>{submitted && passwordCheck(new_login, "Login")}</span>
+						<span>{submitted && passwordCheck(new_login.trim(), "Login")}</span>
 					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && passwordCheck(new_password) !== null && "error"}
+					${submitted && passwordCheck(new_password.trim()) !== null && "error"}
 					`}
 				>
 					<label>Parol</label>
@@ -309,11 +314,13 @@ export default function Employees() {
 						value={new_password}
 						onChange={(e) => setNew_password(e.target.value)}
 					/>
-					{submitted && passwordCheck(new_password) !== null && (
+					{submitted && passwordCheck(new_password.trim()) !== null && (
 						<Info size={20} />
 					)}
 					<div className="validation-field">
-						<span>{submitted && passwordCheck(new_password, "Parol")}</span>
+						<span>
+							{submitted && passwordCheck(new_password.trim(), "Parol")}
+						</span>
 					</div>
 				</div>
 				<div className="modal-btn-group">

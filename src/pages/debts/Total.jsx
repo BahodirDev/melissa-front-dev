@@ -127,6 +127,7 @@ const Total = ({ getData }) => {
 			if (data?.status === 200) {
 				dispatch(deleteData({ id, sum: data?.data?.price }))
 				toast.success("Qarzdorlik muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
@@ -145,7 +146,7 @@ const Total = ({ getData }) => {
 		) {
 			setBtn_loading(true)
 			let newObj = {
-				client_name: totalName,
+				client_name: totalName.trim(),
 				price: totalCost,
 				description: totalComment,
 				debts_due_date: new Date(totalDate).toISOString(),
@@ -191,7 +192,7 @@ const Total = ({ getData }) => {
 			>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(totalName) !== null && "error"}
+					${submitted && stringCheck(totalName.trim()) !== null && "error"}
 					`}
 				>
 					<label>Xaridor</label>
@@ -202,10 +203,13 @@ const Total = ({ getData }) => {
 						value={totalName}
 						onChange={(e) => setTotalName(e.target.value)}
 					/>
-					{submitted && stringCheck(totalName) !== null && <Info size={20} />}
+					{submitted && stringCheck(totalName.trim()) !== null && (
+						<Info size={20} />
+					)}
 					<div className="validation-field">
 						<span>
-							{submitted && stringCheck(totalName, "Ism kiritish majburiy")}
+							{submitted &&
+								stringCheck(totalName.trim(), "Ism kiritish majburiy")}
 						</span>
 					</div>
 				</div>

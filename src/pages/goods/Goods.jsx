@@ -1,8 +1,6 @@
-import { Input } from "antd"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
@@ -12,118 +10,89 @@ import {
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/good"
-import { validation } from "../../components/validation"
+import { stringCheck } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
-import useApiRequest from "../../customHook/useUrl"
 import GoodsList from "./GoodsList"
 import "./goods.css"
+import { toast } from "react-toastify"
+import Search from "../../components/search/Search"
+import AddModal from "../../components/add/AddModal"
+import InfoItem from "../../components/info_item/InfoItem"
+import { Info, SquaresFour } from "@phosphor-icons/react"
 
 export default function Goods() {
-	const [buttonLoader, setButtonLoader] = useState(false)
-	const [filteredProducts, setFilteredProducts] = useState([])
-	const [modal_alert, setModal_alert] = useState("")
-	const [modal_msg, setModal_msg] = useState("")
-	const [toggleClass, setToggleClass] = useState(false)
-	const [objId, setObjId] = useState("")
-	const buttonRef = useRef(null)
-	const [submitted, setSubmitted] = useState(false)
-	const request = useApiRequest()
 	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
-		userInfo,
-		action,
-		setAction,
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
 	] = useOutletContext()
 	const state = useSelector((state) => state.good)
 	const dispatch = useDispatch()
+
+	// filter
+	const [filteredData, setFilteredData] = useState([])
+	const [btn_loading, setBtn_loading] = useState(false)
+	const [objId, setObjId] = useState("")
+	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 
-	// form values
+	// new
 	const [newGoodName, setNewGoodName] = useState("")
 	const [newGoodCode, setNewGoodCode] = useState("")
 
 	useEffect(() => {
-		setAction({
-			url: "/goods/goods-search",
-			body: {
-				category_name: saerchInputValue,
-			},
-			res: setFilteredProducts,
-			submitted: setSearchSubmitted,
-			clearValues: {},
-			setLoading: setLoading,
-		})
-	}, [saerchInputValue])
-
-	const getData = () => {
 		dispatch(setLoading(true))
 		get("/goods/goods-list").then((data) => {
 			if (data?.status === 201) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Malumot topilmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
-	}
+	}, [])
 
-	useEffect(getData, [])
-
-	const postNewGood = () => {
+	const addGood = () => {
 		setSubmitted(true)
 		if (newGoodName && newGoodCode) {
-			setButtonLoader(true)
+			setBtn_loading(true)
+			let newObj = {
+				goods_name: newGoodName.trim(),
+				goods_code: newGoodCode.trim(),
+			}
 			if (objId) {
-				patch(`/goods/goods-patch/${objId}`, {
-					goods_name: newGoodName,
-					goods_code: newGoodCode,
-				}).then((data) => {
+				patch(`/goods/goods-patch/${objId}`, newObj).then((data) => {
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Kategoriya muvoffaqiyatli o'zgartirildi")
-						setNewGoodName("")
-						setNewGoodCode("")
-						setObjId("")
-						setSubmitted(false)
-						setButtonLoader(false)
+						clearAndClose()
+						toast.success("Kategoriya muvoffaqiyatli o'zgartirildi")
 					} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
-						setModal_alert("Xatolik")
-						setModal_msg("Bunday kategoriya allaqachon mavjud")
+						toast.warn("Bunday kategoriya allaqachon mavjud")
 					} else {
-						setModal_alert("Nomalum server xatolik")
-						setModal_msg("Malumot o'zgartirib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
-					setButtonLoader(false)
+					setBtn_loading(false)
 				})
 			} else {
-				post("/goods/goods-post", {
-					goods_name: newGoodName,
-					goods_code: newGoodCode,
-				}).then((data) => {
+				post("/goods/goods-post", newObj).then((data) => {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data))
 						dispatch(setQuantity())
-						buttonRef.current.click()
-						setModal_alert("Xabar")
-						setModal_msg("Kategoriya muvoffaqiyatli qo'shildi")
-						setNewGoodName("")
-						setNewGoodCode("")
-						setSubmitted(false)
-						setButtonLoader(false)
+						clearAndClose()
+						toast.success("Kategoriya muvoffaqiyatli qo'shildi")
 					} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
-						setModal_alert("Xatolik")
-						setModal_msg("Bunday kategoriya allaqachon mavjud")
+						toast.warn("Bunday kategoriya allaqachon mavjud")
 					} else {
-						setModal_alert("Nomalum server xatolik")
-						setModal_msg("Kategoriya qo'shib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
-					setButtonLoader(false)
+					setBtn_loading(false)
 				})
 			}
 		}
@@ -135,136 +104,170 @@ export default function Goods() {
 			if (data?.status === 200) {
 				dispatch(removeGood(id))
 				dispatch(setQuantity())
-				setModal_alert("Xabar")
-				setModal_msg("Kategoriya muvoffaqiyatli o'chirildi")
+				toast.success("Kategoriya muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
-				setModal_alert("Kategoriya o'chirilmadi")
-				setModal_msg("Bu kategoriyada mahsulot mavjud")
+				toast.warn("Bu kategoriyada mahsulot mavjud")
 			} else {
-				setModal_alert("Nomalum server xatolik")
-				setModal_msg("Kategoriya o'chiril bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
 	}
 
-	const collapse = (event) => {
-		setSubmitted(false)
-		setToggleClass(!toggleClass)
-		let content = event.target.nextElementSibling
-		if (content.style.maxHeight) {
-			content.style.maxHeight = null
-			setNewGoodName("")
-			setNewGoodCode("")
-			setObjId("")
-		} else {
-			content.style.maxHeight = content.scrollHeight + "px"
-		}
-	}
-
-	const updateGood = (id) => {
-		let divTop = document.querySelector(".content").scrollTop
-		let scrollTop = setInterval(() => {
-			divTop -= 20
-			document.querySelector(".content").scrollTop = divTop
-
-			if (divTop <= 0) {
-				clearInterval(scrollTop)
-			}
-		}, 10)
-
+	const editGood = (id) => {
 		get(`/goods/goods-list/${id}`).then((data) => {
 			if (data?.status === 201) {
-				setNewGoodName(toggleClass ? "" : data?.data[0]?.goods_name)
-				setNewGoodCode(toggleClass ? "" : data?.data[0]?.goods_code)
+				setNewGoodName(data?.data[0]?.goods_name)
+				setNewGoodCode(data?.data[0]?.goods_code)
 				setObjId(id)
-				buttonRef.current.click()
+				setAddModalDisplay("block")
+				setAddModalVisible(true)
+			} else {
+				toast.error("Nomalum server xatolik")
 			}
 		})
 	}
 
+	const clearAndClose = () => {
+		setNewGoodName("")
+		setNewGoodCode("")
+
+		setObjId("")
+		setSubmitted(false)
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
+	}
+
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/goods/goods-search", {
+				category_name: inputRef.current?.value,
+			}).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
+	}
+
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
+
 	return (
-		<div id="cardWrapperTop">
-			{error_modal(modal_alert, modal_msg, modal_msg.length, setModal_msg)}
-
-			<div className="goods-info">
-				<i className="fa-solid fa-tags"></i> Kategoriyalar soni:{" "}
-				{searchSubmitted
-					? filteredProducts?.length
-					: state?.quantity
-					? state?.quantity
-					: 0}{" "}
-				ta
-			</div>
-
-			<button
-				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
-				onClick={collapse}
-				ref={buttonRef}
+		<>
+			<AddModal
+				addModalVisible={addModalVisible}
+				setAddModalVisible={setAddModalVisible}
+				addModalDisplay={addModalDisplay}
+				setAddModalDisplay={setAddModalDisplay}
+				name={objId ? "Kategoriya tahrirlash" : "Kategoriya qo'shish"}
 			>
-				Qo'shish
-			</button>
-
-			<div className="my-content px-2">
-				<div className="form-group row mb-2">
-					<div className="product-add__input good-input validation-field">
-						<label htmlFor="">Mahsulot nomi</label>
-						<Input
-							type="text"
-							placeholder="Kubik rubik"
-							value={newGoodName}
-							onChange={(e) => setNewGoodName(e.target.value)}
-						/>
-						<div className="validation-field-error">
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && stringCheck(newGoodName.trim()) !== null && "error"}
+					`}
+				>
+					<label>Kategoriya nomi</label>
+					<input
+						type="text"
+						placeholder="Kategoriya nomini kiriting"
+						className="input"
+						value={newGoodName}
+						onChange={(e) => setNewGoodName(e.target.value)}
+					/>
+					{submitted && stringCheck(newGoodName.trim()) !== null && (
+						<Info size={20} />
+					)}
+					<div className="validation-field">
+						<span>
 							{submitted &&
-								validation(!newGoodName.trim(), "Nom kiritish majburiy")}
-						</div>
-					</div>
-					<div className="product-add__input good-input validation-field">
-						<label htmlFor="">Mahsulot kodi</label>
-						<Input
-							type="text"
-							placeholder="fr-231"
-							value={newGoodCode}
-							onChange={(e) => setNewGoodCode(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted &&
-								validation(!newGoodCode.trim(), "Kod kiritish majburiy")}
-						</div>
-					</div>
-					<div className="col-1">
-						<br />
-						<button
-							className="btn btn-melissa"
-							disabled={buttonLoader}
-							onClick={() => postNewGood()}
-							style={{ padding: "4px 10px" }}
-						>
-							<i className="fas fa-plus"></i>
-							{buttonLoader ? (
-								<span
-									className="spinner-grow spinner-grow-sm"
-									role="status"
-									aria-hidden="true"
-									style={{ marginLeft: "5px" }}
-								></span>
-							) : null}
-						</button>
+								stringCheck(newGoodName.trim(), "Nom kiritish majburiy")}
+						</span>
 					</div>
 				</div>
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && stringCheck(newGoodCode.trim()) !== null && "error"}
+					`}
+				>
+					<label>Kategoriya kodi</label>
+					<input
+						type="text"
+						placeholder="Kategoriya kodi kiriting"
+						className="input"
+						value={newGoodCode}
+						onChange={(e) => setNewGoodCode(e.target.value)}
+					/>
+					{submitted && stringCheck(newGoodCode.trim()) !== null && (
+						<Info size={20} />
+					)}
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(newGoodCode.trim(), "Kod kiritish majburiy")}
+						</span>
+					</div>
+				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btn_loading}
+						onClick={addGood}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btn_loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
+			</AddModal>
+
+			<div className="info-wrapper">
+				<InfoItem
+					value={searchSubmitted ? filteredData.length : state?.quantity}
+					name="Omborlar soni"
+					icon={
+						<SquaresFour size={24} style={{ color: "var(--color-primary)" }} />
+					}
+					iconBgColor={"var(--bg-icon)"}
+				/>
 			</div>
+
+			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
 
 			{state?.loading ? (
 				<Loader />
 			) : (
 				<GoodsList
-					goods={searchSubmitted ? filteredProducts : state?.data}
+					data={searchSubmitted ? filteredData : state?.data}
 					deleteGood={deleteGood}
-					updateGood={updateGood}
+					editGood={editGood}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
 				/>
 			)}
-			{/* {loader ? <Loader /> : <AntTable data={products} tableName="goods" />} */}
-		</div>
+		</>
 	)
 }
