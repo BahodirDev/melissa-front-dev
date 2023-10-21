@@ -136,6 +136,7 @@ export default function Currency() {
 				dispatch(removeCurrency(id))
 				dispatch(setQuantity())
 				toast.success("Valyuta muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
 				toast.warn("Bu valyutada mahsulot bor")
 			} else {
@@ -143,7 +144,6 @@ export default function Currency() {
 			}
 			dispatch(setLoading(false))
 		})
-		clearAndClose()
 	}
 
 	const editCurrency = (id) => {

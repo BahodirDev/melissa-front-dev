@@ -88,20 +88,20 @@ export default function Store() {
 		if (storeName.length) {
 			setBtn_loading(true)
 			if (objId) {
-				patch(`/store/store-patch/${objId}`, { store_name: storeName }).then(
-					(data) => {
-						if (data?.status === 201) {
-							dispatch(editData(data?.data))
-							clearAndClose()
-							toast.success("Malumot muvoffaqiyatli o'zgartirildi")
-						} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
-							toast.warn("Bunday ombor allaqachon mavjud")
-						} else {
-							toast.error("Nomalum server xatolik")
-						}
-						setBtn_loading(false)
+				patch(`/store/store-patch/${objId}`, {
+					store_name: storeName.trim(),
+				}).then((data) => {
+					if (data?.status === 201) {
+						dispatch(editData(data?.data))
+						clearAndClose()
+						toast.success("Malumot muvoffaqiyatli o'zgartirildi")
+					} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
+						toast.warn("Bunday ombor allaqachon mavjud")
+					} else {
+						toast.error("Nomalum server xatolik")
 					}
-				)
+					setBtn_loading(false)
+				})
 			} else {
 				post("/store/store-post", { store_name: storeName }).then((data) => {
 					if (data?.status === 201) {
@@ -127,6 +127,7 @@ export default function Store() {
 				dispatch(removeStore(id))
 				dispatch(setQuantity())
 				toast.success("Ombor muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
 				toast.warn("Omborda maxsulot borligi uchun o'chirilmadi")
 			} else {
@@ -134,7 +135,6 @@ export default function Store() {
 			}
 			dispatch(setLoading(false))
 		})
-		clearAndClose()
 	}
 
 	const editStore = (id) => {
@@ -170,7 +170,7 @@ export default function Store() {
 			>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(storeName) !== null && "error"}
+					${submitted && stringCheck(storeName.trim()) !== null && "error"}
 					`}
 				>
 					<label>Ombor nomi</label>
@@ -181,10 +181,13 @@ export default function Store() {
 						value={storeName}
 						onChange={(e) => setStoreName(e.target.value)}
 					/>
-					{submitted && stringCheck(storeName) !== null && <Info size={20} />}
+					{submitted && stringCheck(storeName.trim()) !== null && (
+						<Info size={20} />
+					)}
 					<div className="validation-field">
 						<span>
-							{submitted && stringCheck(storeName, "Nom kiritish majburiy")}
+							{submitted &&
+								stringCheck(storeName.trim(), "Nom kiritish majburiy")}
 						</span>
 					</div>
 				</div>

@@ -98,7 +98,7 @@ function Return() {
 		if (name && client && store && count > 0 && cost > 0) {
 			setBtnLoading(true)
 			let newObj = {
-				return_name: name,
+				return_name: name.trim(),
 				return_count: count,
 				return_cost: cost,
 				client_id: client?.clients_id,
@@ -143,6 +143,7 @@ function Return() {
 				dispatch(removeReturn(id))
 				dispatch(setQuantity())
 				toast.success("Mahsulot muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
@@ -228,7 +229,7 @@ function Return() {
 			>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(name) !== null && "error"}
+					${submitted && stringCheck(name.trim()) !== null && "error"}
 					`}
 				>
 					<label>Mahsulot nomi</label>

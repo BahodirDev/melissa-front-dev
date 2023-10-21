@@ -90,7 +90,7 @@ function Deliver() {
 		if (name.length && phone.slice(18) !== "_") {
 			setBtn_loading(true)
 			let obj = {
-				deliver_name: name,
+				deliver_name: name.trim(),
 				deliver_nomer: phone.replace(/\D/g, ""),
 				deliver_place: loc,
 			}
@@ -132,6 +132,7 @@ function Deliver() {
 				dispatch(removeDeliver(id))
 				dispatch(setQuantity())
 				toast.success("Ta'minotchi muvoffaqiyatli o'chirildi")
+				clearAndClose()
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
 				toast.warn("Bu ta'minotchida qarzdorlik mavjud")
 			} else {
@@ -139,7 +140,6 @@ function Deliver() {
 			}
 			dispatch(setLoading(false))
 		})
-		clearAndClose()
 	}
 
 	const editSup = (id) => {
@@ -179,7 +179,7 @@ function Deliver() {
 			>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(name) !== null && "error"}
+					${submitted && stringCheck(name.trim()) !== null && "error"}
 					`}
 				>
 					<label>Ta'minotchi ismi</label>
@@ -190,10 +190,10 @@ function Deliver() {
 						value={name}
 						onChange={(e) => setName(e.target.value)}
 					/>
-					{submitted && stringCheck(name) !== null && <Info size={20} />}
+					{submitted && stringCheck(name.trim()) !== null && <Info size={20} />}
 					<div className="validation-field">
 						<span>
-							{submitted && stringCheck(name, "Ism kiritish majburiy")}
+							{submitted && stringCheck(name.trim(), "Ism kiritish majburiy")}
 						</span>
 					</div>
 				</div>
