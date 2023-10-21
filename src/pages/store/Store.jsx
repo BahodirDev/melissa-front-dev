@@ -92,8 +92,8 @@ export default function Store() {
 					(data) => {
 						if (data?.status === 201) {
 							dispatch(editData(data?.data))
-							toast.success("Malumot muvoffaqiyatli o'zgartirildi")
 							clearAndClose()
+							toast.success("Malumot muvoffaqiyatli o'zgartirildi")
 						} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
 							toast.warn("Bunday ombor allaqachon mavjud")
 						} else {
@@ -107,8 +107,8 @@ export default function Store() {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data))
 						dispatch(setQuantity())
-						toast.success("Ombor muvoffaqiyatli qo'shildi")
 						clearAndClose()
+						toast.success("Ombor muvoffaqiyatli qo'shildi")
 					} else if (data?.response?.data?.error === "STORE_ALREADY_EXIST") {
 						toast.warn("Bunday ombor allaqachon mavjud")
 					} else {

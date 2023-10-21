@@ -136,24 +136,6 @@ const Client = ({ getData }) => {
 
 	return (
 		<>
-			<div className="info-wrapper">
-				<InfoItem
-					value={
-						searchSubmitted
-							? addComma(filteredData.amount) + " so'm"
-							: addComma(state?.debt?.quantity) + " so'm"
-					}
-					name="Umumiy summa"
-					icon={
-						<CurrencyDollar
-							size={24}
-							style={{ color: "var(--color-warning)" }}
-						/>
-					}
-					iconBgColor={"var(--bg-icon-warning)"}
-				/>
-			</div>
-
 			<div className="filter-wrapper">
 				<div className="input-wrapper">
 					<Select
@@ -180,19 +162,19 @@ const Client = ({ getData }) => {
 					<Select
 						showSearch
 						allowClear
-						placeholder="Ta'minotchi"
+						placeholder="Mijoz"
 						className="select"
 						value={supplier ? supplier : null}
 						onChange={(e) => setSupplier(e)}
 						disabled
 					>
-						{state.deliver?.data.length
-							? state.deliver?.data.map((item, idx) => {
+						{state.client?.data.length
+							? state.client?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={item.deliver_id}>
+											<Select.Option key={idx} value={item.clients_id}>
 												<div>
-													<span>{item?.deliver_name}</span>
+													<span>{item?.clients_name}</span>
 												</div>
 											</Select.Option>
 										)
@@ -236,10 +218,29 @@ const Client = ({ getData }) => {
 				</div>
 			</div>
 
+			<div className="info-wrapper">
+				<InfoItem
+					value={
+						searchSubmitted
+							? addComma(filteredData.amount) + " so'm"
+							: addComma(state?.debt?.quantity) + " so'm"
+					}
+					name="Umumiy summa"
+					icon={
+						<CurrencyDollar
+							size={24}
+							style={{ color: "var(--color-warning)" }}
+						/>
+					}
+					iconBgColor={"var(--bg-icon-warning)"}
+				/>
+			</div>
+
 			<Search
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				showAddBtn={false}
+				className={"table-m"}
 			/>
 
 			{state.debt?.loading ? (

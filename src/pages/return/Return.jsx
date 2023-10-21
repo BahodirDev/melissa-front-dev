@@ -16,64 +16,61 @@ import {
 	setQuantity,
 } from "../../components/reducers/return"
 import ReturnTable from "../../components/return_table/ReturnTable"
-import { validation } from "../../components/validation"
+import {
+	numberCheck,
+	stringCheck,
+	validation,
+} from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import "./return.css"
+import { toast } from "react-toastify"
+import Search from "../../components/search/Search"
+import AddModal from "../../components/add/AddModal"
+import InfoItem from "../../components/info_item/InfoItem"
+import { addComma } from "../../components/addComma"
+import {
+	ArrowCounterClockwise,
+	CaretDown,
+	CurrencyDollar,
+	Info,
+} from "@phosphor-icons/react"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 function Return() {
-	const [filteredData, setFilteredData] = useState({})
-	const [btnLoading, setBtnLoading] = useState(false)
-	const request = useApiRequest()
-	const [modalAlert, setModalAlert] = useState("")
-	const [modalMsg, setModalMsg] = useState("")
-	const [toggleClass, setToggleClass] = useState(false)
-	const [objId, setObjId] = useState("")
-	const buttonRef = useRef(null)
-	const [submitted, setSubmitted] = useState(false)
-	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+	] = useOutletContext()
 	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
-	const [
-		saerchInputValue,
-		setSearchInput,
-		sidebar,
-		userInfo,
-		action,
-		setAction,
-	] = useOutletContext()
+
+	const [btnLoading, setBtnLoading] = useState(false)
+	const [objId, setObjId] = useState("")
+	const [submitted, setSubmitted] = useState(false)
+
+	// filter
+	const [filteredData, setFilteredData] = useState({})
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [searchStoreId, setSearchStoreId] = useState("")
 	const [searchDeliverId, setSearchDeliverId] = useState("")
 	const [searchGoodId, setSearchGoodId] = useState("")
 
-	// new data
+	// new
 	const [name, setName] = useState("")
 	const [count, setCount] = useState(0)
 	const [cost, setCost] = useState(0)
 	const [client, setClient] = useState({})
 	const [store, setStore] = useState("")
 	const [reason, setReason] = useState("")
-
-	useEffect(() => {
-		setAction({
-			url: "/return/return-filter",
-			body: {
-				store_id: searchStoreId,
-				goods_id: searchGoodId,
-				deliver_id: searchDeliverId,
-				goods_name: saerchInputValue,
-				goods_code: saerchInputValue,
-			},
-			res: setFilteredData,
-			submitted: setSearchSubmitted,
-			clearValues: {
-				first: setSearchStoreId,
-				second: setSearchGoodId,
-				third: setSearchDeliverId,
-			},
-			setLoading: setLoading,
-		})
-	}, [saerchInputValue, searchStoreId, searchGoodId, searchDeliverId])
 
 	const getData = (list, action) => {
 		dispatch(setLoading(true))
@@ -84,8 +81,7 @@ function Return() {
 					dispatch(setQuantity())
 				}
 			} else {
-				setModalAlert("Nomalum server xatolik")
-				setModalMsg("Malumot topilmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
@@ -97,27 +93,9 @@ function Return() {
 		getData("goods", setDataGoods)
 	}, [])
 
-	const collapse = (event) => {
-		setSubmitted(false)
-		setToggleClass(!toggleClass)
-		let content = event.target.nextElementSibling
-		if (content.style.maxHeight) {
-			content.style.maxHeight = null
-			setName("")
-			setCount(0)
-			setCost(0)
-			setClient({})
-			setStore("")
-			setReason("")
-			setObjId("")
-		} else {
-			content.style.maxHeight = content.scrollHeight + "px"
-		}
-	}
-
 	const addNewReturn = () => {
 		setSubmitted(true)
-		if (name && client && store && count > 0 && cost > 0 && reason?.length) {
+		if (name && client && store && count > 0 && cost > 0) {
 			setBtnLoading(true)
 			let newObj = {
 				return_name: name,
@@ -131,22 +109,12 @@ function Return() {
 				patch(`/return/return-patch/${objId}`, newObj).then((data) => {
 					if (data?.status === 201) {
 						dispatch(editData({ ...data?.data, ...client }))
-						buttonRef.current.click()
-						setModalAlert("Xabar")
-						setModalMsg("Malumot muvoffaqiyatli o'zgartirildi")
-						setName("")
-						setCount(0)
-						setCost(0)
-						setClient({})
-						setStore("")
-						setReason("")
-						setSubmitted(false)
+						toast.success("Malumot muvoffaqiyatli o'zgartirildi")
+						clearAndClose()
 					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
-						setModalAlert("Xatolik")
-						setModalMsg("Mijoz topilmadi")
+						toast.warn("Bunday mijoz topilmadi")
 					} else {
-						setModalAlert("Nomalum server xatolik")
-						setModalMsg("Mahsulot o'zgartirib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
 					setBtnLoading(false)
 				})
@@ -155,22 +123,12 @@ function Return() {
 					if (data?.status === 200) {
 						dispatch(addData({ ...data?.data, ...client }))
 						dispatch(setQuantity())
-						buttonRef.current.click()
-						setModalAlert("Xabar")
-						setModalMsg("Mahsulot muvoffaqiyatli qaytarildi")
-						setName("")
-						setCount(0)
-						setCost(0)
-						setClient({})
-						setStore("")
-						setReason("")
-						setSubmitted(false)
+						clearAndClose()
+						toast.success("Mahsulot muvoffaqiyatli qaytarildi")
 					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
-						setModalAlert("Xatolik")
-						setModalMsg("Mijoz topilmadi")
+						toast.warn("Bunday mijoz topilmadi")
 					} else {
-						setModalAlert("Nomalum server xatolik")
-						setModalMsg("Malumot o'zgartirib bo'lmadi")
+						toast.error("Nomalum server xatolik")
 					}
 					setBtnLoading(false)
 				})
@@ -184,311 +142,359 @@ function Return() {
 			if (data?.status === 200) {
 				dispatch(removeReturn(id))
 				dispatch(setQuantity())
-				setModalAlert("Xabar")
-				setModalMsg("Qaytgan mahsulot muvoffaqiyatli o'chirildi")
+				toast.success("Mahsulot muvoffaqiyatli o'chirildi")
 			} else {
-				setModalAlert("Nomalum server xatolik")
-				setModalMsg("Malumot o'chirib bo'lmadi")
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
 	}
 
 	const editItem = (id) => {
-		let divTop = document.querySelector(".content").scrollTop
-		let scrollTop = setInterval(() => {
-			divTop -= 20
-			document.querySelector(".content").scrollTop = divTop
-
-			if (divTop <= 0) {
-				clearInterval(scrollTop)
-			}
-		}, 10)
-
 		get(`/return/return-list/${id}`).then((data) => {
 			if (data?.status === 200) {
-				setName(toggleClass ? "" : data?.data?.return_name)
-				setCount(toggleClass ? "" : data?.data?.return_count)
-				setCost(toggleClass ? "" : data?.data?.return_cost)
 				const index = state?.client?.data.findIndex(
 					(item) => item.clients_id === data?.data?.client_id
 				)
-				setClient(toggleClass ? "" : state?.client?.data[index])
-				setStore(toggleClass ? "" : data?.data?.return_store)
-				setReason(toggleClass ? "" : data?.data?.return_case)
+				setName(data?.data?.return_name)
+				setCount(data?.data?.return_count)
+				setCost(data?.data?.return_cost)
+				setClient(state?.client?.data[index])
+				setStore(data?.data?.return_store)
+				setReason(data?.data?.return_case)
+
 				setObjId(id)
-				buttonRef.current.click()
+				setAddModalDisplay("block")
+				setAddModalVisible(true)
+			} else {
+				toast.error("Nomalum server xatolik")
 			}
 		})
 	}
 
-	return state?.return?.loading ? (
-		<Loader />
-	) : (
+	const clearAndClose = () => {
+		setName("")
+		setCount(0)
+		setCost(0)
+		setClient({})
+		setStore("")
+		setReason("")
+		// clear new data
+		setObjId("")
+		setSubmitted(false)
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
+	}
+
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/return/return-filter", {
+				goods_name: inputRef.current?.value,
+				goods_code: inputRef.current?.value,
+			}).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
+	}
+
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
+
+	return (
 		<>
-			{error_modal(modalAlert, modalMsg, modalMsg.length, setModalMsg)}
-
-			<div className="return-info">
-				<i className="fa-solid fa-user-tag"></i> Qaytgan mahsulotlar soni:{" "}
-				{searchSubmitted
-					? filteredData?.length
-					: state?.return?.quantity
-					? state?.return?.quantity
-					: 0}{" "}
-				ta
-			</div>
-
-			<button
-				className={`btn btn-melissa mb-2 ${toggleClass && "collapseActive"}`}
-				onClick={collapse}
-				ref={buttonRef}
+			<AddModal
+				addModalVisible={addModalVisible}
+				setAddModalVisible={setAddModalVisible}
+				addModalDisplay={addModalDisplay}
+				setAddModalDisplay={setAddModalDisplay}
+				name={
+					objId ? "Qaytgan mahsulot tahrirlash" : "Qaytgan mahsulot qo'shish"
+				}
 			>
-				Qo'shish
-			</button>
-
-			<div className="my-content my-2">
-				<div className="row px-2">
-					<div className="col p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Nomi
-						</label>
-						<Input
-							type="text"
-							placeholder="Sharik"
-							value={name}
-							onChange={(e) => setName(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{name.length
-								? validation(name.length < 3, "Kamida 3 ta harf kerak")
-								: null}
-							{submitted && validation(!name.length, "Nom kiritish majburiy")}
-						</div>
+				<div
+					className={`input-wrapper modal-form regular 
+					${submitted && stringCheck(name) !== null && "error"}
+					`}
+				>
+					<label>Mahsulot nomi</label>
+					<input
+						type="text"
+						placeholder="Mahsulot nomini kiriting"
+						className="input"
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+					/>
+					{submitted && stringCheck(name) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && stringCheck(name, "Nom majburiy")}</span>
 					</div>
-					<div className="col p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="">
-							Mijoz
-						</label>
-						<Select
-							showSearch
-							id="goods_name"
-							style={{ width: "100%" }}
-							value={
-								client?.clients_name
-									? `${client?.clients_name} - ${client?.clients_nomer.replace(
-											/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-											"+$1 ($2) $3-$4-$5"
-									  )}`
-									: null
-							}
-							placeholder="Qidiruv..."
-							onChange={(e) => setClient(JSON.parse(e))}
-							optionLabelProp="label"
-						>
-							{state?.client?.data?.length
-								? state?.client?.data.map((item) => {
-										if (!item?.isdelete) {
-											return (
-												<Option
-													className="return-option"
-													value={JSON.stringify(item)}
-													label={`${
-														item?.clients_name
-													} - ${item?.clients_nomer.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-													)}`}
-												>
-													<div>
-														<span>{item?.clients_name} - </span>
-														<span>
-															{item?.clients_nomer.replace(
-																/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-																"+$1 ($2) $3-$4-$5"
-															)}
-														</span>
-													</div>
-												</Option>
-											)
-										}
-								  })
-								: null}
-						</Select>
-						<div className="validation-field-error">
-							{submitted &&
-								validation(
-									!client?.clients_name?.length,
-									"Mijoz tanlash majburiy"
-								)}
-						</div>
-					</div>
-					<div className="col p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="">
-							Ombor
-						</label>
-						<Select
-							showSearch
-							id="goods_name"
-							value={store ? store : null}
-							placeholder="Qidiruv..."
-							onChange={(e) => setStore(e)}
-							optionLabelProp="label"
-							style={{ width: "100%" }}
-						>
-							{state?.store?.data?.length
-								? state?.store?.data.map((item) => {
+				</div>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted && stringCheck(client?.clients_name) !== null && "error"
+					}`}
+				>
+					<label>Mijoz</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Mijoz tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(client?.clients_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							client?.clients_name
+								? `${client?.clients_name} - ${format_phone_number(
+										client?.clients_nomer
+								  )}`
+								: null
+						}
+						onChange={(e) => (e ? setClient(JSON.parse(e)) : setClient({}))}
+					>
+						{state.client?.data.length
+							? state.client?.data.map((item, idx) => {
+									if (!item?.isdelete) {
 										return (
-											<Option value={item?.store_name} label={item?.store_name}>
-												{item?.store_name}
-											</Option>
+											<Select.Option
+												key={idx}
+												className="option-shrink"
+												value={JSON.stringify(item)}
+											>
+												<div>
+													<span>{item?.clients_name} - </span>
+													<span>
+														{format_phone_number(item?.clients_nomer)}
+													</span>
+												</div>
+											</Select.Option>
 										)
-								  })
-								: null}
-						</Select>
-						<div className="validation-field-error">
-							{submitted && validation(!store, "Ombor tanlash majburiy")}
-						</div>
+									}
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(client?.clients_name, "Mijoz tanlash majburiy")}
+						</span>
 					</div>
-					<div className="col p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Soni
-						</label>
-						<Input
-							type="number"
-							placeholder="20"
-							value={count ? count : null}
-							onChange={(e) => setCount(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(count < 1, "Son kiritish majburiy")}
-						</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted && stringCheck(store) !== null && "error"
+					}`}
+				>
+					<label>Ombor</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ombor tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(store) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={store ? store : null}
+						onChange={(e) => setStore(e)}
+					>
+						{state.store?.data.length
+							? state.store?.data.map((item, idx) => {
+									return (
+										<Select.Option key={idx} value={item?.store_name}>
+											<div>
+												<span>{item?.store_name}</span>
+											</div>
+										</Select.Option>
+									)
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted && stringCheck(store, "Ombor tanlash majburiy")}
+						</span>
 					</div>
-					<div className="col p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Narx(so'm)
-						</label>
-						<Input
-							type="number"
-							placeholder="20,000.00"
-							value={cost ? cost : null}
-							onChange={(e) => setCost(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && cost <= 0
-								? validation(true, "Narx kiritish majburiy")
-								: null}
-						</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && numberCheck(count) !== null && "error"
+					}`}
+				>
+					<label>Soni</label>
+					<input
+						type="text"
+						placeholder="Qiymat kiriting"
+						className="input"
+						value={count ? count : ""}
+						onChange={(e) => setCount(e.target.value)}
+					/>
+					{submitted && numberCheck(count) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && numberCheck(count)}</span>
 					</div>
-					<div className="col p-0 mx-1 validation-field">
-						<label className="mx-2" htmlFor="ism">
-							Izoh
-						</label>
-						<Input
-							type="text"
-							placeholder="Siniq"
-							value={reason}
-							onChange={(e) => setReason(e.target.value)}
-						/>
-						<div className="validation-field-error">
-							{submitted && validation(!reason, "Izoh kiritish majburiy")}
-						</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && numberCheck(cost) !== null && "error"
+					}`}
+				>
+					<label>Narxi</label>
+					<input
+						type="text"
+						placeholder="Qiymat kiriting"
+						className="input"
+						value={cost ? cost : ""}
+						onChange={(e) => setCost(e.target.value)}
+					/>
+					{submitted && numberCheck(cost) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && numberCheck(cost)}</span>
 					</div>
-					<div className="col p-0 mx-1">
-						<br />
-						<button
-							className="btn btn-melissa"
-							onClick={addNewReturn}
-							style={{ padding: "3px 10px" }}
-							disabled={btnLoading}
-						>
-							<i className="fas fa-plus"></i>
-							{btnLoading && (
-								<span
-									className="spinner-grow spinner-grow-sm"
-									role="status"
-									aria-hidden="true"
-									style={{ marginLeft: "5px" }}
-								></span>
-							)}
-						</button>
-					</div>
+				</div>
+				<div className="input-wrapper modal-form regular">
+					<label>Izoh</label>
+					<textarea
+						placeholder="Izoh"
+						className="desc-input"
+						value={reason}
+						onChange={(e) => setReason(e.target.value)}
+					></textarea>
+				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btnLoading}
+						onClick={addNewReturn}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btnLoading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
+			</AddModal>
+
+			<div className="filter-wrapper">
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ombor"
+						className="select"
+						value={searchStoreId ? searchStoreId : null}
+						onChange={(e) => setSearchStoreId(e)}
+						disabled
+					>
+						{state.store?.data.length
+							? state.store?.data.map((item, idx) => (
+									<Select.Option key={idx} value={item.store_id}>
+										<div>
+											<span>{item?.store_name}</span>
+										</div>
+									</Select.Option>
+							  ))
+							: null}
+					</Select>
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Mijoz"
+						className="select"
+						value={searchDeliverId ? searchDeliverId : null}
+						onChange={(e) => setSearchDeliverId(e)}
+						disabled
+					>
+						{state.client?.data.length
+							? state.client?.data.map((item, idx) => {
+									if (!item?.isdelete)
+										return (
+											<Select.Option key={idx} value={item.clients_id}>
+												<div>
+													<span>{item?.clients_name}</span>
+												</div>
+											</Select.Option>
+										)
+							  })
+							: null}
+					</Select>
+				</div>
+				<div className="filter-btn-group">
+					<button type="button" className="filter-btn" disabled>
+						Tozalash
+					</button>
+					<button type="button" className="filter-btn" disabled>
+						Saqlash
+					</button>
 				</div>
 			</div>
 
-			<div
-				className="return-item-filter-row"
-				// style={{
-				// 	left: sidebar ? 370 : 200 + "px",
-				// }}
-			>
-				<Select
-					style={{ width: "100%" }}
-					id="store"
-					value={searchStoreId ? searchStoreId : null}
-					placeholder="Ombor 1"
-					onChange={(e) => setSearchStoreId(e)}
-					allowClear
-				>
-					{state?.store?.data?.length
-						? state?.store?.data.map((item) => {
-								return (
-									<Option value={item?.store_id}>{item?.store_name}</Option>
-								)
-						  })
-						: null}
-				</Select>
-				<Select
-					showSearch
-					style={{ width: "100%" }}
-					id="store"
-					value={searchDeliverId ? searchDeliverId : null}
-					placeholder="Mijoz"
-					onChange={(e) => setSearchDeliverId(e)}
-					allowClear
-				>
-					{state?.client?.data?.length
-						? state?.client?.data.map((item) => {
-								if (!item?.isdelete) {
-									return (
-										<Option className="client-option" value={item?.clients_id}>
-											<div>
-												<span>{item?.clients_name} - </span>
-												<span>
-													{item?.clients_nomer.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-													)}
-												</span>
-											</div>
-										</Option>
-									)
-								}
-						  })
-						: null}
-				</Select>
-				<Select
-					style={{ width: "100%" }}
-					id="store"
-					value={searchGoodId ? searchGoodId : null}
-					placeholder="Kategoriya"
-					onChange={(e) => setSearchGoodId(e)}
-					allowClear
-				>
-					{state?.good?.data?.length
-						? state?.good?.data.map((item) => {
-								return (
-									<Option value={item?.goods_id}>{item?.goods_name}</Option>
-								)
-						  })
-						: null}
-				</Select>
+			<div className="info-wrapper">
+				<InfoItem
+					value={
+						searchSubmitted ? filteredData.length : state?.return?.quantity
+					}
+					name="Qaytgan mahsulotlar soni"
+					icon={
+						<ArrowCounterClockwise
+							size={24}
+							style={{ color: "var(--color-primary)" }}
+						/>
+					}
+					iconBgColor={"var(--bg-icon)"}
+				/>
 			</div>
 
-			<ReturnTable
-				data={searchSubmitted ? filteredData : state?.return?.dataReturn}
-				deleteItem={deleteItem}
-				editItem={editItem}
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				className={"table-m"}
 			/>
+
+			{state.return?.loading ? (
+				<Loader />
+			) : (
+				<ReturnTable
+					data={searchSubmitted ? filteredData : state.return.dataReturn}
+					deleteItem={deleteItem}
+					editItem={editItem}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
+					sidebar={sidebar}
+				/>
+			)}
 		</>
 	)
 }

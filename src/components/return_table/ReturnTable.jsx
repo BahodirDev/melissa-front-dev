@@ -1,28 +1,44 @@
 import { Table } from "antd"
 import moment from "moment/moment"
-import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
+import format_phone_number from "../format_phone_number/format_phone_number"
+import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import { useState } from "react"
+import NoData from "../noData/NoData"
 
-const ReturnTable = ({ data, deleteItem, editItem }) => {
+const ReturnTable = ({
+	data,
+	deleteItem,
+	editItem,
+	showDropdown,
+	setshowDropdown,
+	sidebar,
+}) => {
+	const [loc, setLoc] = useState(true)
+
+	const handleClick = (e, id) => {
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
 	let arr2 =
 		data.length &&
-		data?.map((item) => {
+		data?.map((item, idx) => {
 			return {
+				key: idx,
 				id: item?.return_id,
 				name: item?.return_name,
 				store: item?.return_store,
-				count: "x" + item?.return_count,
+				count: item?.return_count + " ta",
 				cost_each: addComma(item?.return_cost) + " so'm",
 				cost_total: addComma(item?.return_cost * item?.return_count) + " so'm",
-				reason: item?.return_case,
+				reason: item?.return_case ? item?.return_case : "Qo'shimcha ma'lumot",
 				client:
 					item?.clients?.clients_name +
 					" - " +
-					item?.clients?.clients_nomer?.replace(
-						/^(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})$/,
-						"+$1 ($2) $3-$4-$5"
-					),
+					format_phone_number(item?.clients?.clients_nomer),
 				data: moment(item?.return_createdat).format("YYYY/MM/DD"),
 			}
 		})
@@ -63,50 +79,72 @@ const ReturnTable = ({ data, deleteItem, editItem }) => {
 			sorter: (a, b) => moment(a.data).unix() - moment(b.datas).unix(),
 		},
 		{
-			title: "Tahrirlash",
+			title: "",
+			width: "50px",
 			render: (text, record) => (
-				<nobr>
-					<button
-						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						onClick={() => editItem(record?.id)}
-					>
-						<i className="fas fa-edit"></i>
+				<div className="table-item-edit-holder">
+					<button type="button" onClick={(e) => handleClick(e, record?.id)}>
+						<DotsThreeVertical size={24} />
 					</button>
-					<button
-						className="btn btn-sm btn-outline-danger mx-1"
-						onClick={(e) =>
-							productDeleteConfirm(
-								e,
-								"Qaytgan mahsulot",
-								deleteItem,
-								record?.id
-							)
-						}
+					<div
+						className={`table-item-edit-wrapper small ${
+							showDropdown === record?.id || "hidden"
+						} ${loc && "top"}`}
 					>
-						<i className="fa-solid fa-trash-can"></i>
-					</button>
-				</nobr>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) => {
+								e.stopPropagation()
+								setshowDropdown("")
+								editItem(record?.id)
+							}}
+						>
+							<nobr>Tahrirlash</nobr>
+							<PencilSimple size={20} />
+						</button>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								productDeleteConfirm(
+									e,
+									<>
+										Mahsulot <span>{record?.name}</span>ni
+									</>,
+									deleteItem,
+									record?.id
+								)
+							}
+						>
+							O'chirish <Trash size={20} />
+						</button>
+					</div>
+				</div>
 			),
 		},
 	]
 
 	return (
-		<Table
-			columns={columns}
-			locale={{
-				emptyText: (
-					<div className="no-data__con">
-						<img src={noDataImg} alt="" />
-						<span>Qaytgan mahsulot mavjud emas</span>
-					</div>
-				),
+		<div
+			className="ant-d-table"
+			style={{
+				width: sidebar && "calc(100dvw - 302px)",
 			}}
-			dataSource={arr2}
-			pagination={{
-				position: ["bottomLeft"],
-				pageSize: 20,
-			}}
-		/>
+		>
+			<Table
+				scroll={{ x: "max-content" }}
+				columns={columns}
+				locale={{
+					emptyText: <NoData />,
+				}}
+				dataSource={arr2}
+				pagination={{
+					position: ["bottomLeft"],
+					pageSize: 20,
+				}}
+			/>
+		</div>
 	)
 }
 

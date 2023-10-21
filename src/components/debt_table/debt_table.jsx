@@ -40,6 +40,7 @@ const DebtTable = ({
 				arr.push({
 					key: idx,
 					id: item?.debts_id,
+					name: item?.client?.clients_name,
 					client:
 						item?.client?.clients_name +
 						" " +
@@ -120,7 +121,7 @@ const DebtTable = ({
 									record?.id,
 									record?.price_total,
 									record?.currencyAmount,
-									record?.client.split(" ")[0]
+									record?.name
 								)
 							}
 						>
@@ -134,7 +135,7 @@ const DebtTable = ({
 								payConfirmModal(
 									e,
 									<>
-										<span>{record?.client.split(" ")[0]}</span> qarzni
+										<span>{record?.name}</span> qarzni
 									</>,
 									closeDebt,
 									record?.id
@@ -151,7 +152,7 @@ const DebtTable = ({
 								productDeleteConfirm(
 									e,
 									<>
-										<span>{record?.client.split(" ")[0]}</span> qarzni
+										<span>{record?.name}</span> qarzni
 									</>,
 									deleteDebt,
 									record?.id

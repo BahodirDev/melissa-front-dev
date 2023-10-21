@@ -194,8 +194,8 @@ const Supplier = ({ getData }) => {
 							deliver_nomer: newObj?.deliver_nomer,
 						})
 					)
-					toast.success("Qarzdorlik muvoffaqiyatli qo'shildi")
 					clearAndClose()
+					toast.success("Qarzdorlik muvoffaqiyatli qo'shildi")
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
@@ -487,24 +487,6 @@ const Supplier = ({ getData }) => {
 				</div>
 			</AddModal>
 
-			<div className="info-wrapper">
-				<InfoItem
-					value={
-						searchSubmitted
-							? addComma(filteredData.amount) + " so'm"
-							: addComma(state?.dDebt?.quantity) + " so'm"
-					}
-					name="Umumiy summa"
-					icon={
-						<CurrencyDollar
-							size={24}
-							style={{ color: "var(--color-warning)" }}
-						/>
-					}
-					iconBgColor={"var(--bg-icon-warning)"}
-				/>
-			</div>
-
 			<div className="filter-wrapper">
 				<div className="input-wrapper">
 					<Select
@@ -587,7 +569,29 @@ const Supplier = ({ getData }) => {
 				</div>
 			</div>
 
-			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+			<div className="info-wrapper">
+				<InfoItem
+					value={
+						searchSubmitted
+							? addComma(filteredData.amount) + " so'm"
+							: addComma(state?.dDebt?.quantity) + " so'm"
+					}
+					name="Umumiy summa"
+					icon={
+						<CurrencyDollar
+							size={24}
+							style={{ color: "var(--color-warning)" }}
+						/>
+					}
+					iconBgColor={"var(--bg-icon-warning)"}
+				/>
+			</div>
+
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				className={"table-m"}
+			/>
 
 			{state.dDebt?.loading ? (
 				<Loader />

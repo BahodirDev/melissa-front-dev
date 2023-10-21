@@ -98,8 +98,8 @@ function Deliver() {
 				patch(`/deliver/deliver-patch/${objId}`, obj).then((data) => {
 					if (data?.status === 200) {
 						dispatch(editData(data?.data?.data))
-						toast.success("Malumot muvoffaqiyatli o'zgartirildi")
 						clearAndClose()
+						toast.success("Malumot muvoffaqiyatli o'zgartirildi")
 					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
 						toast.warn("Bunday ta'minotchi allaqachon mavjud")
 					} else {
@@ -112,8 +112,8 @@ function Deliver() {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data?.data))
 						dispatch(setQuantity())
-						toast.success("Ta'minotchi muvoffaqiyatli qo'shildi")
 						clearAndClose()
+						toast.success("Ta'minotchi muvoffaqiyatli qo'shildi")
 					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
 						toast.warn("Bunday ta'minotchi allaqachon mavjud")
 					} else {
