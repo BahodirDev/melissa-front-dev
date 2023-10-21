@@ -156,7 +156,7 @@ const ODebtTable = ({
 		<div
 			className="ant-d-table"
 			style={{
-				width: sidebar && "calc(100dvw - 302px)",
+				width: sidebar && "calc(100dvw - 309px)",
 			}}
 		>
 			<Table

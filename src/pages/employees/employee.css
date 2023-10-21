@@ -2,14 +2,12 @@
 	height: 170px;
 }
 
-.card-item-bottom.emp {
-	& h4 {
-		color: var(--color-secondary);
-		font-size: var(--text-modal);
-	}
+.card-item-bottom.emp h4 {
+	color: var(--color-secondary);
+	font-size: var(--text-modal);
+}
 
-	& h5 {
-		color: var(--color-accent);
-		font-size: var(--text-md);
-	}
+.card-item-bottom.emp h5 {
+	color: var(--color-accent);
+	font-size: var(--text-md);
 }
