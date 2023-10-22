@@ -165,6 +165,9 @@
 	padding-right: 50px;
 	margin-bottom: 20px;
 }
+.filter-wrapper.report {
+	grid-template-columns: repeat(3, 150px) 260px 150px;
+}
 .filter-wrapper .input-wrapper .select .ant-select-selector {
 	border-radius: var(--radius-sm);
 	border: var(--border-primary);
@@ -195,13 +198,24 @@
 	line-height: 35px;
 	color: var(--color-secondary);
 }
+/* datepicker */
+.filter-wrapper .input-wrapper .date-picker.ant-picker {
+	border-radius: var(--radius-sm);
+	border: var(--border-primary);
+	font-size: var(--text-md) !important;
+	font-weight: var(--weight-thin) !important;
+	height: 35px;
+	font-family: SFProRegular;
+	padding-left: 16px !important;
+	line-height: 1 !important;
+}
 .filter-wrapper .filter-btn-group {
 	display: flex;
 	gap: 12px;
 }
 .filter-wrapper .filter-btn-group .filter-btn {
 	padding: 4px 16px;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-sm);
 	border: var(--border-primary);
 	background-color: var(--bg-light);
 	color: var(--color-accent);

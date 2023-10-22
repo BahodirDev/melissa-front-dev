@@ -17,6 +17,7 @@ import { CurrencyDollar } from "@phosphor-icons/react"
 import { Select } from "antd"
 import Search from "../../components/search/Search"
 import { addComma, formatSumma } from "../../components/addComma"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 const Client = ({ getData }) => {
 	const [
@@ -169,9 +170,16 @@ const Client = ({ getData }) => {
 							? state.client?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={item.clients_id}>
+											<Select.Option
+												key={idx}
+												value={item.clients_id}
+												className="option-shrink"
+											>
 												<div>
-													<span>{item?.clients_name}</span>
+													<span>{item?.clients_name} - </span>
+													<span>
+														{format_phone_number(item?.clients_nomer)}
+													</span>
 												</div>
 											</Select.Option>
 										)
@@ -192,9 +200,9 @@ const Client = ({ getData }) => {
 						{state.good?.data.length
 							? state.good?.data.map((item, idx) => (
 									<Select.Option
-										className="option-shrink"
 										key={idx}
 										value={item.goods_id}
+										className="option-shrink"
 									>
 										<div>
 											<span>{item?.goods_name} - </span>
@@ -219,16 +227,11 @@ const Client = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? formatSumma(filteredData.amount)
+							? formatSumma(+filteredData.amount)
 							: formatSumma(state?.debt?.quantity)
 					}
 					name="Umumiy summa"
-					icon={
-						<CurrencyDollar
-							size={24}
-							style={{ color: "var(--color-warning)" }}
-						/>
-					}
+					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
 					iconBgColor={"var(--bg-icon-warning)"}
 				/>
 			</div>

@@ -442,9 +442,16 @@ function Return() {
 							? state.client?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={item.clients_id}>
+											<Select.Option
+												key={idx}
+												value={item.clients_id}
+												className="option-shrink"
+											>
 												<div>
-													<span>{item?.clients_name}</span>
+													<span>{item?.clients_name} - </span>
+													<span>
+														{format_phone_number(item?.clients_nomer)}
+													</span>
 												</div>
 											</Select.Option>
 										)
@@ -469,10 +476,7 @@ function Return() {
 					}
 					name="Qaytgan mahsulotlar soni"
 					icon={
-						<ArrowCounterClockwise
-							size={24}
-							style={{ color: "var(--color-primary)" }}
-						/>
+						<ArrowCounterClockwise size={24} color="var(--color-primary)" />
 					}
 					iconBgColor={"var(--bg-icon)"}
 				/>

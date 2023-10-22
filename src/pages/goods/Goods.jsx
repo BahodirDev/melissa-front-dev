@@ -248,9 +248,7 @@ export default function Goods() {
 				<InfoItem
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Omborlar soni"
-					icon={
-						<SquaresFour size={24} style={{ color: "var(--color-primary)" }} />
-					}
+					icon={<SquaresFour size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>

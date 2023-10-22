@@ -252,7 +252,7 @@ function Deliver() {
 				<InfoItem
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Ta'minotchilar soni"
-					icon={<Truck size={24} style={{ color: "var(--color-primary)" }} />}
+					icon={<Truck size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>

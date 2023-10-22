@@ -217,7 +217,7 @@ export default function Store() {
 				<InfoItem
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Omborlar soni"
-					icon={<Factory size={24} style={{ color: "var(--color-primary)" }} />}
+					icon={<Factory size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>

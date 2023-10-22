@@ -389,16 +389,11 @@ const Total = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? formatSumma(filteredData.amount)
+							? formatSumma(+filteredData.amount)
 							: formatSumma(state?.nDebt?.quantity)
 					}
 					name="Umumiy summa"
-					icon={
-						<CurrencyDollar
-							size={24}
-							style={{ color: "var(--color-warning)" }}
-						/>
-					}
+					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
 					iconBgColor={"var(--bg-icon-warning)"}
 				/>
 			</div>

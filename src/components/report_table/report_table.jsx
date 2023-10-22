@@ -2,10 +2,14 @@ import { Table } from "antd"
 import moment from "moment/moment"
 import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
+import NoData from "../noData/NoData"
+import { ArrowDown } from "@phosphor-icons/react"
+import { ArrowUp } from "@phosphor-icons/react/dist/ssr"
 
-const AntReportTable = ({ data }) => {
-	let arr2 = data?.map((item) => {
+const AntReportTable = ({ data, sidebar, userRole }) => {
+	let arr2 = data?.map((item, idx) => {
 		return {
+			key: idx,
 			data_store: item?.store,
 			data_product: item?.goods_name,
 			data_code: item?.goods_code,
@@ -47,9 +51,9 @@ const AntReportTable = ({ data }) => {
 			dataIndex: "data_q",
 			render: (text, record) => {
 				const icon = record.is_enter ? (
-					<i className="fa-solid fa-arrow-down" style={{ color: "green" }}></i>
+					<ArrowDown size={18} color="var(--color-success)" />
 				) : (
-					<i className="fa-solid fa-arrow-up" style={{ color: "red" }}></i>
+					<ArrowUp size={18} color="var(--color-danger)" />
 				)
 				return (
 					<span>
@@ -65,12 +69,12 @@ const AntReportTable = ({ data }) => {
 			width: 150,
 		},
 		{
-			title: <nobr>Narx(har biri)</nobr>,
+			title: <nobr>Narx</nobr>,
 			dataIndex: "data_price_each",
 			width: 150,
 		},
 		{
-			title: <nobr>Narx(umumiy)</nobr>,
+			title: <nobr>Umumiy narx</nobr>,
 			dataIndex: "data_price_total",
 		},
 		{
@@ -85,22 +89,25 @@ const AntReportTable = ({ data }) => {
 	]
 
 	return (
-		<Table
-			columns={columns}
-			locale={{
-				emptyText: (
-					<div className="no-data__con">
-						<img src={noDataImg} alt="" />
-						<span>Hisobot mavjud emas</span>
-					</div>
-				),
+		<div
+			className="ant-d-table"
+			style={{
+				width: sidebar && "calc(100dvw - 309px)",
 			}}
-			pagination={{
-				position: ["bottomLeft"],
-				pageSize: 20,
-			}}
-			dataSource={arr2}
-		/>
+		>
+			<Table
+				scroll={{ x: "max-content" }}
+				columns={columns}
+				locale={{
+					emptyText: <NoData />,
+				}}
+				dataSource={arr2}
+				pagination={{
+					position: ["bottomLeft"],
+					pageSize: 20,
+				}}
+			/>
+		</div>
 	)
 }
 export default AntReportTable
