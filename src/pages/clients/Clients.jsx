@@ -11,10 +11,7 @@ import {
 	setLoading,
 	setQuantity,
 } from "../../components/reducers/client"
-import {
-	phoneNumberCheck,
-	stringCheck,
-} from "../../components/validation"
+import { phoneNumberCheck, stringCheck } from "../../components/validation"
 import { get, patch, post, remove } from "../../customHook/api"
 import ClientList from "./ClientList"
 import "./client.css"
@@ -259,9 +256,7 @@ export default function Employees() {
 				<InfoItem
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Mijozlar soni"
-					icon={
-						<UsersFour size={24} style={{ color: "var(--color-primary)" }} />
-					}
+					icon={<UsersFour size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>

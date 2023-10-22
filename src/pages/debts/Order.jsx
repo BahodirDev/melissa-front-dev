@@ -527,9 +527,16 @@ const Order = ({ getData }) => {
 							? state.deliver?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={item.deliver_id}>
+											<Select.Option
+												key={idx}
+												value={item.deliver_id}
+												className="option-shrink"
+											>
 												<div>
-													<span>{item?.deliver_name}</span>
+													<span>{item?.deliver_name} - </span>
+													<span>
+														{format_phone_number(item?.deliver_nomer)}
+													</span>
 												</div>
 											</Select.Option>
 										)
@@ -577,16 +584,11 @@ const Order = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? formatSumma(filteredData.amount)
+							? formatSumma(+filteredData.amount)
 							: formatSumma(state?.oDebt?.quantity)
 					}
 					name="Umumiy summa"
-					icon={
-						<CurrencyDollar
-							size={24}
-							style={{ color: "var(--color-warning)" }}
-						/>
-					}
+					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
 					iconBgColor={"var(--bg-icon-warning)"}
 				/>
 			</div>

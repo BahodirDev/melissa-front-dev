@@ -554,16 +554,23 @@ export default function Products() {
 						placeholder="Ta'minotchi"
 						className="select"
 						value={searchDeliverId ? searchDeliverId : null}
-						onChange={(e) => setSearchStoreId(e)}
+						onChange={(e) => setSearchDeliverId(e)}
 						disabled
 					>
 						{deliver?.data.length
 							? deliver?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={item.deliver_id}>
+											<Select.Option
+												key={idx}
+												value={item.deliver_id}
+												className="option-shrink"
+											>
 												<div>
-													<span>{item?.deliver_name}</span>
+													<span>{item?.deliver_name} - </span>
+													<span>
+														{format_phone_number(item?.deliver_nomer)}
+													</span>
 												</div>
 											</Select.Option>
 										)
@@ -615,30 +622,21 @@ export default function Products() {
 							: product?.quantity
 					}
 					name="Kategoriyalar soni"
-					icon={
-						<SquaresFour size={24} style={{ color: "var(--color-primary)" }} />
-					}
+					icon={<SquaresFour size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 				<InfoItem
 					value={searchSubmitted ? filteredData?.hisob?.soni : product?.amount}
 					name="Mahsulotlar soni"
-					icon={<Package size={24} style={{ color: "var(--color-success)" }} />}
+					icon={<Package size={24} color="var(--color-success)" />}
 					iconBgColor={"var(--bg-success-icon)"}
 				/>
 				<InfoItem
-					value={
-						searchSubmitted
-							? formatSumma(+filteredData?.hisob?.umumiyQiymati)
-							: formatSumma(product?.sum)
-					}
+					value={formatSumma(
+						searchSubmitted ? +filteredData?.hisob?.umumiyQiymati : product?.sum
+					)}
 					name="Umumiy summa"
-					icon={
-						<CurrencyDollar
-							size={24}
-							style={{ color: "var(--color-warning)" }}
-						/>
-					}
+					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
 					iconBgColor={"var(--bg-icon-warning)"}
 				/>
 			</div>

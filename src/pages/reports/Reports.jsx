@@ -3,7 +3,7 @@ import { Option } from "antd/es/mentions"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { addComma } from "../../components/addComma"
+import { addComma, formatSumma } from "../../components/addComma"
 import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -15,68 +15,41 @@ import {
 	setOutcome,
 } from "../../components/reducers/report"
 import AntReportTable from "../../components/report_table/report_table"
-import { get } from "../../customHook/api"
+import { get, post } from "../../customHook/api"
 import useApiRequest from "../../customHook/useUrl"
 import "./report.css"
+import { toast } from "react-toastify"
+import InfoItem from "../../components/info_item/InfoItem"
+import Search from "../../components/search/Search"
+import { ArrowDown, ArrowUp, CurrencyDollar } from "@phosphor-icons/react"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
 const { RangePicker } = DatePicker
 
 export default function Reports() {
-	const [buttonValid, setButtonValid] = useState(false)
-	const [filteredData, setFilteredData] = useState({})
-	const request = useApiRequest()
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+	] = useOutletContext()
 	const { report, store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
-	const [searchSubmitted, setSearchSubmitted] = useState(false)
+
+	const [userInfo, setUserInfo] = useState()
 
 	// filter
-	const [searchInput, setSearchInput, sidebar, userInfo, action, setAction] =
-		useOutletContext()
+	const [filteredData, setFilteredData] = useState({})
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [selectedIncomeOutcome, setSelectedIncomeOutcome] = useState("all")
-	const [dateRange, setDateRange] = useState([])
 	const [storeId, setStoreId] = useState("")
 	const [clientId, setClientId] = useState("")
-
-	useEffect(() => {
-		let startDate = ""
-		let endDate = ""
-		if (dateRange.length) {
-			startDate = `${dateRange[0]?.$y}-${addZero(
-				dateRange[0]?.$M + 1
-			)}-${addZero(dateRange[0]?.$D)}`
-			endDate = `${dateRange[1]?.$y}-${addZero(dateRange[1]?.$M + 1)}-${addZero(
-				dateRange[1]?.$D
-			)}`
-		}
-
-		let filterObj = {
-			store: storeId,
-			client: clientId,
-			selectedDate: startDate,
-			finishedDate: endDate,
-			goods_name: searchInput,
-			goods_code: searchInput,
-		}
-		if (selectedIncomeOutcome === "income") {
-			filterObj.isEnter = true
-		} else if (selectedIncomeOutcome === "outcome") {
-			filterObj.isEnter = false
-		}
-
-		setAction({
-			url: "/reports/reports-filter",
-			body: filterObj,
-			res: setFilteredData,
-			submitted: setSearchSubmitted,
-			clearValues: {
-				second: setDateRange,
-				third: setFilteredData,
-				fourth: setStoreId,
-				fifth: setClientId,
-				sixth: setSelectedIncomeOutcome,
-			},
-			setLoading: setLoading,
-		})
-	}, [dateRange, searchInput, storeId, clientId, selectedIncomeOutcome])
+	const [dateRange, setDateRange] = useState([])
 
 	const getData = (name, setter) => {
 		dispatch(setLoading(true))
@@ -90,179 +63,214 @@ export default function Reports() {
 				} else {
 					dispatch(setter(data?.data))
 				}
+			} else {
+				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
 	}
 
 	useEffect(() => {
+		setUserInfo(localStorage.getItem("role"))
 		getData("reports", setData)
 		getData("deliver", setDataDeliver)
 	}, [])
 
+	const handleFilter = () => {}
+
+	const clearFilter = () => {
+		setSelectedIncomeOutcome("all")
+		setStoreId("")
+		setClientId("")
+		setDateRange([])
+		setSearchSubmitted(false)
+		setFilteredData([])
+	}
+
+	const handleSearch = () => {
+		if (inputRef.current?.value.length > 0) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+			post("/reports/reports-filter", {
+				goods_name: inputRef.current?.value,
+				goods_code: inputRef.current?.value,
+			}).then((data) => {
+				console.log(data)
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
+	}
+
+	const clearSearch = () => {
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
+
 	return (
 		<>
-			{report?.loading ? (
-				<Loader />
-			) : (
-				<div className="report-table__wrapper">
+			<div className="filter-wrapper report">
+				<div className="input-wrapper">
 					<Select
-						style={{ marginRight: "10px", width: "150px" }}
-						defaultValue="all"
-						placeholder="Barchasi"
-						optionLabelProp="label"
-						onChange={(e) => {
-							setSelectedIncomeOutcome(e)
-							setButtonValid(true)
-						}}
+						placeholder="Kirim Chiqim"
+						className="select"
 						value={selectedIncomeOutcome}
+						onChange={(e) => setSelectedIncomeOutcome(e)}
 					>
-						<Option value="all" chosen label="Barchasi">
-							Barchasi
-						</Option>
-						<Option value="income" label="Kirim">
-							Kirim
-						</Option>
-						<Option value="outcome" label="Chiqim">
-							Chiqim
-						</Option>
+						<Select.Option value="all">
+							<div>
+								<span>Barchasi</span>
+							</div>
+						</Select.Option>
+						<Select.Option value="income">
+							<div>
+								<span>Kirim</span>
+							</div>
+						</Select.Option>
+						<Select.Option value="outcome">
+							<div>
+								<span>Chiqim</span>
+							</div>
+						</Select.Option>
 					</Select>
-					<Select
-						allowClear
-						style={{ marginRight: "10px", width: "190px" }}
-						placeholder="Ombor"
-						optionLabelProp="label"
-						onChange={(e) => setStoreId(e)}
-						value={storeId ? storeId : null}
-					>
-						{store?.data?.length &&
-							store?.data?.map((item) => (
-								<Option value={item?.store_name} label={item?.store_name}>
-									{item?.store_name}
-								</Option>
-							))}
-					</Select>
+				</div>
+				<div className="input-wrapper">
 					<Select
 						showSearch
-						style={{ marginRight: "10px", width: "200px" }}
-						placeholder="Haridor"
 						allowClear
-						optionLabelProp="label"
-						onChange={(e) => setClientId(e)}
-						value={clientId ? clientId : null}
+						placeholder="Ombor"
+						className="select"
+						value={storeId ? storeId : null}
+						onChange={(e) => setStoreId(e)}
 					>
-						{[...client?.data, ...deliver?.data]?.map(
-							(item) =>
-								item?.isdelete || (
-									<Option
-										value={
-											item?.clients_name
-												? `${
-														item?.clients_name
-												  } - ${item?.clients_nomer.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-												  )}`
-												: `${
-														item?.deliver_name
-												  } - ${item?.deliver_nomer.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-												  )}`
-										}
-										label={
-											item?.clients_name
-												? `${
-														item?.clients_name
-												  } - ${item?.clients_nomer.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-												  )}`
-												: `${
-														item?.deliver_name
-												  } - ${item?.deliver_nomer.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-												  )}`
-										}
-										className="report-client-option"
-									>
-										<span>
-											{item?.clients_name
-												? item?.clients_name
-												: item?.deliver_name}{" "}
-											-{" "}
-										</span>
-										<span>
-											{item?.clients_nomer
-												? item?.clients_nomer?.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-												  )
-												: item?.deliver_nomer?.replace(
-														/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-														"+$1 ($2) $3-$4-$5"
-												  )}
-										</span>
-									</Option>
-								)
-						)}
+						{store?.data.length
+							? store?.data.map((item, idx) => (
+									<Select.Option key={idx} value={item.store_id}>
+										<div>
+											<span>{item?.store_name}</span>
+										</div>
+									</Select.Option>
+							  ))
+							: null}
 					</Select>
-
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Haridor"
+						className="select"
+						value={clientId ? clientId : null}
+						onChange={(e) => setClientId(e)}
+					>
+						{[...client?.data, ...deliver?.data]?.map((item, idx) => {
+							if (!item?.isdelete)
+								if (item?.clients_name) {
+									return (
+										<Select.Option
+											key={idx}
+											value={item.clients_name}
+											className="option-shrink"
+										>
+											<div>
+												<span>{item?.clients_name} - </span>
+												<span>{format_phone_number(item?.clients_nomer)}</span>
+											</div>
+										</Select.Option>
+									)
+								} else {
+									return (
+										<Select.Option
+											key={idx}
+											value={item.deliver_name}
+											className="option-shrink"
+										>
+											<div>
+												<span>{item?.deliver_name} - </span>
+												<span>{format_phone_number(item?.deliver_nomer)}</span>
+											</div>
+										</Select.Option>
+									)
+								}
+						})}
+					</Select>
+				</div>
+				<div className="input-wrapper">
 					<Space direction="vertical" size={12}>
 						<RangePicker
+							allowClear
+							className="date-picker"
 							value={dateRange}
-							clearIcon={true}
 							onChange={(e) => setDateRange(e)}
 						/>
 					</Space>
-
-					<div className="reports-info">
-						<span>
-							<i className="fa-solid fa-tags"></i> Foyda:{" "}
-							{addComma(
-								searchSubmitted
-									? filteredData?.hisob?.totalProductCost >= 0
-										? filteredData?.hisob?.totalProductCost
-										: 0
-									: report.capital >= 0
-									? report.capital
-									: 0
-							)}{" "}
-							so'm
-						</span>
-						<span>
-							<i className="fa-solid fa-tags"></i> Kirim:{" "}
-							{addComma(
-								searchSubmitted
-									? filteredData?.hisob?.totalCostMinus >= 0
-										? filteredData?.hisob?.totalCostMinus
-										: 0
-									: report.outcome >= 0
-									? report.outcome
-									: 0
-							)}{" "}
-							so'm
-						</span>
-						<span>
-							<i className="fa-solid fa-tags"></i> Chiqim:{" "}
-							{addComma(
-								searchSubmitted
-									? filteredData?.hisob?.totalCostPilus >= 0
-										? filteredData?.hisob?.totalCostPilus
-										: 0
-									: report.income >= 0
-									? report.income
-									: 0
-							)}{" "}
-							so'm
-						</span>
-					</div>
-
-					<AntReportTable
-						data={searchSubmitted ? filteredData?.data : report?.data}
-					/>
 				</div>
+				<div className="filter-btn-group">
+					<button type="button" className="filter-btn" onClick={clearFilter}>
+						Tozalash
+					</button>
+					<button type="button" className="filter-btn" onClick={handleFilter}>
+						Saqlash
+					</button>
+				</div>
+			</div>
+
+			<div className="info-wrapper">
+				<InfoItem
+					value={formatSumma(
+						searchSubmitted
+							? +filteredData?.hisob?.totalProductCost
+							: report.capital
+					)}
+					name="Foyda"
+					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
+					iconBgColor={"var(--bg-icon)"}
+				/>
+				<InfoItem
+					value={formatSumma(
+						searchSubmitted
+							? +filteredData?.hisob?.totalCostMinus
+							: report.outcome
+					)}
+					name="Kirim"
+					icon={<ArrowDown size={24} color="var(--color-success)" />}
+					iconBgColor={"var(--bg-success-icon)"}
+				/>
+				<InfoItem
+					value={formatSumma(
+						searchSubmitted
+							? +filteredData?.hisob?.totalCostPilus
+							: report.income
+					)}
+					name="Chiqim"
+					icon={<ArrowUp size={24} color="var(--color-warning)" />}
+					iconBgColor={"var(--bg-icon-warning)"}
+				/>
+			</div>
+
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				showAddBtn={false}
+				className={"table-m"}
+			/>
+
+			{report?.loading ? (
+				<Loader />
+			) : (
+				<AntReportTable
+					data={searchSubmitted ? filteredData?.data : report?.data}
+					sidebar={sidebar}
+					userRole={userInfo}
+				/>
 			)}
 		</>
 	)

@@ -349,7 +349,7 @@ export default function Employees() {
 				<InfoItem
 					value={searchSubmitted ? filteredUsers.length : state?.quantity}
 					name="Xodimlar soni"
-					icon={<Users size={24} style={{ color: "var(--color-primary)" }} />}
+					icon={<Users size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>
