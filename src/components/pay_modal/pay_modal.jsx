@@ -24,7 +24,7 @@ export const payModal = (e, action, id, max, value, name) => {
 						const maxValue = parseFloat(max.replace(/[^\d.]/g, ""))
 						const inputValue = e.target.value.replace(/,/g, "")
 						if (inputValue > maxValue) {
-							e.target.value = maxValue.toLocaleString("en-US")
+							e.target.value = maxValue.toString()
 						}
 						if (/[^0-9.]/.test(inputValue.slice(-1))) {
 							e.target.value = e.target.value.slice(0, -1)

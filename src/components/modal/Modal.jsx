@@ -23,10 +23,12 @@ export default function MyModal({ myModal, setMyModal }) {
 	const [filteredProducts, setFilteredProducts] = useState([])
 	const [filteredProductsCache, setFilteredProductsCache] = useState([])
 	const [productList, setProductList] = useState([])
+
 	const [store_id, setStore_id] = useState("")
 	const [productId, setProductId] = useState({})
 	const [productQ, setProductQ] = useState(0)
 	const [productPrice, setProductPrice] = useState(0)
+
 	const [buttonValid, setButtonValid] = useState(false)
 	const [modalAlert, setModalAlert] = useState("")
 	const [modalMsg, setModalMsg] = useState("")
@@ -178,7 +180,10 @@ export default function MyModal({ myModal, setMyModal }) {
 				width={1150}
 				footer={[]}
 			>
-				<div className="my-modal my-product-modal" onClick={(e) => e.stopPropagation()}>
+				<div
+					className="my-modal my-product-modal"
+					onClick={(e) => e.stopPropagation()}
+				>
 					{/* form */}
 					<div className="row sell-modal">
 						<div className="col">

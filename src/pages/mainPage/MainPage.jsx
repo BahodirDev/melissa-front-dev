@@ -65,7 +65,7 @@ export default function MainPage() {
 								setSDModalDisplay("none")
 							}, 300)
 						} else {
-							setSDModalDisplay("block")
+							setSDModalDisplay("grid")
 						}
 						return !prevVisible
 					})
@@ -111,7 +111,7 @@ export default function MainPage() {
 					setshowDropdown("")
 					setMiniModal("")
 					setSDModalVisible(true)
-					setSDModalDisplay("block")
+					setSDModalDisplay("grid")
 				}}
 			>
 				<Plus size={24} />
