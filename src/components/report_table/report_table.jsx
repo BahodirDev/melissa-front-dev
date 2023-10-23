@@ -15,7 +15,7 @@ const AntReportTable = ({ data, sidebar, userRole }) => {
 			data_code: item?.goods_code,
 			is_enter: item?.isenter,
 			// data_box: item?.reports_box_count,
-			data_q: item?.reports_count,
+			data_q: Math.ceil(item?.reports_count),
 			data_client: item?.client,
 			data_cost_each: addComma(item?.reports_count_cost) + item?.currency,
 			data_price_each: addComma(item?.reports_count_price) + item?.currency,
@@ -103,6 +103,7 @@ const AntReportTable = ({ data, sidebar, userRole }) => {
 				}}
 				dataSource={arr2}
 				pagination={{
+					showSizeChanger: false,
 					position: ["bottomLeft"],
 					pageSize: 20,
 				}}

@@ -39,7 +39,7 @@ const ODebtTable = ({
 					key: id,
 					id: item?.deliver_debt_id,
 					cost: addComma(item?.debts_cost) + item?.debts_currency,
-					count: (+item?.debts_count).toFixed(1) + " ta",
+					count: (+item?.debts_count).toFixed(1),
 					currencyName: item?.debts_currency,
 					currencyAmount: item?.debts_currency_amount,
 					each: item?.debts_cost,
@@ -167,6 +167,7 @@ const ODebtTable = ({
 				}}
 				dataSource={arr}
 				pagination={{
+					showSizeChanger: false,
 					position: ["bottomLeft"],
 					pageSize: 20,
 				}}

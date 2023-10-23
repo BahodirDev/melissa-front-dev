@@ -221,18 +221,18 @@ export default function Home() {
 					// value={clientId ? clientId : null}
 					defaultValue="lastWeek"
 				>
-					<Option value="lastWeek" label="Ohirgi hafta">
+					<Select.Option value="lastWeek" label="Ohirgi hafta">
 						Ohirgi hafta
-					</Option>
-					<Option value="lastMonth" label="Ohirgi oy">
+					</Select.Option>
+					<Select.Option value="lastMonth" label="Ohirgi oy">
 						Ohirgi oy
-					</Option>
-					<Option value="last3Months" label="Ohirgi 3 oy">
+					</Select.Option>
+					<Select.Option value="last3Months" label="Ohirgi 3 oy">
 						Ohirgi 3 oy
-					</Option>
-					<Option value="lastHalfYear" label="Ohirgi yaril yil">
+					</Select.Option>
+					<Select.Option value="lastHalfYear" label="Ohirgi yaril yil">
 						Ohirgi yarim yil
-					</Option>
+					</Select.Option>
 				</Select>
 				<Space direction="vertical" size={12} style={{ margin: "0 10px" }}>
 					<DatePicker.RangePicker
@@ -321,7 +321,7 @@ export default function Home() {
 								<td>Summa</td>
 							</tr>
 						</thead>
-						<div className="tBodyMargin"></div>
+						{/* <div className="tBodyMargin"></div> */}
 						<tbody>
 							<tr>
 								<td>Alisher</td>
@@ -365,7 +365,7 @@ export default function Home() {
 								<td>Summa</td>
 							</tr>
 						</thead>
-						<div className="tBodyMargin"></div>
+						{/* <div className="tBodyMargin"></div> */}
 						<tbody>
 							<tr>
 								<td>Alisher</td>

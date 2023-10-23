@@ -15,6 +15,7 @@ import {
 	Trash,
 } from "@phosphor-icons/react"
 import { useState } from "react"
+import format_phone_number from "../format_phone_number/format_phone_number"
 
 const DebtTable = ({
 	data,
@@ -44,15 +45,12 @@ const DebtTable = ({
 					client:
 						item?.client?.clients_name +
 						" " +
-						item?.client?.clients_nomer.replace(
-							/^(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})$/,
-							"+$1 ($2) $3-$4-$5"
-						),
+						format_phone_number(item?.client?.clients_nomer),
 					product:
 						item?.product?.product_details?.goods_name +
 						" - " +
 						item?.product?.product_details?.goods_code,
-					quantity: "x" + (+item?.debts_count).toFixed(1),
+					quantity: (+item?.debts_count).toFixed(1),
 					currencyAmount: item?.debts_currency_amount,
 					currencyName: item?.debts_currency,
 					price_each: addComma(item?.debts_price) + item?.debts_currency,
@@ -213,6 +211,7 @@ const DebtTable = ({
 				}}
 				dataSource={arr}
 				pagination={{
+					showSizeChanger: false,
 					position: ["bottomLeft"],
 					pageSize: 20,
 				}}

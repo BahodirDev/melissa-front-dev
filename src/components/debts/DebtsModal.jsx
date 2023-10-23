@@ -11,6 +11,7 @@ import { addDebt as addDebtToClient } from "../reducers/client"
 import { addData } from "../reducers/debt"
 import { setDataProduct } from "../reducers/product"
 import "./debts-modal.css"
+import format_phone_number from "../format_phone_number/format_phone_number"
 
 function DebtsModal({ debtsModal, setDebtsModal }) {
 	const { client, product } = useSelector((state) => state)
@@ -212,18 +213,12 @@ function DebtsModal({ debtsModal, setDebtsModal }) {
 														value={JSON.stringify(item)}
 														label={`${
 															item?.clients_name
-														} - ${item?.clients_nomer.replace(
-															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-															"+$1 ($2) $3-$4-$5"
-														)}`}
+														} - ${format_phone_number(item?.clients_nomer)}`}
 													>
 														<div>
 															<span>{item?.clients_name} - </span>
 															<span>
-																{item?.clients_nomer.replace(
-																	/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-																	"+$1 ($2) $3-$4-$5"
-																)}
+																{format_phone_number(item?.clients_nomer)}
 															</span>
 														</div>
 													</Option>

@@ -2,7 +2,6 @@ import { useState } from "react"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
 import NoData from "../../components/noData/NoData"
 import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
-import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment/moment"
 
 function GoodsList({

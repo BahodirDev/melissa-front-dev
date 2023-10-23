@@ -31,7 +31,7 @@ const ReturnTable = ({
 				id: item?.return_id,
 				name: item?.return_name,
 				store: item?.return_store,
-				count: item?.return_count + " ta",
+				count: Math.ceil(item?.return_count),
 				cost_each: addComma(item?.return_cost) + " so'm",
 				cost_total: addComma(item?.return_cost * item?.return_count) + " so'm",
 				reason: item?.return_case ? item?.return_case : "Qo'shimcha ma'lumot",
@@ -65,11 +65,11 @@ const ReturnTable = ({
 			dataIndex: "count",
 		},
 		{
-			title: "Narxi(har biri)",
+			title: "Narx",
 			dataIndex: "cost_each",
 		},
 		{
-			title: "Narxi(umumiy)",
+			title: "Umumiy narx",
 			dataIndex: "cost_total",
 		},
 		{
@@ -140,6 +140,7 @@ const ReturnTable = ({
 				}}
 				dataSource={arr2}
 				pagination={{
+					showSizeChanger: false,
 					position: ["bottomLeft"],
 					pageSize: 20,
 				}}

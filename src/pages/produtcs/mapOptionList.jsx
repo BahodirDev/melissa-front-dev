@@ -1,3 +1,5 @@
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
+
 export function mapOptionList(arrName, arr) {
 	switch (arrName) {
 		case "goods":
@@ -11,12 +13,7 @@ export function mapOptionList(arrName, arr) {
 						<option value={JSON.stringify(item)} className="product-option">
 							<div>
 								<span>{item?.deliver_name} - </span>
-								<span>
-									{item?.deliver_nomer.replace(
-										/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-										"+$1 ($2) $3-$4-$5"
-									)}
-								</span>
+								<span>{format_phone_number(item?.deliver_nomer)}</span>
 							</div>
 						</option>
 					)

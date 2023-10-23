@@ -68,7 +68,7 @@ const NDebtTable = ({
 			title: "Berilgan sana",
 			dataIndex: "date",
 			render: (text) => {
-				return <>{moment(text).format("YYYY-MM-DD")}</>
+				return <>{moment(text).format("YYYY/MM/DD")}</>
 			},
 		},
 		{
@@ -77,7 +77,7 @@ const NDebtTable = ({
 			defaultSortOrder: "ascend",
 			sorter: (a, b) => moment(a.duedate) - moment(b.duedate),
 			render: (text) => {
-				return <>{moment(text).format("YYYY-MM-DD")}</>
+				return <>{moment(text).format("YYYY/MM/DD")}</>
 			},
 		},
 		{
@@ -167,6 +167,7 @@ const NDebtTable = ({
 				}}
 				dataSource={arr}
 				pagination={{
+					showSizeChanger: false,
 					position: ["bottomLeft"],
 					pageSize: 20,
 				}}

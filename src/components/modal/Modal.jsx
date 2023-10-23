@@ -17,6 +17,7 @@ import {
 } from "../reducers/report"
 import ProductModalList from "./ProductModalList"
 import "./modal.css"
+import format_phone_number from "../format_phone_number/format_phone_number"
 const { Option } = Select
 
 export default function MyModal({ myModal, setMyModal }) {
@@ -281,24 +282,15 @@ export default function MyModal({ myModal, setMyModal }) {
 														className="client-option"
 														value={`${
 															item?.clients_name
-														} - ${item?.clients_nomer.replace(
-															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-															"+$1 ($2) $3-$4-$5"
-														)}`}
+														} - ${format_phone_number(item?.clients_nomer)}`}
 														label={`${
 															item?.clients_name
-														} - ${item?.clients_nomer.replace(
-															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-															"+$1 ($2) $3-$4-$5"
-														)}`}
+														} - ${format_phone_number(item?.clients_nomer)}`}
 													>
 														<div>
 															<span>{item?.clients_name} - </span>
 															<span>
-																{item?.clients_nomer.replace(
-																	/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-																	"+$1 ($2) $3-$4-$5"
-																)}
+																{format_phone_number(item?.clients_nomer)}
 															</span>
 														</div>
 													</Option>
