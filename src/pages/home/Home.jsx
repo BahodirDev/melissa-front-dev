@@ -231,7 +231,7 @@ export default function Home() {
 						Ohirgi 3 oy
 					</Option>
 					<Option value="lastHalfYear" label="Ohirgi yaril yil">
-						Ohirgi yaril yil
+						Ohirgi yarim yil
 					</Option>
 				</Select>
 				<Space direction="vertical" size={12} style={{ margin: "0 10px" }}>

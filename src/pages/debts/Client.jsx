@@ -197,8 +197,8 @@ const Client = ({ getData }) => {
 						onChange={(e) => setCategory(e)}
 						disabled
 					>
-						{state.good?.data.length
-							? state.good?.data.map((item, idx) => (
+						{state.good.data?.length
+							? state.good.data.map((item, idx) => (
 									<Select.Option
 										key={idx}
 										value={item.goods_id}

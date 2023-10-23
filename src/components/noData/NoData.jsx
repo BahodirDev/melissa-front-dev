@@ -10,4 +10,13 @@ const NoData = () => {
 	)
 }
 
+export const EmptyList = () => {
+	return (
+		<div className="no-data-wrapper list">
+			<img src={noDataImg} alt="no-data-image" />
+			<h4>Ro'yxat bo'sh</h4>
+		</div>
+	)
+}
+
 export default NoData

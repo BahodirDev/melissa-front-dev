@@ -6,24 +6,151 @@
 	width: 100dvw;
 	height: 100dvh;
 	background-color: var(--bg-opacity);
-	/* disable body scroll */
+	grid-template-columns: 1fr auto;
 }
 
+/* list */
+.modal-list {
+	width: 0;
+	height: 0;
+	background-color: var(--bg-light);
+	border-radius: var(--radius-lg);
+	margin: auto;
+	padding: 30px 30px;
+	overflow: hidden;
+}
+.modal-list-head {
+	width: 100%;
+	padding: 12px 20px;
+	display: grid;
+	grid-template-columns: 120px 160px 80px 100px 140px auto;
+	gap: 20px;
+	background-color: var(--bg-pagination-btn);
+}
+.modal-list-head.debt {
+	grid-template-columns: 80px 160px 70px 80px 120px 80px auto;
+}
+.modal-list-head h5 {
+	font-size: var(--text-md);
+	color: var(--color-dark);
+}
+.modal-list-body {
+	width: 100%;
+	height: 300px;
+	overflow-y: auto;
+}
+.modal-list-item {
+	display: grid;
+	grid-template-columns: 120px 160px 80px 100px 140px auto;
+	gap: 20px;
+	padding: 12px 20px;
+	background-color: var(--bg-light);
+}
+.modal-list-item.debt {
+	grid-template-columns: 80px 160px 70px 80px 120px 100px auto;
+}
+.modal-list-item:nth-child(even) {
+	background-color: var(--bg-neutral);
+}
+.modal-list-item h6 {
+	font-size: var(--text-md);
+	color: var(--color-secondary);
+	margin: auto 0;
+	display: flex;
+	align-items: flex-end;
+	height: 24px;
+}
+.modal-list-item button {
+	border: none;
+	background: none;
+	color: var(--color-danger);
+}
+
+/* form */
 .sell-modal {
-	float: right;
 	width: 0;
 	height: 100%;
 	background-color: var(--bg-light);
+}
+.sell-modal-top {
+	width: 100%;
+	height: 110px;
+	background-color: var(--bg-neutral);
+	text-align: right;
+	padding: 24px 16px 27px 32px;
+}
+.sell-modal-top button {
+	cursor: pointer;
+	border: none;
+	background: none;
+}
+.sell-modal-top div {
+	display: grid;
+	grid-template-columns: auto auto;
+}
+.sell-modal-top h4 {
+	margin-top: 20px;
+	text-align: left;
+	font-size: var(--text-modal);
+	cursor: pointer;
+	color: var(--color-accent);
+}
+.sell-modal-top h4.active {
+	color: var(--color-primary);
+	cursor: text;
+}
+.sell-modal-bottom {
+	display: block;
+	height: calc(100dvh - 110px);
+	padding: 24px 32px;
+	overflow-y: auto;
+}
+.input-wrapper.modal-form.regular span {
+	color: var(--color-secondary);
+}
+
+/* animation */
+.bounce-in {
+	animation: bounce-in 0.3s ease-out;
+	width: 880px;
+	height: 480px;
+}
+
+.bounce-out {
+	animation: bounce-out 0.3s ease-out;
+	width: 0;
+	height: 0;
 }
 
 .fade-in-sd {
 	animation: fade-in 0.3s ease-out;
 	width: 350px;
 }
-
 .fade-out-sd {
 	animation: fade-out 0.3s ease-out;
 	width: 0;
+}
+
+@keyframes bounce-in {
+	0% {
+		width: 0;
+		height: 0;
+	}
+	100% {
+		width: 880px;
+		height: 480px;
+	}
+}
+
+@keyframes bounce-out {
+	0% {
+		width: 880px;
+		height: 480px;
+	}
+	100% {
+		width: 0;
+		height: 0;
+	}
 }
 
 @keyframes fade-in {
@@ -34,7 +161,6 @@
 		width: 350px;
 	}
 }
-
 @keyframes fade-out {
 	0% {
 		width: 350px;

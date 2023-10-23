@@ -171,36 +171,42 @@ export default function Reports() {
 						value={clientId ? clientId : null}
 						onChange={(e) => setClientId(e)}
 					>
-						{[...client?.data, ...deliver?.data]?.map((item, idx) => {
-							if (!item?.isdelete)
-								if (item?.clients_name) {
-									return (
-										<Select.Option
-											key={idx}
-											value={item.clients_name}
-											className="option-shrink"
-										>
-											<div>
-												<span>{item?.clients_name} - </span>
-												<span>{format_phone_number(item?.clients_nomer)}</span>
-											</div>
-										</Select.Option>
-									)
-								} else {
-									return (
-										<Select.Option
-											key={idx}
-											value={item.deliver_name}
-											className="option-shrink"
-										>
-											<div>
-												<span>{item?.deliver_name} - </span>
-												<span>{format_phone_number(item?.deliver_nomer)}</span>
-											</div>
-										</Select.Option>
-									)
-								}
-						})}
+						{client.data?.length && deliver.data?.length
+							? [...client.data, ...deliver.data].map((item, idx) => {
+									if (!item?.isdelete)
+										if (item?.clients_name) {
+											return (
+												<Select.Option
+													key={idx}
+													value={item.clients_name}
+													className="option-shrink"
+												>
+													<div>
+														<span>{item?.clients_name} - </span>
+														<span>
+															{format_phone_number(item?.clients_nomer)}
+														</span>
+													</div>
+												</Select.Option>
+											)
+										} else {
+											return (
+												<Select.Option
+													key={idx}
+													value={item.deliver_name}
+													className="option-shrink"
+												>
+													<div>
+														<span>{item?.deliver_name} - </span>
+														<span>
+															{format_phone_number(item?.deliver_nomer)}
+														</span>
+													</div>
+												</Select.Option>
+											)
+										}
+							  })
+							: null}
 					</Select>
 				</div>
 				<div className="input-wrapper">

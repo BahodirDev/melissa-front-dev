@@ -244,8 +244,8 @@ export default function Products() {
 							e ? setNewGoodsId(JSON.parse(e)) : setNewGoodsId({})
 						}
 					>
-						{good?.data.length
-							? good?.data.map((item, idx) => {
+						{good.data?.length
+							? good.data.map((item, idx) => {
 									return (
 										<Select.Option
 											key={idx}
@@ -302,8 +302,8 @@ export default function Products() {
 							e ? setNewDeliverId(JSON.parse(e)) : setNewDeliverId({})
 						}
 					>
-						{deliver?.data.length
-							? deliver?.data.map((item, idx) => {
+						{deliver.data?.length
+							? deliver.data.map((item, idx) => {
 									if (!item?.isdelete) {
 										return (
 											<Select.Option
@@ -557,8 +557,8 @@ export default function Products() {
 						onChange={(e) => setSearchDeliverId(e)}
 						disabled
 					>
-						{deliver?.data.length
-							? deliver?.data.map((item, idx) => {
+						{deliver.data?.length
+							? deliver.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
 											<Select.Option
@@ -588,8 +588,8 @@ export default function Products() {
 						onChange={(e) => setSearchGoodId(e)}
 						disabled
 					>
-						{good?.data.length
-							? good?.data.map((item, idx) => (
+						{good.data?.length
+							? good.data.map((item, idx) => (
 									<Select.Option
 										className="option-shrink"
 										key={idx}

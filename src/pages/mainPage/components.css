@@ -94,6 +94,11 @@
 	height: 40px;
 	transition: 0.1s;
 }
+.primary-btn.sell {
+	margin: 30px 0;
+	float: right;
+	width: 130px;
+}
 .primary-btn:hover {
 	background-color: var(--bg-secondary);
 }
@@ -239,6 +244,9 @@
 	background-color: var(--bg-light);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-md);
+}
+.search-wrapper input {
+	padding-right: 40px;
 }
 .search-wrapper div:first-child {
 	position: relative;
