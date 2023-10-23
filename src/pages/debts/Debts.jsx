@@ -46,7 +46,7 @@ function Debts() {
 					dispatch(setList(data?.data))
 				}
 			} else {
-				toast.error("Nomalum server xatolik")
+				toast.error("Nomalum server xatolik", { toastId: "" })
 			}
 			dispatch(setPreload(false))
 		})

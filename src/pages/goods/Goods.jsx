@@ -116,13 +116,15 @@ export default function Goods() {
 	}
 
 	const editGood = (id) => {
+		setNewGoodName("")
+		setObjId(id)
+		setAddModalDisplay("block")
+		setAddModalVisible(true)
+
 		get(`/goods/goods-list/${id}`).then((data) => {
 			if (data?.status === 201) {
 				setNewGoodName(data?.data[0]?.goods_name)
 				setNewGoodCode(data?.data[0]?.goods_code)
-				setObjId(id)
-				setAddModalDisplay("block")
-				setAddModalVisible(true)
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
@@ -176,72 +178,78 @@ export default function Goods() {
 				setAddModalDisplay={setAddModalDisplay}
 				name={objId ? "Kategoriya tahrirlash" : "Kategoriya qo'shish"}
 			>
-				<div
-					className={`input-wrapper modal-form regular 
+				{objId && !newGoodName ? (
+					<Loader />
+				) : (
+					<>
+						<div
+							className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(newGoodName.trim()) !== null && "error"}
 					`}
-				>
-					<label>Kategoriya nomi</label>
-					<input
-						type="text"
-						placeholder="Kategoriya nomini kiriting"
-						className="input"
-						value={newGoodName}
-						onChange={(e) => setNewGoodName(e.target.value)}
-					/>
-					{submitted && stringCheck(newGoodName.trim()) !== null && (
-						<Info size={20} />
-					)}
-					<div className="validation-field">
-						<span>
-							{submitted &&
-								stringCheck(newGoodName.trim(), "Nom kiritish majburiy")}
-						</span>
-					</div>
-				</div>
-				<div
-					className={`input-wrapper modal-form regular 
+						>
+							<label>Kategoriya nomi</label>
+							<input
+								type="text"
+								placeholder="Kategoriya nomini kiriting"
+								className="input"
+								value={newGoodName}
+								onChange={(e) => setNewGoodName(e.target.value)}
+							/>
+							{submitted && stringCheck(newGoodName.trim()) !== null && (
+								<Info size={20} />
+							)}
+							<div className="validation-field">
+								<span>
+									{submitted &&
+										stringCheck(newGoodName.trim(), "Nom kiritish majburiy")}
+								</span>
+							</div>
+						</div>
+						<div
+							className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(newGoodCode.trim()) !== null && "error"}
 					`}
-				>
-					<label>Kategoriya kodi</label>
-					<input
-						type="text"
-						placeholder="Kategoriya kodi kiriting"
-						className="input"
-						value={newGoodCode}
-						onChange={(e) => setNewGoodCode(e.target.value)}
-					/>
-					{submitted && stringCheck(newGoodCode.trim()) !== null && (
-						<Info size={20} />
-					)}
-					<div className="validation-field">
-						<span>
-							{submitted &&
-								stringCheck(newGoodCode.trim(), "Kod kiritish majburiy")}
-						</span>
-					</div>
-				</div>
-				<div className="modal-btn-group">
-					<button
-						className="primary-btn"
-						disabled={btn_loading}
-						onClick={addGood}
-					>
-						{objId ? "Saqlash" : "Qo'shish"}{" "}
-						{btn_loading && (
-							<span
-								className="spinner-grow spinner-grow-sm"
-								role="status"
-								aria-hidden="true"
-								style={{ marginLeft: "5px" }}
-							></span>
-						)}
-					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
-						Bekor qilish
-					</button>
-				</div>
+						>
+							<label>Kategoriya kodi</label>
+							<input
+								type="text"
+								placeholder="Kategoriya kodi kiriting"
+								className="input"
+								value={newGoodCode}
+								onChange={(e) => setNewGoodCode(e.target.value)}
+							/>
+							{submitted && stringCheck(newGoodCode.trim()) !== null && (
+								<Info size={20} />
+							)}
+							<div className="validation-field">
+								<span>
+									{submitted &&
+										stringCheck(newGoodCode.trim(), "Kod kiritish majburiy")}
+								</span>
+							</div>
+						</div>
+						<div className="modal-btn-group">
+							<button
+								className="primary-btn"
+								disabled={btn_loading}
+								onClick={addGood}
+							>
+								{objId ? "Saqlash" : "Qo'shish"}{" "}
+								{btn_loading && (
+									<span
+										className="spinner-grow spinner-grow-sm"
+										role="status"
+										aria-hidden="true"
+										style={{ marginLeft: "5px" }}
+									></span>
+								)}
+							</button>
+							<button className="secondary-btn" onClick={clearAndClose}>
+								Bekor qilish
+							</button>
+						</div>
+					</>
+				)}
 			</AddModal>
 
 			<div className="info-wrapper">

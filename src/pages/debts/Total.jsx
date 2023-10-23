@@ -195,10 +195,10 @@ const Total = ({ getData }) => {
 					${submitted && stringCheck(totalName.trim()) !== null && "error"}
 					`}
 				>
-					<label>Xaridor</label>
+					<label>Haridor</label>
 					<input
 						type="text"
-						placeholder="Xaridor ismini kiriting"
+						placeholder="Haridor ismini kiriting"
 						className="input"
 						value={totalName}
 						onChange={(e) => setTotalName(e.target.value)}

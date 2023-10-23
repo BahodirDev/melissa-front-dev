@@ -16,7 +16,7 @@
 	bottom: 0;
 	left: 0;
 	background: var(--bg-primary);
-	animation: borealisBar 2s linear infinite;
+	animation: borealisBar 1s linear infinite;
 }
 
 @keyframes borealisBar {

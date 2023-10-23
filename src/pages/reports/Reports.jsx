@@ -64,7 +64,7 @@ export default function Reports() {
 					dispatch(setter(data?.data))
 				}
 			} else {
-				toast.error("Nomalum server xatolik")
+				toast.error("Nomalum server xatolik", { toastId: "" })
 			}
 			dispatch(setLoading(false))
 		})

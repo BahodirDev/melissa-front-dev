@@ -23,7 +23,12 @@ import { ToastContainer } from "react-toastify"
 export default function App() {
 	return (
 		<BrowserRouter>
-			<ToastContainer autoClose={3000} position="top-center" />
+			<ToastContainer
+				autoClose={3000}
+				position="top-center"
+				// limit={3}
+				hideProgressBar
+			/>
 
 			<Routes>
 				<Route path="/login" element={<Login />} />

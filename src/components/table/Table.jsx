@@ -17,7 +17,7 @@ const AntTable = ({ data, deleteItem, sidebar, userRole }) => {
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
 				products_box_count: Math.ceil(item?.products_box_count),
-				products_count: item?.products_count,
+				products_count: Math.ceil(item?.products_count),
 				products_count_cost:
 					addComma(item?.products_count_cost) +
 					item?.currency_id?.currency_symbol,
@@ -121,6 +121,7 @@ const AntTable = ({ data, deleteItem, sidebar, userRole }) => {
 				}}
 				dataSource={arr2}
 				pagination={{
+					showSizeChanger: false,
 					position: ["bottomLeft"],
 					pageSize: 20,
 				}}

@@ -250,8 +250,8 @@ const Order = ({ getData }) => {
 							e ? setBeforeGood(JSON.parse(e)) : setBeforeGood({})
 						}
 					>
-						{state.good?.data.length
-							? state.good?.data.map((item, idx) => {
+						{state.good?.data?.length
+							? state.good.data.map((item, idx) => {
 									return (
 										<Select.Option
 											key={idx}
@@ -308,8 +308,8 @@ const Order = ({ getData }) => {
 							e ? setBeforeDeliver(JSON.parse(e)) : setBeforeDeliver({})
 						}
 					>
-						{state.deliver?.data.length
-							? state.deliver?.data.map((item, idx) => {
+						{state.deliver?.data?.length
+							? state.deliver.data.map((item, idx) => {
 									if (!item?.isdelete) {
 										return (
 											<Select.Option
@@ -523,7 +523,7 @@ const Order = ({ getData }) => {
 						onChange={(e) => setSupplier(e)}
 						disabled
 					>
-						{state.deliver?.data.length
+						{state.deliver?.data?.length
 							? state.deliver?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
@@ -554,8 +554,8 @@ const Order = ({ getData }) => {
 						onChange={(e) => setCategory(e)}
 						disabled
 					>
-						{state.good?.data.length
-							? state.good?.data.map((item, idx) => (
+						{state.good?.data?.length
+							? state.good.data.map((item, idx) => (
 									<Select.Option
 										className="option-shrink"
 										key={idx}
