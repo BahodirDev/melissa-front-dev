@@ -157,6 +157,7 @@ function Return() {
 				setStore(data?.data?.return_store)
 				setReason(data?.data?.return_case)
 			} else {
+				clearAndClose()
 				toast.error("Nomalum server xatolik")
 			}
 		})

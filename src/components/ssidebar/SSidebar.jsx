@@ -34,59 +34,59 @@ export default function SSidebar() {
 			{/* links */}
 			<ul>
 				<li>
-					<NavLink to="/stats">
+					<NavLink to="/stats" title="Statistika">
 						<ChartBar size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/reports">
+					<NavLink to="/reports" title="Hisobot">
 						<FileText size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/products">
+					<NavLink to="/products" title="Mahsulotlar">
 						<Cube size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/goods">
+					<NavLink to="/goods" title="Kategoriyalar">
 						<SquaresFour size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/return">
+					<NavLink to="/return" title="Qaytgan mahsulotlar">
 						<Recycle size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/debts">
+					<NavLink to="/debts" title="Qarzdorlik">
 						<HandCoins size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/store">
+					<NavLink to="/store" title="Omborlar">
 						<Warehouse size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/deliver">
+					<NavLink to="/deliver" title="Ta'minotchilar">
 						<Truck size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/clients">
+					<NavLink to="/clients" title="Mijozlar">
 						<UsersFour size={24} />
 					</NavLink>
 				</li>
 				{userRole === "1" && (
 					<li>
-						<NavLink to="/employees">
+						<NavLink to="/employees" title="Xodimlar">
 							<Users size={24} />
 						</NavLink>
 					</li>
 				)}
 				<li>
-					<NavLink to="/currency">
+					<NavLink to="/currency" title="Pul birliklari">
 						<CurrencyDollar size={24} />
 					</NavLink>
 				</li>
@@ -98,6 +98,7 @@ export default function SSidebar() {
 
 				<li className="slogout">
 					<a
+						title="Hisobdan chiqish"
 						href="#"
 						onClick={(e) => {
 							log_out(e, navigate)

@@ -126,6 +126,7 @@ export default function Goods() {
 				setNewGoodName(data?.data[0]?.goods_name)
 				setNewGoodCode(data?.data[0]?.goods_code)
 			} else {
+				clearAndClose()
 				toast.error("Nomalum server xatolik")
 			}
 		})

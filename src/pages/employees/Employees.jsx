@@ -90,7 +90,7 @@ export default function Employees() {
 					if (data?.status === 200) {
 						dispatch(editData(data?.data))
 						clearAndClose()
-						toast.success("Hodim muvoffaqiyatli o'zgartirildi")
+						toast.success("Xodim muvoffaqiyatli o'zgartirildi")
 						setTimeout(() => {
 							if (objId === userId) {
 								// localStorage.clear()
@@ -114,7 +114,7 @@ export default function Employees() {
 						dispatch(addData(data?.data?.data))
 						dispatch(setQuantity())
 						clearAndClose()
-						toast.success("Hodim muvoffaqiyatli qo'shildi")
+						toast.success("Xodim muvoffaqiyatli qo'shildi")
 					} else if (data?.response?.data?.error === "USER_ALREADY_EXIST") {
 						toast.warn("Bunday xodim allaqachon mavjud")
 					} else {
@@ -132,7 +132,7 @@ export default function Employees() {
 			if (data?.status === 200) {
 				dispatch(removeEmp(id))
 				dispatch(setQuantity())
-				toast.success("Hodim muvoffaqiyatli o'chirildi")
+				toast.success("Xodim muvoffaqiyatli o'chirildi")
 				clearAndClose()
 			} else {
 				toast.error("Nomalum server xatolik")
