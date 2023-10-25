@@ -64,14 +64,14 @@ export default function Navbar({ setSidebar, inputRef, sidebar, userInfo }) {
 			<div className="nav-user__info">
 				<div className="nav-user__about">
 					<p className="nav-user__name">
-						{userInfo?.name ? userInfo?.name : "Hodim"}
+						{userInfo?.name ? userInfo?.name : "Xodim"}
 					</p>
 					<span className="nav-user__role">
 						{employee_role(userInfo?.role)}
 					</span>
 				</div>
 				<div className="nav-user__image">
-					<img src={user_image} alt="hodim-rasm" />
+					<img src={user_image} alt="xodim-rasm" />
 				</div>
 			</div>
 		</div>

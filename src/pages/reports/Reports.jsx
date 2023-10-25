@@ -23,6 +23,7 @@ import InfoItem from "../../components/info_item/InfoItem"
 import Search from "../../components/search/Search"
 import { ArrowDown, ArrowUp, CurrencyDollar } from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import moment from "moment"
 const { RangePicker } = DatePicker
 
 export default function Reports() {
@@ -76,7 +77,42 @@ export default function Reports() {
 		getData("deliver", setDataDeliver)
 	}, [])
 
-	const handleFilter = () => {}
+	const handleFilter = () => {
+		if (
+			storeId ||
+			clientId ||
+			dateRange?.length ||
+			selectedIncomeOutcome !== "all"
+		) {
+			dispatch(setLoading(true))
+			setSearchSubmitted(true)
+
+			let filterObj = {
+				store: storeId,
+				client: clientId,
+				selectedDate: dateRange?.length
+					? dateRange[0].format("YYYY/MM/DD")
+					: "",
+				finishedDate: dateRange?.length
+					? dateRange[1].format("YYYY/MM/DD")
+					: "",
+			}
+			if (selectedIncomeOutcome === "income") filterObj.isEnter = true
+			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
+
+			post("/reports/reports-filter", filterObj).then((data) => {
+				if (data.status === 200) {
+					setFilteredData(data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				dispatch(setLoading(false))
+			})
+		} else {
+			setSearchSubmitted(false)
+			setFilteredData([])
+		}
+	}
 
 	const clearFilter = () => {
 		setSelectedIncomeOutcome("all")
@@ -95,7 +131,6 @@ export default function Reports() {
 				goods_name: inputRef.current?.value,
 				goods_code: inputRef.current?.value,
 			}).then((data) => {
-				console.log(data)
 				if (data.status === 200) {
 					setFilteredData(data?.data)
 				} else {
@@ -153,7 +188,7 @@ export default function Reports() {
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => (
-									<Select.Option key={idx} value={item.store_id}>
+									<Select.Option key={idx} value={item.store_name}>
 										<div>
 											<span>{item?.store_name}</span>
 										</div>

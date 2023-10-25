@@ -69,7 +69,7 @@ export default function Currency() {
 	useEffect(() => {
 		dispatch(setLoading(true))
 		get("/currency/currency-list").then((data) => {
-			if (data?.status === 201) {
+			if (data?.status >= 200 && data?.status <= 209) {
 				dispatch(setData(data?.data))
 				dispatch(setQuantity())
 			} else {

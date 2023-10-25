@@ -40,7 +40,7 @@ export default function Sidebar() {
 				</li>
 				<li>
 					<NavLink to="/reports">
-						<FileText size={24} /> Hisoborlar
+						<FileText size={24} /> Hisobot
 					</NavLink>
 				</li>
 				<li>
@@ -65,12 +65,12 @@ export default function Sidebar() {
 				</li>
 				<li>
 					<NavLink to="/store">
-						<Warehouse size={24} /> Ombor
+						<Warehouse size={24} /> Omborlar
 					</NavLink>
 				</li>
 				<li>
 					<NavLink to="/deliver">
-						<Truck size={24} /> Ta'minotchi
+						<Truck size={24} /> Ta'minotchilar
 					</NavLink>
 				</li>
 				<li>
