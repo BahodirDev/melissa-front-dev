@@ -99,6 +99,9 @@
 	float: right;
 	width: 130px;
 }
+.primary-btn.download {
+	padding: 8px 16px;
+}
 .primary-btn:hover {
 	background-color: var(--bg-secondary);
 }
@@ -411,6 +414,13 @@ div.ant-d-table {
 	/* it was 122 */
 	width: calc(100dvw - 129px);
 }
+div.ant-d-table .ant-table {
+	overflow: hidden;
+	border-radius: 0;
+	border-bottom-left-radius: var(--radius-lg);
+	border-bottom-right-radius: var(--radius-lg);
+}
+
 /* head */
 div.ant-d-table .ant-table-thead .ant-table-cell {
 	background-color: #eee;
@@ -418,7 +428,7 @@ div.ant-d-table .ant-table-thead .ant-table-cell {
 }
 
 /* body */
-div.ant-d-table .ant-table-cell {
+div.ant-d-table .ant-table-tbody {
 	color: var(--color-secondary);
 	font-weight: var(--weight-bold);
 	border: none !important;

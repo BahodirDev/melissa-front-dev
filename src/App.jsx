@@ -19,6 +19,7 @@ import {
 } from "./components"
 import "react-toastify/dist/ReactToastify.css"
 import { ToastContainer } from "react-toastify"
+import ClientsInfo from "./pages/clients/ClientsInfo"
 
 export default function App() {
 	return (
@@ -26,8 +27,8 @@ export default function App() {
 			<ToastContainer
 				autoClose={3000}
 				position="top-center"
-				// limit={3}
 				hideProgressBar
+				pauseOnFocusLoss={false}
 			/>
 
 			<Routes>
@@ -44,7 +45,10 @@ export default function App() {
 					<Route path="/store" element={<Store />} />
 					<Route path="/settings" element={<Settings />} />
 					<Route path="/deliver" element={<Deliver />} />
-					<Route path="/clients" element={<Clients />} />
+					<Route path="/clients">
+						<Route index element={<Clients />} />
+						<Route path=":id" element={<ClientsInfo />} />
+					</Route>
 					<Route path="/return" element={<Return />} />
 					<Route path="/debts" element={<Debts />} />
 				</Route>
