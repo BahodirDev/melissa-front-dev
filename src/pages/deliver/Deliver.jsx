@@ -152,7 +152,7 @@ function Deliver() {
 			setAddModalDisplay("block")
 			setAddModalVisible(true)
 		} else {
-			toast.error("Nomalum server xatolik")
+			toast.error("Noma'lum server xatolik")
 		}
 	}
 
