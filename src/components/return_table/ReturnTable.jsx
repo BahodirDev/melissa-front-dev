@@ -76,7 +76,7 @@ const ReturnTable = ({
 			title: "Sana",
 			dataIndex: "data",
 			defaultSortOrder: "descend",
-			sorter: (a, b) => moment(a.data).unix() - moment(b.datas).unix(),
+			sorter: (a, b) => moment(a.data).unix() - moment(b.data).unix(),
 		},
 		{
 			title: "",

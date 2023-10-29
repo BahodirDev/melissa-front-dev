@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
-import DebtsModal from "../../components/debts/DebtsModal"
-import MyModal from "../../components/modal/Modal"
-import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
 import { get } from "../../customHook/api"
@@ -33,15 +30,12 @@ export default function MainPage() {
 
 		get("/currency/currency-list").then((data) => {
 			if (data?.response?.status === 401) {
-				// localStorage.clear()
 				localStorage.removeItem("id")
 				localStorage.removeItem("name")
 				localStorage.removeItem("role")
 				localStorage.removeItem("user")
 				navigate("/login")
-				// window.location.reload(false)
 			} else if (!localStorage.getItem("user")) {
-				// localStorage.clear()
 				localStorage.removeItem("id")
 				localStorage.removeItem("name")
 				localStorage.removeItem("role")
@@ -116,15 +110,24 @@ export default function MainPage() {
 			>
 				<Plus size={24} />
 			</button>
-			{sidebar ? <Sidebar /> : <SSidebar />}
+			{sidebar ? (
+				<Sidebar
+					setSidebar={setSidebar}
+					sidebar={sidebar}
+					userInfo={userInfo}
+				/>
+			) : (
+				<SSidebar
+					setSidebar={setSidebar}
+					sidebar={sidebar}
+					userInfo={userInfo}
+				/>
+			)}
 			<div className="main-div">
-				<Navbar setSidebar={setSidebar} sidebar={sidebar} userInfo={userInfo} />
 				<div
 					className="content"
 					style={{ overflowY: (addModalVisible || SDModalVisible) && "hidden" }}
 				>
-					{/* <MyModal myModal={myModal} setMyModal={setMyModal} />
-					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} /> */}
 					<SellDebt
 						SDModalVisible={SDModalVisible}
 						setSDModalVisible={setSDModalVisible}

@@ -3,8 +3,17 @@
 }
 
 .clients .card-item-top h3 {
+	cursor: pointer !important;
+	text-decoration: underline;
+	text-decoration-color: var(--color-secondary);
 	font-size: var(--text-modal);
 	color: var(--color-secondary);
+	transition: 0.1s;
+}
+
+.clients .card-item-top h3:hover {
+	color: var(--color-accent);
+	text-decoration-color: var(--color-accent);
 }
 
 .clients .card-item-bottom h4 {
@@ -26,5 +35,40 @@
 }
 
 .clients .card-item-bottom button:hover {
-  filter: brightness(1.1);
+	filter: brightness(1.1);
+}
+
+/* client info */
+.filter-wrapper.client-info {
+	display: flex;
+	flex-direction: row;
+}
+
+.client-info .input-wrapper {
+	width: 240px;
+}
+
+.client-info-div {
+	width: 100%;
+	background-color: var(--bg-light);
+	box-shadow: var(--shadow-md);
+	border-top-left-radius: var(--radius-lg);
+	border-top-right-radius: var(--radius-lg);
+	padding: 30px 40px;
+}
+
+.client-info-div h2 {
+	color: var(--color-secondary);
+	font-size: var(--text-xl);
+}
+
+.client-info-div h3 {
+	color: var(--color-accent);
+	font-size: var(--text-lg);
+	font-weight: var(--weight-thin);
+	margin-top: 12px;
+}
+
+.client-info-div h3 span {
+	color: var(--color-secondary);
 }

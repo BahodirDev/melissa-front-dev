@@ -9,6 +9,7 @@ import {
 	Trash,
 } from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import { Link, useNavigate } from "react-router-dom"
 
 function ClientList({
 	data,
@@ -21,6 +22,7 @@ function ClientList({
 }) {
 	const [loc, setLoc] = useState(true)
 	const [loc2, setLoc2] = useState(true)
+	const navigate = useNavigate()
 
 	const handleClick = (e, id) => {
 		setMiniModal("")
@@ -37,7 +39,21 @@ function ClientList({
 						<div key={idx} className="card-item clients">
 							<div className="card-item-top">
 								<div>
-									<h3>{item?.clients_name}</h3>
+									<h3
+										onClick={() =>
+											navigate(item?.clients_name, {
+												state: {
+													id: item?.clients_id,
+													name: item?.clients_name,
+													tel: item?.clients_nomer,
+													desc: item?.clients_desc,
+													date: item?.clients_createdat,
+												},
+											})
+										}
+									>
+										{item?.clients_name}
+									</h3>
 								</div>
 								<div className="card-item-edit-holder">
 									<button

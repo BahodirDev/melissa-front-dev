@@ -7,7 +7,7 @@ import {
 import "./sell debt.css"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useState } from "react"
-import { get, patch, post } from "../../customHook/api"
+import { downloadFile, get, patch, post } from "../../customHook/api"
 import { setData as setDataClient } from "../reducers/client"
 import { setData as setDataCurrency } from "../reducers/currency"
 import { setData } from "../reducers/store"
@@ -25,6 +25,7 @@ import {
 	setOutcome,
 } from "../reducers/report"
 import moment from "moment"
+import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
 
 const SellDebt = ({
 	SDModalVisible,
@@ -229,89 +230,95 @@ const SellDebt = ({
 	}
 
 	const postP = () => {
-		setBtnLoading(true)
-		let newArr = productList.map((item) => {
-			return {
-				product_id: item?.product_id,
-				count: item?.count,
-				client: item?.client.clients_name + " - " + item?.client.clients_nomer,
-				client_id: item?.client.clients_id,
-				cost: (item?.cost / item?.currency_amount).toFixed(2),
-				price: (item?.price / item?.currency_amount).toFixed(2),
-				code: item?.code,
-				store_id: item?.store_id.store_id,
-				currency_amount: item?.currency_amount,
-			}
-		})
+		if (productList.length) {
+			setBtnLoading(true)
+			let newArr = productList.map((item) => {
+				return {
+					product_id: item?.product_id,
+					count: item?.count,
+					client:
+						item?.client.clients_name + " - " + item?.client.clients_nomer,
+					client_id: item?.client.clients_id,
+					cost: (item?.cost / item?.currency_amount).toFixed(2),
+					price: (item?.price / item?.currency_amount).toFixed(2),
+					code: item?.code,
+					store_id: item?.store_id.store_id,
+					currency_amount: item?.currency_amount,
+				}
+			})
+			patch("/products/products-sale", { products: newArr }).then((data) => {
+				if (data?.status === 200 || data?.status === 201) {
+					get("/products/products-list").then((dataP) => {
+						if (dataP?.status === 200) {
+							dispatch(setDataProduct(dataP?.data?.data))
+							dispatch(setQuantity(dataP?.data?.hisob?.kategoriya))
+							dispatch(setAmount(dataP?.data?.hisob?.soni))
+							dispatch(setSum(dataP?.data?.hisob?.umumiyQiymati))
+						}
+					})
+					get("/reports/reports-list").then((dataR) => {
+						if (dataR?.status === 200) {
+							dispatch(setDataReport(dataR?.data?.data))
+							dispatch(setCapital(dataR?.data?.hisob?.totalProductCost))
+							dispatch(setIncome(dataR?.data?.hisob?.totalCostPilus))
+							dispatch(setOutcome(dataR?.data?.hisob?.totalCostMinus))
+						}
+					})
+					clearAndClose()
+					toast.success("Mahsulot muvoffaqiyatli sotildi")
 
-		patch("/products/products-sale", { products: newArr }).then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
-				get("/products/products-list").then((dataP) => {
-					if (dataP?.status === 200) {
-						dispatch(setDataProduct(dataP?.data?.data))
-						dispatch(setQuantity(dataP?.data?.hisob?.kategoriya))
-						dispatch(setAmount(dataP?.data?.hisob?.soni))
-						dispatch(setSum(dataP?.data?.hisob?.umumiyQiymati))
-					}
-				})
-				get("/reports/reports-list").then((dataR) => {
-					if (dataR?.status === 200) {
-						dispatch(setDataReport(dataR?.data?.data))
-						dispatch(setCapital(dataR?.data?.hisob?.totalProductCost))
-						dispatch(setIncome(dataR?.data?.hisob?.totalCostPilus))
-						dispatch(setOutcome(dataR?.data?.hisob?.totalCostMinus))
-					}
-				})
-				clearAndClose()
-				toast.success("Mahsulot muvoffaqiyatli sotildi")
-			} else {
-				toast.error("Nomalum server xatolik")
-			}
-			setBtnLoading(false)
-		})
+					confirmDownloadModal(downloadFile, data?.data?.report_id)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				setBtnLoading(false)
+			})
+		}
 	}
 
 	const postD = () => {
-		setBtnLoadingD(true)
-		let newArr = productListD.map((item) => {
-			return {
-				client_id: item?.client.clients_id,
-				product_id: item?.product.products_id,
-				debts_cost: item?.product.products_count_cost,
-				debts_count: item?.quantity,
-				debts_currency: item?.product.currency_id.currency_symbol,
-				debts_currency_amount: item?.product.currency_id.currency_amount,
-				debts_price: item?.price / item?.product.currency_id.currency_amount,
-				debts_due_date: new Date(item?.dueDate).toISOString(),
-				debts_selected_date: new Date(item?.date).toISOString(),
-			}
-		})
+		if (productListD.length) {
+			setBtnLoadingD(true)
+			let newArr = productListD.map((item) => {
+				return {
+					client_id: item?.client.clients_id,
+					product_id: item?.product.products_id,
+					debts_cost: item?.product.products_count_cost,
+					debts_count: item?.quantity,
+					debts_currency: item?.product.currency_id.currency_symbol,
+					debts_currency_amount: item?.product.currency_id.currency_amount,
+					debts_price: item?.price / item?.product.currency_id.currency_amount,
+					debts_due_date: new Date(item?.dueDate).toISOString(),
+					debts_selected_date: new Date(item?.date).toISOString(),
+				}
+			})
 
-		post("/debts/debts-post", { debts: newArr }).then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
-				get("/products/products-list").then((dataP) => {
-					if (dataP?.status === 200) {
-						dispatch(setDataProduct(dataP?.data?.data))
-						dispatch(setQuantity(dataP?.data?.hisob?.kategoriya))
-						dispatch(setAmount(dataP?.data?.hisob?.soni))
-						dispatch(setSum(dataP?.data?.hisob?.umumiyQiymati))
-					}
-				})
-				get("/reports/reports-list").then((dataR) => {
-					if (dataR?.status === 200) {
-						dispatch(setDataReport(dataR?.data?.data))
-						dispatch(setCapital(dataR?.data?.hisob?.totalProductCost))
-						dispatch(setIncome(dataR?.data?.hisob?.totalCostPilus))
-						dispatch(setOutcome(dataR?.data?.hisob?.totalCostMinus))
-					}
-				})
-				clearAndClose()
-				toast.success("Mahsulot muvoffaqiyatli sotildi")
-			} else {
-				toast.error("Nomalum server xatolik")
-			}
-			setBtnLoadingD(false)
-		})
+			post("/debts/debts-post", { debts: newArr }).then((data) => {
+				if (data?.status === 200 || data?.status === 201) {
+					get("/products/products-list").then((dataP) => {
+						if (dataP?.status === 200) {
+							dispatch(setDataProduct(dataP?.data?.data))
+							dispatch(setQuantity(dataP?.data?.hisob?.kategoriya))
+							dispatch(setAmount(dataP?.data?.hisob?.soni))
+							dispatch(setSum(dataP?.data?.hisob?.umumiyQiymati))
+						}
+					})
+					get("/reports/reports-list").then((dataR) => {
+						if (dataR?.status === 200) {
+							dispatch(setDataReport(dataR?.data?.data))
+							dispatch(setCapital(dataR?.data?.hisob?.totalProductCost))
+							dispatch(setIncome(dataR?.data?.hisob?.totalCostPilus))
+							dispatch(setOutcome(dataR?.data?.hisob?.totalCostMinus))
+						}
+					})
+					clearAndClose()
+					toast.success("Mahsulot muvoffaqiyatli sotildi")
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				setBtnLoadingD(false)
+			})
+		}
 	}
 
 	return (
