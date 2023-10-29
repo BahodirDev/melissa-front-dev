@@ -1,11 +1,12 @@
 import { DatePicker, Space } from "antd"
 import { useEffect, useState } from "react"
-import { useLocation, useOutletContext } from "react-router-dom"
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment/moment"
 import ClientInfoTable from "../../components/client_info_table/ClientInfoTable"
 import { get } from "../../customHook/api"
 import Loader from "../../components/loader/Loader"
+import { CaretLeft } from "@phosphor-icons/react"
 
 const ClientsInfo = () => {
 	const [
@@ -25,6 +26,7 @@ const ClientsInfo = () => {
 	const { RangePicker } = DatePicker
 	const [list, setList] = useState([])
 	const [loading, setLoading] = useState(false)
+	const navigate = useNavigate()
 
 	const { id, name, desc, tel, date } = loc.state
 
@@ -40,6 +42,9 @@ const ClientsInfo = () => {
 
 	return (
 		<>
+			<button type="button" onClick={() => navigate(-1)} className="back-btn">
+				<CaretLeft size={24} /> <span>Orqaga</span>
+			</button>
 			<div className="filter-wrapper client-info">
 				<div className="input-wrapper">
 					<Space direction="vertical" size={12}>
