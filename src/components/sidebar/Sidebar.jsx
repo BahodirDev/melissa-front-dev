@@ -1,3 +1,4 @@
+import user_image from "../../assets/img/user.jpg"
 import { NavLink, useNavigate } from "react-router-dom"
 import { log_out } from "../log_out/delete_modal"
 import "./sidebar.css"
@@ -16,8 +17,9 @@ import {
 	Warehouse,
 } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
+import { employee_role } from "../../pages/employees/employee_role"
 
-export default function Sidebar() {
+export default function Sidebar({ setSidebar, sidebar, userInfo }) {
 	const navigate = useNavigate()
 	const [userRole, setUserRole] = useState(0)
 
@@ -28,7 +30,9 @@ export default function Sidebar() {
 	return (
 		<div className="sidebar">
 			<div className="sicon">
-				<h1>Melissa Kids</h1>
+				<h1 type="button" onClick={() => setSidebar((prev) => !prev)}>
+					Melissa Kids
+				</h1>
 			</div>
 
 			{/* links */}
@@ -97,14 +101,24 @@ export default function Sidebar() {
 				</li> */}
 
 				<li className="logout">
-					<a
-						href="#"
-						onClick={(e) => {
-							log_out(e, navigate)
-						}}
-					>
-						<SignOut size={24} /> Hisobdan chiqish
-					</a>
+					<div className="user__info">
+						<div className="user__image">
+							<img src={user_image} alt="xodim-rasm" />
+						</div>
+						<div className="user__about">
+							<p>{userInfo?.name ? userInfo?.name : "Xodim"}</p>
+							<span>{employee_role(userInfo?.role)}</span>
+						</div>
+						<a
+							href="#"
+							title="Hisobdan chiqish"
+							onClick={(e) => {
+								log_out(e, navigate)
+							}}
+						>
+							<SignOut size={24} />
+						</a>
+					</div>
 				</li>
 			</ul>
 		</div>

@@ -17,7 +17,7 @@ import {
 } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 
-export default function SSidebar() {
+export default function SSidebar({ setSidebar, sidebar, userInfo }) {
 	const navigate = useNavigate()
 	const [userRole, setUserRole] = useState(0)
 
@@ -28,7 +28,9 @@ export default function SSidebar() {
 	return (
 		<div className="ssidebar">
 			<div className="sicon">
-				<h1>M</h1>
+				<h1 type="button" onClick={() => setSidebar((prev) => !prev)}>
+					M
+				</h1>
 			</div>
 
 			{/* links */}

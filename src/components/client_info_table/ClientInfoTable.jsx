@@ -65,7 +65,7 @@ const ClientInfoTable = ({ data, sidebar }) => {
 						onClick={() =>
 							confirmDownloadModal(downloadFile, record?.download_id)
 						}
-						className="primary-btn download"
+						className="download-btn"
 					>
 						<Download size={20} />
 					</button>

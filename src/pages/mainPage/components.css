@@ -99,11 +99,26 @@
 	float: right;
 	width: 130px;
 }
-.primary-btn.download {
-	padding: 8px 16px;
-}
 .primary-btn:hover {
 	background-color: var(--bg-secondary);
+}
+.download-btn {
+	border: none;
+	background: none;
+	outline: none;
+	color: var(--color-secondary);
+}
+.back-btn {
+	color: var(--color-secondary);
+	outline: none;
+	background: none;
+	border: none;
+	margin-bottom: 20px;
+}
+.back-btn svg {
+	margin: 0;
+	padding: 0;
+	margin-top: -5px;
 }
 .primary-btn:disabled {
 	background: var(--bg-disabled);
