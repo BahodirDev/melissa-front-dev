@@ -62,7 +62,7 @@ export default function Store() {
 			dispatch(setLoading(true))
 			setSearchSubmitted(true)
 			post("/store/store-search", {
-				store_name: inputRef.current?.value,
+				search: inputRef.current?.value,
 			}).then((data) => {
 				if (data.status === 200) {
 					setFilteredData(data?.data)

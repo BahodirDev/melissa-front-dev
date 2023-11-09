@@ -7,6 +7,7 @@ import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadM
 import { downloadFile } from "../../customHook/api"
 
 const ClientInfoTable = ({ data, sidebar }) => {
+	// console.log(data[0])
 	let arr =
 		data.length &&
 		data?.map((item, idx) => {
@@ -18,8 +19,8 @@ const ClientInfoTable = ({ data, sidebar }) => {
 				product: item?.files?.goods_name,
 				code: item?.files?.goods_code,
 				quantity: item?.files?.product_count,
-				price_each: 0,
-				price_total: 0,
+				price_each: item?.count_price,
+				price_total: item?.total_price,
 				date: moment(item?.files?.createdat).format("YYYY/MM/DD"),
 			}
 		})

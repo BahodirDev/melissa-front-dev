@@ -24,7 +24,7 @@ const ReturnTable = ({
 	}
 
 	let arr2 =
-		data.length &&
+		data?.length &&
 		data?.map((item, idx) => {
 			return {
 				key: idx,

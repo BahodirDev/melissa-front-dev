@@ -76,7 +76,9 @@ export default function EmployeeList({
 
 						<div className="card-item-bottom emp">
 							<h4>{item?.user_name}</h4>
-							<h5>{format_phone_number(item?.user_nomer)}</h5>
+							<h5>
+								{item?.user_nomer && format_phone_number(item.user_nomer)}
+							</h5>
 						</div>
 					</div>
 				)

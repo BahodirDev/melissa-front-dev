@@ -36,7 +36,7 @@ export default function SSidebar({ setSidebar, sidebar, userInfo }) {
 			{/* links */}
 			<ul>
 				<li>
-					<NavLink to="/stats" title="Statistika">
+					<NavLink to="/" title="Statistika">
 						<ChartBar size={24} />
 					</NavLink>
 				</li>

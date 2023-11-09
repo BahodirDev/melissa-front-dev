@@ -20,8 +20,22 @@ import {
 import "react-toastify/dist/ReactToastify.css"
 import { ToastContainer } from "react-toastify"
 import ClientsInfo from "./pages/clients/ClientsInfo"
+import { useEffect, useState } from "react"
+
+// import { useDispatch, useSelector } from "react-redux"
+// import { login, logout } from "./components/reducers/auth"
 
 export default function App() {
+	// const state = useSelector((state) => state.auth)
+	// const dispatch = useDispatch()
+	// console.log(dispatch(login, logout))
+
+	const [user, setUser] = useState(null)
+
+	useEffect(() => {
+		setUser(localStorage.getItem("user"))
+	}, [])
+
 	return (
 		<BrowserRouter>
 			<ToastContainer
@@ -34,10 +48,9 @@ export default function App() {
 			<Routes>
 				<Route path="/login" element={<Login />} />
 
-				<Route path="/" element={<MainPage />}>
-					<Route path="/" element={<BoshSahifa />} />
+				<Route path="/" element={user ? <MainPage /> : <Login />}>
+					<Route index element={<Home />} />
 					<Route path="/reports" element={<Reports />} />
-					<Route path="/stats" element={<Home />} />
 					<Route path="/products" element={<Products />} />
 					<Route path="/goods" element={<Goods />} />
 					<Route path="/currency" element={<Currency />} />

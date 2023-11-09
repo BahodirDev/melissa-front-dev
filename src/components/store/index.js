@@ -12,6 +12,7 @@ import storeReducer from "../reducers/store"
 import userReducer from "../reducers/users"
 import noteDebtReducer from "../reducers/noteDebt"
 import orderDebtReducer from "../reducers/orderDebt"
+import authReducer from "../reducers/auth"
 
 export default configureStore({
 	reducer: {
@@ -26,7 +27,8 @@ export default configureStore({
 		report: reportReducer,
 		debt: debtReducer,
 		dDebt: dDebtReducer,
-		nDebt: noteDebtReducer, 
-		oDebt: orderDebtReducer
+		nDebt: noteDebtReducer,
+		oDebt: orderDebtReducer,
+		auth: authReducer,
 	},
 })
