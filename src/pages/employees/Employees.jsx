@@ -161,7 +161,7 @@ export default function Employees() {
 		if (inputRef.current?.value.length > 0) {
 			dispatch(setLoading(true))
 			setSearchSubmitted(true)
-			post("/users/users-search", { user_name: inputRef.current?.value }).then(
+			post("/users/users-search", { search: inputRef.current?.value }).then(
 				(data) => {
 					if (data.status === 200) {
 						setFilteredUsers(data?.data)

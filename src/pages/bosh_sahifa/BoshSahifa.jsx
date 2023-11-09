@@ -5,7 +5,7 @@ export default function BoshSahifa() {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		navigate("/stats")
+		navigate("/")
 	}, [])
 
 	return <></>

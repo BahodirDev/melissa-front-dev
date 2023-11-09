@@ -96,6 +96,8 @@ export default function Reports() {
 				finishedDate: dateRange?.length
 					? dateRange[1].format("YYYY/MM/DD")
 					: "",
+				goods_name: inputRef.current?.value,
+				goods_code: inputRef.current?.value,
 			}
 			if (selectedIncomeOutcome === "income") filterObj.isEnter = true
 			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
@@ -127,12 +129,25 @@ export default function Reports() {
 		if (inputRef.current?.value.length > 0) {
 			dispatch(setLoading(true))
 			setSearchSubmitted(true)
-			post("/reports/reports-filter", {
+			let filterObj = {
+				store: storeId,
+				client: clientId,
+				selectedDate: dateRange?.length
+					? dateRange[0].format("YYYY/MM/DD")
+					: "",
+				finishedDate: dateRange?.length
+					? dateRange[1].format("YYYY/MM/DD")
+					: "",
 				goods_name: inputRef.current?.value,
 				goods_code: inputRef.current?.value,
-			}).then((data) => {
+			}
+			if (selectedIncomeOutcome === "income") filterObj.isEnter = true
+			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
+
+			post("/reports/reports-filter", filterObj).then((data) => {
 				if (data.status === 200) {
 					setFilteredData(data?.data)
+					console.log(data.data)
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
@@ -206,25 +221,45 @@ export default function Reports() {
 						value={clientId ? clientId : null}
 						onChange={(e) => setClientId(e)}
 					>
-						{client.data?.length && deliver.data?.length
-							? [...client.data, ...deliver.data].map((item, idx) => {
-									if (!item?.isdelete)
-										if (item?.clients_name) {
-											return (
-												<Select.Option
-													key={idx}
-													value={item.clients_name}
-													className="option-shrink"
-												>
-													<div>
-														<span>{item?.clients_name} - </span>
-														<span>
-															{format_phone_number(item?.clients_nomer)}
-														</span>
-													</div>
-												</Select.Option>
-											)
-										} else {
+						{client.data?.length || deliver.data?.length
+							? selectedIncomeOutcome === "all"
+								? [...client.data, ...deliver.data].map((item, idx) => {
+										if (!item?.isdelete)
+											if (item?.clients_name) {
+												return (
+													<Select.Option
+														key={idx}
+														value={item.clients_name}
+														className="option-shrink"
+													>
+														<div>
+															<span>{item?.clients_name} - </span>
+															<span>
+																{format_phone_number(item?.clients_nomer)}
+															</span>
+														</div>
+													</Select.Option>
+												)
+											} else {
+												return (
+													<Select.Option
+														key={idx}
+														value={item.deliver_name}
+														className="option-shrink"
+													>
+														<div>
+															<span>{item?.deliver_name} - </span>
+															<span>
+																{format_phone_number(item?.deliver_nomer)}
+															</span>
+														</div>
+													</Select.Option>
+												)
+											}
+								  })
+								: selectedIncomeOutcome === "income"
+								? deliver.data.map((item, idx) => {
+										if (!item?.isdelete)
 											return (
 												<Select.Option
 													key={idx}
@@ -239,8 +274,26 @@ export default function Reports() {
 													</div>
 												</Select.Option>
 											)
-										}
-							  })
+								  })
+								: selectedIncomeOutcome === "outcome"
+								? client.data.map((item, idx) => {
+										if (!item?.isdelete)
+											return (
+												<Select.Option
+													key={idx}
+													value={item.clients_name}
+													className="option-shrink"
+												>
+													<div>
+														<span>{item?.clients_name} - </span>
+														<span>
+															{format_phone_number(item?.clients_nomer)}
+														</span>
+													</div>
+												</Select.Option>
+											)
+								  })
+								: null
 							: null}
 					</Select>
 				</div>

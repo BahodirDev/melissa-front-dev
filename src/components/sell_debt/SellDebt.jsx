@@ -4,6 +4,7 @@ import {
 	setQuantity,
 	setSum,
 } from "../reducers/product"
+import { addDebt as addDebtToClient } from "../reducers/client"
 import "./sell debt.css"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useState } from "react"
@@ -26,6 +27,7 @@ import {
 } from "../reducers/report"
 import moment from "moment"
 import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
+import { addData } from "../reducers/debt"
 
 const SellDebt = ({
 	SDModalVisible,
@@ -76,9 +78,12 @@ const SellDebt = ({
 	useEffect(() => {
 		getData("clients", setDataClient)
 		getData("store", setData)
-		getData("products", setProductsD)
 		getData("currency", setDataCurrency)
 	}, [])
+
+	useEffect(() => {
+		getData("products", setProductsD)
+	}, [SDModalVisible])
 
 	const handleStoreChange = (e) => {
 		setProductObj({})
@@ -205,6 +210,7 @@ const SellDebt = ({
 		setProductPD(0)
 		setGivenDate("")
 		setPaidDate("")
+		setProductsCacheD([])
 
 		setSubmittedD(false)
 	}
@@ -281,6 +287,11 @@ const SellDebt = ({
 			setBtnLoadingD(true)
 			let newArr = productListD.map((item) => {
 				return {
+					clients_nomer: item?.client.clients_nomer,
+					clients_name: item?.client.clients_name,
+					goods_code: item?.product.goods_id.goods_code,
+					goods_name: item?.product.goods_id.goods_name,
+
 					client_id: item?.client.clients_id,
 					product_id: item?.product.products_id,
 					debts_cost: item?.product.products_count_cost,
@@ -311,6 +322,13 @@ const SellDebt = ({
 							dispatch(setOutcome(dataR?.data?.hisob?.totalCostMinus))
 						}
 					})
+					const updatedData = newArr.map((obj, index) => ({
+						...obj,
+						debts_id: data?.data[index].debts_id,
+						debts_total_price: data?.data[index].debts_total_price,
+					}))
+					dispatch(addData(updatedData))
+					dispatch(addDebtToClient(updatedData))
 					clearAndClose()
 					toast.success("Mahsulot muvoffaqiyatli sotildi")
 				} else {
@@ -865,7 +883,11 @@ const SellDebt = ({
 								<Select
 									showSearch
 									allowClear
-									placeholder="Mahsulot tanlang"
+									placeholder={
+										storeObj?.store_name
+											? "Mahsulot tanlang"
+											: "Ombor tanlanmagan"
+									}
 									className="select"
 									suffixIcon={
 										submitted &&
@@ -892,25 +914,23 @@ const SellDebt = ({
 										} else setProductObj({})
 									}}
 								>
-									{products.length
-										? products.map((item, idx) => {
-												return (
-													<Select.Option
-														key={idx}
-														value={JSON.stringify(item)}
-														className="option-shrink"
-													>
-														<div>
-															<span>{item?.goods_id?.goods_name} - </span>
-															<span>
-																{item?.goods_id?.goods_code} -{" "}
-																{item?.deliver_id?.deliver_name}
-															</span>
-														</div>
-													</Select.Option>
-												)
-										  })
-										: null}
+									{products?.map((item, idx) => {
+										return (
+											<Select.Option
+												key={idx}
+												value={JSON.stringify(item)}
+												className="option-shrink"
+											>
+												<div>
+													<span>{item?.goods_id?.goods_name} - </span>
+													<span>
+														{item?.goods_id?.goods_code} -{" "}
+														{item?.deliver_id?.deliver_name}
+													</span>
+												</div>
+											</Select.Option>
+										)
+									})}
 								</Select>
 								<div className="validation-field">
 									<span>

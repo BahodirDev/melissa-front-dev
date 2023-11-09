@@ -21,13 +21,6 @@ export default function MainPage() {
 	const [SDModalDisplay, setSDModalDisplay] = useState("none")
 
 	useEffect(() => {
-		setUserInfo({
-			userToken: localStorage.getItem("user"),
-			role: localStorage.getItem("role"),
-			name: localStorage.getItem("name"),
-			id: localStorage.getItem("id"),
-		})
-
 		get("/currency/currency-list").then((data) => {
 			if (data?.response?.status === 401) {
 				localStorage.removeItem("id")
@@ -35,17 +28,26 @@ export default function MainPage() {
 				localStorage.removeItem("role")
 				localStorage.removeItem("user")
 				navigate("/login")
-			} else if (!localStorage.getItem("user")) {
-				localStorage.removeItem("id")
-				localStorage.removeItem("name")
-				localStorage.removeItem("role")
-				localStorage.removeItem("user")
-				navigate("/login")
 			}
 		})
+
+		if (!localStorage.getItem("user")) {
+			localStorage.removeItem("id")
+			localStorage.removeItem("name")
+			localStorage.removeItem("role")
+			localStorage.removeItem("user")
+			navigate("/login")
+		}
 	}, [url])
 
 	useEffect(() => {
+		setUserInfo({
+			userToken: localStorage.getItem("user"),
+			role: localStorage.getItem("role"),
+			name: localStorage.getItem("name"),
+			id: localStorage.getItem("id"),
+		})
+
 		document.addEventListener(
 			"keydown",
 			(e) => {
