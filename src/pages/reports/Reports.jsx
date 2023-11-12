@@ -145,9 +145,9 @@ export default function Reports() {
 			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
 
 			post("/reports/reports-filter", filterObj).then((data) => {
+				console.log(data.data)
 				if (data.status === 200) {
 					setFilteredData(data?.data)
-					console.log(data.data)
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
