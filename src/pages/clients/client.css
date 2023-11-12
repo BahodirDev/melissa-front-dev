@@ -72,3 +72,14 @@
 .client-info-div h3 span {
 	color: var(--color-secondary);
 }
+
+.antd-collapse {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	background-color: var(--bg-light);
+}
+
+.antd-collapse-header {
+	display: flex;
+	justify-content: space-between;
+}
