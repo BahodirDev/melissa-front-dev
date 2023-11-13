@@ -433,7 +433,7 @@ export default function Products() {
 						}
 						value={
 							newPercentId?.currency_name
-								? `${newPercentId?.currency_name} - ${newPercentId?.currency_amount}`
+								? `${newPercentId?.currency_name} - ${addComma(newPercentId?.currency_amount)}`
 								: null
 						}
 						onChange={(e) =>
@@ -446,7 +446,7 @@ export default function Products() {
 										<Select.Option key={idx} value={JSON.stringify(item)}>
 											<div>
 												<span>{item?.currency_name} - </span>
-												<span>{item?.currency_amount}</span>
+												<span>{addComma(item?.currency_amount)}</span>
 											</div>
 										</Select.Option>
 									)

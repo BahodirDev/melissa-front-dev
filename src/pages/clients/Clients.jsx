@@ -63,7 +63,7 @@ export default function Employees() {
 			dispatch(setLoading(true))
 			setSearchSubmitted(true)
 			post("/clients/clients-search", {
-				client_name: inputRef.current?.value,
+				search: inputRef.current?.value,
 			}).then((data) => {
 				if (data.status === 200) {
 					setFilteredData(data?.data)

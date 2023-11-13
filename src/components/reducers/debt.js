@@ -31,8 +31,8 @@ export const debtSlice = createSlice({
 					product: {
 						product_id: item?.product_id,
 						product_details: {
-							goods_name: item?.product_name,
-							goods_code: item?.product_code,
+							goods_name: item?.goods_name,
+							goods_code: item?.goods_code,
 						},
 					},
 					debts_count: item?.debts_count,
@@ -44,8 +44,6 @@ export const debtSlice = createSlice({
 					debts_createdat: item?.debts_selected_date,
 					debts_due_date: item?.debts_due_date,
 					debts_total_price: item?.debts_total_price,
-					// debts_due_date: "2023-08-08T12:15:23.614Z",
-					// debts_createdat: "2023-08-08T12:15:23.615Z",
 				})
 			})
 		},

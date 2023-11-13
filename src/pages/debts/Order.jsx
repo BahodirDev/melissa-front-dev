@@ -380,7 +380,7 @@ const Order = ({ getData }) => {
 						}
 						value={
 							beforeCurrency?.currency_name
-								? `${beforeCurrency?.currency_name} - ${beforeCurrency?.currency_amount}`
+								? `${beforeCurrency?.currency_name} - ${addComma(beforeCurrency?.currency_amount)}`
 								: null
 						}
 						onChange={(e) =>
@@ -393,7 +393,7 @@ const Order = ({ getData }) => {
 										<Select.Option key={idx} value={JSON.stringify(item)}>
 											<div>
 												<span>{item?.currency_name} - </span>
-												<span>{item?.currency_amount}</span>
+												<span>{addComma(item?.currency_amount)}</span>
 											</div>
 										</Select.Option>
 									)

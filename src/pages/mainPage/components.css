@@ -440,6 +440,7 @@ div.ant-d-table .ant-table {
 div.ant-d-table .ant-table-thead .ant-table-cell {
 	background-color: #eee;
 	border-radius: 0 !important;
+	font-family: SFProRegular;
 }
 
 /* body */
@@ -450,6 +451,10 @@ div.ant-d-table .ant-table-tbody {
 }
 div.ant-d-table .ant-table-column-sort {
 	background-color: transparent;
+}
+div.ant-d-table .ant-table-tbody .ant-table-cell {
+	font-family: SFProRegular;
+	font-weight: var(--weight-thin);
 }
 div.ant-d-table tr:nth-child(odd) {
 	background-color: var(--bg-neutral);

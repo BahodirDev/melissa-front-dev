@@ -107,6 +107,7 @@ const Supplier = ({ getData }) => {
 					})
 				)
 				toast.success("Qarzdorlik muvoffaqiyatli yopildi")
+				toast.warn("Mahsulotni ro'yhatga qo'shishni unutmang")
 			} else if (data?.response?.data?.error === "DEBTS_NOT_FOUND") {
 				toast.warn("Bunday qarzdorlik topilmadi")
 			} else {
@@ -358,7 +359,7 @@ const Supplier = ({ getData }) => {
 						}
 						value={
 							newCurrency.currency_name
-								? `${newCurrency.currency_name} - ${newCurrency.currency_amount}`
+								? `${newCurrency.currency_name} - ${addComma(newCurrency.currency_amount)}`
 								: null
 						}
 						onChange={(e) =>
@@ -371,7 +372,7 @@ const Supplier = ({ getData }) => {
 										<Select.Option key={idx} value={JSON.stringify(item)}>
 											<div>
 												<span>{item?.currency_name} - </span>
-												<span>{item?.currency_amount}</span>
+												<span>{addComma(item?.currency_amount)}</span>
 											</div>
 										</Select.Option>
 									)
