@@ -14,7 +14,7 @@ import {
 } from "chart.js"
 import { useState } from "react"
 import { Bar, Doughnut, Line } from "react-chartjs-2"
-import { formatNumber } from "../../components/addComma"
+import { formatSumma } from "../../components/addComma"
 import "./home.css"
 
 ChartJs.register(
@@ -203,7 +203,7 @@ export default function Home() {
 			ctx.textAlign = "center"
 			ctx.textBaseline = "middle"
 			ctx.fillText(
-				`${formatNumber(totalDebt)}`,
+				`${formatSumma(totalDebt)}`,
 				chart.getDatasetMeta(0).data[0].x,
 				chart.getDatasetMeta(0).data[0].y
 			)
@@ -221,18 +221,18 @@ export default function Home() {
 					// value={clientId ? clientId : null}
 					defaultValue="lastWeek"
 				>
-					<Option value="lastWeek" label="Ohirgi hafta">
+					<Select.Option value="lastWeek" label="Ohirgi hafta">
 						Ohirgi hafta
-					</Option>
-					<Option value="lastMonth" label="Ohirgi oy">
+					</Select.Option>
+					<Select.Option value="lastMonth" label="Ohirgi oy">
 						Ohirgi oy
-					</Option>
-					<Option value="last3Months" label="Ohirgi 3 oy">
+					</Select.Option>
+					<Select.Option value="last3Months" label="Ohirgi 3 oy">
 						Ohirgi 3 oy
-					</Option>
-					<Option value="lastHalfYear" label="Ohirgi yaril yil">
-						Ohirgi yaril yil
-					</Option>
+					</Select.Option>
+					<Select.Option value="lastHalfYear" label="Ohirgi yaril yil">
+						Ohirgi yarim yil
+					</Select.Option>
 				</Select>
 				<Space direction="vertical" size={12} style={{ margin: "0 10px" }}>
 					<DatePicker.RangePicker
@@ -271,11 +271,11 @@ export default function Home() {
 					<h5>Balans</h5>
 					<div className="stat-item-wrapper stat-balance">
 						<h6>
-							{formatNumber(1200000000)} <span>so'm</span>
+							{formatSumma(1200000000)} <span>so'm</span>
 						</h6>
 						<h5>Soft balans</h5>
 						<h6>
-							{formatNumber(1200000000)} <span>so'm</span>
+							{formatSumma(1200000000)} <span>so'm</span>
 						</h6>
 					</div>
 				</div>
@@ -321,7 +321,7 @@ export default function Home() {
 								<td>Summa</td>
 							</tr>
 						</thead>
-						<div className="tBodyMargin"></div>
+						{/* <div className="tBodyMargin"></div> */}
 						<tbody>
 							<tr>
 								<td>Alisher</td>
@@ -365,7 +365,7 @@ export default function Home() {
 								<td>Summa</td>
 							</tr>
 						</thead>
-						<div className="tBodyMargin"></div>
+						{/* <div className="tBodyMargin"></div> */}
 						<tbody>
 							<tr>
 								<td>Alisher</td>

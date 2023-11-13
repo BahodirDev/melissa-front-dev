@@ -1,59 +1,99 @@
-body {
-	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-		"Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-		sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+@font-face {
+	font-family: SFProRegular;
+	src: url("./assets/fonts/Regular.OTF");
+}
+@font-face {
+	font-family: SFProBold;
+	src: url("./assets/fonts/Bold.OTF");
 }
 
-code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-		monospace;
+:root {
+	/* colors */
+	--color-primary: #2196f3;
+	--color-secondary: #424242;
+	--color-dark: #212121;
+	--color-accent: #757575;
+	--color-success: #4caf50;
+	--color-warning: #ffc107;
+	--color-danger: #f44336;
+	--color-light: #fff;
+	--color-modal-placeholder: #bdbdbd;
+
+	/* bg */
+	--bg-primary: #2196f3;
+	--bg-secondary: #64b5f6;
+	--bg-accent: #9e9e9e;
+	--bg-neutral: #fafafa;
+	--bg-danger: #f44336;
+	--bg-success: #4caf50;
+	--bg-success-icon: #e8f5e9;
+	--bg-light: #ffffff;
+	--bg-disabled: #e0e0e0;
+	--bg-opacity: rgba(158, 158, 158, 0.6);
+	--bg-icon: #e3f2fd;
+	--bg-icon-warning: #fff8e1;
+	--bg-btn-hover: #e3f2fd;
+	--bg-pagination-btn: #eee;
+
+	/* shadow */
+	--shadow-md: 0px 1px 2px 0px #0000000f;
+
+	/* border */
+	--border-primary: 1px solid #e0e0e0;
+	--border-secondary: 1px solid #bdbdbd;
+	--border-dark: 1px solid #424242;
+	--border-danger: 1px solid #f44336;
+	--border-success: 1px solid #4caf50;
+	--border-info: 1px solid #2196f3;
+	--border-info-hover: 1px solid #64b5f6;
+
+	/* fonts */
+	--text-xxl: 28px;
+	--text-xl: 24px;
+	--text-modal: 18px;
+	--text-lg: 16px;
+	--text-md: 14px;
+	--text-sm: 12px;
+
+	/* padding */
+	--padding-xxl: 30px;
+	--padding-xl: 24px;
+	--padding-lg: 16px;
+	--padding-md: 12px;
+	--padding-sm: 8px;
+
+	/* radius */
+	--radius-lg: 8px;
+	--radius-btn: 7px;
+	--radius-md: 6px;
+	--radius-sm: 4px;
+
+	/* font weight */
+	--weight-bold: 600;
+	--weight-thin: 400;
+}
+
+body {
+	font-family: SFProRegular;
+	font-weight: 500;
+	box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+span,
+button {
+	margin: 0;
+	padding: 0;
+	letter-spacing: 0.5px;
 }
 
 ul {
 	list-style: none;
-}
-
-::-webkit-scrollbar {
-	width: 5px;
-}
-::-webkit-scrollbar-track {
-	background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-	background: #888;
-}
-::-webkit-scrollbar-thumb:hover {
-	background: #555;
-}
-
-.phone-number-input {
-	padding: 4px 11px;
-	border-inline-end-width: 1px;
-	color: rgba(0, 0, 0, 0.88);
-	font-size: 14px;
-	line-height: 1.5;
-	width: 100%;
-	background-color: #fff;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #d9d9d9;
-	border-radius: 6px;
-	transition: all 0.2s;
-}
-
-.phone-number-input::placeholder {
-	color: #c6c6c6;
-}
-
-.phone-number-input:hover {
-	border-color: #4096ff;
-}
-
-.phone-number-input:focus {
-	border-color: #4096ff;
-	box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
-	outline: none;
 }

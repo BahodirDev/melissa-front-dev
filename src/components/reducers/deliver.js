@@ -15,7 +15,8 @@ export const deliverSlice = createSlice({
 			state.loading = action.payload
 		},
 		setQuantity: (state, action) => {
-			state.quantity = state.data.length
+			const filteredItems = state.data.filter((item) => !item?.isdelete)
+			state.quantity = filteredItems.length
 		},
 		addData: (state, action) => {
 			state.data = [...state.data, action.payload]
@@ -44,6 +45,12 @@ export const deliverSlice = createSlice({
 	},
 })
 
-export const { setData, setLoading, setQuantity, addData, editData, removeDeliver } =
-	deliverSlice.actions
+export const {
+	setData,
+	setLoading,
+	setQuantity,
+	addData,
+	editData,
+	removeDeliver,
+} = deliverSlice.actions
 export default deliverSlice.reducer

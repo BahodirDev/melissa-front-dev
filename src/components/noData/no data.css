@@ -1,0 +1,18 @@
+.no-data-wrapper {
+	margin: 60px 0;
+	text-align: center;
+}
+
+.no-data-wrapper h4 {
+	font-size: var(--text-modal);
+	margin-top: var(--padding-xl);
+	color: var(--color-accent);
+}
+
+.no-data-wrapper.list {
+	margin: 30px 0;
+}
+
+.no-data-wrapper.list img {
+	width: 150px;
+}

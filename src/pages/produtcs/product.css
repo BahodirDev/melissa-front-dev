@@ -1,114 +1,21 @@
-.ant-table-thead .ant-table-cell {
-	color: #fff !important;
-}
-.ant-table-thead .ant-table-cell {
-	background: transparent !important;
-}
-.ant-table-thead {
-	background-color: #7e258c;
-}
-.ant-table-content {
-	border-radius: 8px;
-	overflow: hidden;
-	border: 1px solid #7e258c;
-}
-.ant-table-column-sorter-full {
-	color: #fff !important;
-}
-/* / */
-
-.ant-table-cell {
-	font-weight: 600 !important;
-	font-size: 16px;
-}
-
-/*  */
-
-.table-edit__btn {
-	color: #7e258c;
-	border: 1px solid #7e258c;
-}
-.table-edit__btn:hover {
-	background-color: #7e258c;
-	border: 1px solid #7e258c;
-	color: #fff;
-}
-.table-edit__btn:active {
-	background-color: #7e258c !important;
-	border: 1px solid #7e258c !important;
-	color: #fff !important;
-}
-
-/*  */
-.product-add__input {
-	border-radius: 7px;
-	padding: 0;
-	width: 160px;
-	margin: 0 5px;
-	position: relative;
-	height: 75px !important;
-}
-.product-select__icon {
-	position: absolute;
-	top: 50%;
-	transform: translateY(calc(-50% + 2px));
-	right: 10px;
-}
-.product-add__input select,
-.product-add__input input {
-	font-weight: 600;
-	/* border: 1px solid #7D258B; */
-	margin: 0;
-	padding: 5px;
-	padding-left: 7px;
-	font-size: 14px;
-}
-.product-add__btn {
-	padding: 3.5px 10px;
-	background: #7e258c !important;
-	color: #fff !important;
+.product-table-btn {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
 	border: none;
-}
-.product-add__btn:disabled {
-	cursor: not-allowed !important;
-}
-.form-control__search {
-	border: 1px solid #7e258c;
-	border-radius: 7px;
-	font-weight: 600;
-}
-
-.products-info {
-	position: fixed;
-	top: 80px;
-	right: 20px;
-	color: #fff;
-	padding: 3px 20px;
-	background-color: #7e258c;
-	border-radius: 6px;
-}
-
-.products-info span {
-	border-right: 1px solid #fff;
-	padding: 0 20px;
-}
-
-.products-info span:last-child {
-	border: none;
-}
-
-.product-option div span {
+	outline: none;
+	color: var(--color-light);
+	background: var(--bg-danger);
+	font-size: var(--text-md);
+	border-radius: var(--radius-sm);
 	transition: 0.1s;
 }
-.product-option div:hover span:first-child {
-	font-size: 0;
+
+.product-table-btn:hover {
+	filter: brightness(0.95);
 }
 
-.product-filter-row {
-	display: grid;
-	grid-template-columns: 150px 150px 150px;
-	gap: 10px;
-	width: 400px;
-	position: fixed;
-	top: 80px;
+.product-table-btn:active {
+	transform: scale(0.95);
 }

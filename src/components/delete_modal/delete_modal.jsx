@@ -1,4 +1,3 @@
-import { ExclamationCircleFilled } from "@ant-design/icons"
 import { Modal } from "antd"
 const { confirm } = Modal
 
@@ -6,20 +5,45 @@ export const productDeleteConfirm = (e, name, action, id) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
-		title: `${name}ni o'chirishni hohlaysizmi?`,
-		icon: <ExclamationCircleFilled />,
-		okText: "Ha",
+		// title: `${name} o'chirishni hohlaysizmi?`,
+		title: (
+			<span className="delete-modal-span">{name} o'chirishni hohlaysizmi?</span>
+		),
+		icon: " ",
+		okText: "Ha, o'chirish",
 		okType: "danger",
-		cancelText: "Yo'q",
+		cancelText: "Bekor qilish",
 		width: 300,
 		onOk() {
 			action(id)
 		},
 		onCancel() {},
+		width: 350,
 		style: {
 			position: "absolute",
-			top: rect.top - 150,
-			left: rect.left - 250,
+			top: rect.top - 170,
+			left: rect.right - 350,
+			textAlign: "center",
+			padding: 0,
+			borderRadius: "var(--radius-lg)",
+		},
+		bodyStyle: {
+			display: "flex",
+			justifyContent: "center",
+		},
+		cancelButtonProps: {
+			style: {
+				color: "var(--color-secondary)",
+				border: "var(--border-primary)",
+				borderRadius: "var(--radius-sm)",
+			},
+		},
+		okButtonProps: {
+			style: {
+				borderRadius: "var(--radius-sm)",
+				backgroundColor: "var(--bg-danger)",
+				color: "var(--color-light)",
+			},
 		},
 	})
 }

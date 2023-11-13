@@ -1,23 +1,44 @@
 import { useEffect, useRef, useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
-import DebtsModal from "../../components/debts/DebtsModal"
-import MyModal from "../../components/modal/Modal"
-import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
 import { get } from "../../customHook/api"
 import "./main.css"
+import { Plus } from "@phosphor-icons/react"
+import SellDebt from "../../components/sell_debt/SellDebt"
 
 export default function MainPage() {
-	const [debtsModal, setDebtsModal] = useState(false)
-	const [myModal, setMyModal] = useState(false)
 	const [sidebar, setSidebar] = useState(false)
-	const [searchInput, setSearchInput] = useState("")
 	const inputRef = useRef(null)
 	const url = useLocation()
 	const navigate = useNavigate()
 	const [userInfo, setUserInfo] = useState(0)
-	const [action, setAction] = useState({})
+	const [showDropdown, setshowDropdown] = useState("")
+	const [miniModal, setMiniModal] = useState("")
+	const [addModalVisible, setAddModalVisible] = useState(false)
+	const [addModalDisplay, setAddModalDisplay] = useState("none")
+	const [SDModalVisible, setSDModalVisible] = useState(false)
+	const [SDModalDisplay, setSDModalDisplay] = useState("none")
+
+	useEffect(() => {
+		get("/currency/currency-list").then((data) => {
+			if (data?.response?.status === 401) {
+				localStorage.removeItem("id")
+				localStorage.removeItem("name")
+				localStorage.removeItem("role")
+				localStorage.removeItem("user")
+				navigate("/login")
+			}
+		})
+
+		if (!localStorage.getItem("user")) {
+			localStorage.removeItem("id")
+			localStorage.removeItem("name")
+			localStorage.removeItem("role")
+			localStorage.removeItem("user")
+			navigate("/login")
+		}
+	}, [url])
 
 	useEffect(() => {
 		setUserInfo({
@@ -26,95 +47,107 @@ export default function MainPage() {
 			name: localStorage.getItem("name"),
 			id: localStorage.getItem("id"),
 		})
-		get("/currency/currency-list").then((data) => {
-			if (data?.response?.status === 401) {
-				// localStorage.clear()
-				localStorage.removeItem("id")
-				localStorage.removeItem("name")
-				localStorage.removeItem("role")
-				localStorage.removeItem("user")
-				navigate("/login")
-				// window.location.reload(false)
-			} else if (!localStorage.getItem("user")) {
-				// localStorage.clear()
-				localStorage.removeItem("id")
-				localStorage.removeItem("name")
-				localStorage.removeItem("role")
-				localStorage.removeItem("user")
-				navigate("/login")
-			}
-		})
 
-		setSearchInput("")
+		document.addEventListener(
+			"keydown",
+			(e) => {
+				if (e.key === "Escape") {
+					setshowDropdown("")
+					setAddModalVisible(false)
+					setAddModalDisplay("none")
+					setSDModalVisible((prevVisible) => {
+						if (prevVisible) {
+							setTimeout(() => {
+								setSDModalDisplay("none")
+							}, 300)
+						} else {
+							setSDModalDisplay("grid")
+						}
+						return !prevVisible
+					})
+				} else if (e.ctrlKey && e.key === "k") {
+					e.preventDefault()
+					setshowDropdown("")
+					setAddModalVisible(false)
+					setSDModalVisible(false)
+					setTimeout(() => {
+						setAddModalDisplay("none")
+						setSDModalDisplay("none")
+					}, 300)
+					inputRef.current?.focus()
+				} else if (e.ctrlKey && e.key === ",") {
+					e.preventDefault()
+					setSidebar(false)
+				} else if (e.ctrlKey && e.key === ".") {
+					e.preventDefault()
+					setSidebar(true)
+				}
+			},
+			true
+		)
+	}, [])
 
-		window.addEventListener("keydown", (e) => {
-			if (e.key === "Escape") {
-				setDebtsModal(false)
-				setMyModal(!myModal)
-			} else if (e.ctrlKey && e.key === "/") {
-				setMyModal(false)
-				setDebtsModal(false)
-				e.preventDefault()
-				inputRef.current.focus()
-			} else if (e.ctrlKey && e.key === ",") {
-				e.preventDefault()
-				setSidebar(false)
-			} else if (e.ctrlKey && e.key === ".") {
-				e.preventDefault()
-				setSidebar(true)
-			}
-			// else if (e.key === "`") {
-			// 	setMyModal(false)
-			// 	setDebtsModal((prev) => !prev)
-			// }
-		})
-	}, [url])
+	const closeAllModals = () => {
+		setshowDropdown("")
+		setMiniModal("")
+		setAddModalVisible(false)
+		setSDModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+			setSDModalDisplay("none")
+		}, 300)
+	}
 
 	return (
-		<div className="home-con">
+		<div className="home-con" onClick={closeAllModals}>
 			<button
-				onClick={() => {
-					setDebtsModal(false)
-					setMyModal(!myModal)
+				className="primary-btn modal-toggle-btn"
+				onClick={(e) => {
+					e.stopPropagation()
+					setshowDropdown("")
+					setMiniModal("")
+					setSDModalVisible(true)
+					setSDModalDisplay("grid")
 				}}
-				className="btn btn-primary modal-toggle__button"
 			>
-				<i className="fa-solid fa-weight-scale"></i>
+				<Plus size={24} />
 			</button>
-			<button
-				onClick={() => {
-					setMyModal(false)
-					setDebtsModal(!debtsModal)
-				}}
-				className="btn btn-primary debts-modal-toggle__button"
-			>
-				<i className="fas fa-hand-holding-usd"></i>
-			</button>
-			{sidebar ? <Sidebar /> : <SSidebar />}
-			<div className="main-div">
-				<Navbar
+			{sidebar ? (
+				<Sidebar
 					setSidebar={setSidebar}
-					inputRef={inputRef}
 					sidebar={sidebar}
-					searchInput={searchInput}
-					setSearchInput={setSearchInput}
 					userInfo={userInfo}
-					action={action}
 				/>
+			) : (
+				<SSidebar
+					setSidebar={setSidebar}
+					sidebar={sidebar}
+					userInfo={userInfo}
+				/>
+			)}
+			<div className="main-div">
 				<div
 					className="content"
-					style={{ width: sidebar && "calc(100vw - 250px)" }}
+					style={{ overflowY: (addModalVisible || SDModalVisible) && "hidden" }}
 				>
-					<MyModal myModal={myModal} setMyModal={setMyModal} />
-					<DebtsModal debtsModal={debtsModal} setDebtsModal={setDebtsModal} />
+					<SellDebt
+						SDModalVisible={SDModalVisible}
+						setSDModalVisible={setSDModalVisible}
+						SDModalDisplay={SDModalDisplay}
+						setSDModalDisplay={setSDModalDisplay}
+					/>
 					<Outlet
 						context={[
-							searchInput,
-							setSearchInput,
+							inputRef,
+							showDropdown,
+							setshowDropdown,
+							addModalVisible,
+							setAddModalVisible,
+							addModalDisplay,
+							setAddModalDisplay,
+							miniModal,
+							setMiniModal,
 							sidebar,
-							userInfo,
-							action,
-							setAction,
 						]}
 					/>
 				</div>

@@ -10,7 +10,7 @@ export function addComma(num) {
 	return str.join(".")
 }
 
-export function formatNumber(number) {
+export function formatSumma(number) {
 	if (number >= 1000000) {
 		return (number / 1000000).toFixed(1) + " mln"
 	} else if (number >= 1000) {

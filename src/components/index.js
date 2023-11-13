@@ -1,3 +1,4 @@
+import "../pages/mainPage/components.css"
 export { default as BoshSahifa } from "../pages/bosh_sahifa/BoshSahifa"
 export { default as Clients } from "../pages/clients/Clients"
 export { default as Currency } from "../pages/currency/Currency"

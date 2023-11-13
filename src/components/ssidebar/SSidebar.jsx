@@ -1,74 +1,95 @@
 import { NavLink, useNavigate } from "react-router-dom"
-import icon from "../../assets/img/Photoshop-Logo-Illustration-Mockup-Tutorial 1.png"
 import { log_out } from "../log_out/delete_modal"
 import "./ssidebar.css"
+import {
+	ChartBar,
+	Cube,
+	CurrencyDollar,
+	FileText,
+	HandCoins,
+	Recycle,
+	SignOut,
+	SquaresFour,
+	Truck,
+	Users,
+	UsersFour,
+	Warehouse,
+} from "@phosphor-icons/react"
+import { useEffect, useState } from "react"
 
-export default function SSidebar() {
+export default function SSidebar({ setSidebar, sidebar, userInfo }) {
 	const navigate = useNavigate()
+	const [userRole, setUserRole] = useState(0)
+
+	useEffect(() => {
+		setUserRole(localStorage.getItem("role"))
+	}, [])
 
 	return (
 		<div className="ssidebar">
 			<div className="sicon">
-				<NavLink to="/">
-					<img src={icon} alt="Logo icon image" />
-				</NavLink>
+				<h1 type="button" onClick={() => setSidebar((prev) => !prev)}>
+					M
+				</h1>
 			</div>
 
 			{/* links */}
 			<ul>
 				<li>
-					<NavLink to="/stats">
-						<i className="fa-solid fa-square-poll-vertical"></i>
+					<NavLink to="/" title="Statistika">
+						<ChartBar size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/reports">
-						<i className="fa-solid fa-list-check"></i>
+					<NavLink to="/reports" title="Hisobot">
+						<FileText size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/products">
-						<i className="fa-regular fa-rectangle-list"></i>
+					<NavLink to="/products" title="Mahsulotlar">
+						<Cube size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/goods">
-						<i className="fa-solid fa-tags"></i>
+					<NavLink to="/goods" title="Kategoriyalar">
+						<SquaresFour size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/return">
-						<i className="fa-solid fa-box-archive"></i>
+					<NavLink to="/return" title="Qaytgan mahsulotlar">
+						<Recycle size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/debts">
-						<i className="fa-solid fa-hand-holding-dollar"></i>
+					<NavLink to="/debts" title="Qarzdorlik">
+						<HandCoins size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/store">
-						<i className="fa-solid fa-warehouse"></i>
+					<NavLink to="/store" title="Omborlar">
+						<Warehouse size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/deliver">
-						<i className="fa-solid fa-truck"></i>
+					<NavLink to="/deliver" title="Ta'minotchilar">
+						<Truck size={24} />
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/clients">
-						<i className="fa-solid fa-users"></i>
+					<NavLink to="/clients" title="Mijozlar">
+						<UsersFour size={24} />
 					</NavLink>
 				</li>
+				{userRole === "1" && (
+					<li>
+						<NavLink to="/employees" title="Xodimlar">
+							<Users size={24} />
+						</NavLink>
+					</li>
+				)}
 				<li>
-					<NavLink to="/employees">
-						<i className="fa-solid fa-user-tag"></i>
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to="/currency">
-						<i className="fa-solid fa-money-bill-transfer"></i>
+					<NavLink to="/currency" title="Pul birliklari">
+						<CurrencyDollar size={24} />
 					</NavLink>
 				</li>
 				{/* <li>
@@ -79,12 +100,13 @@ export default function SSidebar() {
 
 				<li className="slogout">
 					<a
+						title="Hisobdan chiqish"
 						href="#"
 						onClick={(e) => {
 							log_out(e, navigate)
 						}}
 					>
-						<i className="fa-solid fa-right-from-bracket"></i>
+						<SignOut size={24} />
 					</a>
 				</li>
 			</ul>

@@ -13,7 +13,7 @@
 	padding: 3.5px 10px;
 }
 .input-melissa {
-	font-weight: 600;
+	font-weight: var(--weight-bold);
 	border: 1px solid #7d258b;
 	margin: 0;
 	padding: 5px;

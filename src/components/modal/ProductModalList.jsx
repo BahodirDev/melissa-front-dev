@@ -11,10 +11,10 @@ export default function ProductModalList({ productList, removeItem }) {
 					<span>Soni: </span>
 				</div>
 				<div className="col-3">
-					<span>Narx(har biri): </span>
+					<span>Narx: </span>
 				</div>
 				<div className="col-3" style={{ paddingLeft: "0" }}>
-					<span>Narx(umumiy): </span>
+					<span>Umumiy narx: </span>
 				</div>
 			</div> */}
 			{productList.map((product, idx) => {

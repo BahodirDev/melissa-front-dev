@@ -8,25 +8,28 @@ import { error_modal } from "../error_modal/error_modal"
 import { setData as setDataClient } from "../reducers/client"
 import { setData as setDataCurrency } from "../reducers/currency"
 import { setDataProduct } from "../reducers/product"
+import { setData } from "../reducers/store"
 import {
 	setCapital,
 	setData as setDataReport,
 	setIncome,
 	setOutcome,
 } from "../reducers/report"
-import { setData } from "../reducers/store"
 import ProductModalList from "./ProductModalList"
 import "./modal.css"
+import format_phone_number from "../format_phone_number/format_phone_number"
 const { Option } = Select
 
 export default function MyModal({ myModal, setMyModal }) {
 	const [filteredProducts, setFilteredProducts] = useState([])
 	const [filteredProductsCache, setFilteredProductsCache] = useState([])
 	const [productList, setProductList] = useState([])
+
 	const [store_id, setStore_id] = useState("")
 	const [productId, setProductId] = useState({})
 	const [productQ, setProductQ] = useState(0)
 	const [productPrice, setProductPrice] = useState(0)
+
 	const [buttonValid, setButtonValid] = useState(false)
 	const [modalAlert, setModalAlert] = useState("")
 	const [modalMsg, setModalMsg] = useState("")
@@ -178,7 +181,10 @@ export default function MyModal({ myModal, setMyModal }) {
 				width={1150}
 				footer={[]}
 			>
-				<div className="my-modal my-product-modal" onClick={(e) => e.stopPropagation()}>
+				<div
+					className="my-modal my-product-modal"
+					onClick={(e) => e.stopPropagation()}
+				>
 					{/* form */}
 					<div className="row sell-modal">
 						<div className="col">
@@ -276,24 +282,15 @@ export default function MyModal({ myModal, setMyModal }) {
 														className="client-option"
 														value={`${
 															item?.clients_name
-														} - ${item?.clients_nomer.replace(
-															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-															"+$1 ($2) $3-$4-$5"
-														)}`}
+														} - ${format_phone_number(item?.clients_nomer)}`}
 														label={`${
 															item?.clients_name
-														} - ${item?.clients_nomer.replace(
-															/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-															"+$1 ($2) $3-$4-$5"
-														)}`}
+														} - ${format_phone_number(item?.clients_nomer)}`}
 													>
 														<div>
 															<span>{item?.clients_name} - </span>
 															<span>
-																{item?.clients_nomer.replace(
-																	/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
-																	"+$1 ($2) $3-$4-$5"
-																)}
+																{format_phone_number(item?.clients_nomer)}
 															</span>
 														</div>
 													</Option>

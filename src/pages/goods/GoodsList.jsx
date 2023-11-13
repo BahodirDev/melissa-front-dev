@@ -1,51 +1,87 @@
-import moment from "moment"
-import noDataImg from "../../assets/img/no data.png"
+import { useState } from "react"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
+import NoData from "../../components/noData/NoData"
+import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import moment from "moment/moment"
 
-export default function GoodsList({ goods, deleteGood, updateGood }) {
-	return (
-		<div className="good-wrapper">
-			{goods.length ? (
-				goods.map((item) => {
-					return (
-						<div className="good-item">
-							<h3>{item?.goods_name}</h3>
-							<h5>Code: &nbsp;{item?.goods_code}</h5>
-							<div className="good-item-bottom">
-								<span>
-									{moment(item?.goods_createdat).zone(+7).format("YYYY/MM/DD")}
-								</span>
-								<div>
+function GoodsList({
+	data,
+	deleteGood,
+	editGood,
+	showDropdown,
+	setshowDropdown,
+}) {
+	const [loc, setLoc] = useState(true)
+
+	const handleClick = (e, id) => {
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
+	return data?.length ? (
+		<div className="card-wrapper goods grid">
+			{data.map((item, idx) => {
+				return (
+					<div key={idx} className="card-item goods">
+						<div className="card-item-top">
+							<div>
+								<h3>{item?.goods_name}</h3>
+							</div>
+							<div className="card-item-edit-holder">
+								<button
+									type="button"
+									onClick={(e) => handleClick(e, item?.goods_id)}
+								>
+									<DotsThreeVertical size={24} />
+								</button>
+								<div
+									className={`card-item-edit-wrapper ${
+										showDropdown === item?.goods_id || "hidden"
+									} ${loc && "top"}`}
+								>
 									<button
-										className="btn btn-melissa mx-2"
-										onClick={() => updateGood(item?.goods_id)}
+										type="button"
+										className="card-item-edit-item"
+										onClick={(e) => {
+											e.stopPropagation()
+											setshowDropdown("")
+											editGood(item?.goods_id)
+										}}
 									>
-										<i className="fas fa-edit"></i>
+										Tahrirlash <PencilSimple size={20} />
 									</button>
 									<button
-										className="btn btn-my__danger mx-2"
+										type="button"
+										className="card-item-edit-item"
 										onClick={(e) =>
 											productDeleteConfirm(
 												e,
-												"Kategoriya",
+												<>
+													<span>{item?.goods_name}</span> kategoriyani
+												</>,
 												deleteGood,
 												item?.goods_id
 											)
 										}
 									>
-										<i className="fa-solid fa-trash-can"></i>
+										O'chirish <Trash size={20} />
 									</button>
 								</div>
 							</div>
 						</div>
-					)
-				})
-			) : (
-				<div className="no-data__con">
-					<img src={noDataImg} alt="" />
-					<span>Kategoriya mavjud emas</span>
-				</div>
-			)}
+
+						<div className="card-item-bottom goods">
+							<h3>Kod: {item?.goods_code}</h3>
+							<h4>{moment(item?.goods_createdat).format("YYYY/MM/DD")}</h4>
+						</div>
+					</div>
+				)
+			})}
 		</div>
+	) : (
+		<NoData />
 	)
 }
+
+export default GoodsList

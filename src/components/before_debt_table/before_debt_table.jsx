@@ -1,37 +1,58 @@
 import { Table } from "antd"
-import moment from "moment"
+import moment from "moment/moment"
 import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import { payConfirmModal } from "../pay_confirm_modal/pay_confirm_modal"
 import { payModal } from "../pay_modal/pay_modal"
+import NoData from "../noData/NoData"
+import {
+	CheckCircle,
+	DotsThree,
+	DotsThreeVertical,
+	PencilSimple,
+	PlusMinus,
+	Trash,
+} from "@phosphor-icons/react"
+import { useState } from "react"
 
-const BeforeDebtTable = ({
+const ODebtTable = ({
 	data,
+	closeDebt,
+	payDebt,
 	deleteDebt,
-	editDebt,
-	beforeDebtCloseAtOnce,
+	showDropdown,
+	setshowDropdown,
+	sidebar,
 }) => {
-	let arr =
-		data?.length &&
-		data.map((item) => {
-			return {
-				id: item?.deliver_debt_id,
-				cost: addComma(item?.debts_cost) + item?.debts_currency,
-				count: "x" + (+item?.debts_count).toFixed(1),
-				currencyName: item?.debts_currency,
-				currencyAmount: item?.debts_currency_amount,
-				each: item?.debts_cost,
-				deliver: item?.deliver_id?.deliver_name,
-				good: item?.goods_id?.deliver_name,
-				totalCost:
-					addComma(item?.debts_count * item?.debts_cost) + item?.debts_currency,
-				date: `${moment(item?.debts_createdat).zone(+7).format("YYYY/MM/DD")}`,
-				dueDate: `${moment(item?.debts_due_date)
-					.zone(+7)
-					.format("YYYY/MM/DD")}`,
-			}
-		})
+	const [loc, setLoc] = useState(true)
+
+	const handleClick = (e, id) => {
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
+	let arr = data?.length
+		? data.map((item, id) => {
+				return {
+					key: id,
+					id: item?.deliver_debt_id,
+					cost: addComma(item?.debts_cost) + item?.debts_currency,
+					count: (+item?.debts_count).toFixed(1),
+					currencyName: item?.debts_currency,
+					currencyAmount: item?.debts_currency_amount,
+					each: item?.debts_cost,
+					deliver: item?.deliver_id?.deliver_name,
+					good: item?.goods_id?.deliver_name,
+					totalCost:
+						addComma(item?.debts_count * item?.debts_cost) +
+						item?.debts_currency,
+					date: `${moment(item?.debts_createdat).format("YYYY/MM/DD")}`,
+					dueDate: `${moment(item?.debts_due_date).format("YYYY/MM/DD")}`,
+				}
+		  })
+		: []
 
 	const columns = [
 		{
@@ -47,11 +68,11 @@ const BeforeDebtTable = ({
 			dataIndex: "count",
 		},
 		{
-			title: "Narx(har biri)",
+			title: "Narx",
 			dataIndex: "cost",
 		},
 		{
-			title: "Narx(umumiy)",
+			title: "Umumiy narx",
 			dataIndex: "totalCost",
 		},
 		{
@@ -63,63 +84,96 @@ const BeforeDebtTable = ({
 			dataIndex: "dueDate",
 		},
 		{
-			title: "Tahrirlash",
+			title: "",
+			width: "50px",
 			render: (text, record) => (
-				<nobr>
-					<button
-						className="btn btn-sm btn-table-success mx-1"
-						onClick={(e) =>
-							payConfirmModal(e, beforeDebtCloseAtOnce, record?.id)
-						}
-					>
-						<i className="fa-solid fa-check"></i>
+				<div className="table-item-edit-holder">
+					<button type="button" onClick={(e) => handleClick(e, record?.id)}>
+						<DotsThreeVertical size={24} />
 					</button>
-					<button
-						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						onClick={(e) =>
-							payModal(
-								e,
-								editDebt,
-								record?.id,
-								record?.count,
-								"ta",
-								record?.currencyAmount * record?.each
-							)
-						}
+					<div
+						className={`table-item-edit-wrapper ${
+							showDropdown === record?.id || "hidden"
+						} ${loc && "top"}`}
 					>
-						<i className="fas fa-edit"></i>
-					</button>
-					<button
-						className="btn btn-sm btn-outline-danger"
-						onClick={(e) =>
-							productDeleteConfirm(e, "Oldindan to'lov", deleteDebt, record?.id)
-						}
-					>
-						<i className="fa-solid fa-trash-can"></i>
-					</button>
-				</nobr>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								payModal(
+									e,
+									payDebt,
+									record?.id,
+									record?.count,
+									record?.currencyAmount,
+									record?.deliver
+								)
+							}
+						>
+							<nobr>Qisman to'lash</nobr>
+							<PlusMinus size={20} />
+						</button>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								payConfirmModal(
+									e,
+									<>
+										<span>{record?.deliver}</span> qarzni
+									</>,
+									closeDebt,
+									record?.id
+								)
+							}
+						>
+							<nobr>Qarzni yopish</nobr>
+							<CheckCircle size={20} />
+						</button>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								productDeleteConfirm(
+									e,
+									<>
+										<span>{record?.deliver}</span> qarzni
+									</>,
+									deleteDebt,
+									record?.id
+								)
+							}
+						>
+							O'chirish <Trash size={20} />
+						</button>
+					</div>
+				</div>
 			),
 		},
 	]
 
 	return (
-		<Table
-			columns={columns}
-			locale={{
-				emptyText: (
-					<div className="no-data__con">
-						<img src={noDataImg} alt="" />
-						<span>Qarzdorlik mavjud emas</span>
-					</div>
-				),
+		<div
+			className="ant-d-table"
+			style={{
+				width: sidebar && "calc(100dvw - 309px)",
 			}}
-			dataSource={arr}
-			pagination={{
-				position: ["bottomLeft"],
-				pageSize: 20,
-			}}
-		/>
+		>
+			<Table
+				scroll={{ x: "max-content" }}
+				columns={columns}
+				locale={{
+					emptyText: <NoData />,
+				}}
+				dataSource={arr}
+				pagination={{
+					showSizeChanger: false,
+					position: ["bottomLeft"],
+					pageSize: 20,
+				}}
+			/>
+		</div>
 	)
 }
 
-export default BeforeDebtTable
+export default ODebtTable

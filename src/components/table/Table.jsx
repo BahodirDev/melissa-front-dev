@@ -1,21 +1,23 @@
 import { Table } from "antd"
 import moment from "moment/moment"
-import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
+import NoData from "../noData/NoData"
+import { Trash } from "@phosphor-icons/react"
 
-const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
+const AntTable = ({ data, deleteItem, sidebar, userRole }) => {
 	let arr2 =
 		data?.length &&
-		data?.map((item) => {
+		data?.map((item, idx) => {
 			return {
+				key: idx,
+				id: item?.products_id,
 				deliver_id: item?.deliver_id?.deliver_name,
 				store_id: item?.store_id?.store_name,
-				product_id: item?.products_id,
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
-				products_box_count: "x" + Math.ceil(item?.products_box_count),
-				products_count: "x" + item?.products_count,
+				products_box_count: Math.ceil(item?.products_box_count),
+				products_count: Math.ceil(item?.products_count),
 				products_count_cost:
 					addComma(item?.products_count_cost) +
 					item?.currency_id?.currency_symbol,
@@ -26,11 +28,9 @@ const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 					addComma(
 						(item?.products_count * item?.products_count_cost).toFixed(2)
 					) + item?.currency_id?.currency_symbol,
-				// product_date: item?.products_createdat,
 				product_date: `${moment(item?.products_createdat).format(
 					"YYYY/MM/DD HH:MM:SS"
 				)}`,
-				kurs: item?.currency_id?.currency_amount,
 			}
 		})
 
@@ -46,7 +46,6 @@ const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 		{
 			title: "Mahsulot",
 			dataIndex: "goods_name",
-			// defaultSortOrder: "ascend",
 			sorter: (a, b) => a.goods_name.localeCompare(b.goods_name),
 		},
 		{
@@ -62,7 +61,7 @@ const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 			dataIndex: "products_count",
 		},
 		{
-			title: <nobr>Narx(har biri)</nobr>,
+			title: <nobr>Narx</nobr>,
 			dataIndex: "products_count_cost",
 		},
 		{
@@ -70,7 +69,7 @@ const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 			dataIndex: "products_count_price",
 		},
 		{
-			title: <nobr>Narx(umumiy)</nobr>,
+			title: <nobr>Umumiy narx</nobr>,
 			dataIndex: "total_price",
 		},
 		{
@@ -84,52 +83,50 @@ const AntTable = ({ data, deleteItem, editProduct, userRole }) => {
 			},
 		},
 		{
-			title: userRole == 1 && "Tahrirlash",
+			title: "",
 			render: (text, record) =>
 				userRole == 1 && (
-					<nobr>
-						{/* <button
-						className="btn btn-sm btn-outline-warning mx-1 table-edit__btn"
-						onClick={() => editProduct(record?.product_id)}
+					<button
+						type="button"
+						className="product-table-btn"
+						onClick={(e) =>
+							productDeleteConfirm(
+								e,
+								<>
+									Mahsulot <span>{record?.goods_name}</span>ni
+								</>,
+								deleteItem,
+								record?.id
+							)
+						}
 					>
-						<i className="fas fa-edit"></i>
-					</button> */}
-
-						<button
-							className="btn btn-sm btn-outline-danger mx-1"
-							onClick={(e) =>
-								productDeleteConfirm(
-									e,
-									"Mahsulot",
-									deleteItem,
-									record?.product_id
-								)
-							}
-						>
-							<i className="fa-solid fa-trash-can"></i>
-						</button>
-					</nobr>
+						<Trash size={20} />
+					</button>
 				),
 		},
 	]
 
 	return (
-		<Table
-			columns={columns}
-			locale={{
-				emptyText: (
-					<div className="no-data__con">
-						<img src={noDataImg} alt="" />
-						<span>Mahsulot mavjud emas</span>
-					</div>
-				),
+		<div
+			className="ant-d-table"
+			style={{
+				width: sidebar && "calc(100dvw - 309px)",
 			}}
-			dataSource={arr2}
-			pagination={{
-				position: ["bottomLeft"],
-				pageSize: 20,
-			}}
-		/>
+		>
+			<Table
+				scroll={{ x: "max-content" }}
+				columns={columns}
+				locale={{
+					emptyText: <NoData />,
+				}}
+				dataSource={arr2}
+				pagination={{
+					showSizeChanger: false,
+					position: ["bottomLeft"],
+					pageSize: 20,
+				}}
+			/>
+		</div>
 	)
 }
 

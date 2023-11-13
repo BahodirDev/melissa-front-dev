@@ -1,7 +1,7 @@
 .loader {
-	width: 100%;
-  height: 4px;
-	margin: 20px 0;
+	width: 60%;
+	height: 4px;
+	margin: 40px auto;
 	border-radius: 10px;
 	position: relative;
 	background-color: rgb(245, 240, 240);
@@ -15,8 +15,8 @@
 	right: 100%;
 	bottom: 0;
 	left: 0;
-	background: #7e258c;
-	animation: borealisBar 2s linear infinite;
+	background: var(--bg-primary);
+	animation: borealisBar 1s linear infinite;
 }
 
 @keyframes borealisBar {
