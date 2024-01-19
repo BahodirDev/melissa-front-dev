@@ -10,6 +10,7 @@ const AntReportTable = ({ data, sidebar, userRole }) => {
 	let arr2 = data?.map((item, idx) => {
 		return {
 			key: idx,
+			user_info: item?.user_info,
 			data_store: item?.store,
 			data_product: item?.goods_name,
 			data_code: item?.goods_code,
@@ -28,6 +29,10 @@ const AntReportTable = ({ data, sidebar, userRole }) => {
 	})
 
 	const columns = [
+		{
+			title: "Hodim",
+			dataIndex: "user_info",
+		},
 		{
 			title: "Ombor",
 			dataIndex: "data_store",

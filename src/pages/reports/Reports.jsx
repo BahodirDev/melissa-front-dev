@@ -16,7 +16,6 @@ import {
 } from "../../components/reducers/report"
 import AntReportTable from "../../components/report_table/report_table"
 import { get, post } from "../../customHook/api"
-import useApiRequest from "../../customHook/useUrl"
 import "./report.css"
 import { toast } from "react-toastify"
 import InfoItem from "../../components/info_item/InfoItem"

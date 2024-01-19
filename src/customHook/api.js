@@ -1,4 +1,5 @@
 import axios from "axios"
+import { toast } from "react-toastify"
 
 const apiRequest = async (method, endpoint, data) => {
 	try {
@@ -7,6 +8,9 @@ const apiRequest = async (method, endpoint, data) => {
 			url: `${process.env.REACT_APP_URL + endpoint}`,
 			data,
 		})
+		if (response?.status === 400 || response?.status === 403) {
+			toast.error(data?.message, { toastId: "" })
+		}
 		return response
 	} catch (error) {
 		// throw error
