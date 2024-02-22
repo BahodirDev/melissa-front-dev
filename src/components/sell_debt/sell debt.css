@@ -124,7 +124,7 @@
 
 .fade-in-sd {
 	animation: fade-in 0.3s ease-out;
-	width: 350px;
+	width: 450px;
 }
 .fade-out-sd {
 	animation: fade-out 0.3s ease-out;

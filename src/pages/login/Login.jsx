@@ -61,7 +61,7 @@ export default function Login() {
 				<form className="login-form" onSubmit={sign_in}>
 					<div>
 						<h2>Tizimga kirish</h2>
-						<h4>Lorem ipsum dolor sit amet.</h4>
+						<h4>Tizimga kirish uchun Login va Parolni tering.</h4>
 					</div>
 
 					<div className="input-wrapper">

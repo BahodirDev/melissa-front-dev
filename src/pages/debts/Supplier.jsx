@@ -24,7 +24,7 @@ import {
 	numberCheck,
 	stringCheck,
 } from "../../components/validation"
-import { addComma, formatSumma } from "../../components/addComma"
+import { addComma, addSpace, formatSumma } from "../../components/addComma"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 const Supplier = ({ getData }) => {
@@ -582,8 +582,8 @@ const Supplier = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? formatSumma(+filteredData.amount)
-							: formatSumma(state?.dDebt?.quantity)
+							? addSpace(+filteredData.amount)
+							: addSpace(state?.dDebt?.quantity)
 					}
 					name="Umumiy summa"
 					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}

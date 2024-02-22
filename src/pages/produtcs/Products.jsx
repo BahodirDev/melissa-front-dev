@@ -2,7 +2,7 @@ import { Input, Select } from "antd"
 import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { addComma, formatSumma } from "../../components/addComma"
+import { addComma, addSpace, formatSumma } from "../../components/addComma"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -112,7 +112,7 @@ export default function Products() {
 			newGoodsId.goods_id &&
 			newDeliverId.deliver_id &&
 			newStoreId.store_id &&
-			newPercentId.currency_id &&
+			currency?.data?.length &&
 			newBoxQ > 0 &&
 			newProductQ > 0 &&
 			newProductPrice > 0 &&
@@ -126,7 +126,7 @@ export default function Products() {
 				products_count_cost: +newProductCost,
 				products_count: +newProductQ,
 				products_box_count: +newBoxQ,
-				currency_id: newPercentId?.currency_id,
+				currency_id: currency?.data[0]?.currency_id,
 				products_count_price: +newProductPrice,
 			}
 			post("/products/products-post", newProductObj).then((data) => {
@@ -174,6 +174,7 @@ export default function Products() {
 		setNewPercentId({})
 		setNewProductCost(0)
 		setNewProductPrice(0)
+		setBtnLoading(false)
 
 		setSubmitted(false)
 		setAddModalVisible(false)
@@ -411,7 +412,7 @@ export default function Products() {
 						<span>{submitted && numberCheck(newProductQ)}</span>
 					</div>
 				</div>
-				<div
+				{/* <div
 					className={`input-wrapper modal-form ${
 						submitted &&
 						stringCheck(newPercentId?.currency_name) !== null &&
@@ -462,7 +463,7 @@ export default function Products() {
 								)}
 						</span>
 					</div>
-				</div>
+				</div> */}
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newProductCost) !== null && "error"
@@ -632,7 +633,7 @@ export default function Products() {
 					iconBgColor={"var(--bg-success-icon)"}
 				/>
 				<InfoItem
-					value={formatSumma(
+					value={addSpace(
 						searchSubmitted ? +filteredData?.hisob?.umumiyQiymati : product?.sum
 					)}
 					name="Umumiy summa"
@@ -655,6 +656,8 @@ export default function Products() {
 					deleteItem={deleteProduct}
 					sidebar={sidebar}
 					userRole={userInfo}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
 				/>
 			)}
 		</>

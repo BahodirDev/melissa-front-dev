@@ -35,7 +35,7 @@ const AntdAccordion = ({ data }) =>
 							</div>
 						}
 					>
-						<table>
+						<table cellPadding="5px">
 							<tbody>
 								{item?.files.map((fileInfo) => (
 									<tr>

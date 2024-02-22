@@ -69,9 +69,10 @@ const SellDebt = ({
 
 	const getData = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
-			if (data?.status === 200 || data?.status === 201)
+			if (data?.status === 200 || data?.status === 201) {
 				if (name === "products") dispatch1(data?.data.data)
 				else dispatch(dispatch1(data?.data))
+			}
 		})
 	}
 
