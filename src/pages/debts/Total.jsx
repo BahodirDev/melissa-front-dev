@@ -22,7 +22,7 @@ import {
 	setLoading,
 } from "../../components/reducers/noteDebt"
 import NDebtTable from "../../components/total_debt_table/total_debt_table"
-import { addComma, formatSumma } from "../../components/addComma"
+import { addComma, addSpace, formatSumma } from "../../components/addComma"
 
 const Total = ({ getData }) => {
 	const [
@@ -389,8 +389,8 @@ const Total = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? formatSumma(+filteredData.amount)
-							: formatSumma(state?.nDebt?.quantity)
+							? addSpace(+filteredData.amount)
+							: addSpace(state?.nDebt?.quantity)
 					}
 					name="Umumiy summa"
 					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}

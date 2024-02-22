@@ -483,6 +483,10 @@ div.ant-d-table tr:nth-child(even) {
 	display: grid;
 	grid-template-rows: auto auto auto;
 }
+.table-item-edit-wrapper.extra {
+	height: 70px;
+	top: -35px;
+}
 .table-item-edit-wrapper.small {
 	height: 80px !important;
 	top: -40px;

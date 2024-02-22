@@ -3,7 +3,7 @@ import { Option } from "antd/es/mentions"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { addComma, formatSumma } from "../../components/addComma"
+import { addComma, addSpace, formatSumma } from "../../components/addComma"
 import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -144,7 +144,7 @@ export default function Reports() {
 			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
 
 			post("/reports/reports-filter", filterObj).then((data) => {
-				console.log(data.data)
+				// console.log(data.data)
 				if (data.status === 200) {
 					setFilteredData(data?.data)
 				} else {
@@ -318,7 +318,7 @@ export default function Reports() {
 
 			<div className="info-wrapper">
 				<InfoItem
-					value={formatSumma(
+					value={addSpace(
 						searchSubmitted
 							? +filteredData?.hisob?.totalProductCost
 							: report.capital
@@ -328,7 +328,7 @@ export default function Reports() {
 					iconBgColor={"var(--bg-icon)"}
 				/>
 				<InfoItem
-					value={formatSumma(
+					value={addSpace(
 						searchSubmitted
 							? +filteredData?.hisob?.totalCostMinus
 							: report.outcome
@@ -338,7 +338,7 @@ export default function Reports() {
 					iconBgColor={"var(--bg-success-icon)"}
 				/>
 				<InfoItem
-					value={formatSumma(
+					value={addSpace(
 						searchSubmitted
 							? +filteredData?.hisob?.totalCostPilus
 							: report.income
@@ -363,6 +363,8 @@ export default function Reports() {
 					data={searchSubmitted ? filteredData?.data : report?.data}
 					sidebar={sidebar}
 					userRole={userInfo}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
 				/>
 			)}
 		</>

@@ -256,7 +256,7 @@ export default function Goods() {
 			<div className="info-wrapper">
 				<InfoItem
 					value={searchSubmitted ? filteredData.length : state?.quantity}
-					name="Omborlar soni"
+					name="Kategoriyalar soni"
 					icon={<SquaresFour size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>

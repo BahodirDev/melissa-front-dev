@@ -3,9 +3,25 @@ import moment from "moment/moment"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import NoData from "../noData/NoData"
-import { Trash } from "@phosphor-icons/react"
+import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import { useState } from "react"
 
-const AntTable = ({ data, deleteItem, sidebar, userRole }) => {
+const AntTable = ({
+	data,
+	deleteItem,
+	sidebar,
+	userRole,
+	showDropdown,
+	setshowDropdown,
+}) => {
+	const [loc, setLoc] = useState(true)
+
+	const handleClick = (e, id) => {
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
 	let arr2 =
 		data?.length &&
 		data?.map((item, idx) => {
@@ -84,25 +100,53 @@ const AntTable = ({ data, deleteItem, sidebar, userRole }) => {
 		},
 		{
 			title: "",
-			render: (text, record) =>
-				userRole == 1 && (
-					<button
-						type="button"
-						className="product-table-btn"
-						onClick={(e) =>
-							productDeleteConfirm(
-								e,
-								<>
-									Mahsulot <span>{record?.goods_name}</span>ni
-								</>,
-								deleteItem,
-								record?.id
-							)
-						}
-					>
-						<Trash size={20} />
+			width: "50px",
+			render: (text, record) => (
+				<div className="table-item-edit-holder">
+					<button type="button" onClick={(e) => handleClick(e, record?.id)}>
+						<DotsThreeVertical size={24} />
 					</button>
-				),
+					<div
+						className={`table-item-edit-wrapper extra ${
+							showDropdown === record?.id || "hidden"
+						} ${loc && "top"}`}
+					>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							// onClick={(e) =>
+							// 	payConfirmModal(
+							// 		e,
+							// 		<>
+							// 			<span>{record?.name}</span> qarzni
+							// 		</>,
+							// 		closeDebt,
+							// 		record?.id
+							// 	)
+							// }
+						>
+							Tahrirlash <PencilSimple size={20} />
+						</button>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							onClick={(e) =>
+								productDeleteConfirm(
+									e,
+									<>
+										Mahsulot <span>{record?.goods_name}</span>ni
+									</>,
+									deleteItem,
+									record?.id
+								)
+							}
+						>
+							O'chirish
+							<Trash size={20} />
+						</button>
+					</div>
+				</div>
+			),
 		},
 	]
 

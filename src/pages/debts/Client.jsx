@@ -16,7 +16,7 @@ import InfoItem from "../../components/info_item/InfoItem"
 import { CurrencyDollar } from "@phosphor-icons/react"
 import { Select } from "antd"
 import Search from "../../components/search/Search"
-import { addComma, formatSumma } from "../../components/addComma"
+import { addComma, addSpace, formatSumma } from "../../components/addComma"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 const Client = ({ getData }) => {
@@ -227,8 +227,8 @@ const Client = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? formatSumma(+filteredData.amount)
-							: formatSumma(state?.debt?.quantity)
+							? addSpace(+filteredData.amount)
+							: addSpace(state?.debt?.quantity)
 					}
 					name="Umumiy summa"
 					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}

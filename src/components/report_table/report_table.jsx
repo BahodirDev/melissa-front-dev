@@ -3,13 +3,29 @@ import moment from "moment/moment"
 import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
 import NoData from "../noData/NoData"
-import { ArrowDown } from "@phosphor-icons/react"
+import { ArrowDown, DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
 import { ArrowUp } from "@phosphor-icons/react/dist/ssr"
+import { useState } from "react"
 
-const AntReportTable = ({ data, sidebar, userRole }) => {
+const AntReportTable = ({
+	data,
+	sidebar,
+	userRole,
+	showDropdown,
+	setshowDropdown,
+}) => {
+	const [loc, setLoc] = useState(true)
+
+	const handleClick = (e, id) => {
+		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
+		e.stopPropagation()
+		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
 	let arr2 = data?.map((item, idx) => {
 		return {
 			key: idx,
+			id: item?.reports_id,
 			user_info: item?.user_info,
 			data_store: item?.store,
 			data_product: item?.goods_name,
@@ -90,6 +106,55 @@ const AntReportTable = ({ data, sidebar, userRole }) => {
 			render: (text) => {
 				return <>{text.slice(0, 10)}</>
 			},
+		},
+		{
+			title: "",
+			width: "50px",
+			render: (text, record) => (
+				<div className="table-item-edit-holder">
+					<button type="button" onClick={(e) => handleClick(e, record?.id)}>
+						<DotsThreeVertical size={24} />
+					</button>
+					<div
+						className={`table-item-edit-wrapper extra ${
+							showDropdown === record?.id || "hidden"
+						} ${loc && "top"}`}
+					>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							// onClick={(e) =>
+							// 	payConfirmModal(
+							// 		e,
+							// 		<>
+							// 			<span>{record?.name}</span> qarzni
+							// 		</>,
+							// 		closeDebt,
+							// 		record?.id
+							// 	)
+							// }
+						>
+							Tahrirlash <PencilSimple size={20} />
+						</button>
+						<button
+							type="button"
+							className="table-item-edit-item"
+							// onClick={(e) =>
+							// 	productDeleteConfirm(
+							// 		e,
+							// 		<>
+							// 			<span>{record?.name}</span> qarzni
+							// 		</>,
+							// 		deleteDebt,
+							// 		record?.id
+							// 	)
+							// }
+						>
+							O'chirish <Trash size={20} />
+						</button>
+					</div>
+				</div>
+			),
 		},
 	]
 

@@ -24,7 +24,7 @@ import {
 } from "../../components/reducers/orderDebt"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import ODebtTable from "../../components/before_debt_table/before_debt_table"
-import { addComma, formatSumma } from "../../components/addComma"
+import { addComma, addSpace, formatSumma } from "../../components/addComma"
 
 const Order = ({ getData }) => {
 	const [
@@ -584,8 +584,8 @@ const Order = ({ getData }) => {
 				<InfoItem
 					value={
 						searchSubmitted
-							? formatSumma(+filteredData.amount)
-							: formatSumma(state?.oDebt?.quantity)
+							? addSpace(+filteredData.amount)
+							: addSpace(state?.oDebt?.quantity)
 					}
 					name="Umumiy summa"
 					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
