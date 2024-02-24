@@ -13,6 +13,7 @@ const AntTable = ({
 	userRole,
 	showDropdown,
 	setshowDropdown,
+	editProduct,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -114,16 +115,7 @@ const AntTable = ({
 						<button
 							type="button"
 							className="table-item-edit-item"
-							// onClick={(e) =>
-							// 	payConfirmModal(
-							// 		e,
-							// 		<>
-							// 			<span>{record?.name}</span> qarzni
-							// 		</>,
-							// 		closeDebt,
-							// 		record?.id
-							// 	)
-							// }
+							onClick={() => editProduct(record?.id)}
 						>
 							Tahrirlash <PencilSimple size={20} />
 						</button>

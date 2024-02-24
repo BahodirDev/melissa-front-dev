@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
+import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
@@ -18,7 +19,9 @@ import { toast } from "react-toastify"
 import Search from "../../components/search/Search"
 import AddModal from "../../components/add/AddModal"
 import InfoItem from "../../components/info_item/InfoItem"
-import { Info, SquaresFour } from "@phosphor-icons/react"
+import { CaretDown, Info, SquaresFour } from "@phosphor-icons/react"
+import { Select } from "antd"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 export default function Goods() {
 	const [
@@ -33,6 +36,7 @@ export default function Goods() {
 		setMiniModal,
 	] = useOutletContext()
 	const state = useSelector((state) => state.good)
+	const deliver = useSelector((state) => state.deliver)
 	const dispatch = useDispatch()
 
 	// filter
@@ -45,6 +49,7 @@ export default function Goods() {
 	// new
 	const [newGoodName, setNewGoodName] = useState("")
 	const [newGoodCode, setNewGoodCode] = useState("")
+	const [newDeliver, setNewDeliver] = useState("")
 
 	useEffect(() => {
 		dispatch(setLoading(true))
@@ -57,18 +62,23 @@ export default function Goods() {
 			}
 			dispatch(setLoading(false))
 		})
+		get(`/deliver/deliver-list`).then((data) => {
+			dispatch(setDataDeliver(data?.data))
+		})
 	}, [])
 
 	const addGood = () => {
 		setSubmitted(true)
-		if (newGoodName && newGoodCode) {
+		if (newGoodName && newGoodCode && newDeliver) {
 			setBtn_loading(true)
 			let newObj = {
 				goods_name: newGoodName.trim(),
 				goods_code: newGoodCode.trim(),
+				delivery_id: newDeliver?.deliver_id,
 			}
 			if (objId) {
 				patch(`/goods/goods-patch/${objId}`, newObj).then((data) => {
+					console.log(data)
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
 						clearAndClose()
@@ -125,6 +135,11 @@ export default function Goods() {
 			if (data?.status === 201) {
 				setNewGoodName(data?.data[0]?.goods_name)
 				setNewGoodCode(data?.data[0]?.goods_code)
+				setNewDeliver({
+					deliver_name: data?.data[0]?.deliver_name,
+					deliver_nomer: data?.data[0]?.deliver_nomer,
+					delivery_id: data?.data[0]?.delivery_id,
+				})
 			} else {
 				clearAndClose()
 				toast.error("Nomalum server xatolik")
@@ -135,8 +150,10 @@ export default function Goods() {
 	const clearAndClose = () => {
 		setNewGoodName("")
 		setNewGoodCode("")
+		setNewDeliver("")
 
 		setObjId("")
+		setBtn_loading(false)
 		setSubmitted(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
@@ -183,6 +200,69 @@ export default function Goods() {
 					<Loader />
 				) : (
 					<>
+						<div
+							className={`input-wrapper modal-form ${
+								submitted &&
+								stringCheck(newDeliver?.deliver_name) !== null &&
+								"error"
+							}`}
+						>
+							<label>Ta'minotchi</label>
+							<Select
+								showSearch
+								allowClear
+								placeholder="Ta'minotchi tanlang"
+								className="select"
+								suffixIcon={
+									submitted &&
+									stringCheck(newDeliver?.deliver_name) !== null ? (
+										<Info size={20} />
+									) : (
+										<CaretDown size={16} />
+									)
+								}
+								value={
+									newDeliver?.deliver_name
+										? `${newDeliver?.deliver_name} - ${format_phone_number(
+												newDeliver?.deliver_nomer
+										  )}`
+										: null
+								}
+								onChange={(e) =>
+									e ? setNewDeliver(JSON.parse(e)) : setNewDeliver({})
+								}
+							>
+								{deliver.data?.length
+									? deliver.data.map((item, idx) => {
+											if (!item?.isdelete) {
+												return (
+													<Select.Option
+														key={idx}
+														className="option-shrink"
+														value={JSON.stringify(item)}
+													>
+														<div>
+															<span>{item?.deliver_name} - </span>
+															<span>
+																{format_phone_number(item?.deliver_nomer)}
+															</span>
+														</div>
+													</Select.Option>
+												)
+											}
+									  })
+									: null}
+							</Select>
+							<div className="validation-field">
+								<span>
+									{submitted &&
+										stringCheck(
+											newDeliver?.deliver_nomer,
+											"Ta'minotchi tanlash majburiy"
+										)}
+								</span>
+							</div>
+						</div>
 						<div
 							className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(newGoodName.trim()) !== null && "error"}
