@@ -14,6 +14,8 @@ const AntTable = ({
 	showDropdown,
 	setshowDropdown,
 	editProduct,
+	setAddModalVisible,
+	setAddModalDisplay,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -115,7 +117,10 @@ const AntTable = ({
 						<button
 							type="button"
 							className="table-item-edit-item"
-							onClick={() => editProduct(record?.id)}
+							onClick={(e) => {
+								e.stopPropagation()
+								editProduct(record?.id)
+							}}
 						>
 							Tahrirlash <PencilSimple size={20} />
 						</button>

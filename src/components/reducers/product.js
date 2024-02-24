@@ -58,38 +58,38 @@ export const productSlice = createSlice({
 				action.payload?.currency_amount
 			state.dataProduct = [newDataObj, ...state.dataProduct]
 		},
-		// editData: (state, action) => {
-		// 	const index = state.dataProduct.findIndex(
-		// 		(item) => item.products_id === action.payload?.products_id
-		// 	)
-		// 	const indexStore = state.dataStore.findIndex(
-		// 		(item) => item.store_id === action.payload?.store_id
-		// 	)
-		// 	const indexCurrency = state.dataCurrency.findIndex(
-		// 		(item) => item.currency_id === action.payload?.currency_id
-		// 	)
-		// 	const indexDeliver = state.dataDeliver.findIndex(
-		// 		(item) => item.deliver_id === action.payload?.deliver_id
-		// 	)
-		// 	const indexGood = state.dataGood.findIndex(
-		// 		(item) => item.goods_id === action.payload?.goods_id
-		// 	)
+		editData: (state, action) => {
+			const index = state.dataProduct.findIndex(
+				(item) => item.products_id === action.payload?.products_id
+			)
+			const indexStore = state.dataStore.findIndex(
+				(item) => item.store_id === action.payload?.store_id
+			)
+			const indexCurrency = state.dataCurrency.findIndex(
+				(item) => item.currency_id === action.payload?.currency_id
+			)
+			const indexDeliver = state.dataDeliver.findIndex(
+				(item) => item.deliver_id === action.payload?.deliver_id
+			)
+			const indexGood = state.dataGood.findIndex(
+				(item) => item.goods_id === action.payload?.goods_id
+			)
 
-		// 	if (index !== -1) {
-		// 		state.dataProduct[index] = {
-		// 			...state.dataProduct[index],
+			if (index !== -1) {
+				state.dataProduct[index] = {
+					...state.dataProduct[index],
 
-		// 			goods_id: state.dataGood[indexGood],
-		// 			deliver_id: state.dataDeliver[indexDeliver],
-		// 			store_id: state.dataStore[indexStore],
-		// 			currency_id: state.dataCurrency[indexCurrency],
-		// 			products_box_count: action.payload?.products_box_count,
-		// 			products_count: action.payload?.products_count,
-		// 			products_count_cost: action.payload?.products_count_cost,
-		// 			products_count_price: action.payload?.products_count_price,
-		// 		}
-		// 	}
-		// },
+					goods_id: state.dataGood[indexGood],
+					deliver_id: state.dataDeliver[indexDeliver],
+					store_id: state.dataStore[indexStore],
+					currency_id: state.dataCurrency[indexCurrency],
+					products_box_count: action.payload?.products_box_count,
+					products_count: action.payload?.products_count,
+					products_count_cost: action.payload?.products_count_cost,
+					products_count_price: action.payload?.products_count_price,
+				}
+			}
+		},
 		removeProduct: (state, action) => {
 			const index = state.dataProduct.findIndex(
 				(item) => item.products_id === action.payload
@@ -113,7 +113,7 @@ export const {
 	setAmount,
 	setSum,
 	addData,
-	// editData,
+	editData,
 	removeProduct,
 } = productSlice.actions
 export default productSlice.reducer
