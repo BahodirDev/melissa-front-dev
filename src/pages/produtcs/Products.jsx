@@ -60,6 +60,8 @@ export default function Products() {
 	const [btnLoading, setBtnLoading] = useState(false)
 	const [submitted, setSubmitted] = useState(false)
 	const [userInfo, setUserInfo] = useState()
+	const [goodList, setGoodList] = useState([])
+	const [objId, setObjId] = useState("")
 
 	// filter
 	const [filteredData, setFilteredData] = useState({})
@@ -209,6 +211,31 @@ export default function Products() {
 		inputRef.current.value = ""
 	}
 
+	const getGoodsList = (id) => {
+		get(`/goods/deliver-goods-list/${id}`).then((data) => {
+			setGoodList(data?.data)
+		})
+	}
+
+	const editProduct = (id) => {
+		// setNewGoodName("")
+
+		setshowDropdown("")
+		setAddModalVisible(true)
+		setAddModalDisplay("block")
+
+		// get(`/products/products-list/${id}`).then((data) => {
+		// 	if (data?.status === 200) {
+		// 		// setNewGoodName(data?.data[0]?.goods_name)
+		// 		setObjId(id)
+		// 		console.log(data)
+		// 	} else {
+		// 		clearAndClose()
+		// 		toast.error("Nomalum server xatolik")
+		// 	}
+		// })
+	}
+
 	return (
 		<>
 			<AddModal
@@ -218,60 +245,6 @@ export default function Products() {
 				setAddModalDisplay={setAddModalDisplay}
 				name={"Mahsulot qo'shish"}
 			>
-				<div
-					className={`input-wrapper modal-form ${
-						submitted && stringCheck(newGoodsId?.goods_name) !== null && "error"
-					}`}
-				>
-					<label>Kategoriya</label>
-					<Select
-						showSearch
-						allowClear
-						placeholder="Kategoriya tanlang"
-						className="select"
-						suffixIcon={
-							submitted && stringCheck(newGoodsId?.goods_name) !== null ? (
-								<Info size={20} />
-							) : (
-								<CaretDown size={16} />
-							)
-						}
-						value={
-							newGoodsId.goods_name
-								? `${newGoodsId?.goods_name} - ${newGoodsId?.goods_code}`
-								: null
-						}
-						onChange={(e) =>
-							e ? setNewGoodsId(JSON.parse(e)) : setNewGoodsId({})
-						}
-					>
-						{good.data?.length
-							? good.data.map((item, idx) => {
-									return (
-										<Select.Option
-											key={idx}
-											className="option-shrink"
-											value={JSON.stringify(item)}
-										>
-											<div>
-												<span>{item?.goods_name} - </span>
-												<span>{item?.goods_code}</span>
-											</div>
-										</Select.Option>
-									)
-							  })
-							: null}
-					</Select>
-					<div className="validation-field">
-						<span>
-							{submitted &&
-								stringCheck(
-									newGoodsId?.goods_name,
-									"Kategoriya tanlash majburiy"
-								)}
-						</span>
-					</div>
-				</div>
 				<div
 					className={`input-wrapper modal-form ${
 						submitted &&
@@ -299,9 +272,10 @@ export default function Products() {
 								  )}`
 								: null
 						}
-						onChange={(e) =>
+						onChange={(e) => {
 							e ? setNewDeliverId(JSON.parse(e)) : setNewDeliverId({})
-						}
+							getGoodsList(JSON.parse(e)?.deliver_id)
+						}}
 					>
 						{deliver.data?.length
 							? deliver.data.map((item, idx) => {
@@ -330,6 +304,60 @@ export default function Products() {
 								stringCheck(
 									newDeliverId?.deliver_nomer,
 									"Ta'minotchi tanlash majburiy"
+								)}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted && stringCheck(newGoodsId?.goods_name) !== null && "error"
+					}`}
+				>
+					<label>Kategoriya</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Kategoriya tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newGoodsId?.goods_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							newGoodsId.goods_name
+								? `${newGoodsId?.goods_name} - ${newGoodsId?.goods_code}`
+								: null
+						}
+						onChange={(e) =>
+							e ? setNewGoodsId(JSON.parse(e)) : setNewGoodsId({})
+						}
+					>
+						{goodList?.length
+							? goodList.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											className="option-shrink"
+											value={JSON.stringify(item)}
+										>
+											<div>
+												<span>{item?.goods_name} - </span>
+												<span>{item?.goods_code}</span>
+											</div>
+										</Select.Option>
+									)
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newGoodsId?.goods_name,
+									"Kategoriya tanlash majburiy"
 								)}
 						</span>
 					</div>
@@ -658,6 +686,7 @@ export default function Products() {
 					userRole={userInfo}
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
+					editProduct={editProduct}
 				/>
 			)}
 		</>
