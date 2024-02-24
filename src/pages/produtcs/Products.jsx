@@ -9,6 +9,7 @@ import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { setData as setDataGood } from "../../components/reducers/good"
 import {
 	addData,
+	editData,
 	removeProduct,
 	setAmount,
 	setDataProduct,
@@ -22,7 +23,7 @@ import {
 	stringCheck,
 	validation,
 } from "../../components/validation"
-import { get, post, remove } from "../../customHook/api"
+import { get, patch, post, remove } from "../../customHook/api"
 import { mapOptionList } from "./mapOptionList"
 import "./product.css"
 import { toast } from "react-toastify"
@@ -79,6 +80,7 @@ export default function Products() {
 	const [newProductCost, setNewProductCost] = useState()
 	const [newProductPrice, setNewProductPrice] = useState()
 	const [newPercentId, setNewPercentId] = useState({})
+	const [rDate, setRDate] = useState("")
 
 	const getData = () => {
 		dispatch(setLoading(true))
@@ -131,24 +133,47 @@ export default function Products() {
 				currency_id: currency?.data[0]?.currency_id,
 				products_count_price: +newProductPrice,
 			}
-			post("/products/products-post", newProductObj).then((data) => {
-				if (data?.status === 201) {
-					dispatch(
-						addData({
-							...data?.data,
-							...newGoodsId,
-							...newDeliverId,
-							...newStoreId,
-							...newPercentId,
-						})
-					)
-					clearAndClose()
-					toast.success("Mahsulot muvoffaqiyatli qo'shildi")
-				} else {
-					toast.error("Nomalum server xatolik")
-				}
-				setBtnLoading(false)
-			})
+			if (objId) {
+				patch(`/products/products-patch/${objId}`, newProductObj).then(
+					(data) => {
+						if (data?.status === 200 || data?.status === 201) {
+							dispatch(
+								editData({
+									...data?.data,
+									...newGoodsId,
+									...newDeliverId,
+									...newStoreId,
+									...newPercentId,
+								})
+							)
+							clearAndClose()
+							toast.success("Mahsulot muvoffaqiyatli o'zgartirildi")
+						} else {
+							toast.error("Nomalum server xatolik")
+						}
+						setBtnLoading(false)
+					}
+				)
+			} else {
+				post("/products/products-post", newProductObj).then((data) => {
+					if (data?.status === 201) {
+						dispatch(
+							addData({
+								...data?.data,
+								...newGoodsId,
+								...newDeliverId,
+								...newStoreId,
+								...newPercentId,
+							})
+						)
+						clearAndClose()
+						toast.success("Mahsulot muvoffaqiyatli qo'shildi")
+					} else {
+						toast.error("Nomalum server xatolik")
+					}
+					setBtnLoading(false)
+				})
+			}
 		}
 	}
 
@@ -224,16 +249,23 @@ export default function Products() {
 		setAddModalVisible(true)
 		setAddModalDisplay("block")
 
-		// get(`/products/products-list/${id}`).then((data) => {
-		// 	if (data?.status === 200) {
-		// 		// setNewGoodName(data?.data[0]?.goods_name)
-		// 		setObjId(id)
-		// 		console.log(data)
-		// 	} else {
-		// 		clearAndClose()
-		// 		toast.error("Nomalum server xatolik")
-		// 	}
-		// })
+		get(`/products/products-list/${id}`).then((data) => {
+			if (data?.status === 200) {
+				setObjId(id)
+
+				setNewGoodsId(data?.data?.goods_id)
+				setNewDeliverId(data?.data?.deliver_id)
+				setNewStoreId(data?.data?.store_id)
+				setNewBoxQ(data?.data?.products_box_count)
+				setNewProductQ(data?.data?.products_count)
+				setNewProductCost(data?.data?.products_count_cost)
+				setNewProductPrice(data?.data?.products_count_price)
+				setNewPercentId(data?.data?.currency_id)
+			} else {
+				clearAndClose()
+				toast.error("Nomalum server xatolik")
+			}
+		})
 	}
 
 	return (
@@ -532,6 +564,28 @@ export default function Products() {
 						<span>{submitted && numberCheck(newProductPrice)}</span>
 					</div>
 				</div>
+				{/* {objId ? (
+					<div
+						className={`input-wrapper modal-form regular ${
+							submitted && numberCheck(newProductPrice) !== null && "error"
+						}`}
+					>
+						<label>Qabul qilingan sana</label>
+						<input
+							type="date"
+							placeholder="Sana kiriting"
+							className="input date"
+							value={paidDate ? paidDate : ""}
+							onChange={(e) => setPaidDate(e.target.value)}
+						/>
+						{submitted && numberCheck(newProductPrice) !== null && (
+							<Info size={20} />
+						)}
+						<div className="validation-field">
+							<span>{submitted && numberCheck(newProductPrice)}</span>
+						</div>
+					</div>
+				) : null} */}
 				<div className="modal-btn-group">
 					<button
 						className="primary-btn"
@@ -687,6 +741,8 @@ export default function Products() {
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
 					editProduct={editProduct}
+					setAddModalVisible={setAddModalVisible}
+					setAddModalDisplay={setAddModalDisplay}
 				/>
 			)}
 		</>
