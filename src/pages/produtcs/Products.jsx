@@ -39,6 +39,7 @@ import {
 } from "@phosphor-icons/react"
 import Search from "../../components/search/Search"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import moment from "moment"
 
 export default function Products() {
 	const [
@@ -80,7 +81,7 @@ export default function Products() {
 	const [newProductCost, setNewProductCost] = useState()
 	const [newProductPrice, setNewProductPrice] = useState()
 	const [newPercentId, setNewPercentId] = useState({})
-	const [rDate, setRDate] = useState("")
+	const [newDate, setNewDate] = useState("")
 
 	const getData = () => {
 		dispatch(setLoading(true))
@@ -134,26 +135,29 @@ export default function Products() {
 				products_count_price: +newProductPrice,
 			}
 			if (objId) {
-				patch(`/products/products-patch/${objId}`, newProductObj).then(
-					(data) => {
-						if (data?.status === 200 || data?.status === 201) {
-							dispatch(
-								editData({
-									...data?.data,
-									...newGoodsId,
-									...newDeliverId,
-									...newStoreId,
-									...newPercentId,
-								})
-							)
-							clearAndClose()
-							toast.success("Mahsulot muvoffaqiyatli o'zgartirildi")
-						} else {
-							toast.error("Nomalum server xatolik")
+				if (newDate) {
+					newProductObj.products_createdat = newDate
+					patch(`/products/products-patch/${objId}`, newProductObj).then(
+						(data) => {
+							if (data?.status === 200 || data?.status === 201) {
+								dispatch(
+									editData({
+										...data?.data,
+										...newGoodsId,
+										...newDeliverId,
+										...newStoreId,
+										...currency?.data[0],
+									})
+								)
+								clearAndClose()
+								toast.success("Mahsulot muvoffaqiyatli o'zgartirildi")
+							} else {
+								toast.error("Nomalum server xatolik")
+							}
+							setBtnLoading(false)
 						}
-						setBtnLoading(false)
-					}
-				)
+					)
+				}
 			} else {
 				post("/products/products-post", newProductObj).then((data) => {
 					if (data?.status === 201) {
@@ -163,7 +167,7 @@ export default function Products() {
 								...newGoodsId,
 								...newDeliverId,
 								...newStoreId,
-								...newPercentId,
+								...currency?.data[0],
 							})
 						)
 						clearAndClose()
@@ -202,6 +206,7 @@ export default function Products() {
 		setNewProductCost(0)
 		setNewProductPrice(0)
 		setBtnLoading(false)
+		setObjId("")
 
 		setSubmitted(false)
 		setAddModalVisible(false)
@@ -261,6 +266,7 @@ export default function Products() {
 				setNewProductCost(data?.data?.products_count_cost)
 				setNewProductPrice(data?.data?.products_count_price)
 				setNewPercentId(data?.data?.currency_id)
+				setNewDate(moment(data?.data?.products_createdat).format("YYYY-MM-DD"))
 			} else {
 				clearAndClose()
 				toast.error("Nomalum server xatolik")
@@ -564,10 +570,10 @@ export default function Products() {
 						<span>{submitted && numberCheck(newProductPrice)}</span>
 					</div>
 				</div>
-				{/* {objId ? (
+				{objId ? (
 					<div
 						className={`input-wrapper modal-form regular ${
-							submitted && numberCheck(newProductPrice) !== null && "error"
+							submitted && stringCheck(newDate) !== null && "error"
 						}`}
 					>
 						<label>Qabul qilingan sana</label>
@@ -575,17 +581,15 @@ export default function Products() {
 							type="date"
 							placeholder="Sana kiriting"
 							className="input date"
-							value={paidDate ? paidDate : ""}
-							onChange={(e) => setPaidDate(e.target.value)}
+							value={newDate ? newDate : ""}
+							onChange={(e) => setNewDate(e.target.value)}
 						/>
-						{submitted && numberCheck(newProductPrice) !== null && (
-							<Info size={20} />
-						)}
+						{/* {submitted && stringCheck(newDate) !== null && <Info size={20} />} */}
 						<div className="validation-field">
-							<span>{submitted && numberCheck(newProductPrice)}</span>
+							<span>{submitted && stringCheck(newDate)}</span>
 						</div>
 					</div>
-				) : null} */}
+				) : null}
 				<div className="modal-btn-group">
 					<button
 						className="primary-btn"
