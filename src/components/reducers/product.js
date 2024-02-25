@@ -63,6 +63,7 @@ export const productSlice = createSlice({
 				(item) => item.products_id === action.payload?.products_id
 			)
 			let newDataObj = {
+				products_id: action.payload.products_id,
 				goods_id: {
 					goods_code: action.payload?.goods_code,
 					goods_name: action.payload?.goods_name,
