@@ -207,6 +207,7 @@ export default function Products() {
 		setNewProductPrice(0)
 		setBtnLoading(false)
 		setObjId("")
+		setNewDate("")
 
 		setSubmitted(false)
 		setAddModalVisible(false)
@@ -281,7 +282,7 @@ export default function Products() {
 				setAddModalVisible={setAddModalVisible}
 				addModalDisplay={addModalDisplay}
 				setAddModalDisplay={setAddModalDisplay}
-				name={"Mahsulot qo'shish"}
+				name={objId ? "Mahsulot tahrirlash" : "Mahsulot qo'shish"}
 			>
 				<div
 					className={`input-wrapper modal-form ${
@@ -596,7 +597,7 @@ export default function Products() {
 						disabled={btnLoading}
 						onClick={addNewProduct}
 					>
-						{"Qo'shish"}{" "}
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
 						{btnLoading && (
 							<span
 								className="spinner-grow spinner-grow-sm"
