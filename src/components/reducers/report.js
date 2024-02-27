@@ -32,6 +32,18 @@ export const reportSlice = createSlice({
 				}
 			}
 		},
+		removeData: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.reports_id === action.payload
+			)
+
+			if (index !== -1) {
+				state.data.splice(index, 1)
+				// state.capital = 1
+				// state.outcome = 2
+				// state.income = 3
+			}
+		},
 		setCapital: (state, action) => {
 			state.capital = action.payload
 		},
@@ -44,6 +56,18 @@ export const reportSlice = createSlice({
 		setOutcome: (state, action) => {
 			state.outcome = action.payload
 		},
+		editDate: (state, action) => {
+			const index = state.data.findIndex(
+				(item) => item.reports_id === action.payload
+			)
+
+			if (index !== -1) {
+				state.data[index] = {
+					...state.data[index],
+					reports_createdat: action.payload?.reports_createdat,
+				}
+			}
+		},
 	},
 })
 
@@ -52,9 +76,11 @@ export const {
 	setLoading,
 	addData,
 	editData,
+	removeData,
 	setCapital,
 	setBenefit,
 	setIncome,
 	setOutcome,
+	editDate,
 } = reportSlice.actions
 export default reportSlice.reducer

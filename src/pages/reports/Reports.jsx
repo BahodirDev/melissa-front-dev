@@ -8,6 +8,8 @@ import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import {
+	editDate,
+	removeData,
 	setCapital,
 	setData,
 	setIncome,
@@ -15,7 +17,7 @@ import {
 	setOutcome,
 } from "../../components/reducers/report"
 import AntReportTable from "../../components/report_table/report_table"
-import { get, post } from "../../customHook/api"
+import { get, patch, post, remove } from "../../customHook/api"
 import "./report.css"
 import { toast } from "react-toastify"
 import InfoItem from "../../components/info_item/InfoItem"
@@ -23,6 +25,8 @@ import Search from "../../components/search/Search"
 import { ArrowDown, ArrowUp, CurrencyDollar } from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment"
+import AddModal from "../../components/add/AddModal"
+import { stringCheck } from "../../components/validation"
 const { RangePicker } = DatePicker
 
 export default function Reports() {
@@ -42,6 +46,10 @@ export default function Reports() {
 	const dispatch = useDispatch()
 
 	const [userInfo, setUserInfo] = useState()
+
+	const [submitted, setSubmitted] = useState(false)
+	const [newDate, setNewDate] = useState("")
+	const [btnLoading, setBtnLoading] = useState(false)
 
 	// filter
 	const [filteredData, setFilteredData] = useState({})
@@ -164,8 +172,112 @@ export default function Reports() {
 		inputRef.current.value = ""
 	}
 
+	const deleteReport = (id) => {
+		remove(`/reports/reports-delete/${id}`).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				dispatch(removeData(id))
+				toast.success("Hisobot muvoffaqiyatli o'chirildi")
+			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
+				toast.error("Bunday hisobot topilmadi")
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+		})
+	}
+
+	const editReport = (id) => {
+		setshowDropdown("")
+		setAddModalVisible(true)
+		setAddModalDisplay("block")
+
+		get(`/reports/reports-list/${id}`).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				setNewDate(moment(data?.data?.reports_createdat).format("YYYY-MM-DD"))
+			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
+				toast.error("Bunday hisobot topilmadi")
+			} else {
+				clearAndClose()
+				toast.error("Nomalum server xatolik")
+			}
+		})
+	}
+
+	const clearAndClose = () => {
+		setBtnLoading(false)
+		setNewDate("")
+		setSubmitted(false)
+
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
+	}
+
+	const updateReport = (id) => {
+		patch(`/reports/reports-patch/${id}`, {
+			reports_createdat: new Date(newDate).toISOString(),
+		}).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				dispatch(editDate(id))
+				clearAndClose()
+				toast.success("Hisobot muvoffaqiyatli o'zgartirildi")
+			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
+				toast.error("Bunday hisobot topilmadi")
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+			setBtnLoading(false)
+		})
+	}
+
 	return (
 		<>
+			<AddModal
+				addModalVisible={addModalVisible}
+				setAddModalVisible={setAddModalVisible}
+				addModalDisplay={addModalDisplay}
+				setAddModalDisplay={setAddModalDisplay}
+				name="Hisobot tahrirlash"
+			>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && stringCheck(newDate) !== null && "error"
+					}`}
+				>
+					<label>Qayd qilingan sana</label>
+					<input
+						type="date"
+						placeholder="Sana kiriting"
+						className="input date"
+						value={newDate ? newDate : ""}
+						onChange={(e) => setNewDate(e.target.value)}
+					/>
+					<div className="validation-field">
+						<span>{submitted && stringCheck(newDate)}</span>
+					</div>
+				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btnLoading}
+						onClick={updateReport}
+					>
+						Saqlash
+						{btnLoading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
+			</AddModal>
+
 			<div className="filter-wrapper report">
 				<div className="input-wrapper">
 					<Select
@@ -365,6 +477,8 @@ export default function Reports() {
 					userRole={userInfo}
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
+					deleteReport={deleteReport}
+					editReport={editReport}
 				/>
 			)}
 		</>

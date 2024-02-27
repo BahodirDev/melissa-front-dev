@@ -3,9 +3,15 @@ import moment from "moment/moment"
 import noDataImg from "../../assets/img/no data.png"
 import { addComma } from "../addComma"
 import NoData from "../noData/NoData"
-import { ArrowDown, DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import {
+	ArrowDown,
+	DotsThreeVertical,
+	PencilSimple,
+	Trash,
+} from "@phosphor-icons/react"
 import { ArrowUp } from "@phosphor-icons/react/dist/ssr"
 import { useState } from "react"
+import { productDeleteConfirm } from "../delete_modal/delete_modal"
 
 const AntReportTable = ({
 	data,
@@ -13,6 +19,8 @@ const AntReportTable = ({
 	userRole,
 	showDropdown,
 	setshowDropdown,
+	deleteReport,
+	editReport,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -123,32 +131,29 @@ const AntReportTable = ({
 						<button
 							type="button"
 							className="table-item-edit-item"
-							// onClick={(e) =>
-							// 	payConfirmModal(
-							// 		e,
-							// 		<>
-							// 			<span>{record?.name}</span> qarzni
-							// 		</>,
-							// 		closeDebt,
-							// 		record?.id
-							// 	)
-							// }
+							onClick={(e) => {
+								e.stopPropagation()
+								editReport(record?.id)
+							}}
 						>
 							Tahrirlash <PencilSimple size={20} />
 						</button>
 						<button
 							type="button"
 							className="table-item-edit-item"
-							// onClick={(e) =>
-							// 	productDeleteConfirm(
-							// 		e,
-							// 		<>
-							// 			<span>{record?.name}</span> qarzni
-							// 		</>,
-							// 		deleteDebt,
-							// 		record?.id
-							// 	)
-							// }
+							onClick={(e) =>
+								productDeleteConfirm(
+									e,
+									<>
+										<span>
+											{record?.data_product + "-" + record?.data_code}
+										</span>{" "}
+										hisobotni
+									</>,
+									deleteReport,
+									record?.id
+								)
+							}
 						>
 							O'chirish <Trash size={20} />
 						</button>
