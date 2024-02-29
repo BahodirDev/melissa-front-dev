@@ -173,6 +173,7 @@ function Return() {
 		// clear new data
 		setObjId("")
 		setSubmitted(false)
+		setBtnLoading(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
 			setAddModalDisplay("none")

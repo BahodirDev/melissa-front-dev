@@ -27,6 +27,8 @@ import format_phone_number from "../../components/format_phone_number/format_pho
 import moment from "moment"
 import AddModal from "../../components/add/AddModal"
 import { stringCheck } from "../../components/validation"
+import createPagination from "../../components/pagination/Pagination"
+import Pagination from "../../components/pagination/Pagination"
 const { RangePicker } = DatePicker
 
 export default function Reports() {
@@ -50,6 +52,9 @@ export default function Reports() {
 	const [submitted, setSubmitted] = useState(false)
 	const [newDate, setNewDate] = useState("")
 	const [btnLoading, setBtnLoading] = useState(false)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(0)
+	const [totalPages, setTotalPage] = useState(11)
 
 	// filter
 	const [filteredData, setFilteredData] = useState({})
@@ -78,9 +83,24 @@ export default function Reports() {
 		})
 	}
 
+	const getReports = () => {
+		dispatch(setLoading(true))
+		get(`reports/reports-list`).then((data) => {
+			if (data?.status === 201 || data?.status === 200) {
+				dispatch(setData(data?.data?.data))
+				dispatch(setCapital(data?.data?.hisob?.totalProductCost))
+				dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
+				dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
+			} else {
+				toast.error("Nomalum server xatolik", { toastId: "" })
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
 	useEffect(() => {
 		setUserInfo(localStorage.getItem("role"))
-		getData("reports", setData)
+		getReports()
 		getData("deliver", setDataDeliver)
 	}, [])
 
@@ -228,6 +248,10 @@ export default function Reports() {
 			}
 			setBtnLoading(false)
 		})
+	}
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
 	}
 
 	return (
@@ -471,15 +495,23 @@ export default function Reports() {
 			{report?.loading ? (
 				<Loader />
 			) : (
-				<AntReportTable
-					data={searchSubmitted ? filteredData?.data : report?.data}
-					sidebar={sidebar}
-					userRole={userInfo}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					deleteReport={deleteReport}
-					editReport={editReport}
-				/>
+				<>
+					<AntReportTable
+						data={searchSubmitted ? filteredData?.data : report?.data}
+						sidebar={sidebar}
+						userRole={userInfo}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						deleteReport={deleteReport}
+						editReport={editReport}
+					/>
+
+					<Pagination
+						pages={totalPages}
+						currentPage={currentPage}
+						onPageChange={handlePageChange}
+					/>
+				</>
 			)}
 		</>
 	)
