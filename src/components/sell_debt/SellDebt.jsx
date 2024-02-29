@@ -191,6 +191,8 @@ const SellDebt = ({
 		setProductsD([])
 
 		setSubmittedD(false)
+		setBtnLoading(false)
+		setBtnLoadingD(false)
 		setSDModalVisible(false)
 		setTimeout(() => {
 			setSDModalDisplay("none")

@@ -246,6 +246,7 @@ export default function Products() {
 		get(`/goods/deliver-goods-list/${id}`).then((data) => {
 			setGoodList(data?.data)
 		})
+		setNewGoodsId({})
 	}
 
 	const editProduct = (id) => {

@@ -162,6 +162,7 @@ function Deliver() {
 		setLoc("")
 		setObjId("")
 		setSubmitted(false)
+		setBtn_loading(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
 			setAddModalDisplay("none")

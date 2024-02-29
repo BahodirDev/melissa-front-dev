@@ -175,6 +175,7 @@ const Total = ({ getData }) => {
 		// clear new data
 		setObjId("")
 		setSubmitted(false)
+		setBtn_loading(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
 			setAddModalDisplay("none")

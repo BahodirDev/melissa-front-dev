@@ -191,6 +191,7 @@ export default function Employees() {
 		setNew_password("")
 		setObjId("")
 		setSubmitted(false)
+		setBtn_loading(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
 			setAddModalDisplay("none")
