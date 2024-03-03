@@ -27,6 +27,8 @@ import format_phone_number from "../../components/format_phone_number/format_pho
 import moment from "moment"
 import AddModal from "../../components/add/AddModal"
 import { stringCheck } from "../../components/validation"
+import createPagination from "../../components/pagination/Pagination"
+import Pagination from "../../components/pagination/Pagination"
 const { RangePicker } = DatePicker
 
 export default function Reports() {
@@ -50,6 +52,10 @@ export default function Reports() {
 	const [submitted, setSubmitted] = useState(false)
 	const [newDate, setNewDate] = useState("")
 	const [btnLoading, setBtnLoading] = useState(false)
+	const [objId, setObjId] = useState("")
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPages, setTotalPage] = useState(1)
 
 	// filter
 	const [filteredData, setFilteredData] = useState({})
@@ -78,9 +84,31 @@ export default function Reports() {
 		})
 	}
 
+	const getReports = () => {
+		dispatch(setLoading(true))
+		get(`reports/reports-list?limit=${limit}&page=${currentPage}`).then(
+			(data) => {
+				if (data?.status === 201 || data?.status === 200) {
+					setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
+					dispatch(setData(data?.data?.data))
+					dispatch(setCapital(data?.data?.hisob?.totalProductCost))
+					dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
+					dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
+				} else {
+					toast.error("Nomalum server xatolik", { toastId: "" })
+				}
+				dispatch(setLoading(false))
+			}
+		)
+	}
+
+	useEffect(() => {
+		getReports()
+	}, [currentPage])
+
 	useEffect(() => {
 		setUserInfo(localStorage.getItem("role"))
-		getData("reports", setData)
+		// getReports()
 		getData("deliver", setDataDeliver)
 	}, [])
 
@@ -189,10 +217,11 @@ export default function Reports() {
 		setshowDropdown("")
 		setAddModalVisible(true)
 		setAddModalDisplay("block")
+		setObjId(id)
 
 		get(`/reports/reports-list/${id}`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
-				setNewDate(moment(data?.data?.reports_createdat).format("YYYY-MM-DD"))
+				setNewDate(moment(data?.data[0]?.reports_createdat).format("YYYY-MM-DD"))
 			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
 				toast.error("Bunday hisobot topilmadi")
 			} else {
@@ -213,12 +242,13 @@ export default function Reports() {
 		}, 300)
 	}
 
-	const updateReport = (id) => {
-		patch(`/reports/reports-patch/${id}`, {
+	const updateReport = () => {
+		patch(`/reports/reports-patch/${objId}`, {
 			reports_createdat: new Date(newDate).toISOString(),
 		}).then((data) => {
+			console.log(data)
 			if (data?.status === 200 || data?.status === 201) {
-				dispatch(editDate(id))
+				dispatch(editDate(objId))
 				clearAndClose()
 				toast.success("Hisobot muvoffaqiyatli o'zgartirildi")
 			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
@@ -228,6 +258,10 @@ export default function Reports() {
 			}
 			setBtnLoading(false)
 		})
+	}
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
 	}
 
 	return (
@@ -471,15 +505,23 @@ export default function Reports() {
 			{report?.loading ? (
 				<Loader />
 			) : (
-				<AntReportTable
-					data={searchSubmitted ? filteredData?.data : report?.data}
-					sidebar={sidebar}
-					userRole={userInfo}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					deleteReport={deleteReport}
-					editReport={editReport}
-				/>
+				<>
+					<AntReportTable
+						data={searchSubmitted ? filteredData?.data : report?.data}
+						sidebar={sidebar}
+						userRole={userInfo}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						deleteReport={deleteReport}
+						editReport={editReport}
+					/>
+
+					<Pagination
+						pages={totalPages}
+						currentPage={currentPage}
+						onPageChange={handlePageChange}
+					/>
+				</>
 			)}
 		</>
 	)

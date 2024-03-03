@@ -24,6 +24,10 @@ const AntReportTable = ({
 }) => {
 	const [loc, setLoc] = useState(true)
 
+	// const customPageChange = () => {
+	// 	console.log("hey")
+	// }
+
 	const handleClick = (e, id) => {
 		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
 		e.stopPropagation()
@@ -177,11 +181,13 @@ const AntReportTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr2}
-				pagination={{
-					showSizeChanger: false,
-					position: ["bottomLeft"],
-					pageSize: 20,
-				}}
+				// pagination={{
+				// 	showSizeChanger: false,
+				// 	position: ["bottomLeft"],
+				// 	pageSize: 20,
+				// 	onChange: customPageChange,
+				// }}
+				pagination={false}
 			/>
 		</div>
 	)

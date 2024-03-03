@@ -40,6 +40,7 @@ import {
 import Search from "../../components/search/Search"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment"
+import Pagination from "../../components/pagination/Pagination"
 
 export default function Products() {
 	const [
@@ -72,6 +73,10 @@ export default function Products() {
 	const [searchDeliverId, setSearchDeliverId] = useState("")
 	const [searchGoodId, setSearchGoodId] = useState("")
 
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPages, setTotalPage] = useState(1)
+
 	// new
 	const [newGoodsId, setNewGoodsId] = useState({})
 	const [newDeliverId, setNewDeliverId] = useState({})
@@ -85,18 +90,25 @@ export default function Products() {
 
 	const getData = () => {
 		dispatch(setLoading(true))
-		get("/products/products-list").then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
-				dispatch(setDataProduct(data?.data?.data))
-				dispatch(setQuantity(data?.data?.hisob?.kategoriya))
-				dispatch(setAmount(data?.data?.hisob?.soni))
-				dispatch(setSum(data?.data?.hisob?.umumiyQiymati))
-			} else {
-				toast.error("Nomalum server xatolik")
+		get(`/products/products-list?limit=${limit}&page=${currentPage}`).then(
+			(data) => {
+				if (data?.status === 200 || data?.status === 201) {
+					setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
+					dispatch(setDataProduct(data?.data?.data))
+					dispatch(setQuantity(data?.data?.hisob?.kategoriya))
+					dispatch(setAmount(data?.data?.hisob?.soni))
+					dispatch(setSum(data?.data?.hisob?.umumiyQiymati))
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+				dispatch(setLoading(false))
 			}
-			dispatch(setLoading(false))
-		})
+		)
 	}
+
+	useEffect(() => {
+		getData()
+	}, [currentPage])
 
 	const getData1 = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
@@ -106,7 +118,7 @@ export default function Products() {
 
 	useEffect(() => {
 		setUserInfo(localStorage.getItem("role"))
-		getData()
+		// getData()
 		getData1("deliver", setDataDeliver)
 		getData1("goods", setDataGood)
 	}, [])
@@ -246,6 +258,7 @@ export default function Products() {
 		get(`/goods/deliver-goods-list/${id}`).then((data) => {
 			setGoodList(data?.data)
 		})
+		setNewGoodsId({})
 	}
 
 	const editProduct = (id) => {
@@ -273,6 +286,10 @@ export default function Products() {
 				toast.error("Nomalum server xatolik")
 			}
 		})
+	}
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
 	}
 
 	return (
@@ -738,17 +755,25 @@ export default function Products() {
 			{product?.loading ? (
 				<Loader />
 			) : (
-				<AntTable
-					data={searchSubmitted ? filteredData?.data : product?.dataProduct}
-					deleteItem={deleteProduct}
-					sidebar={sidebar}
-					userRole={userInfo}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					editProduct={editProduct}
-					setAddModalVisible={setAddModalVisible}
-					setAddModalDisplay={setAddModalDisplay}
-				/>
+				<>
+					<AntTable
+						data={searchSubmitted ? filteredData?.data : product?.dataProduct}
+						deleteItem={deleteProduct}
+						sidebar={sidebar}
+						userRole={userInfo}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						editProduct={editProduct}
+						setAddModalVisible={setAddModalVisible}
+						setAddModalDisplay={setAddModalDisplay}
+					/>
+
+					<Pagination
+						pages={totalPages}
+						currentPage={currentPage}
+						onPageChange={handlePageChange}
+					/>
+				</>
 			)}
 		</>
 	)

@@ -144,6 +144,7 @@ export default function Employees() {
 		setDesc("")
 		setObjId("")
 		setSubmitted(false)
+		setBtn_loading(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
 			setAddModalDisplay("none")

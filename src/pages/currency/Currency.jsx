@@ -172,6 +172,7 @@ export default function Currency() {
 		setNewAmount("")
 		setObjId("")
 		setSubmitted(false)
+		setButtonLoader(false)
 		setAddModalVisible(false)
 		setTimeout(() => {
 			setAddModalDisplay("none")
