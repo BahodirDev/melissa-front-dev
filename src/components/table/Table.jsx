@@ -161,11 +161,12 @@ const AntTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr2}
-				pagination={{
-					showSizeChanger: false,
-					position: ["bottomLeft"],
-					pageSize: 20,
-				}}
+				// pagination={{
+				// 	showSizeChanger: false,
+				// 	position: ["bottomLeft"],
+				// 	pageSize: 20,
+				// }}
+				pagination={false}
 			/>
 		</div>
 	)
