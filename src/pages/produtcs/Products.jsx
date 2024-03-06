@@ -99,6 +99,7 @@ export default function Products() {
 					dispatch(setAmount(data?.data?.hisob?.soni))
 					dispatch(setSum(data?.data?.hisob?.umumiyQiymati))
 				} else {
+					setTotalPage(0)
 					toast.error("Nomalum server xatolik")
 				}
 				dispatch(setLoading(false))
@@ -236,6 +237,7 @@ export default function Products() {
 				search: inputRef.current?.value,
 			}).then((data) => {
 				if (data.status === 200) {
+					// setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 					setFilteredData(data?.data)
 				} else {
 					toast.error("Nomalum server xatolik")
@@ -768,11 +770,13 @@ export default function Products() {
 						setAddModalDisplay={setAddModalDisplay}
 					/>
 
+					{/* {searchSubmitted ? null : ( */}
 					<Pagination
 						pages={totalPages}
 						currentPage={currentPage}
 						onPageChange={handlePageChange}
 					/>
+					{/* )} */}
 				</>
 			)}
 		</>
