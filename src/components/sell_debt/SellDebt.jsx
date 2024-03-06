@@ -70,8 +70,7 @@ const SellDebt = ({
 	const getData = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
-				if (name === "products") dispatch1(data?.data.data)
-				else dispatch(dispatch1(data?.data))
+				dispatch(dispatch1(data?.data))
 			}
 		})
 	}
@@ -83,7 +82,13 @@ const SellDebt = ({
 	}, [])
 
 	useEffect(() => {
-		getData("products", setProductsD)
+		get(`/products/products-list?limit=20&page=1`).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				setProductsD(data?.data?.data)
+			} else {
+				setProductsD([])
+			}
+		})
 	}, [SDModalVisible])
 
 	const handleStoreChange = (e) => {
