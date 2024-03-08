@@ -86,70 +86,39 @@ export default function Reports() {
 
 	const getReports = () => {
 		dispatch(setLoading(true))
-		get(`reports/reports-list?limit=${limit}&page=${currentPage}`).then(
-			(data) => {
-				if (data?.status === 201 || data?.status === 200) {
-					setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
-					dispatch(setData(data?.data?.data))
-					dispatch(setCapital(data?.data?.hisob?.totalProductCost))
-					dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
-					dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
-				} else {
-					toast.error("Nomalum server xatolik", { toastId: "" })
-				}
-				dispatch(setLoading(false))
-			}
-		)
-	}
-
-	useEffect(() => {
-		getReports()
-	}, [currentPage])
-
-	useEffect(() => {
-		setUserInfo(localStorage.getItem("role"))
-		// getReports()
-		getData("deliver", setDataDeliver)
-	}, [])
-
-	const handleFilter = () => {
 		if (
 			storeId ||
 			clientId ||
 			dateRange?.length ||
-			selectedIncomeOutcome !== "all"
+			selectedIncomeOutcome !== "all" ||
+			inputRef.current?.value.length > 0
 		) {
-			dispatch(setLoading(true))
-			setSearchSubmitted(true)
-
-			let filterObj = {
-				store: storeId,
-				client: clientId,
-				selectedDate: dateRange?.length
-					? dateRange[0].format("YYYY/MM/DD")
-					: "",
-				finishedDate: dateRange?.length
-					? dateRange[1].format("YYYY/MM/DD")
-					: "",
-				goods_name: inputRef.current?.value,
-				goods_code: inputRef.current?.value,
-			}
-			if (selectedIncomeOutcome === "income") filterObj.isEnter = true
-			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
-
-			post("/reports/reports-filter", filterObj).then((data) => {
-				if (data.status === 200) {
-					setFilteredData(data?.data)
-				} else {
-					toast.error("Nomalum server xatolik")
-				}
-				dispatch(setLoading(false))
-			})
+			handleSearch()
 		} else {
-			setSearchSubmitted(false)
-			setFilteredData([])
+			get(`reports/reports-list?limit=${limit}&page=${currentPage}`).then(
+				(data) => {
+					if (data?.status === 201 || data?.status === 200) {
+						setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
+						dispatch(setData(data?.data?.data))
+						dispatch(setCapital(data?.data?.hisob?.totalProductCost))
+						dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
+						dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
+					} else {
+						setTotalPage(0)
+						toast.error("Nomalum server xatolik", { toastId: "" })
+					}
+					dispatch(setLoading(false))
+				}
+			)
 		}
 	}
+
+	useEffect(getReports, [currentPage])
+
+	useEffect(() => {
+		setUserInfo(localStorage.getItem("role"))
+		getData("deliver", setDataDeliver)
+	}, [])
 
 	const clearFilter = () => {
 		setSelectedIncomeOutcome("all")
@@ -158,47 +127,41 @@ export default function Reports() {
 		setDateRange([])
 		setSearchSubmitted(false)
 		setFilteredData([])
+		inputRef.current.value = ""
 	}
 
 	const handleSearch = () => {
-		if (inputRef.current?.value.length > 0) {
-			dispatch(setLoading(true))
-			setSearchSubmitted(true)
-			let filterObj = {
-				store: storeId,
-				client: clientId,
-				selectedDate: dateRange?.length
-					? dateRange[0].format("YYYY/MM/DD")
-					: "",
-				finishedDate: dateRange?.length
-					? dateRange[1].format("YYYY/MM/DD")
-					: "",
-				goods_name: inputRef.current?.value,
-				goods_code: inputRef.current?.value,
-			}
-			if (selectedIncomeOutcome === "income") filterObj.isEnter = true
-			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
-
-			post("/reports/reports-filter", filterObj).then((data) => {
-				// console.log(data.data)
-				if (data.status === 200) {
-					setFilteredData(data?.data)
-				} else {
-					toast.error("Nomalum server xatolik")
-				}
-				dispatch(setLoading(false))
-			})
-		} else {
-			setSearchSubmitted(false)
-			setFilteredData([])
+		dispatch(setLoading(true))
+		setSearchSubmitted(true)
+		let filterObj = {
+			store: storeId,
+			client: clientId,
+			selectedDate: dateRange?.length
+				? dateRange[0].format("YYYY/MM/DD")
+				: null,
+			finishedDate: dateRange?.length
+				? dateRange[1].format("YYYY/MM/DD")
+				: null,
+			search: inputRef.current?.value,
 		}
+		if (selectedIncomeOutcome === "income") filterObj.isEnter = true
+		else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
+		post(
+			`/reports/reports-filter?limit=${limit}&page=${currentPage}`,
+			filterObj
+		).then((data) => {
+			if (data.status === 200) {
+				setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
+				setFilteredData(data?.data)
+			} else {
+				setTotalPage(0)
+				toast.error("Nomalum server xatolik")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
-	const clearSearch = () => {
-		setSearchSubmitted(false)
-		setFilteredData([])
-		inputRef.current.value = ""
-	}
+	useEffect(handleSearch, [storeId, clientId, dateRange, selectedIncomeOutcome])
 
 	const deleteReport = (id) => {
 		remove(`/reports/reports-delete/${id}`).then((data) => {
@@ -221,7 +184,9 @@ export default function Reports() {
 
 		get(`/reports/reports-list/${id}`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
-				setNewDate(moment(data?.data[0]?.reports_createdat).format("YYYY-MM-DD"))
+				setNewDate(
+					moment(data?.data[0]?.reports_createdat).format("YYYY-MM-DD")
+				)
 			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
 				toast.error("Bunday hisobot topilmadi")
 			} else {
@@ -456,9 +421,9 @@ export default function Reports() {
 					<button type="button" className="filter-btn" onClick={clearFilter}>
 						Tozalash
 					</button>
-					<button type="button" className="filter-btn" onClick={handleFilter}>
+					{/* <button type="button" className="filter-btn" onClick={handleFilter}>
 						Saqlash
-					</button>
+					</button> */}
 				</div>
 			</div>
 
@@ -497,7 +462,7 @@ export default function Reports() {
 
 			<Search
 				handleSearch={handleSearch}
-				clearSearch={clearSearch}
+				clearSearch={() => (inputRef.current.value = "")}
 				showAddBtn={false}
 				className={"table-m"}
 			/>

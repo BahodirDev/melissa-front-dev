@@ -138,7 +138,7 @@ export default function Goods() {
 				setNewDeliver({
 					deliver_name: data?.data[0]?.deliver_name,
 					deliver_nomer: data?.data[0]?.deliver_nomer,
-					delivery_id: data?.data[0]?.delivery_id,
+					deliver_id: data?.data[0]?.delivery_id,
 				})
 			} else {
 				clearAndClose()

@@ -10,7 +10,7 @@ function Pagination({ pages, currentPage, onPageChange }) {
 	}
 
 	const renderPaginationItems = () => {
-		if (pages < 6) {
+		if (pages <= 6) {
 			return Array.from({ length: pages }, (_, i) => (
 				<button
 					key={i + 1}
@@ -77,7 +77,7 @@ function Pagination({ pages, currentPage, onPageChange }) {
 	return (
 		<div className="custom-pagination">
 			<button
-				disabled={activePage <= 1}
+				disabled={activePage <= 1 || pages <= 1 || isNaN(pages)}
 				className="page-item previous no"
 				onClick={() => handlePageChange(activePage - 1)}
 			>
@@ -85,7 +85,7 @@ function Pagination({ pages, currentPage, onPageChange }) {
 			</button>
 			<div className="wrapper">{renderPaginationItems()}</div>
 			<button
-				disabled={activePage >= pages}
+				disabled={activePage >= pages || pages <= 1 || isNaN(pages)}
 				className="page-item next no"
 				onClick={() => handlePageChange(activePage + 1)}
 			>
