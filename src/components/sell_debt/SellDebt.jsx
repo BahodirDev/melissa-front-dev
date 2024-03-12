@@ -51,6 +51,7 @@ const SellDebt = ({
 	const [productListD, setProductListD] = useState([])
 	const [productsD, setProductsD] = useState([])
 	const [productsCacheD, setProductsCacheD] = useState([])
+	const [totalPriceSellList, setTotalPriceSellList] = useState(0)
 
 	// new sell
 	const [storeObj, setStoreObj] = useState({})
@@ -165,6 +166,9 @@ const SellDebt = ({
 				code: productObj?.goods_id?.goods_code,
 			}
 			setProductList([newObj, ...productList])
+
+			setTotalPriceSellList((prev) => prev + productP * productQ)
+
 			const index = products.findIndex(
 				(item) => item?.products_id === productObj?.products_id
 			)
@@ -231,6 +235,18 @@ const SellDebt = ({
 		// remove from cache and add back to products
 		const newObj = productsCache.filter((item) => item.products_id === id)[0]
 		setProducts([newObj, ...products])
+
+		const removedItem = productList.findIndex(
+			(item) => item.product_id === id
+		)
+		if (removedItem !== -1) {
+			setTotalPriceSellList(
+				(prev) =>
+					prev -
+					productList[removedItem]?.count * productList[removedItem]?.price
+			)
+			console.log(productList[removedItem])
+		}
 	}
 
 	const removeItemFromListD = (id) => {
@@ -420,6 +436,7 @@ const SellDebt = ({
 							<h5>Miqdor</h5>
 							<h5>Narx</h5>
 							<h5>Umumiy narx</h5>
+							<h5>{addComma(totalPriceSellList)}</h5>
 						</div>
 						<div className="modal-list-body">
 							{productList.length ? (
