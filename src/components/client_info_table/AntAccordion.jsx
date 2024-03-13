@@ -1,6 +1,6 @@
 import { Collapse } from "antd"
 import moment from "moment/moment"
-import { addComma } from "../addComma"
+import { addComma, roundToNearestThousand } from "../addComma"
 import NoData from "../noData/NoData"
 import { Download } from "@phosphor-icons/react"
 import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
@@ -37,10 +37,21 @@ const AntdAccordion = ({ data }) =>
 					>
 						<table cellPadding="5px">
 							<tbody>
-								{item?.files.map((fileInfo) => (
+								<h6>
+									{item?.files?.length}ta -{" "}
+									{roundToNearestThousand(
+										item?.files?.reduce(
+											(totalPrice, product) =>
+												totalPrice + product?.total_price,
+											0
+										)
+									).toLocaleString()}
+									so'm
+								</h6>
+								{item?.files.map((fileInfo, idx) => (
 									<tr>
 										<td>
-											{fileInfo?.goods_name} - {fileInfo?.goods_code}
+											{idx + 1} {fileInfo?.goods_name} - {fileInfo?.goods_code}
 										</td>
 										<td>{fileInfo?.product_count}ta</td>
 										<td>{addComma(fileInfo?.count_price)} =</td>

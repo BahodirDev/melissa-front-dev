@@ -3,7 +3,7 @@ import { Option } from "antd/es/mentions"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { addComma, addSpace, formatSumma } from "../../components/addComma"
+import { addComma, addSpace, formatSumma, roundToNearestThousand } from "../../components/addComma"
 import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -431,8 +431,8 @@ export default function Reports() {
 				<InfoItem
 					value={addSpace(
 						searchSubmitted
-							? +filteredData?.hisob?.totalProductCost
-							: report.capital
+							? roundToNearestThousand(+filteredData?.hisob?.totalProductCost)
+							: roundToNearestThousand(report.capital)
 					)}
 					name="Foyda"
 					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
@@ -441,8 +441,8 @@ export default function Reports() {
 				<InfoItem
 					value={addSpace(
 						searchSubmitted
-							? +filteredData?.hisob?.totalCostMinus
-							: report.outcome
+							? roundToNearestThousand(+filteredData?.hisob?.totalCostMinus)
+							: roundToNearestThousand(report.outcome)
 					)}
 					name="Kirim"
 					icon={<ArrowDown size={24} color="var(--color-success)" />}
@@ -451,8 +451,8 @@ export default function Reports() {
 				<InfoItem
 					value={addSpace(
 						searchSubmitted
-							? +filteredData?.hisob?.totalCostPilus
-							: report.income
+							? roundToNearestThousand(+filteredData?.hisob?.totalCostPilus)
+							: roundToNearestThousand(report.income)
 					)}
 					name="Chiqim"
 					icon={<ArrowUp size={24} color="var(--color-warning)" />}

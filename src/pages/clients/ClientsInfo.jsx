@@ -34,7 +34,7 @@ const ClientsInfo = () => {
 			<button type="button" onClick={() => navigate(-1)} className="back-btn">
 				<CaretLeft size={24} /> <span>Orqaga</span>
 			</button>
-			<div className="filter-wrapper client-info">
+			{/* <div className="filter-wrapper client-info">
 				<div className="input-wrapper">
 					<Space direction="vertical" size={12}>
 						<RangePicker
@@ -56,7 +56,7 @@ const ClientsInfo = () => {
 						Saqlash
 					</button>
 				</div>
-			</div>
+			</div> */}
 
 			<div className="client-info-div">
 				<h2>{name}</h2>

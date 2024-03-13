@@ -17,7 +17,7 @@ import { CaretDown, Info, X, XCircle } from "@phosphor-icons/react"
 import { dateCompare, numberCheck, stringCheck } from "../validation"
 import { Select } from "antd"
 import format_phone_number from "../format_phone_number/format_phone_number"
-import { addComma } from "../addComma"
+import { addComma, roundToNearestThousand } from "../addComma"
 import { EmptyList } from "../noData/NoData"
 import { toast } from "react-toastify"
 import {
@@ -29,7 +29,7 @@ import {
 import moment from "moment"
 import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
 import { addData } from "../reducers/debt"
-import { confirmCloseModal } from "../confirm/confirm_modal"
+import { confirmApproveModal, confirmCloseModal } from "../confirm/confirm_modal"
 
 const SellDebt = ({
 	SDModalVisible,
@@ -498,7 +498,9 @@ const SellDebt = ({
 							type="button"
 							className="primary-btn sell"
 							disabled={btnLoading}
-							onClick={postP}
+							onClick={(e) =>
+								confirmApproveModal("Savdoni tasdiqlaysizmi?", postP)
+							}
 						>
 							Sotish
 							{btnLoading && (
@@ -1011,7 +1013,12 @@ const SellDebt = ({
 									}
 									value={
 										productObj?.goods_id?.goods_name
-											? `${productObj.goods_id.goods_name} - ${productObj.goods_id.goods_code} - ${productObj.deliver_id.deliver_name}`
+											? `${productObj.goods_id.goods_name} - ${
+													productObj.goods_id.goods_code
+											  } - ${(
+													productObj?.products_count_price *
+													productObj?.currency_id?.currency_amount
+											  ).toLocaleString()}`
 											: null
 									}
 									onChange={(e) => {
@@ -1037,7 +1044,10 @@ const SellDebt = ({
 													<span>{item?.goods_id?.goods_name} - </span>
 													<span>
 														{item?.goods_id?.goods_code} -{" "}
-														{item?.deliver_id?.deliver_name}
+														{(
+															item?.products_count_price *
+															item?.currency_id?.currency_amount
+														).toLocaleString()}
 													</span>
 												</div>
 											</Select.Option>
@@ -1100,11 +1110,13 @@ const SellDebt = ({
 								<label>
 									Narx (
 									{productObj.products_count_price
-										? addComma(
+										? // roundToNearestThousand(
+										  (
 												productObj.products_count_price *
-													productObj.currency_id.currency_amount
-										  )
-										: 0}{" "}
+												productObj.currency_id.currency_amount
+										  ).toLocaleString()
+										: // ).toLocaleString()
+										  0}
 									so'm )
 								</label>
 								<input
