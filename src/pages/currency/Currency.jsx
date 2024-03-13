@@ -281,7 +281,11 @@ export default function Currency() {
 				/>
 			</div>
 
-			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				// clearAndClose={clearAndClose}
+			/>
 
 			{state?.loading ? (
 				<Loader />
