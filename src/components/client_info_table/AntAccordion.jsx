@@ -20,7 +20,7 @@ const AntdAccordion = ({ data }) =>
 						key={item.key}
 						header={
 							<div className="antd-collapse-header">
-								{moment(item?.files[0].createdat).format("YYYY/MM/DD HH:MM:SS")}
+								{moment(item?.files[0].createdat).format("YYYY/MM/DD hh:mm:ss")}
 								<button
 									onClick={() =>
 										confirmDownloadModal(

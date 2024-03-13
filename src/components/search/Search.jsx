@@ -6,6 +6,7 @@ const Search = ({
 	clearSearch,
 	showAddBtn = true,
 	className,
+	// clearAndClose = () => {},
 }) => {
 	const [
 		inputRef,
@@ -17,11 +18,22 @@ const Search = ({
 		setAddModalDisplay,
 	] = useOutletContext()
 
+	const handleKeyPress = (event) => {
+		if (event.key === "Enter") {
+			handleSearch()
+		}
+	}
+
 	return (
 		<div className={`search-wrapper ${className}`}>
 			<div>
 				<div className="input-wrapper">
-					<input type="text" placeholder="Izlash..." ref={inputRef} />
+					<input
+						type="text"
+						placeholder="Izlash..."
+						ref={inputRef}
+						onKeyPress={handleKeyPress}
+					/>
 				</div>
 				<button className="primary-btn" onClick={handleSearch}>
 					Izlash
@@ -35,6 +47,7 @@ const Search = ({
 						onClick={(e) => {
 							e.stopPropagation()
 							setshowDropdown("")
+							// clearAndClose()
 							setAddModalVisible(true)
 							setAddModalDisplay("block")
 						}}

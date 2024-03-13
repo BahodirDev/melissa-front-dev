@@ -28,6 +28,7 @@ import {
 import moment from "moment"
 import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
 import { addData } from "../reducers/debt"
+import { confirmCloseModal } from "../confirm/confirm_modal"
 
 const SellDebt = ({
 	SDModalVisible,
@@ -35,7 +36,7 @@ const SellDebt = ({
 	SDModalDisplay,
 	setSDModalDisplay,
 }) => {
-	const { store, client } = useSelector((state) => state)
+	const { store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
 
 	const [isDebtVisible, setIsDebtVisible] = useState(false)
@@ -55,6 +56,7 @@ const SellDebt = ({
 
 	// new sell
 	const [storeObj, setStoreObj] = useState({})
+	const [deliverObj, setDeliverObj] = useState({})
 	const [productObj, setProductObj] = useState({})
 	const [clientObj, setClientObj] = useState({})
 	const [productQ, setProductQ] = useState(0)
@@ -92,14 +94,14 @@ const SellDebt = ({
 		})
 	}, [SDModalVisible])
 
-	const handleStoreChange = (e) => {
+	const handleDeliverChange = (e) => {
 		setProductObj({})
 		setProductQ(0)
 
 		if (e) {
-			setStoreObj(JSON.parse(e))
+			setDeliverObj(JSON.parse(e))
 
-			get(`/products/products-by-storeid/${JSON.parse(e).store_id}`).then(
+			get(`/products/products-by-deliverId/${JSON.parse(e)?.deliver_id}`).then(
 				(data) => {
 					if (data?.status === 200) {
 						setProducts(data?.data)
@@ -109,7 +111,7 @@ const SellDebt = ({
 				}
 			)
 		} else {
-			setStoreObj({})
+			setDeliverObj({})
 			setProducts([])
 		}
 	}
@@ -147,6 +149,7 @@ const SellDebt = ({
 		setSubmitted(true)
 		if (
 			storeObj.store_id &&
+			deliver?.deliver_name &&
 			productObj.products_count_price &&
 			clientObj.clients_name &&
 			productQ > 0 &&
@@ -199,6 +202,7 @@ const SellDebt = ({
 		setProductsCacheD([])
 		setProductsD([])
 
+		setTotalPriceSellList(0)
 		setSubmittedD(false)
 		setBtnLoading(false)
 		setBtnLoadingD(false)
@@ -236,16 +240,13 @@ const SellDebt = ({
 		const newObj = productsCache.filter((item) => item.products_id === id)[0]
 		setProducts([newObj, ...products])
 
-		const removedItem = productList.findIndex(
-			(item) => item.product_id === id
-		)
+		const removedItem = productList.findIndex((item) => item.product_id === id)
 		if (removedItem !== -1) {
 			setTotalPriceSellList(
 				(prev) =>
 					prev -
 					productList[removedItem]?.count * productList[removedItem]?.price
 			)
-			console.log(productList[removedItem])
 		}
 	}
 
@@ -298,6 +299,14 @@ const SellDebt = ({
 					toast.success("Mahsulot muvoffaqiyatli sotildi")
 
 					confirmDownloadModal(downloadFile, data?.data?.report_id)
+				} else if (data?.response?.data?.message === "Mahsulot kam") {
+					let productNames = ""
+					data?.response?.data?.data.forEach((item, idx) => {
+						productNames += item?.name
+						if (idx + 1 < data?.response?.data?.data.length)
+							productNames += ", "
+					})
+					toast.error(`${productNames} mahsuloti kam`, { autoClose: false })
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
@@ -433,7 +442,7 @@ const SellDebt = ({
 						<div className="modal-list-head">
 							<h5>Mijoz</h5>
 							<h5>Mahsulot</h5>
-							<h5>Miqdor</h5>
+							<h5>Miqdor ({productList?.length})</h5>
 							<h5>Narx</h5>
 							<h5>Umumiy narx</h5>
 							<h5>{addComma(totalPriceSellList)}</h5>
@@ -443,7 +452,9 @@ const SellDebt = ({
 								productList.map((item, idx) => {
 									return (
 										<div className="modal-list-item" key={idx}>
-											<h6>{item?.client.clients_name}</h6>
+											<h6>
+												{idx + 1} {item?.client.clients_name}
+											</h6>
 											<h6>
 												{item.product_name} - {item.code}
 											</h6>
@@ -800,7 +811,8 @@ const SellDebt = ({
 										)
 									}
 									value={storeObj?.store_name ? storeObj?.store_name : null}
-									onChange={handleStoreChange}
+									// onChange={handleStoreChange}
+									onChange={(e) => setStoreObj(JSON.parse(e))}
 								>
 									{store?.data.length
 										? store?.data.map((item, idx) => {
@@ -893,6 +905,57 @@ const SellDebt = ({
 											stringCheck(
 												clientObj?.clients_name,
 												"Mijoz tanlash majburiy"
+											)}
+									</span>
+								</div>
+							</div>
+							<div
+								className={`input-wrapper modal-form ${
+									submitted &&
+									stringCheck(deliverObj?.deliver_name) !== null &&
+									"error"
+								}`}
+							>
+								<label>Ta'minotchi tanlang</label>
+								<Select
+									showSearch
+									allowClear
+									placeholder="Ta'minotchi tanlang"
+									className="select"
+									suffixIcon={
+										submitted &&
+										stringCheck(deliverObj?.deliver_name) !== null ? (
+											<Info size={20} />
+										) : (
+											<CaretDown size={16} />
+										)
+									}
+									value={
+										deliverObj?.deliver_name ? deliverObj?.deliver_name : null
+									}
+									onChange={handleDeliverChange}
+								>
+									{deliver?.data.length
+										? deliver?.data.map((item, idx) => {
+												return (
+													<Select.Option key={idx} value={JSON.stringify(item)}>
+														<div>
+															<span>
+																{item?.deliver_name} -{" "}
+																{format_phone_number(item?.deliver_nomer)}
+															</span>
+														</div>
+													</Select.Option>
+												)
+										  })
+										: null}
+								</Select>
+								<div className="validation-field">
+									<span>
+										{submitted &&
+											stringCheck(
+												deliverObj?.deliver_name,
+												"Ta'minotchi tanlash majburiy"
 											)}
 									</span>
 								</div>
@@ -1046,7 +1109,24 @@ const SellDebt = ({
 								<button className="primary-btn" onClick={handelAddToList}>
 									Qo'shish
 								</button>
-								<button className="secondary-btn" onClick={clearAndClose}>
+								{/* <button className="secondary-btn" onClick={clearAndClose}> */}
+								<button
+									className="secondary-btn"
+									onClick={(e) => {
+										if (productList?.length >= 1)
+											confirmCloseModal(
+												"Ro'yxat o'chirib yuborilsinmi?",
+												() => {
+													setSDModalVisible(false)
+													setTimeout(() => {
+														setSDModalDisplay("none")
+													}, 300)
+												},
+												clearAndClose
+											)
+										else clearAndClose()
+									}}
+								>
 									Bekor qilish
 								</button>
 							</div>
