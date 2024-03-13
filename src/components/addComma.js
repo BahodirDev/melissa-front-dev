@@ -22,6 +22,11 @@ export function addSpace(num) {
 	return str.join(".") + " so'm"
 }
 
+export function roundToNearestThousand(number) {
+	const remainder = number % 1000
+	return number - remainder + (remainder > 500 ? 1000 : 0)
+}
+
 export function formatSumma(number) {
 	if (number >= 1000000) {
 		return (number / 1000000).toFixed(1) + " mln"

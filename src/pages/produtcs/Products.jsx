@@ -2,7 +2,12 @@ import { Input, Select } from "antd"
 import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { addComma, addSpace, formatSumma } from "../../components/addComma"
+import {
+	addComma,
+	addSpace,
+	formatSumma,
+	roundToNearestThousand,
+} from "../../components/addComma"
 import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -740,7 +745,11 @@ export default function Products() {
 				/>
 				<InfoItem
 					value={addSpace(
-						searchSubmitted ? +filteredData?.hisob?.umumiyQiymati : product?.sum
+						roundToNearestThousand(
+							searchSubmitted
+								? +filteredData?.hisob?.umumiyQiymati
+								: product?.sum
+						)
 					)}
 					name="Umumiy summa"
 					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
