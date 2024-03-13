@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import { downloadFile, get, patch, post } from "../../customHook/api"
 import { setData as setDataClient } from "../reducers/client"
 import { setData as setDataCurrency } from "../reducers/currency"
+import { setData as setDataDeliver } from "../reducers/deliver"
 import { setData } from "../reducers/store"
 import { CaretDown, Info, X, XCircle } from "@phosphor-icons/react"
 import { dateCompare, numberCheck, stringCheck } from "../validation"
@@ -82,16 +83,17 @@ const SellDebt = ({
 		getData("clients", setDataClient)
 		getData("store", setData)
 		getData("currency", setDataCurrency)
+		getData("deliver", setDataDeliver)
 	}, [])
 
 	useEffect(() => {
-		get(`/products/products-list?limit=20&page=1`).then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
-				setProductsD(data?.data?.data)
-			} else {
-				setProductsD([])
-			}
-		})
+		// get(`/products/products-list?limit=20&page=1`).then((data) => {
+		// 	if (data?.status === 200 || data?.status === 201) {
+		// 		setProductsD(data?.data?.data)
+		// 	} else {
+		// 		setProductsD([])
+		// 	}
+		// })
 	}, [SDModalVisible])
 
 	const handleDeliverChange = (e) => {
@@ -149,7 +151,7 @@ const SellDebt = ({
 		setSubmitted(true)
 		if (
 			storeObj.store_id &&
-			deliver?.deliver_name &&
+			deliverObj?.deliver_name &&
 			productObj.products_count_price &&
 			clientObj.clients_name &&
 			productQ > 0 &&
@@ -182,6 +184,7 @@ const SellDebt = ({
 
 	const clearAndClose = () => {
 		setStoreObj({})
+		setDeliverObj({})
 		setProductObj({})
 		setClientObj({})
 		setProductQ(0)
@@ -307,6 +310,9 @@ const SellDebt = ({
 							productNames += ", "
 					})
 					toast.error(`${productNames} mahsuloti kam`, { autoClose: false })
+
+					// highlight not enough products
+					addKey(productList, data?.response?.data?.data)
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
@@ -370,6 +376,15 @@ const SellDebt = ({
 				setBtnLoadingD(false)
 			})
 		}
+	}
+
+	const addKey = (arr1, arr2) => {
+		arr1.forEach((obj1) => {
+			const match = arr2.find((obj2) => obj1.product_id === obj2.id)
+			if (match) {
+				obj1.highlight = true
+			}
+		})
 	}
 
 	return (
@@ -451,7 +466,12 @@ const SellDebt = ({
 							{productList.length ? (
 								productList.map((item, idx) => {
 									return (
-										<div className="modal-list-item" key={idx}>
+										<div
+											className={`modal-list-item ${
+												item?.highlight ? "highlight" : null
+											}`}
+											key={idx}
+										>
 											<h6>
 												{idx + 1} {item?.client.clients_name}
 											</h6>
@@ -937,16 +957,20 @@ const SellDebt = ({
 								>
 									{deliver?.data.length
 										? deliver?.data.map((item, idx) => {
-												return (
-													<Select.Option key={idx} value={JSON.stringify(item)}>
-														<div>
-															<span>
-																{item?.deliver_name} -{" "}
-																{format_phone_number(item?.deliver_nomer)}
-															</span>
-														</div>
-													</Select.Option>
-												)
+												if (!item?.isdelete)
+													return (
+														<Select.Option
+															key={idx}
+															value={JSON.stringify(item)}
+														>
+															<div>
+																<span>
+																	{item?.deliver_name} -{" "}
+																	{format_phone_number(item?.deliver_nomer)}
+																</span>
+															</div>
+														</Select.Option>
+													)
 										  })
 										: null}
 								</Select>
@@ -1059,6 +1083,7 @@ const SellDebt = ({
 											setProductQ(e.target.value)
 										}
 									}}
+									// onChange={(e) => setProductQ(e.target.value)}
 								/>
 								{submitted && numberCheck(productQ) !== null && (
 									<Info size={20} />
