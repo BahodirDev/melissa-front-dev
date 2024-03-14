@@ -1,14 +1,29 @@
+import { toast } from "react-toastify"
 import { Collapse } from "antd"
 import moment from "moment/moment"
 import { addComma, roundToNearestThousand } from "../addComma"
 import NoData from "../noData/NoData"
-import { Download } from "@phosphor-icons/react"
+import { Download, Trash } from "@phosphor-icons/react"
 import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
-import { downloadFile } from "../../customHook/api"
+import { downloadFile, remove } from "../../customHook/api"
+import { productDeleteConfirm } from "../delete_modal/delete_modal"
 const { Panel } = Collapse
 
-const AntdAccordion = ({ data }) =>
-	data?.length ? (
+const AntdAccordion = ({ data, removeFromList }) => {
+	const deleteReport = (id) => {
+		remove(`files/files-delete/${id}`).then((data) => {
+			if (data?.status === 200 || data?.status === 201) {
+				removeFromList(id)
+				toast.success("Fayl muvoffaqiyatli o'chirildi")
+			} else if (data?.response?.status === 404) {
+				toast.warn("Bunday fayl topilmadi")
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+		})
+	}
+
+	return data?.length ? (
 		<Collapse className="antd-collapse" accordion>
 			{data
 				.sort(
@@ -20,17 +35,42 @@ const AntdAccordion = ({ data }) =>
 						key={item.key}
 						header={
 							<div className="antd-collapse-header">
-								{moment(item?.files[0].createdat).format("YYYY/MM/DD hh:mm:ss")}
+								<div>
+									{moment(item?.files[0].createdat).format(
+										"YYYY/MM/DD hh:mm:ss"
+									)}
+									<button
+										onClick={() =>
+											confirmDownloadModal(
+												downloadFile,
+												item?.unique_file_table_id
+											)
+										}
+										className="download-btn accordion"
+									>
+										<Download size={20} />
+									</button>
+								</div>
 								<button
-									onClick={() =>
-										confirmDownloadModal(
-											downloadFile,
+									type="button"
+									className="accordion-delete__btn"
+									onClick={(e) =>
+										productDeleteConfirm(
+											e,
+											<>
+												<span>
+													{moment(item?.files[0].createdat).format(
+														"YYYY/MM/DD"
+													)}
+												</span>{" "}
+												dagi faylni
+											</>,
+											deleteReport,
 											item?.unique_file_table_id
 										)
 									}
-									className="download-btn"
 								>
-									<Download size={20} />
+									O'chirish <Trash size={20} />
 								</button>
 							</div>
 						}
@@ -71,5 +111,6 @@ const AntdAccordion = ({ data }) =>
 	) : (
 		<NoData />
 	)
+}
 
 export default AntdAccordion

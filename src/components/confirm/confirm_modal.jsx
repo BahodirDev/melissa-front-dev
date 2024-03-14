@@ -51,8 +51,12 @@ export const confirmApproveModal = (msg, action) => {
 		onCancel() {},
 		width: 350,
 		bodyStyle: {
-			display: "flex",
-			justifyContent: "center",
+			// display: "flex",
+			// justifyContent: "center",
+		},
+		style: {
+			top: '50%',
+			transform: 'translateY(-50%)'
 		},
 		cancelButtonProps: {
 			style: {

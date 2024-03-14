@@ -108,6 +108,9 @@
 	outline: none;
 	color: var(--color-secondary);
 }
+.download-btn.accordion {
+	margin-left: 20px;
+}
 .back-btn {
 	color: var(--color-secondary);
 	outline: none;
@@ -138,6 +141,19 @@
 }
 .secondary-btn:hover {
 	border: var(--border-primary);
+}
+.accordion-delete__btn {
+	font-size: var(--text-md);
+	color: var(--color-light);
+	background-color: var(--bg-danger);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	border: none;
+	padding: 2px 18px;
+	transition: 0.1s;
+}
+.accordion-delete__btn:hover {
+	filter: brightness(1.5);
 }
 
 /* info */

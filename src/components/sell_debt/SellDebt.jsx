@@ -17,7 +17,7 @@ import { CaretDown, Info, X, XCircle } from "@phosphor-icons/react"
 import { dateCompare, numberCheck, stringCheck } from "../validation"
 import { Select } from "antd"
 import format_phone_number from "../format_phone_number/format_phone_number"
-import { addComma, roundToNearestThousand } from "../addComma"
+import { addComma, roundToNearestHundred, roundToNearestThousand } from "../addComma"
 import { EmptyList } from "../noData/NoData"
 import { toast } from "react-toastify"
 import {
@@ -29,7 +29,10 @@ import {
 import moment from "moment"
 import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
 import { addData } from "../reducers/debt"
-import { confirmApproveModal, confirmCloseModal } from "../confirm/confirm_modal"
+import {
+	confirmApproveModal,
+	confirmCloseModal,
+} from "../confirm/confirm_modal"
 
 const SellDebt = ({
 	SDModalVisible,
@@ -891,7 +894,7 @@ const SellDebt = ({
 										e ? setClientObj(JSON.parse(e)) : setClientObj({})
 									}
 								>
-									<Select.Option
+									{/* <Select.Option
 										value={JSON.stringify({
 											clients_name: "Yangi mijoz",
 											clients_nomer: "000000000000",
@@ -899,7 +902,7 @@ const SellDebt = ({
 										})}
 									>
 										Yangi mijoz - (00) 000 00 00
-									</Select.Option>
+									</Select.Option> */}
 									{client?.data.length
 										? client?.data.map((item, idx) => {
 												if (!item?.isdelete) {
@@ -1018,7 +1021,7 @@ const SellDebt = ({
 											  } - ${(
 													productObj?.products_count_price *
 													productObj?.currency_id?.currency_amount
-											  ).toLocaleString()}`
+											  ).toLocaleString()}so'm`
 											: null
 									}
 									onChange={(e) => {
@@ -1027,8 +1030,10 @@ const SellDebt = ({
 										if (e) {
 											setProductObj(JSON.parse(e))
 											setProductP(
-												JSON.parse(e).products_count_price *
-													JSON.parse(e).currency_id.currency_amount
+												roundToNearestHundred(
+													JSON.parse(e).products_count_price *
+														JSON.parse(e).currency_id.currency_amount
+												)
 											)
 										} else setProductObj({})
 									}}
@@ -1047,7 +1052,7 @@ const SellDebt = ({
 														{(
 															item?.products_count_price *
 															item?.currency_id?.currency_amount
-														).toLocaleString()}
+														).toLocaleString()}so'm
 													</span>
 												</div>
 											</Select.Option>
@@ -1110,13 +1115,11 @@ const SellDebt = ({
 								<label>
 									Narx (
 									{productObj.products_count_price
-										? // roundToNearestThousand(
-										  (
+										? (
 												productObj.products_count_price *
 												productObj.currency_id.currency_amount
 										  ).toLocaleString()
-										: // ).toLocaleString()
-										  0}
+										: 0}
 									so'm )
 								</label>
 								<input
