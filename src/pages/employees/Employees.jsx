@@ -87,7 +87,7 @@ export default function Employees() {
 			}
 			if (objId) {
 				patch(`/users/users-patch/${objId}`, newUser).then((data) => {
-					if (data?.status === 200) {
+					if (data?.status === 200 || data?.status === 201) {
 						dispatch(editData(data?.data))
 						clearAndClose()
 						toast.success("Xodim muvoffaqiyatli o'zgartirildi")
@@ -106,6 +106,7 @@ export default function Employees() {
 					} else {
 						toast.error("Nomalum server xatolik")
 					}
+					// console.log(data)
 					setBtn_loading(false)
 				})
 			} else {

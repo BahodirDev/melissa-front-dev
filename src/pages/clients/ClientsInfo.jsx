@@ -29,6 +29,16 @@ const ClientsInfo = () => {
 		})
 	}, [])
 
+	const removeFromList = (id) => {
+		const index = list.findIndex((item) => item?.unique_file_table_id === id)
+
+		if (index !== -1) {
+			const newList = [...list]
+			newList.splice(index, 1)
+			setList(newList)
+		}
+	}
+
 	return (
 		<>
 			<button type="button" onClick={() => navigate(-1)} className="back-btn">
@@ -71,7 +81,11 @@ const ClientsInfo = () => {
 				</h3>
 			</div>
 
-			{loading ? <Loader /> : <AntdAccordion data={list} />}
+			{loading ? (
+				<Loader />
+			) : (
+				<AntdAccordion data={list} removeFromList={removeFromList} />
+			)}
 		</>
 	)
 }

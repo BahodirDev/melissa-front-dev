@@ -109,7 +109,7 @@
 	color: var(--color-secondary);
 }
 .highlight {
-	background-color: #fbd9df !important;
+	background-color: var(--bg-danger-opacity) !important;
 }
 
 /* animation */
