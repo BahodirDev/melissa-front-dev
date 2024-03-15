@@ -37,7 +37,7 @@ const AntdAccordion = ({ data, removeFromList }) => {
 							<div className="antd-collapse-header">
 								<div>
 									{moment(item?.files[0].createdat).format(
-										"YYYY/MM/DD hh:mm:ss"
+										"YYYY/MM/DD hh:mm"
 									)}
 									<button
 										onClick={() =>

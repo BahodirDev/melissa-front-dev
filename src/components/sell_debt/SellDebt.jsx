@@ -17,7 +17,11 @@ import { CaretDown, Info, X, XCircle } from "@phosphor-icons/react"
 import { dateCompare, numberCheck, stringCheck } from "../validation"
 import { Select } from "antd"
 import format_phone_number from "../format_phone_number/format_phone_number"
-import { addComma, roundToNearestHundred, roundToNearestThousand } from "../addComma"
+import {
+	addComma,
+	roundToNearestHundred,
+	roundToNearestThousand,
+} from "../addComma"
 import { EmptyList } from "../noData/NoData"
 import { toast } from "react-toastify"
 import {
@@ -50,13 +54,13 @@ const SellDebt = ({
 	const [productList, setProductList] = useState([])
 	const [products, setProducts] = useState([])
 	const [productsCache, setProductsCache] = useState([])
+	const [totalPriceSellList, setTotalPriceSellList] = useState(0)
 
 	const [btnLoadingD, setBtnLoadingD] = useState(false)
 	const [submittedD, setSubmittedD] = useState(false)
 	const [productListD, setProductListD] = useState([])
 	const [productsD, setProductsD] = useState([])
 	const [productsCacheD, setProductsCacheD] = useState([])
-	const [totalPriceSellList, setTotalPriceSellList] = useState(0)
 
 	// new sell
 	const [storeObj, setStoreObj] = useState({})
@@ -87,17 +91,19 @@ const SellDebt = ({
 		getData("store", setData)
 		getData("currency", setDataCurrency)
 		getData("deliver", setDataDeliver)
+
+		// get previous list on page load
+		// const existingData = localStorage.getItem("productList")
+		// const parsedData = existingData ? JSON.parse(existingData) : []
+		// setProductList(parsedData)
+		// setTotalPriceSellList(parsedData?.length)
+		// setStoreObj(parsedData[0]?.store_id)
+		// setClientObj(parsedData[0]?.client)
 	}, [])
 
-	useEffect(() => {
-		// get(`/products/products-list?limit=20&page=1`).then((data) => {
-		// 	if (data?.status === 200 || data?.status === 201) {
-		// 		setProductsD(data?.data?.data)
-		// 	} else {
-		// 		setProductsD([])
-		// 	}
-		// })
-	}, [SDModalVisible])
+	// useEffect(() => {
+	// 	localStorage.setItem("productList", JSON.stringify(productList))
+	// }, [productList])
 
 	const handleDeliverChange = (e) => {
 		setProductObj({})
@@ -209,6 +215,7 @@ const SellDebt = ({
 		setProductsD([])
 
 		setTotalPriceSellList(0)
+		// localStorage.setItem("productList", JSON.stringify([]))
 		setSubmittedD(false)
 		setBtnLoading(false)
 		setBtnLoadingD(false)
@@ -1052,7 +1059,8 @@ const SellDebt = ({
 														{(
 															item?.products_count_price *
 															item?.currency_id?.currency_amount
-														).toLocaleString()}so'm
+														).toLocaleString()}
+														so'm
 													</span>
 												</div>
 											</Select.Option>

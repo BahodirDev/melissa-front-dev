@@ -53,7 +53,7 @@ const DDebtTable = ({
 					price_each: addComma(item?.debts_cost) + item?.debts_currency,
 					price_total: addComma(item?.debts_total_price) + item?.debts_currency,
 					date: `${moment(item?.debts_createdat).format("YYYY/MM/DD")}`,
-					duedate: `${moment(item?.debts_due_date).format("YYYY/MM/DD HH:MM")}`,
+					duedate: `${moment(item?.debts_due_date).format("YYYY/MM/DD hh:mm")}`,
 				})
 			}
 		})
