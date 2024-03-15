@@ -51,7 +51,7 @@ const AntReportTable = ({
 			data_price_total: addComma(item?.reports_total_cost) + item?.currency,
 			// data_kurs: addComma(item?.currency_amount) + "лв",
 			data_date: `${moment(item?.reports_createdat).format(
-				"YYYY/MM/DD hh:mm:ss"
+				"YYYY/MM/DD hh:mm"
 			)}`,
 		}
 	})
