@@ -105,22 +105,42 @@ const SellDebt = ({
 	// 	localStorage.setItem("productList", JSON.stringify(productList))
 	// }, [productList])
 
+	const handleStoreChange = (id) => {
+		setProductObj({})
+		setProductQ(0)
+
+		if (id) {
+			const obj = JSON.parse(id)
+			setStoreObj(obj)
+
+			get(`/products/products-by-storeId/${obj?.store_id}`).then((data) => {
+				if (data?.status === 200) {
+					setProducts(data?.data)
+				} else {
+					setProducts([])
+				}
+			})
+		} else {
+			setStoreObj({})
+			setProducts([])
+		}
+	}
+
 	const handleDeliverChange = (e) => {
 		setProductObj({})
 		setProductQ(0)
 
 		if (e) {
-			setDeliverObj(JSON.parse(e))
+			const obj = JSON.parse(e)
+			setDeliverObj(obj)
 
-			get(`/products/products-by-deliverId/${JSON.parse(e)?.deliver_id}`).then(
-				(data) => {
-					if (data?.status === 200) {
-						setProducts(data?.data)
-					} else {
-						setProducts([])
-					}
+			get(`/products/products-by-deliverId/${obj?.deliver_id}`).then((data) => {
+				if (data?.status === 200) {
+					setProducts(data?.data)
+				} else {
+					setProducts([])
 				}
-			)
+			})
 		} else {
 			setDeliverObj({})
 			setProducts([])
@@ -160,9 +180,9 @@ const SellDebt = ({
 		setSubmitted(true)
 		if (
 			storeObj.store_id &&
-			deliverObj?.deliver_name &&
-			productObj.products_count_price &&
+			// deliverObj?.deliver_name &&
 			clientObj.clients_name &&
+			productObj.products_count_price &&
 			productQ > 0 &&
 			productP > 0
 		) {
@@ -843,8 +863,7 @@ const SellDebt = ({
 										)
 									}
 									value={storeObj?.store_name ? storeObj?.store_name : null}
-									// onChange={handleStoreChange}
-									onChange={(e) => setStoreObj(JSON.parse(e))}
+									onChange={handleStoreChange}
 								>
 									{store?.data.length
 										? store?.data.map((item, idx) => {
@@ -942,11 +961,12 @@ const SellDebt = ({
 								</div>
 							</div>
 							<div
-								className={`input-wrapper modal-form ${
-									submitted &&
-									stringCheck(deliverObj?.deliver_name) !== null &&
-									"error"
-								}`}
+								className={`input-wrapper modal-form`}
+								//	${
+								// 	submitted &&
+								// 	stringCheck(deliverObj?.deliver_name) !== null &&
+								// 	"error"
+								//	}
 							>
 								<label>Ta'minotchi tanlang</label>
 								<Select
@@ -954,14 +974,14 @@ const SellDebt = ({
 									allowClear
 									placeholder="Ta'minotchi tanlang"
 									className="select"
-									suffixIcon={
-										submitted &&
-										stringCheck(deliverObj?.deliver_name) !== null ? (
-											<Info size={20} />
-										) : (
-											<CaretDown size={16} />
-										)
-									}
+									// suffixIcon={
+									// 	submitted &&
+									// 	stringCheck(deliverObj?.deliver_name) !== null ? (
+									// 		<Info size={20} />
+									// 	) : (
+									// 		<CaretDown size={16} />
+									// 	)
+									// }
 									value={
 										deliverObj?.deliver_name ? deliverObj?.deliver_name : null
 									}
@@ -986,7 +1006,7 @@ const SellDebt = ({
 										  })
 										: null}
 								</Select>
-								<div className="validation-field">
+								{/* <div className="validation-field">
 									<span>
 										{submitted &&
 											stringCheck(
@@ -994,7 +1014,7 @@ const SellDebt = ({
 												"Ta'minotchi tanlash majburiy"
 											)}
 									</span>
-								</div>
+								</div> */}
 							</div>
 							<div
 								className={`input-wrapper modal-form ${
