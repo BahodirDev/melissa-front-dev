@@ -182,6 +182,18 @@ const Total = ({ getData }) => {
 		}, 300)
 	}
 
+	const clearOnly = () => {
+		setTotalName("")
+		setTotalCost(0)
+		setTotalComment("")
+		setTotalDate("")
+		setTotalDueDate("")
+		// clear new data
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -403,6 +415,7 @@ const Total = ({ getData }) => {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				className={"table-m"}
+				clearOnly={clearOnly}
 			/>
 
 			{state.nDebt?.loading ? (

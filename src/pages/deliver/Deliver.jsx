@@ -169,6 +169,15 @@ function Deliver() {
 		}, 300)
 	}
 
+	const clearOnly = () => {
+		setName("")
+		setPhone("")
+		setLoc("")
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -258,7 +267,11 @@ function Deliver() {
 				/>
 			</div>
 
-			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				clearOnly={clearOnly}
+			/>
 
 			{state?.loading ? (
 				<Loader />

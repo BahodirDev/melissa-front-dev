@@ -215,6 +215,20 @@ const Order = ({ getData }) => {
 		}, 300)
 	}
 
+	const clearOnly = () => {
+		setBeforeGood({})
+		setBeforeDeliver({})
+		setBeforeCost(0)
+		setBeforeCount(0)
+		setBeforeCurrency({})
+		setBeforeDate("")
+		setBeforeDueDate("")
+		// clear new data
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -381,7 +395,9 @@ const Order = ({ getData }) => {
 						}
 						value={
 							beforeCurrency?.currency_name
-								? `${beforeCurrency?.currency_name} - ${addComma(beforeCurrency?.currency_amount)}`
+								? `${beforeCurrency?.currency_name} - ${addComma(
+										beforeCurrency?.currency_amount
+								  )}`
 								: null
 						}
 						onChange={(e) =>
@@ -598,6 +614,7 @@ const Order = ({ getData }) => {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				className={"table-m"}
+				clearOnly={clearOnly}
 			/>
 
 			{state.oDebt?.loading ? (

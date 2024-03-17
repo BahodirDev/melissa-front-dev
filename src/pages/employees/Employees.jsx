@@ -199,6 +199,17 @@ export default function Employees() {
 		}, 300)
 	}
 
+	const clearOnly = () => {
+		setNew_name("")
+		setNew_number("")
+		setNew_job(0)
+		setNew_login("")
+		setNew_password("")
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -356,7 +367,11 @@ export default function Employees() {
 				/>
 			</div>
 
-			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				clearOnly={clearOnly}
+			/>
 
 			{state?.loading ? (
 				<Loader />

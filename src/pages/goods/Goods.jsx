@@ -187,6 +187,16 @@ export default function Goods() {
 		inputRef.current.value = ""
 	}
 
+	const clearOnly = () => {
+		setNewGoodName("")
+		setNewGoodCode("")
+		setNewDeliver("")
+
+		setObjId("")
+		setBtn_loading(false)
+		setSubmitted(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -342,7 +352,11 @@ export default function Goods() {
 				/>
 			</div>
 
-			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				clearOnly={clearOnly}
+			/>
 
 			{state?.loading ? (
 				<Loader />

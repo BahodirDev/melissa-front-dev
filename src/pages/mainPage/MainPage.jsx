@@ -65,7 +65,7 @@ export default function MainPage() {
 						}
 						return !prevVisible
 					})
-				} else if (e.ctrlKey && e.key === "k") {
+				} else if (e.key === "`") {
 					e.preventDefault()
 					setshowDropdown("")
 					setAddModalVisible(false)

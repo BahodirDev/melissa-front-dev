@@ -6,7 +6,7 @@ const Search = ({
 	clearSearch,
 	showAddBtn = true,
 	className,
-	// clearAndClose = () => {},
+	clearOnly,
 }) => {
 	const [
 		inputRef,
@@ -47,7 +47,7 @@ const Search = ({
 						onClick={(e) => {
 							e.stopPropagation()
 							setshowDropdown("")
-							// clearAndClose()
+							clearOnly()
 							setAddModalVisible(true)
 							setAddModalDisplay("block")
 						}}

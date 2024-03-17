@@ -160,6 +160,13 @@ export default function Store() {
 		}, 300)
 	}
 
+	const clearOnly = () => {
+		setStoreName("")
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -223,7 +230,11 @@ export default function Store() {
 				/>
 			</div>
 
-			<Search handleSearch={handleSearch} clearSearch={clearSearch} />
+			<Search
+				handleSearch={handleSearch}
+				clearSearch={clearSearch}
+				clearOnly={clearOnly}
+			/>
 
 			{state?.loading ? (
 				<Loader />

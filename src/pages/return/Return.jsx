@@ -206,6 +206,19 @@ function Return() {
 		inputRef.current.value = ""
 	}
 
+	const clearOnly = () => {
+		setName("")
+		setCount(0)
+		setCost(0)
+		setClient({})
+		setStore("")
+		setReason("")
+		// clear new data
+		setObjId("")
+		setSubmitted(false)
+		setBtnLoading(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -484,6 +497,7 @@ function Return() {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				className={"table-m"}
+				clearOnly={clearOnly}
 			/>
 
 			{state.return?.loading ? (

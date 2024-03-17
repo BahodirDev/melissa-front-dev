@@ -136,8 +136,6 @@ export default function Products() {
 			newDeliverId.deliver_id &&
 			newStoreId.store_id &&
 			currency?.data?.length &&
-			newBoxQ > 0 &&
-			newProductQ > 0 &&
 			newProductPrice > 0 &&
 			newProductCost > 0
 		) {
@@ -177,24 +175,26 @@ export default function Products() {
 					)
 				}
 			} else {
-				post("/products/products-post", newProductObj).then((data) => {
-					if (data?.status === 201) {
-						dispatch(
-							addData({
-								...data?.data,
-								...newGoodsId,
-								...newDeliverId,
-								...newStoreId,
-								...currency?.data[0],
-							})
-						)
-						clearAndClose()
-						toast.success("Mahsulot muvoffaqiyatli qo'shildi")
-					} else {
-						toast.error("Nomalum server xatolik")
-					}
-					setBtnLoading(false)
-				})
+				if (newBoxQ > 0 && newProductQ > 0) {
+					post("/products/products-post", newProductObj).then((data) => {
+						if (data?.status === 201) {
+							dispatch(
+								addData({
+									...data?.data,
+									...newGoodsId,
+									...newDeliverId,
+									...newStoreId,
+									...currency?.data[0],
+								})
+							)
+							clearAndClose()
+							toast.success("Mahsulot muvoffaqiyatli qo'shildi")
+						} else {
+							toast.error("Nomalum server xatolik")
+						}
+						setBtnLoading(false)
+					})
+				}
 			}
 		}
 	}
@@ -297,6 +297,22 @@ export default function Products() {
 
 	const handlePageChange = (pageNumber) => {
 		setCurrentPage(pageNumber)
+	}
+
+	const clearOnly = () => {
+		setNewGoodsId({})
+		setNewDeliverId({})
+		setNewStoreId({})
+		setNewBoxQ(0)
+		setNewProductQ(0)
+		setNewPercentId({})
+		setNewProductCost(0)
+		setNewProductPrice(0)
+		setBtnLoading(false)
+		setObjId("")
+		setNewDate("")
+
+		setSubmitted(false)
 	}
 
 	return (
@@ -469,7 +485,7 @@ export default function Products() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						submitted && numberCheck(newBoxQ) !== null && "error"
+						objId ? null : submitted && numberCheck(newBoxQ) !== null && "error"
 					}`}
 				>
 					<label>Quti soni</label>
@@ -480,14 +496,18 @@ export default function Products() {
 						value={newBoxQ ? newBoxQ : ""}
 						onChange={(e) => setNewBoxQ(e.target.value)}
 					/>
-					{submitted && numberCheck(newBoxQ) !== null && <Info size={20} />}
+					{objId
+						? null
+						: submitted && numberCheck(newBoxQ) !== null && <Info size={20} />}
 					<div className="validation-field">
-						<span>{submitted && numberCheck(newBoxQ)}</span>
+						<span>{objId ? null : submitted && numberCheck(newBoxQ)}</span>
 					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						submitted && numberCheck(newProductQ) !== null && "error"
+						objId
+							? null
+							: submitted && numberCheck(newProductQ) !== null && "error"
 					}`}
 				>
 					<label>Mahsulot soni</label>
@@ -498,9 +518,12 @@ export default function Products() {
 						value={newProductQ ? newProductQ : ""}
 						onChange={(e) => setNewProductQ(e.target.value)}
 					/>
-					{submitted && numberCheck(newProductQ) !== null && <Info size={20} />}
+					{objId
+						? null
+						: submitted &&
+						  numberCheck(newProductQ) !== null && <Info size={20} />}
 					<div className="validation-field">
-						<span>{submitted && numberCheck(newProductQ)}</span>
+						<span>{objId ? null : submitted && numberCheck(newProductQ)}</span>
 					</div>
 				</div>
 				{/* <div
@@ -761,6 +784,7 @@ export default function Products() {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				className={"table-m"}
+				clearOnly={clearOnly}
 			/>
 
 			{product?.loading ? (
