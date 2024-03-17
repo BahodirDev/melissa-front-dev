@@ -179,6 +179,14 @@ export default function Currency() {
 		}, 300)
 	}
 
+	const clearOnly = () => {
+		setNewName({})
+		setNewAmount("")
+		setObjId("")
+		setSubmitted(false)
+		setButtonLoader(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -284,7 +292,7 @@ export default function Currency() {
 			<Search
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
-				// clearAndClose={clearAndClose}
+				clearOnly={clearOnly}
 			/>
 
 			{state?.loading ? (

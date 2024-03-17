@@ -224,6 +224,20 @@ const Supplier = ({ getData }) => {
 		}, 300)
 	}
 
+	const clearOnly = () => {
+		setNewDeliver({})
+		setNewGood({})
+		setNewCurrency({})
+		setNewCount(0)
+		setNewCost(0)
+		setDeliverDate("")
+		setDeliverDueDate("")
+		// clear new data
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+	}
+
 	return (
 		<>
 			<AddModal
@@ -360,7 +374,9 @@ const Supplier = ({ getData }) => {
 						}
 						value={
 							newCurrency.currency_name
-								? `${newCurrency.currency_name} - ${addComma(newCurrency.currency_amount)}`
+								? `${newCurrency.currency_name} - ${addComma(
+										newCurrency.currency_amount
+								  )}`
 								: null
 						}
 						onChange={(e) =>
@@ -596,6 +612,7 @@ const Supplier = ({ getData }) => {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				className={"table-m"}
+				clearOnly={clearOnly}
 			/>
 
 			{state.dDebt?.loading ? (

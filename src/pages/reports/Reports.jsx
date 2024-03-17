@@ -3,7 +3,12 @@ import { Option } from "antd/es/mentions"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
-import { addComma, addSpace, formatSumma, roundToNearestThousand } from "../../components/addComma"
+import {
+	addComma,
+	addSpace,
+	formatSumma,
+	roundToNearestThousand,
+} from "../../components/addComma"
 import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
