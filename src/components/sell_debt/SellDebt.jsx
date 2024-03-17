@@ -15,7 +15,7 @@ import { setData as setDataDeliver } from "../reducers/deliver"
 import { setData } from "../reducers/store"
 import { CaretDown, Info, X, XCircle } from "@phosphor-icons/react"
 import { dateCompare, numberCheck, stringCheck } from "../validation"
-import { Select } from "antd"
+import { Select, Spin } from "antd"
 import format_phone_number from "../format_phone_number/format_phone_number"
 import {
 	addComma,
@@ -55,6 +55,7 @@ const SellDebt = ({
 	const [products, setProducts] = useState([])
 	const [productsCache, setProductsCache] = useState([])
 	const [totalPriceSellList, setTotalPriceSellList] = useState(0)
+	const [productListLoading, setProductListLoading] = useState(false)
 
 	const [btnLoadingD, setBtnLoadingD] = useState(false)
 	const [submittedD, setSubmittedD] = useState(false)
@@ -92,18 +93,18 @@ const SellDebt = ({
 		getData("currency", setDataCurrency)
 		getData("deliver", setDataDeliver)
 
-		// get previous list on page load
-		// const existingData = localStorage.getItem("productList")
-		// const parsedData = existingData ? JSON.parse(existingData) : []
-		// setProductList(parsedData)
-		// setTotalPriceSellList(parsedData?.length)
-		// setStoreObj(parsedData[0]?.store_id)
-		// setClientObj(parsedData[0]?.client)
-	}, [])
+		const handleBeforeUnload = (event) => {
+			const confirmationMessage = "Are you sure you want to leave?"
+			;(event || window.event).returnValue = confirmationMessage
+			return confirmationMessage
+		}
 
-	// useEffect(() => {
-	// 	localStorage.setItem("productList", JSON.stringify(productList))
-	// }, [productList])
+		window.addEventListener("beforeunload", handleBeforeUnload)
+
+		return () => {
+			window.removeEventListener("beforeunload", handleBeforeUnload)
+		}
+	}, [])
 
 	const handleStoreChange = (id) => {
 		setProductObj({})
@@ -112,6 +113,7 @@ const SellDebt = ({
 		if (id) {
 			const obj = JSON.parse(id)
 			setStoreObj(obj)
+			setProductListLoading(true)
 
 			get(`/products/products-by-storeId/${obj?.store_id}`).then((data) => {
 				if (data?.status === 200) {
@@ -119,6 +121,7 @@ const SellDebt = ({
 				} else {
 					setProducts([])
 				}
+				setProductListLoading(true)
 			})
 		} else {
 			setStoreObj({})
@@ -1064,6 +1067,9 @@ const SellDebt = ({
 											)
 										} else setProductObj({})
 									}}
+									notFoundContent={
+										productListLoading ? <Spin size="small" /> : null
+									}
 								>
 									{products?.map((item, idx) => {
 										return (
