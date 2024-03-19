@@ -161,6 +161,7 @@ const SellDebt = ({
 		} else {
 			setDeliverObj({})
 			setProducts([])
+			handleStoreChange(JSON.stringify(storeObj))
 		}
 	}
 
