@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
@@ -21,6 +21,7 @@ import InfoItem from "../../components/info_item/InfoItem"
 import Search from "../../components/search/Search"
 
 export default function Store() {
+	const navigate = useNavigate()
 	const [
 		inputRef,
 		showDropdown,
@@ -31,6 +32,8 @@ export default function Store() {
 		setAddModalDisplay,
 		miniModal,
 		setMiniModal,
+		sidebar,
+		userInfo,
 	] = useOutletContext()
 	const state = useSelector((state) => state.store)
 	const dispatch = useDispatch()
@@ -45,6 +48,8 @@ export default function Store() {
 	const [storeName, setStoreName] = useState("")
 
 	useEffect(() => {
+		if (userInfo?.role !== 1) navigate("/*")
+
 		dispatch(setLoading(true))
 		get("/store/store-list").then((data) => {
 			if (data?.status === 201) {

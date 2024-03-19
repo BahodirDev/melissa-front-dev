@@ -24,7 +24,7 @@ export default function Sidebar({ setSidebar, sidebar, userInfo }) {
 	const [userRole, setUserRole] = useState(0)
 
 	useEffect(() => {
-		setUserRole(localStorage.getItem("role"))
+		setUserRole(JSON.parse(localStorage.getItem("role")))
 	}, [])
 
 	return (
@@ -57,43 +57,53 @@ export default function Sidebar({ setSidebar, sidebar, userInfo }) {
 						<SquaresFour size={24} /> Kategoriyalar
 					</NavLink>
 				</li>
-				<li>
-					<NavLink to="/return">
-						<Recycle size={24} /> Qaytgan mahsulotlar
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to="/debts">
-						<HandCoins size={24} /> Qarzdorlik
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to="/store">
-						<Warehouse size={24} /> Omborlar
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to="/deliver">
-						<Truck size={24} /> Ta'minotchilar
-					</NavLink>
-				</li>
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/return">
+							<Recycle size={24} /> Qaytgan mahsulotlar
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/debts">
+							<HandCoins size={24} /> Qarzdorlik
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/store">
+							<Warehouse size={24} /> Omborlar
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/deliver">
+							<Truck size={24} /> Ta'minotchilar
+						</NavLink>
+					</li>
+				)}
 				<li>
 					<NavLink to="/clients">
 						<UsersFour size={24} /> Mijozlar
 					</NavLink>
 				</li>
-				{userRole === "1" && (
+				{userRole === 1 && (
 					<li>
 						<NavLink to="/employees">
 							<Users size={24} /> Xodimlar
 						</NavLink>
 					</li>
 				)}
-				<li>
-					<NavLink to="/currency">
-						<CurrencyDollar size={24} /> Pul birliklari
-					</NavLink>
-				</li>
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/currency">
+							<CurrencyDollar size={24} /> Pul birliklari
+						</NavLink>
+					</li>
+				)}
 				{/* <li>
 					<NavLink to="/settings">
 						<i className="fa-solid fa-gear"></i>

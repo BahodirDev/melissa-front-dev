@@ -2,7 +2,7 @@ import { Select } from "antd"
 import { Option } from "antd/es/mentions"
 import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { setData as setDataGoods } from "../../components/reducers/good"
@@ -37,7 +37,9 @@ function Return() {
 		miniModal,
 		setMiniModal,
 		sidebar,
+		userInfo,
 	] = useOutletContext()
+	const navigate = useNavigate()
 	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
 
@@ -76,6 +78,7 @@ function Return() {
 	}
 
 	useEffect(() => {
+		if (userInfo?.role !== 1) navigate("/*")
 		getData("return", setDataReturn)
 		getData("deliver", setDataDeliver)
 		getData("goods", setDataGoods)

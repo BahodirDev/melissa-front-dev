@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { PatternFormat } from "react-number-format"
 import { useDispatch, useSelector } from "react-redux"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import Loader from "../../components/loader/Loader"
 import {
 	addData,
@@ -22,6 +22,7 @@ import Search from "../../components/search/Search"
 import { toast } from "react-toastify"
 
 function Deliver() {
+	const navigate = useNavigate()
 	const [
 		inputRef,
 		showDropdown,
@@ -32,6 +33,8 @@ function Deliver() {
 		setAddModalDisplay,
 		miniModal,
 		setMiniModal,
+		sidebar,
+		userInfo,
 	] = useOutletContext()
 	const state = useSelector((state) => state.deliver)
 	const dispatch = useDispatch()
@@ -47,6 +50,8 @@ function Deliver() {
 	const [loc, setLoc] = useState("")
 
 	useEffect(() => {
+		if (userInfo?.role !== 1) navigate("/*")
+
 		dispatch(setLoading(true))
 		get("/deliver/deliver-list").then((data) => {
 			if (data?.status === 201) {

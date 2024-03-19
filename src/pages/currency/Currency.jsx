@@ -1,7 +1,7 @@
 import { Select } from "antd"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import currency from "../../assets/currency.json"
 import Loader from "../../components/loader/Loader"
 import {
@@ -24,6 +24,7 @@ import AddModal from "../../components/add/AddModal"
 import { CaretDown, Info } from "@phosphor-icons/react"
 
 export default function Currency() {
+	const navigate = useNavigate()
 	const [filteredData, setFilteredData] = useState([])
 	const [newName, setNewName] = useState({})
 	const [newAmount, setNewAmount] = useState(0)
@@ -36,6 +37,10 @@ export default function Currency() {
 		setAddModalVisible,
 		addModalDisplay,
 		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+		userInfo,
 	] = useOutletContext()
 	const [objId, setObjId] = useState("")
 	const [submitted, setSubmitted] = useState(false)
@@ -67,6 +72,8 @@ export default function Currency() {
 	}
 
 	useEffect(() => {
+		if (userInfo?.role !== 1) navigate("/*")
+
 		dispatch(setLoading(true))
 		get("/currency/currency-list").then((data) => {
 			if (data?.status >= 200 && data?.status <= 209) {

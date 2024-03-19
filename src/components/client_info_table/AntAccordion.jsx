@@ -9,7 +9,7 @@ import { downloadFile, remove } from "../../customHook/api"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 const { Panel } = Collapse
 
-const AntdAccordion = ({ data, removeFromList }) => {
+const AntdAccordion = ({ data, removeFromList, userInfo }) => {
 	const deleteReport = (id) => {
 		remove(`files/files-delete/${id}`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
@@ -36,9 +36,7 @@ const AntdAccordion = ({ data, removeFromList }) => {
 						header={
 							<div className="antd-collapse-header">
 								<div>
-									{moment(item?.files[0].createdat).format(
-										"YYYY/MM/DD hh:mm"
-									)}
+									{moment(item?.files[0].createdat).format("YYYY/MM/DD hh:mm")}
 									<button
 										onClick={() =>
 											confirmDownloadModal(
@@ -51,27 +49,29 @@ const AntdAccordion = ({ data, removeFromList }) => {
 										<Download size={20} />
 									</button>
 								</div>
-								<button
-									type="button"
-									className="accordion-delete__btn"
-									onClick={(e) =>
-										productDeleteConfirm(
-											e,
-											<>
-												<span>
-													{moment(item?.files[0].createdat).format(
-														"YYYY/MM/DD"
-													)}
-												</span>{" "}
-												dagi faylni
-											</>,
-											deleteReport,
-											item?.unique_file_table_id
-										)
-									}
-								>
-									O'chirish <Trash size={20} />
-								</button>
+								{userInfo === 1 ? (
+									<button
+										type="button"
+										className="accordion-delete__btn"
+										onClick={(e) =>
+											productDeleteConfirm(
+												e,
+												<>
+													<span>
+														{moment(item?.files[0].createdat).format(
+															"YYYY/MM/DD"
+														)}
+													</span>{" "}
+													dagi faylni
+												</>,
+												deleteReport,
+												item?.unique_file_table_id
+											)
+										}
+									>
+										O'chirish <Trash size={20} />
+									</button>
+								) : null}
 							</div>
 						}
 					>

@@ -1,7 +1,12 @@
 import { useState } from "react"
 import { productDeleteConfirm } from "../../components/delete_modal/delete_modal"
 import NoData from "../../components/noData/NoData"
-import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import {
+	DotsThreeVertical,
+	PencilSimple,
+	Trash,
+	UserMinus,
+} from "@phosphor-icons/react"
 import moment from "moment/moment"
 
 function GoodsList({
@@ -10,6 +15,7 @@ function GoodsList({
 	editGood,
 	showDropdown,
 	setshowDropdown,
+	userInfo,
 }) {
 	const [loc, setLoc] = useState(true)
 
@@ -28,47 +34,49 @@ function GoodsList({
 							<div>
 								<h3>{item?.goods_name}</h3>
 							</div>
-							<div className="card-item-edit-holder">
-								<button
-									type="button"
-									onClick={(e) => handleClick(e, item?.goods_id)}
-								>
-									<DotsThreeVertical size={24} />
-								</button>
-								<div
-									className={`card-item-edit-wrapper ${
-										showDropdown === item?.goods_id || "hidden"
-									} ${loc && "top"}`}
-								>
+							{userInfo === 1 ? (
+								<div className="card-item-edit-holder">
 									<button
 										type="button"
-										className="card-item-edit-item"
-										onClick={(e) => {
-											e.stopPropagation()
-											setshowDropdown("")
-											editGood(item?.goods_id)
-										}}
+										onClick={(e) => handleClick(e, item?.goods_id)}
 									>
-										Tahrirlash <PencilSimple size={20} />
+										<DotsThreeVertical size={24} />
 									</button>
-									<button
-										type="button"
-										className="card-item-edit-item"
-										onClick={(e) =>
-											productDeleteConfirm(
-												e,
-												<>
-													<span>{item?.goods_name}</span> kategoriyani
-												</>,
-												deleteGood,
-												item?.goods_id
-											)
-										}
+									<div
+										className={`card-item-edit-wrapper ${
+											showDropdown === item?.goods_id || "hidden"
+										} ${loc && "top"}`}
 									>
-										O'chirish <Trash size={20} />
-									</button>
+										<button
+											type="button"
+											className="card-item-edit-item"
+											onClick={(e) => {
+												e.stopPropagation()
+												setshowDropdown("")
+												editGood(item?.goods_id)
+											}}
+										>
+											Tahrirlash <PencilSimple size={20} />
+										</button>
+										<button
+											type="button"
+											className="card-item-edit-item"
+											onClick={(e) =>
+												productDeleteConfirm(
+													e,
+													<>
+														<span>{item?.goods_name}</span> kategoriyani
+													</>,
+													deleteGood,
+													item?.goods_id
+												)
+											}
+										>
+											O'chirish <Trash size={20} />
+										</button>
+									</div>
 								</div>
-							</div>
+							) : null}
 						</div>
 
 						<div className="card-item-bottom goods">

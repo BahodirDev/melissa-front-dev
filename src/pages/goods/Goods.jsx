@@ -34,6 +34,8 @@ export default function Goods() {
 		setAddModalDisplay,
 		miniModal,
 		setMiniModal,
+		sidebar,
+		userInfo,
 	] = useOutletContext()
 	const state = useSelector((state) => state.good)
 	const deliver = useSelector((state) => state.deliver)
@@ -355,6 +357,7 @@ export default function Goods() {
 			<Search
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
+				showAddBtn={userInfo?.role === 1}
 				clearOnly={clearOnly}
 			/>
 
@@ -367,6 +370,7 @@ export default function Goods() {
 					editGood={editGood}
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
+					userInfo={userInfo?.role}
 				/>
 			)}
 		</>
