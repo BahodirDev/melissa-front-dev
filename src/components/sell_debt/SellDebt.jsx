@@ -137,7 +137,7 @@ const SellDebt = ({
 			const obj = JSON.parse(e)
 			setDeliverObj(obj)
 
-			get(`/products/products-by-deliverId/${obj?.deliver_id}`).then((data) => {
+			get(`products/products-by-deliverId/${obj?.deliver_id}`).then((data) => {
 				if (data?.status === 200) {
 					setProducts(data?.data)
 				} else {
@@ -963,28 +963,13 @@ const SellDebt = ({
 									</span>
 								</div>
 							</div>
-							<div
-								className={`input-wrapper modal-form`}
-								//	${
-								// 	submitted &&
-								// 	stringCheck(deliverObj?.deliver_name) !== null &&
-								// 	"error"
-								//	}
-							>
+							<div className={`input-wrapper modal-form`}>
 								<label>Ta'minotchi tanlang</label>
 								<Select
 									showSearch
 									allowClear
 									placeholder="Ta'minotchi tanlang"
 									className="select"
-									// suffixIcon={
-									// 	submitted &&
-									// 	stringCheck(deliverObj?.deliver_name) !== null ? (
-									// 		<Info size={20} />
-									// 	) : (
-									// 		<CaretDown size={16} />
-									// 	)
-									// }
 									value={
 										deliverObj?.deliver_name ? deliverObj?.deliver_name : null
 									}
@@ -1009,15 +994,6 @@ const SellDebt = ({
 										  })
 										: null}
 								</Select>
-								{/* <div className="validation-field">
-									<span>
-										{submitted &&
-											stringCheck(
-												deliverObj?.deliver_name,
-												"Ta'minotchi tanlash majburiy"
-											)}
-									</span>
-								</div> */}
 							</div>
 							<div
 								className={`input-wrapper modal-form ${
@@ -1211,4 +1187,5 @@ const SellDebt = ({
 		</div>
 	)
 }
+
 export default SellDebt
