@@ -59,6 +59,7 @@ export default function Products() {
 		miniModal,
 		setMiniModal,
 		sidebar,
+		userInfo,
 	] = useOutletContext()
 	const { product, good, currency, deliver, store } = useSelector(
 		(state) => state
@@ -67,7 +68,7 @@ export default function Products() {
 
 	const [btnLoading, setBtnLoading] = useState(false)
 	const [submitted, setSubmitted] = useState(false)
-	const [userInfo, setUserInfo] = useState()
+	// const [userInfo, setUserInfo] = useState()
 	const [goodList, setGoodList] = useState([])
 	const [objId, setObjId] = useState("")
 
@@ -123,7 +124,7 @@ export default function Products() {
 	}
 
 	useEffect(() => {
-		setUserInfo(localStorage.getItem("role"))
+		// setUserInfo(localStorage.getItem("role"))
 		// getData()
 		getData1("deliver", setDataDeliver)
 		getData1("goods", setDataGood)
@@ -753,15 +754,19 @@ export default function Products() {
 				<InfoItem
 					value={
 						searchSubmitted
-							? filteredData?.hisob?.kategoriya
-							: product?.quantity
+							? addSpace(filteredData?.hisob?.kategoriya)
+							: addSpace(product?.quantity)
 					}
 					name="Kategoriyalar soni"
 					icon={<SquaresFour size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 				<InfoItem
-					value={searchSubmitted ? filteredData?.hisob?.soni : product?.amount}
+					value={
+						searchSubmitted
+							? addSpace(filteredData?.hisob?.soni)
+							: addSpace(product?.amount)
+					}
 					name="Mahsulotlar soni"
 					icon={<Package size={24} color="var(--color-success)" />}
 					iconBgColor={"var(--bg-success-icon)"}
@@ -795,7 +800,7 @@ export default function Products() {
 						data={searchSubmitted ? filteredData?.data : product?.dataProduct}
 						deleteItem={deleteProduct}
 						sidebar={sidebar}
-						userRole={userInfo}
+						userRole={userInfo?.role}
 						showDropdown={showDropdown}
 						setshowDropdown={setshowDropdown}
 						editProduct={editProduct}

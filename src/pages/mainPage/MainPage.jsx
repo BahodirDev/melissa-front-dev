@@ -43,7 +43,7 @@ export default function MainPage() {
 	useEffect(() => {
 		setUserInfo({
 			userToken: localStorage.getItem("user"),
-			role: localStorage.getItem("role"),
+			role: JSON.parse(localStorage.getItem("role")),
 			name: localStorage.getItem("name"),
 			id: localStorage.getItem("id"),
 		})
@@ -148,6 +148,7 @@ export default function MainPage() {
 							miniModal,
 							setMiniModal,
 							sidebar,
+							userInfo,
 						]}
 					/>
 				</div>

@@ -122,48 +122,49 @@ const AntReportTable = ({
 		{
 			title: "",
 			width: "50px",
-			render: (text, record) => (
-				<div className="table-item-edit-holder">
-					<button type="button" onClick={(e) => handleClick(e, record?.id)}>
-						<DotsThreeVertical size={24} />
-					</button>
-					<div
-						className={`table-item-edit-wrapper extra ${
-							showDropdown === record?.id || "hidden"
-						} ${loc && "top"}`}
-					>
-						<button
-							type="button"
-							className="table-item-edit-item"
-							onClick={(e) => {
-								e.stopPropagation()
-								editReport(record?.id)
-							}}
-						>
-							Tahrirlash <PencilSimple size={20} />
+			render: (text, record) =>
+				userRole === 1 ? (
+					<div className="table-item-edit-holder">
+						<button type="button" onClick={(e) => handleClick(e, record?.id)}>
+							<DotsThreeVertical size={24} />
 						</button>
-						<button
-							type="button"
-							className="table-item-edit-item"
-							onClick={(e) =>
-								productDeleteConfirm(
-									e,
-									<>
-										<span>
-											{record?.data_product + "-" + record?.data_code}
-										</span>{" "}
-										hisobotni
-									</>,
-									deleteReport,
-									record?.id
-								)
-							}
+						<div
+							className={`table-item-edit-wrapper extra ${
+								showDropdown === record?.id || "hidden"
+							} ${loc && "top"}`}
 						>
-							O'chirish <Trash size={20} />
-						</button>
+							<button
+								type="button"
+								className="table-item-edit-item"
+								onClick={(e) => {
+									e.stopPropagation()
+									editReport(record?.id)
+								}}
+							>
+								Tahrirlash <PencilSimple size={20} />
+							</button>
+							<button
+								type="button"
+								className="table-item-edit-item"
+								onClick={(e) =>
+									productDeleteConfirm(
+										e,
+										<>
+											<span>
+												{record?.data_product + "-" + record?.data_code}
+											</span>{" "}
+											hisobotni
+										</>,
+										deleteReport,
+										record?.id
+									)
+								}
+							>
+								O'chirish <Trash size={20} />
+							</button>
+						</div>
 					</div>
-				</div>
-			),
+				) : null,
 		},
 	]
 

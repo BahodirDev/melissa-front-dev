@@ -16,8 +16,23 @@ import Supplier from "./Supplier"
 import Total from "./Total"
 import "./debts.css"
 import { toast } from "react-toastify"
+import { useNavigate, useOutletContext } from "react-router-dom"
 
 function Debts() {
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+		userInfo,
+	] = useOutletContext()
+	const navigate = useNavigate()
 	const { deliver, currency, good } = useSelector((state) => state)
 	const dispatch = useDispatch()
 	const [show, setShow] = useState("client")
@@ -53,6 +68,8 @@ function Debts() {
 	}
 
 	useEffect(() => {
+		if (userInfo?.role !== 1) navigate("/*")
+
 		getData("deliver", setDataDeliver, fakeLoad)
 		getData("goods", setDataGood, fakeLoad)
 		setShow(localStorage.getItem("debt-section"))

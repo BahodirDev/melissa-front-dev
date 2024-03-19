@@ -48,11 +48,11 @@ export default function Reports() {
 		miniModal,
 		setMiniModal,
 		sidebar,
+		userInfo,
 	] = useOutletContext()
 	const { report, store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
 
-	const [userInfo, setUserInfo] = useState()
 
 	const [submitted, setSubmitted] = useState(false)
 	const [newDate, setNewDate] = useState("")
@@ -121,7 +121,6 @@ export default function Reports() {
 	useEffect(getReports, [currentPage])
 
 	useEffect(() => {
-		setUserInfo(localStorage.getItem("role"))
 		getData("deliver", setDataDeliver)
 	}, [])
 
@@ -479,7 +478,7 @@ export default function Reports() {
 					<AntReportTable
 						data={searchSubmitted ? filteredData?.data : report?.data}
 						sidebar={sidebar}
-						userRole={userInfo}
+						userRole={userInfo?.role}
 						showDropdown={showDropdown}
 						setshowDropdown={setshowDropdown}
 						deleteReport={deleteReport}

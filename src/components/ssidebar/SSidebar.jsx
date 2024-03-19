@@ -22,7 +22,7 @@ export default function SSidebar({ setSidebar, sidebar, userInfo }) {
 	const [userRole, setUserRole] = useState(0)
 
 	useEffect(() => {
-		setUserRole(localStorage.getItem("role"))
+		setUserRole(JSON.parse(localStorage.getItem("role")))
 	}, [])
 
 	return (
@@ -55,43 +55,53 @@ export default function SSidebar({ setSidebar, sidebar, userInfo }) {
 						<SquaresFour size={24} />
 					</NavLink>
 				</li>
-				<li>
-					<NavLink to="/return" title="Qaytgan mahsulotlar">
-						<Recycle size={24} />
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to="/debts" title="Qarzdorlik">
-						<HandCoins size={24} />
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to="/store" title="Omborlar">
-						<Warehouse size={24} />
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to="/deliver" title="Ta'minotchilar">
-						<Truck size={24} />
-					</NavLink>
-				</li>
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/return" title="Qaytgan mahsulotlar">
+							<Recycle size={24} />
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/debts" title="Qarzdorlik">
+							<HandCoins size={24} />
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/store" title="Omborlar">
+							<Warehouse size={24} />
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/deliver" title="Ta'minotchilar">
+							<Truck size={24} />
+						</NavLink>
+					</li>
+				)}
 				<li>
 					<NavLink to="/clients" title="Mijozlar">
 						<UsersFour size={24} />
 					</NavLink>
 				</li>
-				{userRole === "1" && (
+				{userRole === 1 && (
 					<li>
 						<NavLink to="/employees" title="Xodimlar">
 							<Users size={24} />
 						</NavLink>
 					</li>
 				)}
-				<li>
-					<NavLink to="/currency" title="Pul birliklari">
-						<CurrencyDollar size={24} />
-					</NavLink>
-				</li>
+				{userRole === 1 && (
+					<li>
+						<NavLink to="/currency" title="Pul birliklari">
+							<CurrencyDollar size={24} />
+						</NavLink>
+					</li>
+				)}
 				{/* <li>
 					<NavLink to="/settings">
 						<i className="fa-solid fa-gear"></i>

@@ -1,6 +1,6 @@
 import { DatePicker, Space } from "antd"
 import { useEffect, useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment/moment"
 import ClientInfoTable from "../../components/client_info_table/AntAccordion"
@@ -10,6 +10,20 @@ import { CaretLeft } from "@phosphor-icons/react"
 import AntdAccordion from "../../components/client_info_table/AntAccordion"
 
 const ClientsInfo = () => {
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+		userInfo,
+	] = useOutletContext()
+
 	const loc = useLocation()
 	const [dateRange, setDateRange] = useState([])
 	const { RangePicker } = DatePicker
@@ -84,7 +98,11 @@ const ClientsInfo = () => {
 			{loading ? (
 				<Loader />
 			) : (
-				<AntdAccordion data={list} removeFromList={removeFromList} />
+				<AntdAccordion
+					data={list}
+					removeFromList={removeFromList}
+					userInfo={userInfo?.role}
+				/>
 			)}
 		</>
 	)
