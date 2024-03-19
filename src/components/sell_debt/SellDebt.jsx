@@ -93,18 +93,32 @@ const SellDebt = ({
 		getData("currency", setDataCurrency)
 		getData("deliver", setDataDeliver)
 
-		const handleBeforeUnload = (event) => {
-			const confirmationMessage = "Are you sure you want to leave?"
-			;(event || window.event).returnValue = confirmationMessage
-			return confirmationMessage
-		}
+		let storage = localStorage.getItem("sellInfo")
+		let oldSellInfo
+		if (storage) {
+			oldSellInfo = JSON.parse(storage)
+			setStoreObj(oldSellInfo?.store)
+			setClientObj(oldSellInfo?.client)
+			setProductList(oldSellInfo?.productList)
 
-		window.addEventListener("beforeunload", handleBeforeUnload)
-
-		return () => {
-			window.removeEventListener("beforeunload", handleBeforeUnload)
+			const sumOfOldList = oldSellInfo?.productList?.reduce(
+				(totalPrice, product) => totalPrice + product?.price,
+				0
+			)
+			setTotalPriceSellList(sumOfOldList)
 		}
 	}, [])
+
+	useEffect(() => {
+		localStorage.setItem(
+			"sellInfo",
+			JSON.stringify({
+				store: storeObj,
+				client: clientObj,
+				productList,
+			})
+		)
+	}, [productList])
 
 	const handleStoreChange = (id) => {
 		setProductObj({})
@@ -206,10 +220,10 @@ const SellDebt = ({
 
 			setTotalPriceSellList((prev) => prev + productP * productQ)
 
-			const index = products.findIndex(
-				(item) => item?.products_id === productObj?.products_id
-			)
-			setProductsCache([...productsCache, ...products.splice(index, 1)])
+			// const index = products.findIndex(
+			// 	(item) => item?.products_id === productObj?.products_id
+			// )
+			// setProductsCache([...productsCache, ...products.splice(index, 1)])
 			clear()
 		}
 	}
@@ -223,7 +237,7 @@ const SellDebt = ({
 		setProductP(0)
 
 		setProductList([])
-		setProductsCache([])
+		// setProductsCache([])
 		setProducts([])
 
 		setProductObjD({})
@@ -273,8 +287,8 @@ const SellDebt = ({
 		setProductList(arr)
 
 		// remove from cache and add back to products
-		const newObj = productsCache.filter((item) => item.products_id === id)[0]
-		setProducts([newObj, ...products])
+		// const newObj = productsCache.filter((item) => item.products_id === id)[0]
+		// setProducts([newObj, ...products])
 
 		const removedItem = productList.findIndex((item) => item.product_id === id)
 		if (removedItem !== -1) {
