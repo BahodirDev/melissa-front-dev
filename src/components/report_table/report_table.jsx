@@ -24,10 +24,6 @@ const AntReportTable = ({
 }) => {
 	const [loc, setLoc] = useState(true)
 
-	// const customPageChange = () => {
-	// 	console.log("hey")
-	// }
-
 	const handleClick = (e, id) => {
 		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
 		e.stopPropagation()
@@ -44,12 +40,12 @@ const AntReportTable = ({
 			data_code: item?.goods_code,
 			is_enter: item?.isenter,
 			// data_box: item?.reports_box_count,
+			deliver: item?.deliver ? item?.deliver : "Nomalum",
 			data_q: Math.ceil(item?.reports_count),
-			data_client: item?.client,
+			data_client: item?.client ? item?.client : "Nomalum",
 			data_cost_each: addComma(item?.reports_count_cost) + item?.currency,
 			data_price_each: addComma(item?.reports_count_price) + item?.currency,
 			data_price_total: addComma(item?.reports_total_cost) + item?.currency,
-			// data_kurs: addComma(item?.currency_amount) + "лв",
 			data_date: `${moment(item?.reports_createdat).format(
 				"YYYY/MM/DD hh:mm"
 			)}`,
@@ -74,6 +70,10 @@ const AntReportTable = ({
 		{
 			title: "Kod",
 			dataIndex: "data_code",
+		},
+		{
+			title: "Ta'minotchi",
+			dataIndex: "deliver",
 		},
 		{
 			title: "Haridor",

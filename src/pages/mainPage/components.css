@@ -205,7 +205,7 @@
 	margin-bottom: 20px;
 }
 .filter-wrapper.report {
-	grid-template-columns: repeat(2, 150px) 200px 260px 150px;
+	grid-template-columns: repeat(2, 150px) 200px 220px 260px 150px;
 }
 .filter-wrapper .input-wrapper .select .ant-select-selector {
 	border-radius: var(--radius-sm);
