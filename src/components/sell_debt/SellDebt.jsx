@@ -990,7 +990,7 @@ const SellDebt = ({
 									}
 									onChange={handleDeliverChange}
 								>
-									{deliver?.data.length
+									{deliver?.data?.length
 										? deliver?.data.map((item, idx) => {
 												if (!item?.isdelete)
 													return (

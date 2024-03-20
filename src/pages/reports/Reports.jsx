@@ -53,7 +53,6 @@ export default function Reports() {
 	const { report, store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
 
-
 	const [submitted, setSubmitted] = useState(false)
 	const [newDate, setNewDate] = useState("")
 	const [btnLoading, setBtnLoading] = useState(false)
@@ -67,6 +66,7 @@ export default function Reports() {
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [selectedIncomeOutcome, setSelectedIncomeOutcome] = useState("all")
 	const [storeId, setStoreId] = useState("")
+	const [deliverId, setDeliverId] = useState("")
 	const [clientId, setClientId] = useState("")
 	const [dateRange, setDateRange] = useState([])
 
@@ -127,6 +127,7 @@ export default function Reports() {
 	const clearFilter = () => {
 		setSelectedIncomeOutcome("all")
 		setStoreId("")
+		setDeliverId("")
 		setClientId("")
 		setDateRange([])
 		setSearchSubmitted(false)
@@ -139,6 +140,7 @@ export default function Reports() {
 		setSearchSubmitted(true)
 		let filterObj = {
 			store: storeId,
+			deliver: deliverId,
 			client: clientId,
 			selectedDate: dateRange?.length
 				? dateRange[0].format("YYYY/MM/DD")
@@ -165,7 +167,13 @@ export default function Reports() {
 		})
 	}
 
-	useEffect(handleSearch, [storeId, clientId, dateRange, selectedIncomeOutcome])
+	useEffect(handleSearch, [
+		storeId,
+		deliverId,
+		clientId,
+		dateRange,
+		selectedIncomeOutcome,
+	])
 
 	const deleteReport = (id) => {
 		remove(`/reports/reports-delete/${id}`).then((data) => {
@@ -231,6 +239,16 @@ export default function Reports() {
 
 	const handlePageChange = (pageNumber) => {
 		setCurrentPage(pageNumber)
+		if (
+			selectedIncomeOutcome === "all" &&
+			storeId === "" &&
+			deliverId === "" &&
+			clientId === "" &&
+			dateRange?.length === 0 &&
+			inputRef.current.value === ""
+		) {
+			setSearchSubmitted(false)
+		}
 	}
 
 	return (
@@ -330,84 +348,52 @@ export default function Reports() {
 					<Select
 						showSearch
 						allowClear
-						placeholder="Haridor"
+						placeholder="Ta'minotchi"
+						className="select"
+						value={deliverId ? deliverId : null}
+						onChange={(e) => setDeliverId(e)}
+					>
+						{deliver.data?.length
+							? deliver.data.map((item, idx) => {
+									if (!item?.isdelete)
+										return (
+											<Select.Option key={idx} value={item.deliver_name}>
+												<div>
+													<span>{item?.deliver_name}</span>
+												</div>
+											</Select.Option>
+										)
+							  })
+							: null}
+					</Select>
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Mijoz"
 						className="select"
 						value={clientId ? clientId : null}
 						onChange={(e) => setClientId(e)}
 					>
-						{client.data?.length || deliver.data?.length
-							? selectedIncomeOutcome === "all"
-								? [...client.data, ...deliver.data].map((item, idx) => {
-										if (!item?.isdelete)
-											if (item?.clients_name) {
-												return (
-													<Select.Option
-														key={idx}
-														value={item.clients_name}
-														className="option-shrink"
-													>
-														<div>
-															<span>{item?.clients_name} - </span>
-															<span>
-																{format_phone_number(item?.clients_nomer)}
-															</span>
-														</div>
-													</Select.Option>
-												)
-											} else {
-												return (
-													<Select.Option
-														key={idx}
-														value={item.deliver_name}
-														className="option-shrink"
-													>
-														<div>
-															<span>{item?.deliver_name} - </span>
-															<span>
-																{format_phone_number(item?.deliver_nomer)}
-															</span>
-														</div>
-													</Select.Option>
-												)
-											}
-								  })
-								: selectedIncomeOutcome === "income"
-								? deliver.data.map((item, idx) => {
-										if (!item?.isdelete)
-											return (
-												<Select.Option
-													key={idx}
-													value={item.deliver_name}
-													className="option-shrink"
-												>
-													<div>
-														<span>{item?.deliver_name} - </span>
-														<span>
-															{format_phone_number(item?.deliver_nomer)}
-														</span>
-													</div>
-												</Select.Option>
-											)
-								  })
-								: selectedIncomeOutcome === "outcome"
-								? client.data.map((item, idx) => {
-										if (!item?.isdelete)
-											return (
-												<Select.Option
-													key={idx}
-													value={item.clients_name}
-													className="option-shrink"
-												>
-													<div>
-														<span>{item?.clients_name} - </span>
-														<span>
-															{format_phone_number(item?.clients_nomer)}
-														</span>
-													</div>
-												</Select.Option>
-											)
-								  })
-								: null
+						{client.data?.length
+							? client.data.map((item, idx) => {
+									if (!item?.isdelete)
+										return (
+											<Select.Option
+												key={idx}
+												value={item.clients_name}
+												className="option-shrink"
+											>
+												<div>
+													<span>{item?.clients_name} - </span>
+													<span>
+														{format_phone_number(item?.clients_nomer)}
+													</span>
+												</div>
+											</Select.Option>
+										)
+							  })
 							: null}
 					</Select>
 				</div>
