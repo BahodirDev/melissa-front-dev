@@ -772,13 +772,15 @@ export default function Products() {
 					iconBgColor={"var(--bg-success-icon)"}
 				/>
 				<InfoItem
-					value={addSpace(
-						roundToNearestThousand(
-							searchSubmitted
-								? +filteredData?.hisob?.umumiyQiymati
-								: product?.sum
-						)
-					)}
+					value={
+						addSpace(
+							roundToNearestThousand(
+								searchSubmitted
+									? +filteredData?.hisob?.umumiyQiymati
+									: product?.sum
+							)
+						) + " so'm"
+					}
 					name="Umumiy summa"
 					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
 					iconBgColor={"var(--bg-icon-warning)"}

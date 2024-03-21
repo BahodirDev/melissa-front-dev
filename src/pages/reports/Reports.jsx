@@ -419,31 +419,37 @@ export default function Reports() {
 
 			<div className="info-wrapper">
 				<InfoItem
-					value={addSpace(
-						searchSubmitted
-							? roundToNearestThousand(+filteredData?.hisob?.totalProductCost)
-							: roundToNearestThousand(report.capital)
-					)}
+					value={
+						addSpace(
+							searchSubmitted
+								? roundToNearestThousand(+filteredData?.hisob?.totalProductCost)
+								: roundToNearestThousand(report.capital)
+						) + " so'm"
+					}
 					name="Foyda"
 					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
 				<InfoItem
-					value={addSpace(
-						searchSubmitted
-							? roundToNearestThousand(+filteredData?.hisob?.totalCostMinus)
-							: roundToNearestThousand(report.outcome)
-					)}
+					value={
+						addSpace(
+							searchSubmitted
+								? roundToNearestThousand(+filteredData?.hisob?.totalCostMinus)
+								: roundToNearestThousand(report.outcome)
+						) + " so'm"
+					}
 					name="Kirim"
 					icon={<ArrowDown size={24} color="var(--color-success)" />}
 					iconBgColor={"var(--bg-success-icon)"}
 				/>
 				<InfoItem
-					value={addSpace(
-						searchSubmitted
-							? roundToNearestThousand(+filteredData?.hisob?.totalCostPilus)
-							: roundToNearestThousand(report.income)
-					)}
+					value={
+						addSpace(
+							searchSubmitted
+								? roundToNearestThousand(+filteredData?.hisob?.totalCostPilus)
+								: roundToNearestThousand(report.income)
+						) + " so'm"
+					}
 					name="Chiqim"
 					icon={<ArrowUp size={24} color="var(--color-warning)" />}
 					iconBgColor={"var(--bg-icon-warning)"}

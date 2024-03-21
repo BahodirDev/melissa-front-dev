@@ -101,8 +101,9 @@ const SellDebt = ({
 			setClientObj(oldSellInfo?.client)
 			setProductList(oldSellInfo?.productList)
 
+			handleStoreChange(JSON.stringify(oldSellInfo?.store))
 			const sumOfOldList = oldSellInfo?.productList?.reduce(
-				(totalPrice, product) => totalPrice + product?.price,
+				(totalPrice, product) => totalPrice + product?.price * product?.count,
 				0
 			)
 			setTotalPriceSellList(sumOfOldList)
@@ -118,6 +119,9 @@ const SellDebt = ({
 				productList,
 			})
 		)
+		if (productList?.length < 1) {
+			localStorage.setItem("sellInfo", "")
+		}
 	}, [productList])
 
 	const handleStoreChange = (id) => {
@@ -253,7 +257,7 @@ const SellDebt = ({
 		setProductsD([])
 
 		setTotalPriceSellList(0)
-		// localStorage.setItem("productList", JSON.stringify([]))
+		localStorage.setItem("sellInfo", "")
 		setSubmittedD(false)
 		setBtnLoading(false)
 		setBtnLoadingD(false)
@@ -528,7 +532,7 @@ const SellDebt = ({
 											</h6>
 											<h6>{item.count}</h6>
 											<h6>{addComma(item.price)}</h6>
-											<h6>{addComma(item.count * item.price)} so'm</h6>
+											<h6>{addComma(item.count * item.price)}</h6>
 											<button
 												type="button"
 												onClick={() => removeItemFromList(item.product_id)}
