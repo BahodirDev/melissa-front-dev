@@ -25,6 +25,8 @@ const AntTable = ({
 		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
 	}
 
+	console.log(data[0])
+
 	let arr2 =
 		data?.length &&
 		data?.map((item, idx) => {

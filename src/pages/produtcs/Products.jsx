@@ -25,6 +25,7 @@ import {
 import AntTable from "../../components/table/Table"
 import {
 	numberCheck,
+	numberCheckAllow0,
 	stringCheck,
 	validation,
 } from "../../components/validation"
@@ -88,6 +89,7 @@ export default function Products() {
 	const [newDeliverId, setNewDeliverId] = useState({})
 	const [newStoreId, setNewStoreId] = useState({})
 	const [newBoxQ, setNewBoxQ] = useState()
+	const [newPerBox, setNewPerBox] = useState(0)
 	const [newProductQ, setNewProductQ] = useState()
 	const [newProductCost, setNewProductCost] = useState()
 	const [newProductPrice, setNewProductPrice] = useState()
@@ -146,8 +148,9 @@ export default function Products() {
 				deliver_id: newDeliverId?.deliver_id,
 				store_id: newStoreId?.store_id,
 				products_count_cost: +newProductCost,
-				products_count: +newProductQ,
 				products_box_count: +newBoxQ,
+				each_box_count: +newPerBox,
+				out_of_box: +newProductQ,
 				currency_id: currency?.data[0]?.currency_id,
 				products_count_price: +newProductPrice,
 			}
@@ -194,6 +197,7 @@ export default function Products() {
 							toast.error("Nomalum server xatolik")
 						}
 						setBtnLoading(false)
+						console.log(data)
 					})
 				}
 			}
@@ -220,6 +224,7 @@ export default function Products() {
 		setNewDeliverId({})
 		setNewStoreId({})
 		setNewBoxQ(0)
+		setNewPerBox(0)
 		setNewProductQ(0)
 		setNewPercentId({})
 		setNewProductCost(0)
@@ -486,7 +491,9 @@ export default function Products() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						objId ? null : submitted && numberCheck(newBoxQ) !== null && "error"
+						objId
+							? null
+							: submitted && numberCheckAllow0(newBoxQ) !== null && "error"
 					}`}
 				>
 					<label>Quti soni</label>
@@ -495,90 +502,70 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newBoxQ ? newBoxQ : ""}
-						onChange={(e) => setNewBoxQ(e.target.value)}
+						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
 					/>
 					{objId
 						? null
-						: submitted && numberCheck(newBoxQ) !== null && <Info size={20} />}
+						: submitted &&
+						  numberCheckAllow0(newBoxQ) !== null && <Info size={20} />}
 					<div className="validation-field">
-						<span>{objId ? null : submitted && numberCheck(newBoxQ)}</span>
+						<span>
+							{objId ? null : submitted && numberCheckAllow0(newBoxQ)}
+						</span>
 					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
 						objId
 							? null
-							: submitted && numberCheck(newProductQ) !== null && "error"
+							: submitted && numberCheck(newPerBox) !== null && "error"
 					}`}
 				>
-					<label>Mahsulot soni</label>
+					<label>Har bir quti soni</label>
+					<input
+						type="text"
+						placeholder="Qiymat kiriting"
+						className="input"
+						value={newPerBox ? newPerBox : ""}
+						onChange={(e) =>
+							setNewPerBox(e.target.value.replace(/[^0-9]/g, ""))
+						}
+					/>
+					{objId
+						? null
+						: submitted &&
+						  numberCheck(newPerBox) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{objId ? null : submitted && numberCheck(newPerBox)}</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						objId
+							? null
+							: submitted && numberCheckAllow0(newProductQ) !== null && "error"
+					}`}
+				>
+					<label>Qoldiq soni</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newProductQ ? newProductQ : ""}
-						onChange={(e) => setNewProductQ(e.target.value)}
+						onChange={(e) =>
+							setNewProductQ(e.target.value.replace(/[^0-9]/g, ""))
+						}
 					/>
 					{objId
 						? null
 						: submitted &&
-						  numberCheck(newProductQ) !== null && <Info size={20} />}
-					<div className="validation-field">
-						<span>{objId ? null : submitted && numberCheck(newProductQ)}</span>
-					</div>
-				</div>
-				{/* <div
-					className={`input-wrapper modal-form ${
-						submitted &&
-						stringCheck(newPercentId?.currency_name) !== null &&
-						"error"
-					}`}
-				>
-					<label>Pul birligi</label>
-					<Select
-						showSearch
-						allowClear
-						placeholder="Pul birligi tanlang"
-						className="select"
-						suffixIcon={
-							submitted && stringCheck(newPercentId?.currency_name) !== null ? (
-								<Info size={20} />
-							) : (
-								<CaretDown size={16} />
-							)
-						}
-						value={
-							newPercentId?.currency_name
-								? `${newPercentId?.currency_name} - ${addComma(newPercentId?.currency_amount)}`
-								: null
-						}
-						onChange={(e) =>
-							e ? setNewPercentId(JSON.parse(e)) : setNewPercentId({})
-						}
-					>
-						{currency?.data.length
-							? currency?.data.map((item, idx) => {
-									return (
-										<Select.Option key={idx} value={JSON.stringify(item)}>
-											<div>
-												<span>{item?.currency_name} - </span>
-												<span>{addComma(item?.currency_amount)}</span>
-											</div>
-										</Select.Option>
-									)
-							  })
-							: null}
-					</Select>
+						  numberCheckAllow0(newProductQ) !== null && <Info size={20} />}
 					<div className="validation-field">
 						<span>
-							{submitted &&
-								stringCheck(
-									newPercentId?.currency_name,
-									"Pul birligi tanlash majburiy"
-								)}
+							{objId ? null : submitted && numberCheckAllow0(newProductQ)}
 						</span>
 					</div>
-				</div> */}
+				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newProductCost) !== null && "error"
@@ -590,7 +577,9 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newProductCost ? newProductCost : ""}
-						onChange={(e) => setNewProductCost(e.target.value)}
+						onChange={(e) =>
+							setNewProductCost(e.target.value.replace(/[^0-9]/g, ""))
+						}
 					/>
 					{submitted && numberCheck(newProductCost) !== null && (
 						<Info size={20} />
@@ -610,7 +599,9 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newProductPrice ? newProductPrice : ""}
-						onChange={(e) => setNewProductPrice(e.target.value)}
+						onChange={(e) =>
+							setNewProductPrice(e.target.value.replace(/[^0-9]/g, ""))
+						}
 					/>
 					{submitted && numberCheck(newProductPrice) !== null && (
 						<Info size={20} />
@@ -808,13 +799,11 @@ export default function Products() {
 						setAddModalDisplay={setAddModalDisplay}
 					/>
 
-					{/* {searchSubmitted ? null : ( */}
 					<Pagination
 						pages={totalPages}
 						currentPage={currentPage}
 						onPageChange={handlePageChange}
 					/>
-					{/* )} */}
 				</>
 			)}
 		</>
