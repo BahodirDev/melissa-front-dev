@@ -80,7 +80,6 @@ export default function Goods() {
 			}
 			if (objId) {
 				patch(`/goods/goods-patch/${objId}`, newObj).then((data) => {
-					console.log(data)
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
 						clearAndClose()
@@ -128,7 +127,6 @@ export default function Goods() {
 	}
 
 	const editGood = (id) => {
-		setNewGoodName("")
 		setObjId(id)
 		setAddModalDisplay("block")
 		setAddModalVisible(true)
@@ -208,141 +206,134 @@ export default function Goods() {
 				setAddModalDisplay={setAddModalDisplay}
 				name={objId ? "Kategoriya tahrirlash" : "Kategoriya qo'shish"}
 			>
-				{objId && !newGoodName ? (
-					<Loader />
-				) : (
-					<>
-						<div
-							className={`input-wrapper modal-form ${
-								submitted &&
-								stringCheck(newDeliver?.deliver_name) !== null &&
-								"error"
-							}`}
-						>
-							<label>Ta'minotchi</label>
-							<Select
-								showSearch
-								allowClear
-								placeholder="Ta'minotchi tanlang"
-								className="select"
-								suffixIcon={
-									submitted &&
-									stringCheck(newDeliver?.deliver_name) !== null ? (
-										<Info size={20} />
-									) : (
-										<CaretDown size={16} />
-									)
-								}
-								value={
-									newDeliver?.deliver_name
-										? `${newDeliver?.deliver_name} - ${format_phone_number(
-												newDeliver?.deliver_nomer
-										  )}`
-										: null
-								}
-								onChange={(e) =>
-									e ? setNewDeliver(JSON.parse(e)) : setNewDeliver({})
-								}
-							>
-								{deliver.data?.length
-									? deliver.data.map((item, idx) => {
-											if (!item?.isdelete) {
-												return (
-													<Select.Option
-														key={idx}
-														className="option-shrink"
-														value={JSON.stringify(item)}
-													>
-														<div>
-															<span>{item?.deliver_name} - </span>
-															<span>
-																{format_phone_number(item?.deliver_nomer)}
-															</span>
-														</div>
-													</Select.Option>
-												)
-											}
-									  })
-									: null}
-							</Select>
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(
-											newDeliver?.deliver_nomer,
-											"Ta'minotchi tanlash majburiy"
-										)}
-								</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular 
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(newDeliver?.deliver_name) !== null &&
+						"error"
+					}`}
+				>
+					<label>Ta'minotchi</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ta'minotchi tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newDeliver?.deliver_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							newDeliver?.deliver_name
+								? `${newDeliver?.deliver_name} - ${format_phone_number(
+										newDeliver?.deliver_nomer
+								  )}`
+								: null
+						}
+						onChange={(e) =>
+							e ? setNewDeliver(JSON.parse(e)) : setNewDeliver({})
+						}
+					>
+						{deliver.data?.length
+							? deliver.data.map((item, idx) => {
+									if (!item?.isdelete) {
+										return (
+											<Select.Option
+												key={idx}
+												className="option-shrink"
+												value={JSON.stringify(item)}
+											>
+												<div>
+													<span>{item?.deliver_name} - </span>
+													<span>
+														{format_phone_number(item?.deliver_nomer)}
+													</span>
+												</div>
+											</Select.Option>
+										)
+									}
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newDeliver?.deliver_nomer,
+									"Ta'minotchi tanlash majburiy"
+								)}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(newGoodName.trim()) !== null && "error"}
 					`}
-						>
-							<label>Kategoriya nomi</label>
-							<input
-								type="text"
-								placeholder="Kategoriya nomini kiriting"
-								className="input"
-								value={newGoodName}
-								onChange={(e) => setNewGoodName(e.target.value)}
-							/>
-							{submitted && stringCheck(newGoodName.trim()) !== null && (
-								<Info size={20} />
-							)}
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(newGoodName.trim(), "Nom kiritish majburiy")}
-								</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular 
+				>
+					<label>Kategoriya nomi</label>
+					<input
+						type="text"
+						placeholder="Kategoriya nomini kiriting"
+						className="input"
+						value={newGoodName}
+						onChange={(e) => setNewGoodName(e.target.value)}
+					/>
+					{submitted && stringCheck(newGoodName.trim()) !== null && (
+						<Info size={20} />
+					)}
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(newGoodName.trim(), "Nom kiritish majburiy")}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(newGoodCode.trim()) !== null && "error"}
 					`}
-						>
-							<label>Kategoriya kodi</label>
-							<input
-								type="text"
-								placeholder="Kategoriya kodi kiriting"
-								className="input"
-								value={newGoodCode}
-								onChange={(e) => setNewGoodCode(e.target.value)}
-							/>
-							{submitted && stringCheck(newGoodCode.trim()) !== null && (
-								<Info size={20} />
-							)}
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(newGoodCode.trim(), "Kod kiritish majburiy")}
-								</span>
-							</div>
-						</div>
-						<div className="modal-btn-group">
-							<button
-								className="primary-btn"
-								disabled={btn_loading}
-								onClick={addGood}
-							>
-								{objId ? "Saqlash" : "Qo'shish"}{" "}
-								{btn_loading && (
-									<span
-										className="spinner-grow spinner-grow-sm"
-										role="status"
-										aria-hidden="true"
-										style={{ marginLeft: "5px" }}
-									></span>
-								)}
-							</button>
-							<button className="secondary-btn" onClick={clearAndClose}>
-								Bekor qilish
-							</button>
-						</div>
-					</>
-				)}
+				>
+					<label>Kategoriya kodi</label>
+					<input
+						type="text"
+						placeholder="Kategoriya kodi kiriting"
+						className="input"
+						value={newGoodCode}
+						onChange={(e) => setNewGoodCode(e.target.value)}
+					/>
+					{submitted && stringCheck(newGoodCode.trim()) !== null && (
+						<Info size={20} />
+					)}
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(newGoodCode.trim(), "Kod kiritish majburiy")}
+						</span>
+					</div>
+				</div>
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btn_loading}
+						onClick={addGood}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btn_loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
 			</AddModal>
 
 			<div className="info-wrapper">

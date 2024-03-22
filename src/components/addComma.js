@@ -19,7 +19,7 @@ export function addSpace(num) {
 	if (str[1] && str[1].length >= 5) {
 		str[1] = str[1].replace(/(\d{3})/g, "$1 ")
 	}
-	return str.join(".") + " so'm"
+	return str.join(".")
 }
 
 export function roundToNearestThousand(number) {
@@ -31,7 +31,6 @@ export function roundToNearestHundred(number) {
 	const remainder = number % 100
 	return number - remainder + (remainder > 50 ? 100 : 0)
 }
-
 
 export function formatSumma(number) {
 	if (number >= 1000000) {
