@@ -69,6 +69,7 @@ const SellDebt = ({
 	const [productObj, setProductObj] = useState({})
 	const [clientObj, setClientObj] = useState({})
 	const [productQ, setProductQ] = useState(0)
+	const [productB, setProductB] = useState(0)
 	const [productP, setProductP] = useState(0)
 
 	// new debt
@@ -129,7 +130,7 @@ const SellDebt = ({
 			setStoreObj(obj)
 			setProductListLoading(true)
 
-			get(`/products/products-by-storeId/${obj?.store_id}`).then((data) => {
+			get(`/products/products-by-storeid/${obj?.store_id}`).then((data) => {
 				if (data?.status === 200) {
 					setProducts(data?.data)
 				} else {
@@ -1096,11 +1097,49 @@ const SellDebt = ({
 							</div>
 							<div
 								className={`input-wrapper modal-form regular ${
+									submitted && numberCheck(productB) !== null && "error"
+								}`}
+							>
+								<label>
+									Quti (
+									{productObj.products_count ? productObj.products_count : 0})
+								</label>
+								<input
+									type="text"
+									placeholder="Qiymat kiriting"
+									className="input"
+									value={productB ? productB : ""}
+									onKeyPress={(e) => {
+										if (isNaN(e.key)) {
+											e.preventDefault()
+										}
+									}}
+									onChange={(e) => {
+										let maxValue = productObj.products_count
+											? productObj.products_count
+											: 0
+										if (+e.target.value > +maxValue) {
+											setProductB(maxValue)
+										} else {
+											setProductB(e.target.value)
+										}
+									}}
+									// onChange={(e) => setProductQ(e.target.value)}
+								/>
+								{submitted && numberCheck(productB) !== null && (
+									<Info size={20} />
+								)}
+								<div className="validation-field">
+									<span>{submitted && numberCheck(productB)}</span>
+								</div>
+							</div>
+							<div
+								className={`input-wrapper modal-form regular ${
 									submitted && numberCheck(productQ) !== null && "error"
 								}`}
 							>
 								<label>
-									Miqdor (
+									Dona (
 									{productObj.products_count ? productObj.products_count : 0})
 								</label>
 								<input
