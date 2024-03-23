@@ -496,7 +496,7 @@ export default function Products() {
 							: submitted && numberCheckAllow0(newBoxQ) !== null && "error"
 					}`}
 				>
-					<label>Qutilar soni</label>
+					<label>Quti</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"
@@ -521,7 +521,7 @@ export default function Products() {
 							: submitted && numberCheck(newPerBox) !== null && "error"
 					}`}
 				>
-					<label>Har bir quti soni</label>
+					<label>Har bir qutida</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"
@@ -547,7 +547,7 @@ export default function Products() {
 							: submitted && numberCheckAllow0(newProductQ) !== null && "error"
 					}`}
 				>
-					<label>Umumiy soni</label>
+					<label>Jami</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"

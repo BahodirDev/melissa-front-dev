@@ -36,8 +36,8 @@ const AntTable = ({
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
 				products_box_count: Math.ceil(item?.products_box_count),
-				products_count: Math.ceil(+item?.products_count + +item?.out_of_box),
 				per_box: item?.each_box_count,
+				products_count: Math.ceil(+item?.products_count),
 				// extra: item?.out_of_box,
 				products_count_cost:
 					addComma(item?.products_count_cost) +
