@@ -140,7 +140,9 @@ export default function Products() {
 			newStoreId.store_id &&
 			currency?.data?.length &&
 			newProductPrice > 0 &&
-			newProductCost > 0
+			newProductCost > 0 &&
+			newPerBox > 0 &&
+			(newBoxQ > 0 || newProductQ > 0)
 		) {
 			setBtnLoading(true)
 			let newProductObj = {
@@ -179,27 +181,25 @@ export default function Products() {
 					)
 				}
 			} else {
-				if (newBoxQ > 0 && newProductQ > 0) {
-					post("/products/products-post", newProductObj).then((data) => {
-						if (data?.status === 201) {
-							dispatch(
-								addData({
-									...data?.data,
-									...newGoodsId,
-									...newDeliverId,
-									...newStoreId,
-									...currency?.data[0],
-								})
-							)
-							clearAndClose()
-							toast.success("Mahsulot muvoffaqiyatli qo'shildi")
-						} else {
-							toast.error("Nomalum server xatolik")
-						}
-						setBtnLoading(false)
-						console.log(data)
-					})
-				}
+				post("/products/products-post", newProductObj).then((data) => {
+					if (data?.status === 201) {
+						dispatch(
+							addData({
+								...data?.data,
+								...newGoodsId,
+								...newDeliverId,
+								...newStoreId,
+								...currency?.data[0],
+							})
+						)
+						clearAndClose()
+						toast.success("Mahsulot muvoffaqiyatli qo'shildi")
+					} else {
+						toast.error("Nomalum server xatolik")
+					}
+					setBtnLoading(false)
+					console.log(data)
+				})
 			}
 		}
 	}
@@ -496,7 +496,7 @@ export default function Products() {
 							: submitted && numberCheckAllow0(newBoxQ) !== null && "error"
 					}`}
 				>
-					<label>Quti soni</label>
+					<label>Qutilar soni</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"
@@ -527,9 +527,10 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newPerBox ? newPerBox : ""}
-						onChange={(e) =>
+						onChange={(e) => {
 							setNewPerBox(e.target.value.replace(/[^0-9]/g, ""))
-						}
+							setNewProductQ(newBoxQ * e.target.value)
+						}}
 					/>
 					{objId
 						? null
@@ -546,7 +547,7 @@ export default function Products() {
 							: submitted && numberCheckAllow0(newProductQ) !== null && "error"
 					}`}
 				>
-					<label>Qoldiq soni</label>
+					<label>Umumiy soni</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"

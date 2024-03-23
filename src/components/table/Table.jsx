@@ -38,7 +38,7 @@ const AntTable = ({
 				products_box_count: Math.ceil(item?.products_box_count),
 				products_count: Math.ceil(+item?.products_count + +item?.out_of_box),
 				per_box: item?.each_box_count,
-				extra: item?.out_of_box,
+				// extra: item?.out_of_box,
 				products_count_cost:
 					addComma(item?.products_count_cost) +
 					item?.currency_id?.currency_symbol,
@@ -73,19 +73,19 @@ const AntTable = ({
 			dataIndex: "goods_code",
 		},
 		{
-			title: <nobr>Qutilar soni</nobr>,
+			title: <nobr>Quti</nobr>,
 			dataIndex: "products_box_count",
 		},
 		{
-			title: <nobr>Har bir quti soni</nobr>,
+			title: <nobr>Har bir qutida</nobr>,
 			dataIndex: "per_box",
 		},
+		// {
+		// 	title: "Qoldiq",
+		// 	dataIndex: "extra",
+		// },
 		{
-			title: "Qoldiq",
-			dataIndex: "extra",
-		},
-		{
-			title: "Miqdor",
+			title: "Jami",
 			dataIndex: "products_count",
 		},
 		{

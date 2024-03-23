@@ -136,9 +136,10 @@ const SellDebt = ({
 				} else {
 					setProducts([])
 				}
-				setProductListLoading(true)
+				setProductListLoading(false)
 			})
 		} else {
+			setProductListLoading(false)
 			setStoreObj({})
 			setProducts([])
 		}
@@ -1063,27 +1064,29 @@ const SellDebt = ({
 										productListLoading ? <Spin size="small" /> : null
 									}
 								>
-									{products?.map((item, idx) => {
-										return (
-											<Select.Option
-												key={idx}
-												value={JSON.stringify(item)}
-												className="option-shrink"
-											>
-												<div>
-													<span>{item?.goods_id?.goods_name} - </span>
-													<span>
-														{item?.goods_id?.goods_code} -{" "}
-														{(
-															item?.products_count_price *
-															item?.currency_id?.currency_amount
-														).toLocaleString()}
-														so'm
-													</span>
-												</div>
-											</Select.Option>
-										)
-									})}
+									{products?.length
+										? products?.map((item, idx) => {
+												return (
+													<Select.Option
+														key={idx}
+														value={JSON.stringify(item)}
+														className="option-shrink"
+													>
+														<div>
+															<span>{item?.goods_id?.goods_name} - </span>
+															<span>
+																{item?.goods_id?.goods_code} -{" "}
+																{(
+																	item?.products_count_price *
+																	item?.currency_id?.currency_amount
+																).toLocaleString()}
+																so'm
+															</span>
+														</div>
+													</Select.Option>
+												)
+										  })
+										: null}
 								</Select>
 								<div className="validation-field">
 									<span>
@@ -1102,7 +1105,11 @@ const SellDebt = ({
 							>
 								<label>
 									Quti (
-									{productObj.products_count ? productObj.products_count : 0})
+									{productObj.products_box_count
+										? productObj.products_box_count
+										: 0}
+									) - [
+									{productObj.each_box_count ? productObj.each_box_count : 0}]
 								</label>
 								<input
 									type="text"
@@ -1115,8 +1122,8 @@ const SellDebt = ({
 										}
 									}}
 									onChange={(e) => {
-										let maxValue = productObj.products_count
-											? productObj.products_count
+										let maxValue = productObj.products_box_count
+											? productObj.products_box_count
 											: 0
 										if (+e.target.value > +maxValue) {
 											setProductB(maxValue)
@@ -1124,7 +1131,6 @@ const SellDebt = ({
 											setProductB(e.target.value)
 										}
 									}}
-									// onChange={(e) => setProductQ(e.target.value)}
 								/>
 								{submitted && numberCheck(productB) !== null && (
 									<Info size={20} />
@@ -1140,7 +1146,12 @@ const SellDebt = ({
 							>
 								<label>
 									Dona (
-									{productObj.products_count ? productObj.products_count : 0})
+									{productObj.products_box_count
+										? productObj.products_box_count *
+												productObj.each_box_count +
+										  +productObj.out_of_box
+										: 0}
+									)
 								</label>
 								<input
 									type="text"
@@ -1153,9 +1164,14 @@ const SellDebt = ({
 										}
 									}}
 									onChange={(e) => {
-										let maxValue = productObj.products_count
-											? productObj.products_count
-											: 0
+										let maxValue =
+											productObj.products_box_count *
+												productObj.each_box_count +
+											+productObj.out_of_box
+												? productObj.products_box_count *
+														productObj.each_box_count +
+												  +productObj.out_of_box
+												: 0
 										if (+e.target.value > +maxValue) {
 											setProductQ(maxValue)
 										} else {
