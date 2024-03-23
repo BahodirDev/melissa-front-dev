@@ -1,5 +1,5 @@
 export function addComma(num) {
-	let strNum = (+num).toFixed(2)
+	let strNum = (+num).toFixed(0)
 	var str = strNum.toString().split(".")
 	if (str[0].length >= 5) {
 		str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g, "$1,")

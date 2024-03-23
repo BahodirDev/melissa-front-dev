@@ -18,6 +18,12 @@ const numberCheck = (number) => {
 	else return null
 }
 
+const numberCheckAllow0 = (number) => {
+	if (!number) return "Qiymat kiritish majburiy"
+	else if (number < 0 || isNaN(number * 1)) return "Noto'g'ri qiymat"
+	else return null
+}
+
 const phoneNumberCheck = (number) => {
 	if (!number) return "Raqam kiritish majburiy"
 	else if (number.slice(-1) === "_") return "Noto'g'ri raqam"
@@ -32,4 +38,4 @@ const passwordCheck = (password, name = "") => {
 	else return null
 }
 
-export { validation, stringCheck, numberCheck, phoneNumberCheck, passwordCheck, dateCompare }
+export { validation, stringCheck, numberCheck,numberCheckAllow0, phoneNumberCheck, passwordCheck, dateCompare }

@@ -1,4 +1,5 @@
-import {
+import product, {
+	productSlice,
 	setAmount,
 	setDataProduct,
 	setQuantity,
@@ -139,7 +140,7 @@ const SellDebt = ({
 				} else {
 					setProducts([])
 				}
-				setProductListLoading(true)
+				setProductListLoading(false)
 			})
 		} else {
 			setStoreObj({})
@@ -437,6 +438,17 @@ const SellDebt = ({
 				obj1.highlight = true
 			}
 		})
+	}
+
+	function filterOption(inputValue, option) {
+		const goodsData = JSON.parse(option.props.value)?.goods_id
+		const goodsCode = goodsData?.goods_code
+		const goodsName = goodsData?.goods_name
+		// Check if goods_code or goods_name contains the inputValue
+		return (
+			goodsCode.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+			goodsName.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+		)
 	}
 
 	return (
@@ -1031,6 +1043,7 @@ const SellDebt = ({
 											: "Ombor tanlanmagan"
 									}
 									className="select"
+									filterOption={filterOption}
 									suffixIcon={
 										submitted &&
 										stringCheck(productObj?.goods_id?.goods_name) !== null ? (
@@ -1066,27 +1079,29 @@ const SellDebt = ({
 										productListLoading ? <Spin size="small" /> : null
 									}
 								>
-									{products?.map((item, idx) => {
-										return (
-											<Select.Option
-												key={idx}
-												value={JSON.stringify(item)}
-												className="option-shrink"
-											>
-												<div>
-													<span>{item?.goods_id?.goods_name} - </span>
-													<span>
-														{item?.goods_id?.goods_code} -{" "}
-														{(
-															item?.products_count_price *
-															item?.currency_id?.currency_amount
-														).toLocaleString()}
-														so'm
-													</span>
-												</div>
-											</Select.Option>
-										)
-									})}
+									{products?.length
+										? products?.map((item, idx) => {
+												return (
+													<Select.Option
+														key={idx}
+														value={JSON.stringify(item)}
+														className="option-shrink"
+													>
+														<div>
+															<span>{item?.goods_id?.goods_name} - </span>
+															<span>
+																{item?.goods_id?.goods_code} -{" "}
+																{(
+																	item?.products_count_price *
+																	item?.currency_id?.currency_amount
+																).toLocaleString()}
+																so'm
+															</span>
+														</div>
+													</Select.Option>
+												)
+										  })
+										: null}
 								</Select>
 								<div className="validation-field">
 									<span>
