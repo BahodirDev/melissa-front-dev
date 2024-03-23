@@ -128,6 +128,7 @@ const SellDebt = ({
 			const obj = JSON.parse(id)
 			setStoreObj(obj)
 			setProductListLoading(true)
+			
 
 			get(`/products/products-by-storeid/${obj?.store_id}`).then((data) => {
 				if (data?.status === 200) {
