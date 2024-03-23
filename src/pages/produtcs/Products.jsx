@@ -144,7 +144,6 @@ export default function Products() {
 			newPerBox > 0 &&
 			(newBoxQ > 0 || newProductQ > 0)
 		) {
-			setBtnLoading(true)
 			let newProductObj = {
 				goods_id: newGoodsId?.goods_id,
 				deliver_id: newDeliverId?.deliver_id,
@@ -158,6 +157,7 @@ export default function Products() {
 			}
 			if (objId) {
 				if (newDate) {
+					setBtnLoading(true)
 					newProductObj.products_createdat = newDate
 					patch(`/products/products-patch/${objId}`, newProductObj).then(
 						(data) => {
@@ -181,25 +181,28 @@ export default function Products() {
 					)
 				}
 			} else {
-				post("/products/products-post", newProductObj).then((data) => {
-					if (data?.status === 201) {
-						dispatch(
-							addData({
-								...data?.data,
-								...newGoodsId,
-								...newDeliverId,
-								...newStoreId,
-								...currency?.data[0],
-							})
-						)
-						clearAndClose()
-						toast.success("Mahsulot muvoffaqiyatli qo'shildi")
-					} else {
-						toast.error("Nomalum server xatolik")
-					}
-					setBtnLoading(false)
-					console.log(data)
-				})
+				if (newProductQ > 0) {
+					setBtnLoading(true)
+					post("/products/products-post", newProductObj).then((data) => {
+						if (data?.status === 201) {
+							dispatch(
+								addData({
+									...data?.data,
+									...newGoodsId,
+									...newDeliverId,
+									...newStoreId,
+									...currency?.data[0],
+								})
+							)
+							clearAndClose()
+							toast.success("Mahsulot muvoffaqiyatli qo'shildi")
+						} else {
+							toast.error("Nomalum server xatolik")
+						}
+						setBtnLoading(false)
+						console.log(data)
+					})
+				}
 			}
 		}
 	}
@@ -310,6 +313,7 @@ export default function Products() {
 		setNewDeliverId({})
 		setNewStoreId({})
 		setNewBoxQ(0)
+		setNewPerBox(0)
 		setNewProductQ(0)
 		setNewPercentId({})
 		setNewProductCost(0)
@@ -544,7 +548,7 @@ export default function Products() {
 					className={`input-wrapper modal-form regular ${
 						objId
 							? null
-							: submitted && numberCheckAllow0(newProductQ) !== null && "error"
+							: submitted && numberCheck(newProductQ) !== null && "error"
 					}`}
 				>
 					<label>Jami</label>
@@ -560,11 +564,9 @@ export default function Products() {
 					{objId
 						? null
 						: submitted &&
-						  numberCheckAllow0(newProductQ) !== null && <Info size={20} />}
+						  numberCheck(newProductQ) !== null && <Info size={20} />}
 					<div className="validation-field">
-						<span>
-							{objId ? null : submitted && numberCheckAllow0(newProductQ)}
-						</span>
+						<span>{objId ? null : submitted && numberCheck(newProductQ)}</span>
 					</div>
 				</div>
 				<div
