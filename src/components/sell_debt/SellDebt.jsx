@@ -128,7 +128,6 @@ const SellDebt = ({
 			const obj = JSON.parse(id)
 			setStoreObj(obj)
 			setProductListLoading(true)
-			
 
 			get(`/products/products-by-storeid/${obj?.store_id}`).then((data) => {
 				if (data?.status === 200) {
@@ -315,8 +314,8 @@ const SellDebt = ({
 				return {
 					product_id: item?.product_id,
 					count: item?.count,
-					client:
-						item?.client.clients_name + " - " + item?.client.clients_nomer,
+					client: item?.client.clients_name,
+					client_nomer: item?.client.clients_nomer,
 					client_id: item?.client.clients_id,
 					cost: (item?.cost / item?.currency_amount).toFixed(2),
 					price: (item?.price / item?.currency_amount).toFixed(2),
