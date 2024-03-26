@@ -82,6 +82,7 @@ function GoodsList({
 						<div className="card-item-bottom goods">
 							<h3>Kod: {item?.goods_code}</h3>
 							<h4>{moment(item?.goods_createdat).format("YYYY/MM/DD")}</h4>
+							{/* <img src={item?.img_url} alt="" width={50} height={50} /> */}
 						</div>
 					</div>
 				)

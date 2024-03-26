@@ -47,11 +47,13 @@ export default function Goods() {
 	const [objId, setObjId] = useState("")
 	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [imageValidationError, setImageValidationError] = useState(false)
 
 	// new
 	const [newGoodName, setNewGoodName] = useState("")
 	const [newGoodCode, setNewGoodCode] = useState("")
 	const [newDeliver, setNewDeliver] = useState("")
+	const [imageFile, setImageFile] = useState(null)
 
 	useEffect(() => {
 		dispatch(setLoading(true))
@@ -69,6 +71,47 @@ export default function Goods() {
 		})
 	}, [])
 
+	const handleImageChange = (e) => {
+		const allowedExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"]
+		const maxSize = 1024 * 1024
+
+		const selectedImage = e.target.files[0]
+		const fileName = selectedImage.name
+		const fileExtension = fileName.split(".").pop().toLowerCase()
+
+		if (!allowedExtensions.includes(fileExtension)) {
+			setImageValidationError(true)
+			toast.error(
+				"Fayl turi yaroqsiz. Iltimos, jpg, jpeg, png, gif, bmp yoki webp faylini yuklang.",
+				{ toastId: "" }
+			)
+			return false
+		}
+		if (selectedImage.size > maxSize) {
+			setImageValidationError(true)
+			toast.error(
+				"Fayl hajmi chegaradan oshib ketdi (1MB). Iltimos, kichikroq fayl yuklang.",
+				{ toastId: "" }
+			)
+			return false
+		}
+
+		setImageValidationError(false)
+		setImageFile(selectedImage)
+
+		let formData = new FormData()
+		formData.append("id", objId)
+		formData.append("file", selectedImage)
+
+		post("/goods/goods-imgupload", formData).then((data) => {
+			if (data?.status === 201 || data?.status === 200) {
+				toast.success("Rasm muvoffaqiyatli kiritildi", { toastId: "" })
+			} else {
+				toast.error("Nomalum server xatolik", { toastId: "" })
+			}
+		})
+	}
+
 	const addGood = () => {
 		setSubmitted(true)
 		if (newGoodName && newGoodCode && newDeliver) {
@@ -80,7 +123,6 @@ export default function Goods() {
 			}
 			if (objId) {
 				patch(`/goods/goods-patch/${objId}`, newObj).then((data) => {
-					console.log(data)
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
 						clearAndClose()
@@ -128,7 +170,6 @@ export default function Goods() {
 	}
 
 	const editGood = (id) => {
-		setNewGoodName("")
 		setObjId(id)
 		setAddModalDisplay("block")
 		setAddModalVisible(true)
@@ -142,6 +183,7 @@ export default function Goods() {
 					deliver_nomer: data?.data[0]?.deliver_nomer,
 					deliver_id: data?.data[0]?.delivery_id,
 				})
+				setImageFile(data?.data[0]?.img_url)
 			} else {
 				clearAndClose()
 				toast.error("Nomalum server xatolik")
@@ -153,6 +195,7 @@ export default function Goods() {
 		setNewGoodName("")
 		setNewGoodCode("")
 		setNewDeliver("")
+		setImageFile(null)
 
 		setObjId("")
 		setBtn_loading(false)
@@ -199,6 +242,69 @@ export default function Goods() {
 		setSubmitted(false)
 	}
 
+	document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
+		const dropZoneElement = inputElement.closest(".drop-zone")
+		dropZoneElement.addEventListener("click", (e) => {
+			inputElement.click()
+		})
+		inputElement.addEventListener("change", (e) => {
+			if (inputElement.files.length) {
+				updateThumbnail(dropZoneElement, inputElement.files[0])
+			}
+		})
+		dropZoneElement.addEventListener("dragover", (e) => {
+			e.preventDefault()
+			dropZoneElement.classList.add("drop-zone--over")
+		})
+		;["dragleave", "dragend"].forEach((type) => {
+			dropZoneElement.addEventListener(type, (e) => {
+				dropZoneElement.classList.remove("drop-zone--over")
+			})
+		})
+		let changeEventTriggered = false
+		dropZoneElement.addEventListener("drop", (e) => {
+			e.preventDefault()
+			if (e.dataTransfer.files.length && !changeEventTriggered) {
+				inputElement.files = e.dataTransfer.files
+				updateThumbnail(dropZoneElement, e.dataTransfer.files[0])
+
+				const event = new Event("change", { bubbles: true })
+				inputElement.dispatchEvent(event)
+				changeEventTriggered = true
+			}
+			dropZoneElement.classList.remove("drop-zone--over")
+		})
+	})
+	function updateThumbnail(dropZoneElement, file) {
+		let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb")
+
+		// First time - remove the prompt
+		if (dropZoneElement.querySelector(".drop-zone__prompt")) {
+			dropZoneElement.querySelector(".drop-zone__prompt").remove()
+		}
+
+		// First time - there is no thumbnail element, so lets create it
+		if (!thumbnailElement) {
+			thumbnailElement = document.createElement("div")
+			thumbnailElement.classList.add("drop-zone__thumb")
+			dropZoneElement.appendChild(thumbnailElement)
+		}
+
+		thumbnailElement.dataset.label = file.name
+
+		// Show thumbnail for image files
+		if (file.type.startsWith("image/")) {
+			const reader = new FileReader()
+
+			reader.readAsDataURL(file)
+			reader.onload = () => {
+				thumbnailElement.style.backgroundImage = `url('${reader.result}')`
+			}
+		} else {
+			thumbnailElement.style.backgroundImage = null
+		}
+	}
+
 	return (
 		<>
 			<AddModal
@@ -208,141 +314,170 @@ export default function Goods() {
 				setAddModalDisplay={setAddModalDisplay}
 				name={objId ? "Kategoriya tahrirlash" : "Kategoriya qo'shish"}
 			>
-				{objId && !newGoodName ? (
-					<Loader />
-				) : (
-					<>
-						<div
-							className={`input-wrapper modal-form ${
-								submitted &&
-								stringCheck(newDeliver?.deliver_name) !== null &&
-								"error"
-							}`}
-						>
-							<label>Ta'minotchi</label>
-							<Select
-								showSearch
-								allowClear
-								placeholder="Ta'minotchi tanlang"
-								className="select"
-								suffixIcon={
-									submitted &&
-									stringCheck(newDeliver?.deliver_name) !== null ? (
-										<Info size={20} />
-									) : (
-										<CaretDown size={16} />
-									)
-								}
-								value={
-									newDeliver?.deliver_name
-										? `${newDeliver?.deliver_name} - ${format_phone_number(
-												newDeliver?.deliver_nomer
-										  )}`
-										: null
-								}
-								onChange={(e) =>
-									e ? setNewDeliver(JSON.parse(e)) : setNewDeliver({})
-								}
-							>
-								{deliver.data?.length
-									? deliver.data.map((item, idx) => {
-											if (!item?.isdelete) {
-												return (
-													<Select.Option
-														key={idx}
-														className="option-shrink"
-														value={JSON.stringify(item)}
-													>
-														<div>
-															<span>{item?.deliver_name} - </span>
-															<span>
-																{format_phone_number(item?.deliver_nomer)}
-															</span>
-														</div>
-													</Select.Option>
-												)
-											}
-									  })
-									: null}
-							</Select>
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(
-											newDeliver?.deliver_nomer,
-											"Ta'minotchi tanlash majburiy"
-										)}
-								</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular 
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(newDeliver?.deliver_name) !== null &&
+						"error"
+					}`}
+				>
+					<label>Ta'minotchi</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ta'minotchi tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newDeliver?.deliver_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							newDeliver?.deliver_name
+								? `${newDeliver?.deliver_name} - ${format_phone_number(
+										newDeliver?.deliver_nomer
+								  )}`
+								: null
+						}
+						onChange={(e) =>
+							e ? setNewDeliver(JSON.parse(e)) : setNewDeliver({})
+						}
+					>
+						{deliver.data?.length
+							? deliver.data.map((item, idx) => {
+									if (!item?.isdelete) {
+										return (
+											<Select.Option
+												key={idx}
+												className="option-shrink"
+												value={JSON.stringify(item)}
+											>
+												<div>
+													<span>{item?.deliver_name} - </span>
+													<span>
+														{format_phone_number(item?.deliver_nomer)}
+													</span>
+												</div>
+											</Select.Option>
+										)
+									}
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newDeliver?.deliver_nomer,
+									"Ta'minotchi tanlash majburiy"
+								)}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(newGoodName.trim()) !== null && "error"}
 					`}
-						>
-							<label>Kategoriya nomi</label>
-							<input
-								type="text"
-								placeholder="Kategoriya nomini kiriting"
-								className="input"
-								value={newGoodName}
-								onChange={(e) => setNewGoodName(e.target.value)}
-							/>
-							{submitted && stringCheck(newGoodName.trim()) !== null && (
-								<Info size={20} />
-							)}
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(newGoodName.trim(), "Nom kiritish majburiy")}
-								</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular 
+				>
+					<label>Kategoriya nomi</label>
+					<input
+						type="text"
+						placeholder="Kategoriya nomini kiriting"
+						className="input"
+						value={newGoodName}
+						onChange={(e) => setNewGoodName(e.target.value)}
+					/>
+					{submitted && stringCheck(newGoodName.trim()) !== null && (
+						<Info size={20} />
+					)}
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(newGoodName.trim(), "Nom kiritish majburiy")}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(newGoodCode.trim()) !== null && "error"}
 					`}
-						>
-							<label>Kategoriya kodi</label>
-							<input
-								type="text"
-								placeholder="Kategoriya kodi kiriting"
-								className="input"
-								value={newGoodCode}
-								onChange={(e) => setNewGoodCode(e.target.value)}
-							/>
-							{submitted && stringCheck(newGoodCode.trim()) !== null && (
-								<Info size={20} />
-							)}
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(newGoodCode.trim(), "Kod kiritish majburiy")}
+				>
+					<label>Kategoriya kodi</label>
+					<input
+						type="text"
+						placeholder="Kategoriya kodi kiriting"
+						className="input"
+						value={newGoodCode}
+						onChange={(e) => setNewGoodCode(e.target.value)}
+					/>
+					{submitted && stringCheck(newGoodCode.trim()) !== null && (
+						<Info size={20} />
+					)}
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(newGoodCode.trim(), "Kod kiritish majburiy")}
+						</span>
+					</div>
+				</div>
+				{objId ? (
+					<div
+						className={`input-wrapper modal-form regular ${
+							imageValidationError ? "error" : null
+						}`}
+					>
+						<label>Rasm</label>
+						<div class="drop-zone">
+							{imageFile === null || imageFile === "Unknown" ? (
+								<span class="drop-zone__prompt">
+									Rasm yuklang yoki tashlang
 								</span>
-							</div>
+							) : (
+								<div
+									className="drop-zone__thumb"
+									style={{ backgroundImage: `url('${imageFile}')` }}
+								></div>
+							)}
+							<input
+								className="input"
+								onChange={handleImageChange}
+								type="file"
+								name="myFile"
+								class="drop-zone__input"
+							/>
 						</div>
-						<div className="modal-btn-group">
-							<button
-								className="primary-btn"
-								disabled={btn_loading}
-								onClick={addGood}
-							>
-								{objId ? "Saqlash" : "Qo'shish"}{" "}
-								{btn_loading && (
-									<span
-										className="spinner-grow spinner-grow-sm"
-										role="status"
-										aria-hidden="true"
-										style={{ marginLeft: "5px" }}
-									></span>
-								)}
-							</button>
-							<button className="secondary-btn" onClick={clearAndClose}>
-								Bekor qilish
-							</button>
+						{imageValidationError ? <Info size={20} /> : null}
+						<div className="validation-field">
+							<span>
+								{imageValidationError
+									? "Iltimos yaroqli faylni kiriting"
+									: null}
+							</span>
 						</div>
-					</>
-				)}
+					</div>
+				) : null}
+				<div className="modal-btn-group">
+					<button
+						className="primary-btn"
+						disabled={btn_loading}
+						onClick={addGood}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btn_loading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button className="secondary-btn" onClick={clearAndClose}>
+						Bekor qilish
+					</button>
+				</div>
 			</AddModal>
 
 			<div className="info-wrapper">
