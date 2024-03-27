@@ -37,6 +37,7 @@
 	--bg-danger-opacity: #fbd9df;
 
 	/* shadow */
+	--shadow-lg: 0px 1px 4px 1px #0000000f;
 	--shadow-md: 0px 1px 2px 0px #0000000f;
 
 	/* border */

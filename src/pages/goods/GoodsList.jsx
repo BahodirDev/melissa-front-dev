@@ -35,45 +35,50 @@ function GoodsList({
 								<h3>{item?.goods_name}</h3>
 							</div>
 							{userInfo === 1 ? (
-								<div className="card-item-edit-holder">
-									<button
-										type="button"
-										onClick={(e) => handleClick(e, item?.goods_id)}
-									>
-										<DotsThreeVertical size={24} />
-									</button>
-									<div
-										className={`card-item-edit-wrapper ${
-											showDropdown === item?.goods_id || "hidden"
-										} ${loc && "top"}`}
-									>
+								<div>
+									<div className="card-item-edit-holder">
 										<button
 											type="button"
-											className="card-item-edit-item"
-											onClick={(e) => {
-												e.stopPropagation()
-												setshowDropdown("")
-												editGood(item?.goods_id)
-											}}
+											onClick={(e) => handleClick(e, item?.goods_id)}
 										>
-											Tahrirlash <PencilSimple size={20} />
+											<DotsThreeVertical size={24} />
 										</button>
-										<button
-											type="button"
-											className="card-item-edit-item"
-											onClick={(e) =>
-												productDeleteConfirm(
-													e,
-													<>
-														<span>{item?.goods_name}</span> kategoriyani
-													</>,
-													deleteGood,
-													item?.goods_id
-												)
-											}
+										<div
+											className={`card-item-edit-wrapper ${
+												showDropdown === item?.goods_id || "hidden"
+											} ${loc && "top"}`}
 										>
-											O'chirish <Trash size={20} />
-										</button>
+											<button
+												type="button"
+												className="card-item-edit-item"
+												onClick={(e) => {
+													e.stopPropagation()
+													setshowDropdown("")
+													editGood(item?.goods_id)
+												}}
+											>
+												Tahrirlash <PencilSimple size={20} />
+											</button>
+											<button
+												type="button"
+												className="card-item-edit-item"
+												onClick={(e) =>
+													productDeleteConfirm(
+														e,
+														<>
+															<span>{item?.goods_name}</span> kategoriyani
+														</>,
+														deleteGood,
+														item?.goods_id
+													)
+												}
+											>
+												O'chirish <Trash size={20} />
+											</button>
+										</div>
+									</div>
+									<div className="card-item__image">
+										<img src={item?.img_url} alt="" />
 									</div>
 								</div>
 							) : null}
@@ -82,7 +87,6 @@ function GoodsList({
 						<div className="card-item-bottom goods">
 							<h3>Kod: {item?.goods_code}</h3>
 							<h4>{moment(item?.goods_createdat).format("YYYY/MM/DD")}</h4>
-							{/* <img src={item?.img_url} alt="" width={50} height={50} /> */}
 						</div>
 					</div>
 				)
