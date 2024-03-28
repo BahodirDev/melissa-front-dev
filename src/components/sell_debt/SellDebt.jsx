@@ -97,6 +97,7 @@ const SellDebt = ({
 		let oldSellInfo
 		if (storage) {
 			oldSellInfo = JSON.parse(storage)
+			handleStoreChange(JSON.stringify(oldSellInfo?.store))
 			setStoreObj(oldSellInfo?.store)
 			setClientObj(oldSellInfo?.client)
 			setProductList(oldSellInfo?.productList)
@@ -234,7 +235,6 @@ const SellDebt = ({
 		setProductP(0)
 
 		setProductList([])
-		// setProductsCache([])
 		setProducts([])
 
 		setProductObjD({})
@@ -430,7 +430,6 @@ const SellDebt = ({
 			}
 		})
 	}
-
 
 	return (
 		<div className="sell-modal-wrapper" style={{ display: SDModalDisplay }}>
@@ -935,15 +934,6 @@ const SellDebt = ({
 										e ? setClientObj(JSON.parse(e)) : setClientObj({})
 									}
 								>
-									{/* <Select.Option
-										value={JSON.stringify({
-											clients_name: "Yangi mijoz",
-											clients_nomer: "000000000000",
-											clients_id: "",
-										})}
-									>
-										Yangi mijoz - (00) 000 00 00
-									</Select.Option> */}
 									{client?.data.length
 										? client?.data.map((item, idx) => {
 												if (!item?.isdelete) {
@@ -1068,7 +1058,16 @@ const SellDebt = ({
 														className="option-shrink"
 													>
 														<div>
-															<span>{item?.goods_id?.goods_name} - </span>
+															<span>
+																<img
+																	src={item?.img_url}
+																	width={40}
+																	height={40}
+																	alt=""
+																	onClick={() => window.open(item?.img_url)}
+																/>{" "}
+																{item?.goods_id?.goods_name} -{" "}
+															</span>
 															<span>
 																{item?.goods_id?.goods_code} -{" "}
 																{(
