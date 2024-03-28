@@ -86,16 +86,16 @@ export default function MainPage() {
 			true
 		)
 
-		// ask before refresh
-		const handleBeforeUnload = (event) => {
-			const confirmationMessage = "Are you sure you want to leave?"
-			;(event || window.event).returnValue = confirmationMessage
-			return confirmationMessage
-		}
-		window.addEventListener("beforeunload", handleBeforeUnload)
-		return () => {
-			window.removeEventListener("beforeunload", handleBeforeUnload)
-		}
+		// // ask before refresh
+		// const handleBeforeUnload = (event) => {
+		// 	const confirmationMessage = "Are you sure you want to leave?"
+		// 	;(event || window.event).returnValue = confirmationMessage
+		// 	return confirmationMessage
+		// }
+		// window.addEventListener("beforeunload", handleBeforeUnload)
+		// return () => {
+		// 	window.removeEventListener("beforeunload", handleBeforeUnload)
+		// }
 	}, [])
 
 	const closeAllModals = () => {
