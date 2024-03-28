@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid"
 import product, {
 	productSlice,
 	setAmount,
@@ -37,6 +38,7 @@ import { addData } from "../reducers/debt"
 import {
 	confirmApproveModal,
 	confirmCloseModal,
+	confirmReturnTF,
 } from "../confirm/confirm_modal"
 
 const SellDebt = ({
@@ -98,6 +100,7 @@ const SellDebt = ({
 		let oldSellInfo
 		if (storage) {
 			oldSellInfo = JSON.parse(storage)
+			handleStoreChange(JSON.stringify(oldSellInfo?.store))
 			setStoreObj(oldSellInfo?.store)
 			setClientObj(oldSellInfo?.client)
 			setProductList(oldSellInfo?.productList)
@@ -203,34 +206,57 @@ const SellDebt = ({
 		setSubmitted(true)
 		if (
 			storeObj.store_id &&
-			// deliverObj?.deliver_name &&
 			clientObj.clients_name &&
 			productObj.products_count_price &&
 			productQ > 0 &&
 			productP > 0
 		) {
-			let newObj = {
-				product_id: productObj?.products_id,
-				product_name: productObj?.goods_id?.goods_name,
-				count: +productQ,
-				store_id: storeObj,
-				price: productP,
-				client: clientObj,
-				cost:
-					productObj?.products_count_cost *
-					productObj?.currency_id?.currency_amount,
-				currency_amount: productObj?.currency_id?.currency_amount,
-				code: productObj?.goods_id?.goods_code,
+			const existingProduct = productList.find(
+				(item) => item?.product_id === productObj?.products_id
+			)
+
+			if (existingProduct) {
+				confirmReturnTF(
+					"Mahsulot ro'yxatda mavjud. Qo'shishni istaysizmi?",
+					() => {
+						let newObj = {
+							product_id: productObj?.products_id,
+							product_name: productObj?.goods_id?.goods_name,
+							count: +productQ,
+							store_id: storeObj,
+							price: productP,
+							client: clientObj,
+							cost:
+								productObj?.products_count_cost *
+								productObj?.currency_id?.currency_amount,
+							currency_amount: productObj?.currency_id?.currency_amount,
+							code: productObj?.goods_id?.goods_code,
+							id: uuidv4(),
+						}
+						setProductList([newObj, ...productList])
+						setTotalPriceSellList((prev) => prev + productP * productQ)
+						clear()
+					}
+				)
+			} else {
+				let newObj = {
+					product_id: productObj?.products_id,
+					product_name: productObj?.goods_id?.goods_name,
+					count: +productQ,
+					store_id: storeObj,
+					price: productP,
+					client: clientObj,
+					cost:
+						productObj?.products_count_cost *
+						productObj?.currency_id?.currency_amount,
+					currency_amount: productObj?.currency_id?.currency_amount,
+					code: productObj?.goods_id?.goods_code,
+					id: uuidv4(),
+				}
+				setProductList([newObj, ...productList])
+				setTotalPriceSellList((prev) => prev + productP * productQ)
+				clear()
 			}
-			setProductList([newObj, ...productList])
-
-			setTotalPriceSellList((prev) => prev + productP * productQ)
-
-			// const index = products.findIndex(
-			// 	(item) => item?.products_id === productObj?.products_id
-			// )
-			// setProductsCache([...productsCache, ...products.splice(index, 1)])
-			clear()
 		}
 	}
 
@@ -288,15 +314,10 @@ const SellDebt = ({
 	}
 
 	const removeItemFromList = (id) => {
-		// remove from the list
-		let arr = productList.filter((item) => item?.product_id !== id)
+		let arr = productList.filter((item) => item?.id !== id)
 		setProductList(arr)
 
-		// remove from cache and add back to products
-		// const newObj = productsCache.filter((item) => item.products_id === id)[0]
-		// setProducts([newObj, ...products])
-
-		const removedItem = productList.findIndex((item) => item.product_id === id)
+		const removedItem = productList.findIndex((item) => item.id === id)
 		if (removedItem !== -1) {
 			setTotalPriceSellList(
 				(prev) =>
@@ -547,7 +568,7 @@ const SellDebt = ({
 											<h6>{addComma(item.count * item.price)}</h6>
 											<button
 												type="button"
-												onClick={() => removeItemFromList(item.product_id)}
+												onClick={() => removeItemFromList(item.id)}
 											>
 												<XCircle size={24} />
 											</button>
