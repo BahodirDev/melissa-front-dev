@@ -78,7 +78,6 @@ export default function Products() {
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [searchStoreId, setSearchStoreId] = useState("")
 	const [searchDeliverId, setSearchDeliverId] = useState("")
-	const [searchGoodId, setSearchGoodId] = useState("")
 
 	const [currentPage, setCurrentPage] = useState(1)
 	const [limit, setLimit] = useState(20)
@@ -98,21 +97,29 @@ export default function Products() {
 
 	const getData = () => {
 		dispatch(setLoading(true))
-		get(`/products/products-list?limit=${limit}&page=${currentPage}`).then(
-			(data) => {
-				if (data?.status === 200 || data?.status === 201) {
-					setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
-					dispatch(setDataProduct(data?.data?.data))
-					dispatch(setQuantity(data?.data?.hisob?.kategoriya))
-					dispatch(setAmount(data?.data?.hisob?.soni))
-					dispatch(setSum(data?.data?.hisob?.umumiyQiymati))
-				} else {
-					setTotalPage(0)
-					toast.error("Nomalum server xatolik")
+		if (
+			searchStoreId ||
+			searchDeliverId ||
+			inputRef.current?.value.length > 0
+		) {
+			handleSearch()
+		} else {
+			get(`/products/products-list?limit=${limit}&page=${currentPage}`).then(
+				(data) => {
+					if (data?.status === 200 || data?.status === 201) {
+						setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
+						dispatch(setDataProduct(data?.data?.data))
+						dispatch(setQuantity(data?.data?.hisob?.kategoriya))
+						dispatch(setAmount(data?.data?.hisob?.soni))
+						dispatch(setSum(data?.data?.hisob?.umumiyQiymati))
+					} else {
+						setTotalPage(0)
+						toast.error("Nomalum server xatolik")
+					}
+					dispatch(setLoading(false))
 				}
-				dispatch(setLoading(false))
-			}
-		)
+			)
+		}
 	}
 
 	useEffect(getData, [currentPage])
@@ -309,12 +316,18 @@ export default function Products() {
 				clearAndClose()
 				toast.error("Nomalum server xatolik")
 			}
-			console.log(data)
 		})
 	}
 
 	const handlePageChange = (pageNumber) => {
 		setCurrentPage(pageNumber)
+		if (
+			searchStoreId === "" &&
+			searchDeliverId === "" &&
+			inputRef.current.value === ""
+		) {
+			setSearchSubmitted(false)
+		}
 	}
 
 	const clearOnly = () => {
