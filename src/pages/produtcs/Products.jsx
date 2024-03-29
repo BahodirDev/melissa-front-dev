@@ -139,7 +139,7 @@ export default function Products() {
 		})
 	}
 
-	// useEffect(handleSearch, [searchStoreId, searchDeliverId])
+	useEffect(handleSearch, [searchStoreId, searchDeliverId])
 
 	const getData1 = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
@@ -176,6 +176,7 @@ export default function Products() {
 				out_of_box: +newProductQ,
 				currency_id: currency?.data[0]?.currency_id,
 				products_count_price: +newProductPrice,
+				products_count: +newProductQ,
 			}
 			if (objId) {
 				if (newDate) {
@@ -300,6 +301,7 @@ export default function Products() {
 				setNewBoxQ(data?.data?.products_box_count)
 				setNewProductQ(data?.data?.products_count)
 				setNewProductCost(data?.data?.products_count_cost)
+				setNewPerBox(data?.data?.each_box_count)
 				setNewProductPrice(data?.data?.products_count_price)
 				setNewPercentId(data?.data?.currency_id)
 				setNewDate(moment(data?.data?.products_createdat).format("YYYY-MM-DD"))
@@ -510,7 +512,6 @@ export default function Products() {
 						</span>
 					</div>
 				</div>
-
 				<div
 					className={`input-wrapper modal-form regular ${
 						objId
@@ -587,7 +588,6 @@ export default function Products() {
 						<span>{objId ? null : submitted && numberCheck(newProductQ)}</span>
 					</div>
 				</div>
-
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newProductCost) !== null && "error"

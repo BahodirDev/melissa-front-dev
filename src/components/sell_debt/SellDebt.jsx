@@ -1080,7 +1080,16 @@ const SellDebt = ({
 														className="option-shrink"
 													>
 														<div>
-															<span>{item?.goods_id?.goods_name} - </span>
+															<span>
+																<img
+																	src={item?.img_url}
+																	width={40}
+																	height={40}
+																	alt=""
+																	onClick={() => window.open(item?.img_url)}
+																/>{" "}
+																{item?.goods_id?.goods_name} -{" "}
+															</span>
 															<span>
 																{item?.goods_id?.goods_code} -{" "}
 																{(
