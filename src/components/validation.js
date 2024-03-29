@@ -38,4 +38,12 @@ const passwordCheck = (password, name = "") => {
 	else return null
 }
 
-export { validation, stringCheck, numberCheck,numberCheckAllow0, phoneNumberCheck, passwordCheck, dateCompare }
+export {
+	validation,
+	stringCheck,
+	numberCheck,
+	numberCheckAllow0,
+	phoneNumberCheck,
+	passwordCheck,
+	dateCompare,
+}

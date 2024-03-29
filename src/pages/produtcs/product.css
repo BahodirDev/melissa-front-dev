@@ -19,3 +19,7 @@
 .product-table-btn:active {
 	transform: scale(0.95);
 }
+
+.filter-wrapper.product {
+	grid-template-columns: 200px 200px auto;
+}

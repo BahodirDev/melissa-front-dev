@@ -74,14 +74,7 @@ export default function Reports() {
 		dispatch(setLoading(true))
 		get(`/${name}/${name}-list`).then((data) => {
 			if (data?.status === 201 || data?.status === 200) {
-				if (name === "reports") {
-					dispatch(setter(data?.data?.data))
-					dispatch(setCapital(data?.data?.hisob?.totalProductCost))
-					dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
-					dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
-				} else {
-					dispatch(setter(data?.data))
-				}
+				dispatch(setter(data?.data))
 			} else {
 				toast.error("Nomalum server xatolik", { toastId: "" })
 			}

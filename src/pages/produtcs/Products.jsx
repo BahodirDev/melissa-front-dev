@@ -25,6 +25,7 @@ import {
 import AntTable from "../../components/table/Table"
 import {
 	numberCheck,
+	numberCheckAllow0,
 	stringCheck,
 	validation,
 } from "../../components/validation"
@@ -88,6 +89,7 @@ export default function Products() {
 	const [newDeliverId, setNewDeliverId] = useState({})
 	const [newStoreId, setNewStoreId] = useState({})
 	const [newBoxQ, setNewBoxQ] = useState()
+	const [newPerBox, setNewPerBox] = useState(0)
 	const [newProductQ, setNewProductQ] = useState()
 	const [newProductCost, setNewProductCost] = useState()
 	const [newProductPrice, setNewProductPrice] = useState()
@@ -113,9 +115,31 @@ export default function Products() {
 		)
 	}
 
-	useEffect(() => {
-		getData()
-	}, [currentPage])
+	useEffect(getData, [currentPage])
+
+	const handleSearch = () => {
+		dispatch(setLoading(true))
+		setSearchSubmitted(true)
+		const storeObj = searchStoreId && JSON.parse(searchStoreId)
+		const deliverObj = searchDeliverId && JSON.parse(searchDeliverId)
+		let filterObj = {
+			store_id: storeObj?.store_id,
+			deliver_id: deliverObj?.deliver_id,
+			search: inputRef.current?.value,
+		}
+		post("/products/products-filter", filterObj).then((data) => {
+			if (data.status === 200) {
+				setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
+				setFilteredData(data?.data)
+			} else {
+				setTotalPage(0)
+				toast.error("Nomalum server xatolik")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
+	// useEffect(handleSearch, [searchStoreId, searchDeliverId])
 
 	const getData1 = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
@@ -138,21 +162,24 @@ export default function Products() {
 			newStoreId.store_id &&
 			currency?.data?.length &&
 			newProductPrice > 0 &&
-			newProductCost > 0
+			newProductCost > 0 &&
+			newPerBox > 0 &&
+			(newBoxQ > 0 || newProductQ > 0)
 		) {
-			setBtnLoading(true)
 			let newProductObj = {
 				goods_id: newGoodsId?.goods_id,
 				deliver_id: newDeliverId?.deliver_id,
 				store_id: newStoreId?.store_id,
 				products_count_cost: +newProductCost,
-				products_count: +newProductQ,
 				products_box_count: +newBoxQ,
+				each_box_count: +newPerBox,
+				out_of_box: +newProductQ,
 				currency_id: currency?.data[0]?.currency_id,
 				products_count_price: +newProductPrice,
 			}
 			if (objId) {
 				if (newDate) {
+					setBtnLoading(true)
 					newProductObj.products_createdat = newDate
 					patch(`/products/products-patch/${objId}`, newProductObj).then(
 						(data) => {
@@ -176,7 +203,8 @@ export default function Products() {
 					)
 				}
 			} else {
-				if (newBoxQ > 0 && newProductQ > 0) {
+				if (newProductQ > 0) {
+					setBtnLoading(true)
 					post("/products/products-post", newProductObj).then((data) => {
 						if (data?.status === 201) {
 							dispatch(
@@ -194,6 +222,7 @@ export default function Products() {
 							toast.error("Nomalum server xatolik")
 						}
 						setBtnLoading(false)
+						console.log(data)
 					})
 				}
 			}
@@ -220,53 +249,38 @@ export default function Products() {
 		setNewDeliverId({})
 		setNewStoreId({})
 		setNewBoxQ(0)
+		setNewPerBox(0)
 		setNewProductQ(0)
 		setNewPercentId({})
 		setNewProductCost(0)
 		setNewProductPrice(0)
-		setBtnLoading(false)
-		setObjId("")
 		setNewDate("")
+		setObjId("")
 
+		setBtnLoading(false)
 		setSubmitted(false)
+
 		setAddModalVisible(false)
 		setTimeout(() => {
 			setAddModalDisplay("none")
 		}, 300)
 	}
 
-	const handleSearch = () => {
-		if (inputRef.current?.value.length > 0) {
-			dispatch(setLoading(true))
-			setSearchSubmitted(true)
-			post("/products/products-filter", {
-				search: inputRef.current?.value,
-			}).then((data) => {
-				if (data.status === 200) {
-					// setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
-					setFilteredData(data?.data)
-				} else {
-					toast.error("Nomalum server xatolik")
-				}
-				dispatch(setLoading(false))
-			})
-		} else {
-			setSearchSubmitted(false)
-			setFilteredData([])
-		}
-	}
-
-	const clearSearch = () => {
+	const clearFilter = () => {
+		setSearchStoreId("")
+		setSearchDeliverId("")
 		setSearchSubmitted(false)
 		setFilteredData([])
 		inputRef.current.value = ""
 	}
 
 	const getGoodsList = (id) => {
-		get(`/goods/deliver-goods-list/${id}`).then((data) => {
-			setGoodList(data?.data)
-		})
-		setNewGoodsId({})
+		if (id) {
+			get(`/goods/deliver-goods-list/${id}`).then((data) => {
+				setGoodList(data?.data)
+			})
+			setNewGoodsId({})
+		}
 	}
 
 	const editProduct = (id) => {
@@ -293,6 +307,7 @@ export default function Products() {
 				clearAndClose()
 				toast.error("Nomalum server xatolik")
 			}
+			console.log(data)
 		})
 	}
 
@@ -305,6 +320,7 @@ export default function Products() {
 		setNewDeliverId({})
 		setNewStoreId({})
 		setNewBoxQ(0)
+		setNewPerBox(0)
 		setNewProductQ(0)
 		setNewPercentId({})
 		setNewProductCost(0)
@@ -314,6 +330,16 @@ export default function Products() {
 		setNewDate("")
 
 		setSubmitted(false)
+	}
+
+	function filterOptionStore(inputValue, option) {
+		const data = JSON.parse(option.props.value)?.store_name
+		return data.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+	}
+
+	function filterOptionDeliver(inputValue, option) {
+		const data = JSON.parse(option.props.value)?.deliver_name
+		return data.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
 	}
 
 	return (
@@ -354,7 +380,7 @@ export default function Products() {
 						}
 						onChange={(e) => {
 							e ? setNewDeliverId(JSON.parse(e)) : setNewDeliverId({})
-							getGoodsList(JSON.parse(e)?.deliver_id)
+							getGoodsList(e ? JSON.parse(e)?.deliver_id : null)
 						}}
 					>
 						{deliver.data?.length
@@ -484,24 +510,56 @@ export default function Products() {
 						</span>
 					</div>
 				</div>
+
 				<div
 					className={`input-wrapper modal-form regular ${
-						objId ? null : submitted && numberCheck(newBoxQ) !== null && "error"
+						objId
+							? null
+							: submitted && numberCheckAllow0(newBoxQ) !== null && "error"
 					}`}
 				>
-					<label>Quti soni</label>
+					<label>Quti</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newBoxQ ? newBoxQ : ""}
-						onChange={(e) => setNewBoxQ(e.target.value)}
+						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
 					/>
 					{objId
 						? null
-						: submitted && numberCheck(newBoxQ) !== null && <Info size={20} />}
+						: submitted &&
+						  numberCheckAllow0(newBoxQ) !== null && <Info size={20} />}
 					<div className="validation-field">
-						<span>{objId ? null : submitted && numberCheck(newBoxQ)}</span>
+						<span>
+							{objId ? null : submitted && numberCheckAllow0(newBoxQ)}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						objId
+							? null
+							: submitted && numberCheck(newPerBox) !== null && "error"
+					}`}
+				>
+					<label>Har bir qutida</label>
+					<input
+						type="text"
+						placeholder="Qiymat kiriting"
+						className="input"
+						value={newPerBox ? newPerBox : ""}
+						onChange={(e) => {
+							setNewPerBox(e.target.value.replace(/[^0-9]/g, ""))
+							setNewProductQ(newBoxQ * e.target.value)
+						}}
+					/>
+					{objId
+						? null
+						: submitted &&
+						  numberCheck(newPerBox) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{objId ? null : submitted && numberCheck(newPerBox)}</span>
 					</div>
 				</div>
 				<div
@@ -511,13 +569,15 @@ export default function Products() {
 							: submitted && numberCheck(newProductQ) !== null && "error"
 					}`}
 				>
-					<label>Mahsulot soni</label>
+					<label>Jami</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newProductQ ? newProductQ : ""}
-						onChange={(e) => setNewProductQ(e.target.value)}
+						onChange={(e) =>
+							setNewProductQ(e.target.value.replace(/[^0-9]/g, ""))
+						}
 					/>
 					{objId
 						? null
@@ -527,58 +587,7 @@ export default function Products() {
 						<span>{objId ? null : submitted && numberCheck(newProductQ)}</span>
 					</div>
 				</div>
-				{/* <div
-					className={`input-wrapper modal-form ${
-						submitted &&
-						stringCheck(newPercentId?.currency_name) !== null &&
-						"error"
-					}`}
-				>
-					<label>Pul birligi</label>
-					<Select
-						showSearch
-						allowClear
-						placeholder="Pul birligi tanlang"
-						className="select"
-						suffixIcon={
-							submitted && stringCheck(newPercentId?.currency_name) !== null ? (
-								<Info size={20} />
-							) : (
-								<CaretDown size={16} />
-							)
-						}
-						value={
-							newPercentId?.currency_name
-								? `${newPercentId?.currency_name} - ${addComma(newPercentId?.currency_amount)}`
-								: null
-						}
-						onChange={(e) =>
-							e ? setNewPercentId(JSON.parse(e)) : setNewPercentId({})
-						}
-					>
-						{currency?.data.length
-							? currency?.data.map((item, idx) => {
-									return (
-										<Select.Option key={idx} value={JSON.stringify(item)}>
-											<div>
-												<span>{item?.currency_name} - </span>
-												<span>{addComma(item?.currency_amount)}</span>
-											</div>
-										</Select.Option>
-									)
-							  })
-							: null}
-					</Select>
-					<div className="validation-field">
-						<span>
-							{submitted &&
-								stringCheck(
-									newPercentId?.currency_name,
-									"Pul birligi tanlash majburiy"
-								)}
-						</span>
-					</div>
-				</div> */}
+
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newProductCost) !== null && "error"
@@ -661,7 +670,7 @@ export default function Products() {
 				</div>
 			</AddModal>
 
-			<div className="filter-wrapper">
+			<div className="filter-wrapper product">
 				<div className="input-wrapper">
 					<Select
 						showSearch
@@ -670,11 +679,11 @@ export default function Products() {
 						className="select"
 						value={searchStoreId ? searchStoreId : null}
 						onChange={(e) => setSearchStoreId(e)}
-						disabled
+						filterOption={filterOptionStore}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => (
-									<Select.Option key={idx} value={item.store_id}>
+									<Select.Option key={idx} value={JSON.stringify(item)}>
 										<div>
 											<span>{item?.store_name}</span>
 										</div>
@@ -691,22 +700,15 @@ export default function Products() {
 						className="select"
 						value={searchDeliverId ? searchDeliverId : null}
 						onChange={(e) => setSearchDeliverId(e)}
-						disabled
+						filterOption={filterOptionDeliver}
 					>
 						{deliver.data?.length
 							? deliver.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option
-												key={idx}
-												value={item.deliver_id}
-												className="option-shrink"
-											>
+											<Select.Option key={idx} value={JSON.stringify(item)}>
 												<div>
-													<span>{item?.deliver_name} - </span>
-													<span>
-														{format_phone_number(item?.deliver_nomer)}
-													</span>
+													<span>{item?.deliver_name}</span>
 												</div>
 											</Select.Option>
 										)
@@ -714,38 +716,9 @@ export default function Products() {
 							: null}
 					</Select>
 				</div>
-				<div className="input-wrapper">
-					<Select
-						showSearch
-						allowClear
-						placeholder="Kategoriya"
-						className="select"
-						value={searchGoodId ? searchGoodId : null}
-						onChange={(e) => setSearchGoodId(e)}
-						disabled
-					>
-						{good.data?.length
-							? good.data.map((item, idx) => (
-									<Select.Option
-										className="option-shrink"
-										key={idx}
-										value={item.goods_id}
-									>
-										<div>
-											<span>{item?.goods_name} - </span>
-											<span>{item?.goods_code}</span>
-										</div>
-									</Select.Option>
-							  ))
-							: null}
-					</Select>
-				</div>
 				<div className="filter-btn-group">
-					<button type="button" className="filter-btn" disabled>
+					<button type="button" className="filter-btn" onClick={clearFilter}>
 						Tozalash
-					</button>
-					<button type="button" className="filter-btn" disabled>
-						Saqlash
 					</button>
 				</div>
 			</div>
@@ -789,7 +762,7 @@ export default function Products() {
 
 			<Search
 				handleSearch={handleSearch}
-				clearSearch={clearSearch}
+				clearSearch={() => (inputRef.current.value = "")}
 				className={"table-m"}
 				clearOnly={clearOnly}
 			/>
@@ -810,13 +783,11 @@ export default function Products() {
 						setAddModalDisplay={setAddModalDisplay}
 					/>
 
-					{/* {searchSubmitted ? null : ( */}
 					<Pagination
 						pages={totalPages}
 						currentPage={currentPage}
 						onPageChange={handlePageChange}
 					/>
-					{/* )} */}
 				</>
 			)}
 		</>

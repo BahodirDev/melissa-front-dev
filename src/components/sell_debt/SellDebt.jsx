@@ -105,9 +105,8 @@ const SellDebt = ({
 			setClientObj(oldSellInfo?.client)
 			setProductList(oldSellInfo?.productList)
 
-			handleStoreChange(JSON.stringify(oldSellInfo?.store))
 			const sumOfOldList = oldSellInfo?.productList?.reduce(
-				(totalPrice, product) => totalPrice + product?.price * product?.count,
+				(totalPrice, product) => totalPrice + product?.price,
 				0
 			)
 			setTotalPriceSellList(sumOfOldList)
@@ -146,6 +145,7 @@ const SellDebt = ({
 				setProductListLoading(false)
 			})
 		} else {
+			setProductListLoading(false)
 			setStoreObj({})
 			setProducts([])
 		}
@@ -211,52 +211,24 @@ const SellDebt = ({
 			productQ > 0 &&
 			productP > 0
 		) {
-			const existingProduct = productList.find(
-				(item) => item?.product_id === productObj?.products_id
-			)
-
-			if (existingProduct) {
-				confirmReturnTF(
-					"Mahsulot ro'yxatda mavjud. Qo'shishni istaysizmi?",
-					() => {
-						let newObj = {
-							product_id: productObj?.products_id,
-							product_name: productObj?.goods_id?.goods_name,
-							count: +productQ,
-							store_id: storeObj,
-							price: productP,
-							client: clientObj,
-							cost:
-								productObj?.products_count_cost *
-								productObj?.currency_id?.currency_amount,
-							currency_amount: productObj?.currency_id?.currency_amount,
-							code: productObj?.goods_id?.goods_code,
-							id: uuidv4(),
-						}
-						setProductList([newObj, ...productList])
-						setTotalPriceSellList((prev) => prev + productP * productQ)
-						clear()
-					}
-				)
-			} else {
-				let newObj = {
-					product_id: productObj?.products_id,
-					product_name: productObj?.goods_id?.goods_name,
-					count: +productQ,
-					store_id: storeObj,
-					price: productP,
-					client: clientObj,
-					cost:
-						productObj?.products_count_cost *
-						productObj?.currency_id?.currency_amount,
-					currency_amount: productObj?.currency_id?.currency_amount,
-					code: productObj?.goods_id?.goods_code,
-					id: uuidv4(),
-				}
-				setProductList([newObj, ...productList])
-				setTotalPriceSellList((prev) => prev + productP * productQ)
-				clear()
+			let newObj = {
+				product_id: productObj?.products_id,
+				product_name: productObj?.goods_id?.goods_name,
+				count: +productQ,
+				store_id: storeObj,
+				price: productP,
+				client: clientObj,
+				cost:
+					productObj?.products_count_cost *
+					productObj?.currency_id?.currency_amount,
+				currency_amount: productObj?.currency_id?.currency_amount,
+				code: productObj?.goods_id?.goods_code,
 			}
+			setProductList([newObj, ...productList])
+
+			setTotalPriceSellList((prev) => prev + productP * productQ)
+
+			clear()
 		}
 	}
 
@@ -269,7 +241,6 @@ const SellDebt = ({
 		setProductP(0)
 
 		setProductList([])
-		// setProductsCache([])
 		setProducts([])
 
 		setProductObjD({})
@@ -284,7 +255,7 @@ const SellDebt = ({
 		setProductsD([])
 
 		setTotalPriceSellList(0)
-		localStorage.setItem("sellInfo", "")
+		// localStorage.setItem("productList", JSON.stringify([]))
 		setSubmittedD(false)
 		setBtnLoading(false)
 		setBtnLoadingD(false)
@@ -344,8 +315,8 @@ const SellDebt = ({
 				return {
 					product_id: item?.product_id,
 					count: item?.count,
-					client:
-						item?.client.clients_name + " - " + item?.client.clients_nomer,
+					client: item?.client.clients_name,
+					client_nomer: item?.client.clients_nomer,
 					client_id: item?.client.clients_id,
 					cost: (item?.cost / item?.currency_amount).toFixed(2),
 					price: (item?.price / item?.currency_amount).toFixed(2),
@@ -984,7 +955,7 @@ const SellDebt = ({
 									>
 										Yangi mijoz - (00) 000 00 00
 									</Select.Option> */}
-									{client?.data.length
+									{client?.data?.length
 										? client?.data.map((item, idx) => {
 												if (!item?.isdelete) {
 													return (
@@ -1134,13 +1105,23 @@ const SellDebt = ({
 									</span>
 								</div>
 							</div>
+							<div className={`input-wrapper modal-form regular`}>
+								<label>
+									Quti (
+									{productObj.products_box_count
+										? productObj.products_box_count
+										: 0}
+									) - [
+									{productObj.each_box_count ? productObj.each_box_count : 0}]
+								</label>
+							</div>
 							<div
 								className={`input-wrapper modal-form regular ${
 									submitted && numberCheck(productQ) !== null && "error"
 								}`}
 							>
 								<label>
-									Miqdor (
+									Dona (
 									{productObj.products_count ? productObj.products_count : 0})
 								</label>
 								<input
@@ -1163,7 +1144,6 @@ const SellDebt = ({
 											setProductQ(e.target.value)
 										}
 									}}
-									// onChange={(e) => setProductQ(e.target.value)}
 								/>
 								{submitted && numberCheck(productQ) !== null && (
 									<Info size={20} />
@@ -1244,5 +1224,3 @@ const SellDebt = ({
 }
 
 export default SellDebt
-
-// absolutely no change at all

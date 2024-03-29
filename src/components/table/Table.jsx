@@ -36,7 +36,8 @@ const AntTable = ({
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
 				products_box_count: Math.ceil(item?.products_box_count),
-				products_count: Math.ceil(item?.products_count),
+				per_box: item?.each_box_count,
+				products_count: Math.ceil(+item?.products_count),
 				products_count_cost:
 					addComma(item?.products_count_cost) +
 					item?.currency_id?.currency_symbol,
@@ -44,9 +45,8 @@ const AntTable = ({
 					addComma(item?.products_count_price) +
 					item?.currency_id?.currency_symbol,
 				total_price:
-					addComma(
-						(item?.products_count * item?.products_count_cost).toFixed(2)
-					) + item?.currency_id?.currency_symbol,
+					addComma(item?.products_count * item?.products_count_cost) +
+					item?.currency_id?.currency_symbol,
 				product_date: `${moment(item?.products_createdat).format(
 					"YYYY/MM/DD hh:mm"
 				)}`,
@@ -72,11 +72,15 @@ const AntTable = ({
 			dataIndex: "goods_code",
 		},
 		{
-			title: <nobr>Qutilar soni</nobr>,
+			title: <nobr>Quti</nobr>,
 			dataIndex: "products_box_count",
 		},
 		{
-			title: "Miqdor",
+			title: <nobr>Har bir qutida</nobr>,
+			dataIndex: "per_box",
+		},
+		{
+			title: "Jami",
 			dataIndex: "products_count",
 		},
 		{

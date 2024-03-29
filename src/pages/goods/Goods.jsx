@@ -47,11 +47,13 @@ export default function Goods() {
 	const [objId, setObjId] = useState("")
 	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [imageValidationError, setImageValidationError] = useState(false)
 
 	// new
 	const [newGoodName, setNewGoodName] = useState("")
 	const [newGoodCode, setNewGoodCode] = useState("")
 	const [newDeliver, setNewDeliver] = useState("")
+	const [imageFile, setImageFile] = useState(null)
 
 	useEffect(() => {
 		dispatch(setLoading(true))
@@ -68,6 +70,47 @@ export default function Goods() {
 			dispatch(setDataDeliver(data?.data))
 		})
 	}, [])
+
+	const handleImageChange = (e) => {
+		const allowedExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"]
+		const maxSize = 1024 * 1024
+
+		const selectedImage = e.target.files[0]
+		const fileName = selectedImage.name
+		const fileExtension = fileName.split(".").pop().toLowerCase()
+
+		if (!allowedExtensions.includes(fileExtension)) {
+			setImageValidationError(true)
+			toast.error(
+				"Fayl turi yaroqsiz. Iltimos, jpg, jpeg, png, gif, bmp yoki webp faylini yuklang.",
+				{ toastId: "" }
+			)
+			return false
+		}
+		if (selectedImage.size > maxSize) {
+			setImageValidationError(true)
+			toast.error(
+				"Fayl hajmi chegaradan oshib ketdi (1MB). Iltimos, kichikroq fayl yuklang.",
+				{ toastId: "" }
+			)
+			return false
+		}
+
+		setImageValidationError(false)
+		setImageFile(selectedImage)
+
+		let formData = new FormData()
+		formData.append("id", objId)
+		formData.append("file", selectedImage)
+
+		post("/goods/goods-imgupload", formData).then((data) => {
+			if (data?.status === 201 || data?.status === 200) {
+				toast.success("Rasm muvoffaqiyatli kiritildi", { toastId: "" })
+			} else {
+				toast.error("Nomalum server xatolik", { toastId: "" })
+			}
+		})
+	}
 
 	const addGood = () => {
 		setSubmitted(true)
@@ -140,6 +183,7 @@ export default function Goods() {
 					deliver_nomer: data?.data[0]?.deliver_nomer,
 					deliver_id: data?.data[0]?.delivery_id,
 				})
+				setImageFile(data?.data[0]?.img_url)
 			} else {
 				clearAndClose()
 				toast.error("Nomalum server xatolik")
@@ -151,6 +195,7 @@ export default function Goods() {
 		setNewGoodName("")
 		setNewGoodCode("")
 		setNewDeliver("")
+		setImageFile(null)
 
 		setObjId("")
 		setBtn_loading(false)
@@ -195,6 +240,69 @@ export default function Goods() {
 		setObjId("")
 		setBtn_loading(false)
 		setSubmitted(false)
+	}
+
+	document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
+		const dropZoneElement = inputElement.closest(".drop-zone")
+		dropZoneElement.addEventListener("click", (e) => {
+			inputElement.click()
+		})
+		inputElement.addEventListener("change", (e) => {
+			if (inputElement.files.length) {
+				updateThumbnail(dropZoneElement, inputElement.files[0])
+			}
+		})
+		dropZoneElement.addEventListener("dragover", (e) => {
+			e.preventDefault()
+			dropZoneElement.classList.add("drop-zone--over")
+		})
+		;["dragleave", "dragend"].forEach((type) => {
+			dropZoneElement.addEventListener(type, (e) => {
+				dropZoneElement.classList.remove("drop-zone--over")
+			})
+		})
+		let changeEventTriggered = false
+		dropZoneElement.addEventListener("drop", (e) => {
+			e.preventDefault()
+			if (e.dataTransfer.files.length && !changeEventTriggered) {
+				inputElement.files = e.dataTransfer.files
+				updateThumbnail(dropZoneElement, e.dataTransfer.files[0])
+
+				const event = new Event("change", { bubbles: true })
+				inputElement.dispatchEvent(event)
+				changeEventTriggered = true
+			}
+			dropZoneElement.classList.remove("drop-zone--over")
+		})
+	})
+	function updateThumbnail(dropZoneElement, file) {
+		let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb")
+
+		// First time - remove the prompt
+		if (dropZoneElement.querySelector(".drop-zone__prompt")) {
+			dropZoneElement.querySelector(".drop-zone__prompt").remove()
+		}
+
+		// First time - there is no thumbnail element, so lets create it
+		if (!thumbnailElement) {
+			thumbnailElement = document.createElement("div")
+			thumbnailElement.classList.add("drop-zone__thumb")
+			dropZoneElement.appendChild(thumbnailElement)
+		}
+
+		thumbnailElement.dataset.label = file.name
+
+		// Show thumbnail for image files
+		if (file.type.startsWith("image/")) {
+			const reader = new FileReader()
+
+			reader.readAsDataURL(file)
+			reader.onload = () => {
+				thumbnailElement.style.backgroundImage = `url('${reader.result}')`
+			}
+		} else {
+			thumbnailElement.style.backgroundImage = null
+		}
 	}
 
 	return (
@@ -314,6 +422,42 @@ export default function Goods() {
 						</span>
 					</div>
 				</div>
+				{objId ? (
+					<div
+						className={`input-wrapper modal-form regular ${
+							imageValidationError ? "error" : null
+						}`}
+					>
+						<label>Rasm</label>
+						<div class="drop-zone">
+							{imageFile === null || imageFile === "Unknown" ? (
+								<span class="drop-zone__prompt">
+									Rasm yuklang yoki tashlang
+								</span>
+							) : (
+								<div
+									className="drop-zone__thumb"
+									style={{ backgroundImage: `url('${imageFile}')` }}
+								></div>
+							)}
+							<input
+								className="input"
+								onChange={handleImageChange}
+								type="file"
+								name="myFile"
+								class="drop-zone__input"
+							/>
+						</div>
+						{imageValidationError ? <Info size={20} /> : null}
+						<div className="validation-field">
+							<span>
+								{imageValidationError
+									? "Iltimos yaroqli faylni kiriting"
+									: null}
+							</span>
+						</div>
+					</div>
+				) : null}
 				<div className="modal-btn-group">
 					<button
 						className="primary-btn"
