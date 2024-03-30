@@ -120,7 +120,7 @@ export default function Products() {
 						dispatch(setAmount(data?.data?.hisob?.soni))
 						dispatch(setSum(data?.data?.hisob?.umumiyQiymati))
 					} else {
-						setTotalPage(0)
+						setTotalPage(1)
 						toast.error("Nomalum server xatolik")
 					}
 					dispatch(setLoading(false))
@@ -147,7 +147,6 @@ export default function Products() {
 	const handleSearch = () => {
 		dispatch(setLoading(true))
 		setSearchSubmitted(true)
-		setCurrentPage(1)
 		const storeObj = searchStoreId && JSON.parse(searchStoreId)
 		const deliverObj = searchDeliverId && JSON.parse(searchDeliverId)
 		let filterObj = {
@@ -160,7 +159,7 @@ export default function Products() {
 				setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 				setFilteredData(data?.data)
 			} else {
-				setTotalPage(0)
+				setTotalPage(1)
 				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
@@ -168,6 +167,7 @@ export default function Products() {
 	}
 
 	useEffect(() => {
+		setCurrentPage(1)
 		if (didMount.current) {
 			handleSearch()
 		} else {

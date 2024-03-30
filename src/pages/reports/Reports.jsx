@@ -103,7 +103,7 @@ export default function Reports() {
 						dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
 						dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
 					} else {
-						setTotalPage(0)
+						setTotalPage(1)
 						toast.error("Nomalum server xatolik", { toastId: "" })
 					}
 					dispatch(setLoading(false))
@@ -132,7 +132,6 @@ export default function Reports() {
 	const handleSearch = () => {
 		dispatch(setLoading(true))
 		setSearchSubmitted(true)
-		setCurrentPage(1)
 		let filterObj = {
 			store: storeId,
 			deliver: deliverId,
@@ -155,7 +154,7 @@ export default function Reports() {
 				setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 				setFilteredData(data?.data)
 			} else {
-				setTotalPage(0)
+				setTotalPage(1)
 				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
@@ -163,6 +162,7 @@ export default function Reports() {
 	}
 
 	useEffect(() => {
+		setCurrentPage(1)
 		if (didMount.current) {
 			handleSearch()
 		} else {
