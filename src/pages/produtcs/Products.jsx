@@ -142,6 +142,7 @@ export default function Products() {
 		setSearchSubmitted(false)
 		setFilteredData([])
 		inputRef.current.value = ""
+		getData()
 	}
 
 	const handleSearch = () => {
@@ -154,7 +155,10 @@ export default function Products() {
 			deliver_id: deliverObj?.deliver_id,
 			search: inputRef.current?.value,
 		}
-		post("/products/products-filter", filterObj).then((data) => {
+		post(
+			`/products/products-filter?limit=${limit}&page=${currentPage}`,
+			filterObj
+		).then((data) => {
 			if (data.status === 200) {
 				setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 				setFilteredData(data?.data)
