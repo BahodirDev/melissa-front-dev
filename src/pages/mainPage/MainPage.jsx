@@ -8,7 +8,7 @@ import { Plus } from "@phosphor-icons/react"
 import SellDebt from "../../components/sell_debt/SellDebt"
 
 export default function MainPage() {
-	const [sidebar, setSidebar] = useState(false)
+	const [sidebar, setSidebar] = useState(true)
 	const inputRef = useRef(null)
 	const url = useLocation()
 	const navigate = useNavigate()

@@ -82,6 +82,7 @@ export default function Products() {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [limit, setLimit] = useState(20)
 	const [totalPages, setTotalPage] = useState(1)
+	const didMount = useRef(false)
 
 	// new
 	const [newGoodsId, setNewGoodsId] = useState({})
@@ -94,6 +95,12 @@ export default function Products() {
 	const [newProductPrice, setNewProductPrice] = useState()
 	const [newPercentId, setNewPercentId] = useState({})
 	const [newDate, setNewDate] = useState("")
+
+	const getData1 = (name, dispatch1) => {
+		get(`/${name}/${name}-list`).then((data) => {
+			dispatch(dispatch1(data?.data))
+		})
+	}
 
 	const getData = () => {
 		dispatch(setLoading(true))
@@ -124,9 +131,23 @@ export default function Products() {
 
 	useEffect(getData, [currentPage])
 
+	useEffect(() => {
+		getData1("deliver", setDataDeliver)
+		getData1("goods", setDataGood)
+	}, [])
+
+	const clearFilter = () => {
+		setSearchStoreId("")
+		setSearchDeliverId("")
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+	}
+
 	const handleSearch = () => {
 		dispatch(setLoading(true))
 		setSearchSubmitted(true)
+		setCurrentPage(1)
 		const storeObj = searchStoreId && JSON.parse(searchStoreId)
 		const deliverObj = searchDeliverId && JSON.parse(searchDeliverId)
 		let filterObj = {
@@ -146,20 +167,13 @@ export default function Products() {
 		})
 	}
 
-	useEffect(handleSearch, [searchStoreId, searchDeliverId])
-
-	const getData1 = (name, dispatch1) => {
-		get(`/${name}/${name}-list`).then((data) => {
-			dispatch(dispatch1(data?.data))
-		})
-	}
-
 	useEffect(() => {
-		// setUserInfo(localStorage.getItem("role"))
-		// getData()
-		getData1("deliver", setDataDeliver)
-		getData1("goods", setDataGood)
-	}, [])
+		if (didMount.current) {
+			handleSearch()
+		} else {
+			didMount.current = true
+		}
+	}, [searchStoreId, searchDeliverId])
 
 	const addNewProduct = () => {
 		setSubmitted(true)
@@ -192,15 +206,15 @@ export default function Products() {
 					patch(`/products/products-patch/${objId}`, newProductObj).then(
 						(data) => {
 							if (data?.status === 200 || data?.status === 201) {
-								dispatch(
-									editData({
-										...data?.data,
-										...newGoodsId,
-										...newDeliverId,
-										...newStoreId,
-										...currency?.data[0],
-									})
-								)
+								// dispatch(
+								// 	editData({
+								// 		...data?.data,
+								// 		...newGoodsId,
+								// 		...newDeliverId,
+								// 		...newStoreId,
+								// 		...currency?.data[0],
+								// 	})
+								// )
 								clearAndClose()
 								toast.success("Mahsulot muvoffaqiyatli o'zgartirildi")
 							} else {
@@ -215,22 +229,22 @@ export default function Products() {
 					setBtnLoading(true)
 					post("/products/products-post", newProductObj).then((data) => {
 						if (data?.status === 201) {
-							dispatch(
-								addData({
-									...data?.data,
-									...newGoodsId,
-									...newDeliverId,
-									...newStoreId,
-									...currency?.data[0],
-								})
-							)
+							// dispatch(
+							// 	addData({
+							// 		...data?.data,
+							// 		...newGoodsId,
+							// 		...newDeliverId,
+							// 		...newStoreId,
+							// 		...currency?.data[0],
+							// 	})
+							// )
 							clearAndClose()
 							toast.success("Mahsulot muvoffaqiyatli qo'shildi")
 						} else {
 							toast.error("Nomalum server xatolik")
 						}
 						setBtnLoading(false)
-						console.log(data)
+						// console.log(data)
 					})
 				}
 			}
@@ -242,6 +256,12 @@ export default function Products() {
 			if (data?.status === 200 || data?.status === 201) {
 				dispatch(removeProduct(id))
 				toast.success("Mahsulot muvoffaqiyatli o'chirildi")
+				if (searchSubmitted) {
+					setFilteredData((prevState) => ({
+						...prevState,
+						data: prevState.data.filter((item) => item.products_id !== id),
+					}))
+				}
 			} else if (data?.response?.data?.error === "PRODUCT_NOT_FOUND") {
 				toast.error("Bunday mahsulot topilmadi")
 			} else if (data?.response?.data?.error === "DEBTS_EXIST") {
@@ -272,14 +292,6 @@ export default function Products() {
 		setTimeout(() => {
 			setAddModalDisplay("none")
 		}, 300)
-	}
-
-	const clearFilter = () => {
-		setSearchStoreId("")
-		setSearchDeliverId("")
-		setSearchSubmitted(false)
-		setFilteredData([])
-		inputRef.current.value = ""
 	}
 
 	const getGoodsList = (id) => {
@@ -776,6 +788,7 @@ export default function Products() {
 			<Search
 				handleSearch={handleSearch}
 				clearSearch={() => (inputRef.current.value = "")}
+				showAddBtn={userInfo?.role === 1}
 				className={"table-m"}
 				clearOnly={clearOnly}
 			/>

@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid"
 import product, {
 	productSlice,
 	setAmount,
@@ -106,7 +105,7 @@ const SellDebt = ({
 			setProductList(oldSellInfo?.productList)
 
 			const sumOfOldList = oldSellInfo?.productList?.reduce(
-				(totalPrice, product) => totalPrice + product?.price,
+				(totalPrice, product) => totalPrice + product?.price * product?.count,
 				0
 			)
 			setTotalPriceSellList(sumOfOldList)
@@ -171,15 +170,13 @@ const SellDebt = ({
 			// 		}
 			// 	})
 			// } else {
-				get(`products/products-by-deliverId/${obj?.deliver_id}`).then(
-					(data) => {
-						if (data?.status === 200) {
-							setProducts(data?.data)
-						} else {
-							setProducts([])
-						}
-					}
-				)
+			get(`products/products-by-deliverId/${obj?.deliver_id}`).then((data) => {
+				if (data?.status === 200) {
+					setProducts(data?.data)
+				} else {
+					setProducts([])
+				}
+			})
 			// }
 		} else {
 			setDeliverObj({})
@@ -226,24 +223,58 @@ const SellDebt = ({
 			productQ > 0 &&
 			productP > 0
 		) {
-			let newObj = {
-				product_id: productObj?.products_id,
-				product_name: productObj?.goods_id?.goods_name,
-				count: +productQ,
-				store_id: storeObj,
-				price: productP,
-				client: clientObj,
-				cost:
-					productObj?.products_count_cost *
-					productObj?.currency_id?.currency_amount,
-				currency_amount: productObj?.currency_id?.currency_amount,
-				code: productObj?.goods_id?.goods_code,
+			const existingProduct = productList.find(
+				(item) => item?.product_id === productObj?.products_id
+			)
+
+			if (existingProduct) {
+				confirmReturnTF(
+					"Mahsulot ro'yxatda mavjud. Qo'shishni istaysizmi?",
+					() => {
+						let newObj = {
+							product_id: productObj?.products_id,
+							product_name: productObj?.goods_id?.goods_name,
+							count: +productQ + existingProduct?.count,
+							store_id: storeObj,
+							price: productP,
+							client: clientObj,
+							cost:
+								productObj?.products_count_cost *
+								productObj?.currency_id?.currency_amount,
+							currency_amount: productObj?.currency_id?.currency_amount,
+							code: productObj?.goods_id?.goods_code,
+						}
+						const prevList = productList.filter(
+							(item) => item?.product_id !== productObj?.products_id
+						)
+						setProductList([newObj, ...prevList])
+						setTotalPriceSellList(
+							(prev) =>
+								prev -
+								existingProduct?.count * existingProduct?.price +
+								(existingProduct?.count + +productQ) * productP
+						)
+						clear()
+					}
+				)
+			} else {
+				let newObj = {
+					product_id: productObj?.products_id,
+					product_name: productObj?.goods_id?.goods_name,
+					count: +productQ,
+					store_id: storeObj,
+					price: productP,
+					client: clientObj,
+					cost:
+						productObj?.products_count_cost *
+						productObj?.currency_id?.currency_amount,
+					currency_amount: productObj?.currency_id?.currency_amount,
+					code: productObj?.goods_id?.goods_code,
+				}
+				setProductList([newObj, ...productList])
+				setTotalPriceSellList((prev) => prev + productP * productQ)
+				clear()
 			}
-			setProductList([newObj, ...productList])
-
-			setTotalPriceSellList((prev) => prev + productP * productQ)
-
-			clear()
 		}
 	}
 
@@ -300,10 +331,10 @@ const SellDebt = ({
 	}
 
 	const removeItemFromList = (id) => {
-		let arr = productList.filter((item) => item?.id !== id)
+		let arr = productList.filter((item) => item?.product_id !== id)
 		setProductList(arr)
 
-		const removedItem = productList.findIndex((item) => item.id === id)
+		const removedItem = productList.findIndex((item) => item?.product_id === id)
 		if (removedItem !== -1) {
 			setTotalPriceSellList(
 				(prev) =>
@@ -554,7 +585,7 @@ const SellDebt = ({
 											<h6>{addComma(item.count * item.price)}</h6>
 											<button
 												type="button"
-												onClick={() => removeItemFromList(item.id)}
+												onClick={() => removeItemFromList(item.product_id)}
 											>
 												<XCircle size={24} />
 											</button>

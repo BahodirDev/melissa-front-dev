@@ -1,6 +1,6 @@
 import { DatePicker, Select, Space } from "antd"
 import { Option } from "antd/es/mentions"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
 import {
@@ -60,6 +60,7 @@ export default function Reports() {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [limit, setLimit] = useState(20)
 	const [totalPages, setTotalPage] = useState(1)
+	const didMount = useRef(false)
 
 	// filter
 	const [filteredData, setFilteredData] = useState({})
@@ -131,6 +132,7 @@ export default function Reports() {
 	const handleSearch = () => {
 		dispatch(setLoading(true))
 		setSearchSubmitted(true)
+		setCurrentPage(1)
 		let filterObj = {
 			store: storeId,
 			deliver: deliverId,
@@ -160,19 +162,25 @@ export default function Reports() {
 		})
 	}
 
-	useEffect(handleSearch, [
-		storeId,
-		deliverId,
-		clientId,
-		dateRange,
-		selectedIncomeOutcome,
-	])
+	useEffect(() => {
+		if (didMount.current) {
+			handleSearch()
+		} else {
+			didMount.current = true
+		}
+	}, [storeId, deliverId, clientId, dateRange, selectedIncomeOutcome])
 
 	const deleteReport = (id) => {
 		remove(`/reports/reports-delete/${id}`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
 				dispatch(removeData(id))
 				toast.success("Hisobot muvoffaqiyatli o'chirildi")
+				if (searchSubmitted) {
+					setFilteredData((prevState) => ({
+						...prevState,
+						data: prevState?.data.filter((item) => item.reports_id !== id),
+					}))
+				}
 			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
 				toast.error("Bunday hisobot topilmadi")
 			} else {
@@ -216,11 +224,10 @@ export default function Reports() {
 		patch(`/reports/reports-patch/${objId}`, {
 			reports_createdat: new Date(newDate).toISOString(),
 		}).then((data) => {
-			console.log(data)
+			// console.log(data)
 			if (data?.status === 200 || data?.status === 201) {
-				dispatch(editDate(objId))
 				clearAndClose()
-				toast.success("Hisobot muvoffaqiyatli o'zgartirildi")
+				toast.success("Malumot muvoffaqiyatli o'zgartirildi")
 			} else if (data?.response?.data?.error === "REPORTS_NOT_FOUND") {
 				toast.error("Bunday hisobot topilmadi")
 			} else {

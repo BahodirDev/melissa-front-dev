@@ -39,9 +39,6 @@ export const reportSlice = createSlice({
 
 			if (index !== -1) {
 				state.data.splice(index, 1)
-				// state.capital = 1
-				// state.outcome = 2
-				// state.income = 3
 			}
 		},
 		setCapital: (state, action) => {

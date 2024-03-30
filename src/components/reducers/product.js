@@ -85,7 +85,7 @@ export const productSlice = createSlice({
 				products_count_price: action.payload.products_count_price,
 				products_createdat: action.payload.products_createdat,
 			}
-			
+
 			if (index !== -1) {
 				// state.amount += +newDataObj.products_count
 				// state.sum +=
@@ -96,17 +96,11 @@ export const productSlice = createSlice({
 			}
 		},
 		removeProduct: (state, action) => {
-			const index = state.dataProduct.findIndex(
+			const index = state?.dataProduct.findIndex(
 				(item) => item.products_id === action.payload
 			)
 
-			state.quantity -= 1
-			state.amount -= state.dataProduct[index].products_count
-			state.sum -=
-				state.dataProduct[index].products_count *
-				state.dataProduct[index].products_count_cost *
-				state.dataProduct[index].currency_id.currency_amount
-			state.dataProduct.splice(index, 1)
+			if (index !== -1) state.dataProduct.splice(index, 1)
 		},
 	},
 })

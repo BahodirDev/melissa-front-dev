@@ -348,7 +348,7 @@ export default function MyModal({ myModal, setMyModal }) {
 											: ""
 									}
 									// onChange={(e) => setProductPrice(e.target.value)}
-									onChange={(e) => console.log(e.target.value)}
+									// onChange={(e) => console.log(e.target.value)}
 								/>
 							)}
 						</div>

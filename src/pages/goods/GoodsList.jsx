@@ -77,16 +77,23 @@ function GoodsList({
 											</button>
 										</div>
 									</div>
-									<div className="card-item__image">
-										<img src={item?.img_url} alt="" />
-									</div>
 								</div>
 							) : null}
 						</div>
 
 						<div className="card-item-bottom goods">
-							<h3>Kod: {item?.goods_code}</h3>
-							<h4>{moment(item?.goods_createdat).format("YYYY/MM/DD")}</h4>
+							<div className="card-item-bottom__left">
+								<h3>Kod: {item?.goods_code}</h3>
+								<h4>{moment(item?.goods_createdat).format("YYYY/MM/DD")}</h4>
+							</div>
+
+							<div className="card-item__image">
+								<img
+									src={item?.img_url}
+									alt=""
+									onClick={() => window.open(item?.img_url)}
+								/>
+							</div>
 						</div>
 					</div>
 				)

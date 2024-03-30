@@ -118,7 +118,7 @@ const Order = ({ getData }) => {
 	const payDebt = (id, sum, value) => {
 		dispatch(setLoading(true))
 		patch(`/ordered/ordered-change/${id}`, { amount: sum }).then((data) => {
-			console.log(data)
+			// console.log(data)
 			if (data?.status === 200) {
 				dispatch(
 					payOrderDebt({
