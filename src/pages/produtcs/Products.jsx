@@ -543,9 +543,7 @@ export default function Products() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						objId
-							? null
-							: submitted && numberCheckAllow0(newBoxQ) !== null && "error"
+						submitted && numberCheckAllow0(newBoxQ) !== null && "error"
 					}`}
 				>
 					<label>Quti</label>
@@ -556,21 +554,16 @@ export default function Products() {
 						value={newBoxQ ? newBoxQ : ""}
 						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
 					/>
-					{objId
-						? null
-						: submitted &&
-						  numberCheckAllow0(newBoxQ) !== null && <Info size={20} />}
+					{submitted && numberCheckAllow0(newBoxQ) !== null && (
+						<Info size={20} />
+					)}
 					<div className="validation-field">
-						<span>
-							{objId ? null : submitted && numberCheckAllow0(newBoxQ)}
-						</span>
+						<span>{submitted && numberCheckAllow0(newBoxQ)}</span>
 					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						objId
-							? null
-							: submitted && numberCheck(newPerBox) !== null && "error"
+						submitted && numberCheck(newPerBox) !== null && "error"
 					}`}
 				>
 					<label>Har bir qutida</label>
@@ -584,19 +577,14 @@ export default function Products() {
 							setNewProductQ(newBoxQ * e.target.value)
 						}}
 					/>
-					{objId
-						? null
-						: submitted &&
-						  numberCheck(newPerBox) !== null && <Info size={20} />}
+					{submitted && numberCheck(newPerBox) !== null && <Info size={20} />}
 					<div className="validation-field">
-						<span>{objId ? null : submitted && numberCheck(newPerBox)}</span>
+						<span>{submitted && numberCheck(newPerBox)}</span>
 					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						objId
-							? null
-							: submitted && numberCheck(newProductQ) !== null && "error"
+						submitted && numberCheck(newProductQ) !== null && "error"
 					}`}
 				>
 					<label>Jami</label>
@@ -609,12 +597,9 @@ export default function Products() {
 							setNewProductQ(e.target.value.replace(/[^0-9]/g, ""))
 						}
 					/>
-					{objId
-						? null
-						: submitted &&
-						  numberCheck(newProductQ) !== null && <Info size={20} />}
+					{submitted && numberCheck(newProductQ) !== null && <Info size={20} />}
 					<div className="validation-field">
-						<span>{objId ? null : submitted && numberCheck(newProductQ)}</span>
+						<span>{submitted && numberCheck(newProductQ)}</span>
 					</div>
 				</div>
 				<div
