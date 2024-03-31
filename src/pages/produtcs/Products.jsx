@@ -188,15 +188,14 @@ export default function Products() {
 			currency?.data?.length &&
 			newProductPrice > 0 &&
 			newProductCost > 0 &&
-			newPerBox > 0 &&
-			(newBoxQ > 0 || newProductQ > 0)
+			newPerBox > 0
 		) {
 			let newProductObj = {
 				goods_id: newGoodsId?.goods_id,
 				deliver_id: newDeliverId?.deliver_id,
 				store_id: newStoreId?.store_id,
 				products_count_cost: +newProductCost,
-				products_box_count: +newBoxQ,
+				products_box_count: newBoxQ ? +newBoxQ : 0,
 				each_box_count: +newPerBox,
 				out_of_box: +newProductQ,
 				currency_id: currency?.data[0]?.currency_id,
@@ -374,6 +373,7 @@ export default function Products() {
 	}
 
 	const addOnTop = (id) => {
+		clearOnly()
 		setshowDropdown("")
 		setAddModalVisible(true)
 		setAddModalDisplay("block")
@@ -565,11 +565,7 @@ export default function Products() {
 						</span>
 					</div>
 				</div>
-				<div
-					className={`input-wrapper modal-form regular ${
-						submitted && numberCheckAllow0(newBoxQ) !== null && "error"
-					}`}
-				>
+				<div className={`input-wrapper modal-form regular`}>
 					<label>Quti</label>
 					<input
 						type="text"
@@ -578,12 +574,12 @@ export default function Products() {
 						value={newBoxQ ? newBoxQ : ""}
 						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
 					/>
-					{submitted && numberCheckAllow0(newBoxQ) !== null && (
+					{/* {submitted && numberCheckAllow0(newBoxQ) !== null && (
 						<Info size={20} />
 					)}
 					<div className="validation-field">
 						<span>{submitted && numberCheckAllow0(newBoxQ)}</span>
-					</div>
+					</div> */}
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
@@ -608,7 +604,7 @@ export default function Products() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						submitted && numberCheck(newProductQ) !== null && "error"
+						!objId && submitted && numberCheck(newProductQ) !== null && "error"
 					}`}
 				>
 					<label>Jami</label>
@@ -621,9 +617,11 @@ export default function Products() {
 							setNewProductQ(e.target.value.replace(/[^0-9]/g, ""))
 						}
 					/>
-					{submitted && numberCheck(newProductQ) !== null && <Info size={20} />}
+					{!objId && submitted && numberCheck(newProductQ) !== null && (
+						<Info size={20} />
+					)}
 					<div className="validation-field">
-						<span>{submitted && numberCheck(newProductQ)}</span>
+						<span>{!objId && submitted && numberCheck(newProductQ)}</span>
 					</div>
 				</div>
 				<div

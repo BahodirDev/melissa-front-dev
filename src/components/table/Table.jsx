@@ -3,7 +3,18 @@ import moment from "moment/moment"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import NoData from "../noData/NoData"
-import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import {
+	CirclesThreePlus,
+	DotsThreeVertical,
+	FilePlus,
+	FolderNotchPlus,
+	ListPlus,
+	PencilSimple,
+	Plus,
+	PlusCircle,
+	PlusSquare,
+	Trash,
+} from "@phosphor-icons/react"
 import { useState } from "react"
 
 const AntTable = ({
@@ -128,7 +139,7 @@ const AntTable = ({
 									addOnTop(record?.id)
 								}}
 							>
-								Qo'shish <PencilSimple size={20} />
+								Qo'shish <CirclesThreePlus size={20} />
 							</button>
 							<button
 								type="button"
