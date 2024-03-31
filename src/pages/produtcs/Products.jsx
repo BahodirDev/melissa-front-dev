@@ -373,6 +373,30 @@ export default function Products() {
 		return data.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
 	}
 
+	const addOnTop = (id) => {
+		setshowDropdown("")
+		setAddModalVisible(true)
+		setAddModalDisplay("block")
+
+		get(`/products/products-list/${id}`).then((data) => {
+			if (data?.status === 200) {
+				setNewGoodsId(data?.data?.goods_id)
+				setNewDeliverId(data?.data?.deliver_id)
+				setNewStoreId(data?.data?.store_id)
+				setNewBoxQ(0)
+				setNewProductQ(0)
+				setNewProductCost(data?.data?.products_count_cost)
+				setNewPerBox(data?.data?.each_box_count)
+				setNewProductPrice(data?.data?.products_count_price)
+				setNewPercentId(data?.data?.currency_id)
+				setNewDate(moment(data?.data?.products_createdat).format("YYYY-MM-DD"))
+			} else {
+				clearAndClose()
+				toast.error("Nomalum server xatolik")
+			}
+		})
+	}
+
 	return (
 		<>
 			<AddModal
@@ -796,6 +820,7 @@ export default function Products() {
 						editProduct={editProduct}
 						setAddModalVisible={setAddModalVisible}
 						setAddModalDisplay={setAddModalDisplay}
+						addOnTop={addOnTop}
 					/>
 
 					<Pagination

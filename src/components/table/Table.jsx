@@ -16,6 +16,7 @@ const AntTable = ({
 	editProduct,
 	setAddModalVisible,
 	setAddModalDisplay,
+	addOnTop,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -115,10 +116,20 @@ const AntTable = ({
 							<DotsThreeVertical size={24} />
 						</button>
 						<div
-							className={`table-item-edit-wrapper extra ${
+							className={`table-item-edit-wrapper extra product ${
 								showDropdown === record?.id || "hidden"
 							} ${loc && "top"}`}
 						>
+							<button
+								type="button"
+								className="table-item-edit-item"
+								onClick={(e) => {
+									e.stopPropagation()
+									addOnTop(record?.id)
+								}}
+							>
+								Qo'shish <PencilSimple size={20} />
+							</button>
 							<button
 								type="button"
 								className="table-item-edit-item"

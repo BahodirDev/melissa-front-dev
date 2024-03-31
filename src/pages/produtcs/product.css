@@ -23,3 +23,8 @@
 .filter-wrapper.product {
 	grid-template-columns: 200px 200px auto;
 }
+
+.table-item-edit-wrapper.product {
+	height: 110px;
+	margin-top: -35px;
+}
