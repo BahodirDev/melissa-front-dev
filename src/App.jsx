@@ -22,14 +22,7 @@ import { ToastContainer } from "react-toastify"
 import ClientsInfo from "./pages/clients/ClientsInfo"
 import { useEffect, useState } from "react"
 
-// import { useDispatch, useSelector } from "react-redux"
-// import { login, logout } from "./components/reducers/auth"
-
 export default function App() {
-	// const state = useSelector((state) => state.auth)
-	// const dispatch = useDispatch()
-	// console.log(dispatch(login, logout))
-
 	const [user, setUser] = useState(null)
 
 	useEffect(() => {

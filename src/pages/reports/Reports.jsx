@@ -153,6 +153,7 @@ export default function Reports() {
 			if (data.status === 200) {
 				setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 				setFilteredData(data?.data)
+				if (!data?.data?.data?.length) setCurrentPage(1)
 			} else {
 				setTotalPage(1)
 				toast.error("Nomalum server xatolik")

@@ -19,6 +19,7 @@ export default function MainPage() {
 	const [addModalDisplay, setAddModalDisplay] = useState("none")
 	const [SDModalVisible, setSDModalVisible] = useState(false)
 	const [SDModalDisplay, setSDModalDisplay] = useState("none")
+	const [activeSectionIndex, setActiveSectionIndex] = useState(0)
 
 	useEffect(() => {
 		get("/currency/currency-list").then((data) => {
@@ -37,6 +38,42 @@ export default function MainPage() {
 			localStorage.removeItem("role")
 			localStorage.removeItem("user")
 			navigate("/login")
+		}
+
+		switch (url.pathname) {
+			case "/":
+				setActiveSectionIndex(0)
+				break
+			case "/reports":
+				setActiveSectionIndex(1)
+				break
+			case "/products":
+				setActiveSectionIndex(2)
+				break
+			case "/goods":
+				setActiveSectionIndex(3)
+				break
+			case "/return":
+				setActiveSectionIndex(4)
+				break
+			case "/debts":
+				setActiveSectionIndex(5)
+				break
+			case "/store":
+				setActiveSectionIndex(6)
+				break
+			case "/deliver":
+				setActiveSectionIndex(7)
+				break
+			case "/clients":
+				setActiveSectionIndex(8)
+				break
+			case "/employees":
+				setActiveSectionIndex(9)
+				break
+			case "/currency":
+				setActiveSectionIndex(10)
+				break
 		}
 	}, [url])
 
@@ -81,6 +118,12 @@ export default function MainPage() {
 				} else if (e.ctrlKey && e.key === ".") {
 					e.preventDefault()
 					setSidebar(true)
+				} else if (e.ctrlKey && e.key === "ArrowUp") {
+					e.preventDefault()
+					setActiveSectionIndex((prev) => (prev === 0 ? 10 : prev - 1))
+				} else if (e.ctrlKey && e.key === "ArrowDown") {
+					e.preventDefault()
+					setActiveSectionIndex((prev) => (prev === 10 ? 0 : prev + 1))
 				}
 			},
 			true
@@ -128,12 +171,14 @@ export default function MainPage() {
 					setSidebar={setSidebar}
 					sidebar={sidebar}
 					userInfo={userInfo}
+					activeSectionIndex={activeSectionIndex}
 				/>
 			) : (
 				<SSidebar
 					setSidebar={setSidebar}
 					sidebar={sidebar}
 					userInfo={userInfo}
+					activeSectionIndex={activeSectionIndex}
 				/>
 			)}
 			<div className="main-div">
