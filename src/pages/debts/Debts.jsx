@@ -68,7 +68,7 @@ function Debts() {
 	}
 
 	useEffect(() => {
-		if (userInfo?.role !== 1) navigate("/*")
+		if (localStorage.getItem("role") !== "1") navigate("/*")
 
 		getData("deliver", setDataDeliver, fakeLoad)
 		getData("goods", setDataGood, fakeLoad)

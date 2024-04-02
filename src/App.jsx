@@ -16,21 +16,15 @@ import {
 	Return,
 	Settings,
 	Store,
+	ClientsInfo,
 } from "./components"
 import "react-toastify/dist/ReactToastify.css"
 import { ToastContainer } from "react-toastify"
-import ClientsInfo from "./pages/clients/ClientsInfo"
 import { useEffect, useState } from "react"
 
 export default function App() {
-	const [user, setUser] = useState(null)
-
-	useEffect(() => {
-		setUser(localStorage.getItem("user"))
-	}, [])
-
 	return (
-		<BrowserRouter>
+		<>
 			<ToastContainer
 				autoClose={3000}
 				position="top-center"
@@ -60,6 +54,6 @@ export default function App() {
 				</Route>
 				<Route path="*" element={<PageNotFound />} />
 			</Routes>
-		</BrowserRouter>
+		</>
 	)
 }

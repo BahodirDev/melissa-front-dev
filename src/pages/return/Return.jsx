@@ -78,7 +78,7 @@ function Return() {
 	}
 
 	useEffect(() => {
-		if (userInfo?.role !== 1) navigate("/*")
+		if (localStorage.getItem("role") !== "1") navigate("/*")
 		getData("return", setDataReturn)
 		getData("deliver", setDataDeliver)
 		getData("goods", setDataGoods)

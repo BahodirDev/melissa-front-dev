@@ -50,7 +50,7 @@ function Deliver() {
 	const [loc, setLoc] = useState("")
 
 	useEffect(() => {
-		if (userInfo?.role !== 1) navigate("/*")
+		if (localStorage.getItem("role") !== "1") navigate("/*")
 
 		dispatch(setLoading(true))
 		get("/deliver/deliver-list").then((data) => {

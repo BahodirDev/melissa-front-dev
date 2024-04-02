@@ -5,6 +5,7 @@ import { Provider } from "react-redux"
 import App from "./App"
 import store from "./components/store"
 import "./index.css"
+import { BrowserRouter } from "react-router-dom"
 
 axios.defaults.baseURL = process.env.REACT_APP_URL
 axios.defaults.headers.common["Authorization"] = localStorage.getItem("user")
@@ -14,7 +15,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"))
 root.render(
 	// <React.StrictMode>
 	<Provider store={store}>
-		<App />
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>
 	</Provider>
 	// </React.StrictMode>
 )

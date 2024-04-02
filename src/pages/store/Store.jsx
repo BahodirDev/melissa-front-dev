@@ -48,7 +48,7 @@ export default function Store() {
 	const [storeName, setStoreName] = useState("")
 
 	useEffect(() => {
-		if (userInfo?.role !== 1) navigate("/*")
+		if (localStorage.getItem("role") !== "1") navigate("/*")
 
 		dispatch(setLoading(true))
 		get("/store/store-list").then((data) => {
