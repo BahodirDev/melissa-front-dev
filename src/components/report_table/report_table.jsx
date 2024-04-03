@@ -43,8 +43,10 @@ const AntReportTable = ({
 			deliver: item?.deliver ? item?.deliver : "Nomalum",
 			data_q: Math.ceil(item?.reports_count),
 			data_client: item?.client ? item?.client : "Nomalum",
-			data_cost_each: addComma(item?.reports_count_cost) + item?.currency,
-			data_price_each: addComma(item?.reports_count_price) + item?.currency,
+			data_price_each:
+				addComma(
+					item?.isenter ? item?.reports_count_cost : item?.reports_count_price
+				) + item?.currency,
 			data_price_total:
 				addComma(
 					item?.isenter
@@ -100,11 +102,6 @@ const AntReportTable = ({
 					</span>
 				)
 			},
-		},
-		{
-			title: <nobr>Xarajat</nobr>,
-			dataIndex: "data_cost_each",
-			width: 150,
 		},
 		{
 			title: <nobr>Narx</nobr>,
