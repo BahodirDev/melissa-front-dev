@@ -45,7 +45,12 @@ const AntReportTable = ({
 			data_client: item?.client ? item?.client : "Nomalum",
 			data_cost_each: addComma(item?.reports_count_cost) + item?.currency,
 			data_price_each: addComma(item?.reports_count_price) + item?.currency,
-			data_price_total: addComma(item?.reports_total_cost) + item?.currency,
+			data_price_total:
+				addComma(
+					item?.isenter
+						? item?.reports_count_cost * item?.reports_count
+						: item?.reports_total_cost
+				) + item?.currency,
 			data_date: `${moment(item?.reports_createdat).format(
 				"YYYY/MM/DD hh:mm"
 			)}`,
