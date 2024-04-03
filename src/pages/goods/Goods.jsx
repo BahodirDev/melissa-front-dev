@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import Loader from "../../components/loader/Loader"
 import {
@@ -37,6 +37,7 @@ export default function Goods() {
 		sidebar,
 		userInfo,
 	] = useOutletContext()
+	const navigate = useNavigate()
 	const state = useSelector((state) => state.good)
 	const deliver = useSelector((state) => state.deliver)
 	const dispatch = useDispatch()
@@ -56,6 +57,8 @@ export default function Goods() {
 	const [imageFile, setImageFile] = useState(null)
 
 	useEffect(() => {
+		if (localStorage.getItem("role") !== "1") navigate("/*")
+
 		dispatch(setLoading(true))
 		get("/goods/goods-list").then((data) => {
 			if (data?.status === 201) {

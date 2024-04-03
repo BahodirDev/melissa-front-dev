@@ -1,5 +1,4 @@
 import { Button, DatePicker, Select, Space } from "antd"
-import { Option } from "antd/es/mentions"
 import {
 	ArcElement,
 	BarElement,
@@ -15,6 +14,9 @@ import {
 import { useState } from "react"
 import { Bar, Doughnut, Line } from "react-chartjs-2"
 import { formatSumma } from "../../components/addComma"
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
+
 import "./home.css"
 
 ChartJs.register(
@@ -30,6 +32,12 @@ ChartJs.register(
 )
 
 export default function Home() {
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (localStorage.getItem("role") !== "1") navigate("/products")
+	}, [])
+
 	const data = {
 		labels: ["Mon", "Tue", "Wed"],
 		datasets: [

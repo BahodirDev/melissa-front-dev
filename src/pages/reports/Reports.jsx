@@ -2,7 +2,7 @@ import { DatePicker, Select, Space } from "antd"
 import { Option } from "antd/es/mentions"
 import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import {
 	addComma,
 	addSpace,
@@ -50,6 +50,7 @@ export default function Reports() {
 		sidebar,
 		userInfo,
 	] = useOutletContext()
+	const navigate = useNavigate()
 	const { report, store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
 
@@ -115,6 +116,8 @@ export default function Reports() {
 	useEffect(getReports, [currentPage])
 
 	useEffect(() => {
+		if (localStorage.getItem("role") !== "1") navigate("/*")
+
 		getData("deliver", setDataDeliver)
 	}, [])
 

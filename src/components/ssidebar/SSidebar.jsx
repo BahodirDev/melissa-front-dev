@@ -90,32 +90,36 @@ export default function SSidebar({
 
 			{/* links */}
 			<ul>
-				<li>
-					<NavLink
-						to="/"
-						title="Statistika"
-						className={`${
-							activeSectionIndex === 0 && url.pathname !== "/"
-								? "tabFocus"
-								: null
-						}`}
-					>
-						<ChartBar size={24} />
-					</NavLink>
-				</li>
-				<li>
-					<NavLink
-						to="/reports"
-						title="Hisobot"
-						className={`${
-							activeSectionIndex === 1 && url.pathname !== "/reports"
-								? "tabFocus"
-								: null
-						}`}
-					>
-						<FileText size={24} />
-					</NavLink>
-				</li>
+				{userRole === 1 && (
+					<li>
+						<NavLink
+							to="/"
+							title="Statistika"
+							className={`${
+								activeSectionIndex === 0 && url.pathname !== "/"
+									? "tabFocus"
+									: null
+							}`}
+						>
+							<ChartBar size={24} />
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink
+							to="/reports"
+							title="Hisobot"
+							className={`${
+								activeSectionIndex === 1 && url.pathname !== "/reports"
+									? "tabFocus"
+									: null
+							}`}
+						>
+							<FileText size={24} />
+						</NavLink>
+					</li>
+				)}
 				<li>
 					<NavLink
 						to="/products"
@@ -129,19 +133,21 @@ export default function SSidebar({
 						<Cube size={24} />
 					</NavLink>
 				</li>
-				<li>
-					<NavLink
-						to="/goods"
-						title="Kategoriyalar"
-						className={`${
-							activeSectionIndex === 3 && url.pathname !== "/goods"
-								? "tabFocus"
-								: null
-						}`}
-					>
-						<SquaresFour size={24} />
-					</NavLink>
-				</li>
+				{userRole === 1 && (
+					<li>
+						<NavLink
+							to="/goods"
+							title="Kategoriyalar"
+							className={`${
+								activeSectionIndex === 3 && url.pathname !== "/goods"
+									? "tabFocus"
+									: null
+							}`}
+						>
+							<SquaresFour size={24} />
+						</NavLink>
+					</li>
+				)}
 				{userRole === 1 && (
 					<li>
 						<NavLink

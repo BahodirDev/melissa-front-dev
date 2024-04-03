@@ -760,42 +760,44 @@ export default function Products() {
 				</div>
 			</div>
 
-			<div className="info-wrapper">
-				<InfoItem
-					value={
-						searchSubmitted
-							? addSpace(filteredData?.hisob?.kategoriya)
-							: addSpace(product?.quantity)
-					}
-					name="Kategoriyalar soni"
-					icon={<SquaresFour size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
-				/>
-				<InfoItem
-					value={
-						searchSubmitted
-							? addSpace(filteredData?.hisob?.soni)
-							: addSpace(product?.amount)
-					}
-					name="Mahsulotlar soni"
-					icon={<Package size={24} color="var(--color-success)" />}
-					iconBgColor={"var(--bg-success-icon)"}
-				/>
-				<InfoItem
-					value={
-						addSpace(
-							roundToNearestThousand(
-								searchSubmitted
-									? +filteredData?.hisob?.umumiyQiymati
-									: product?.sum
-							)
-						) + " so'm"
-					}
-					name="Umumiy summa"
-					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
-					iconBgColor={"var(--bg-icon-warning)"}
-				/>
-			</div>
+			{userInfo?.role === 1 ? (
+				<div className="info-wrapper">
+					<InfoItem
+						value={
+							searchSubmitted
+								? addSpace(filteredData?.hisob?.kategoriya)
+								: addSpace(product?.quantity)
+						}
+						name="Kategoriyalar soni"
+						icon={<SquaresFour size={24} color="var(--color-primary)" />}
+						iconBgColor={"var(--bg-icon)"}
+					/>
+					<InfoItem
+						value={
+							searchSubmitted
+								? addSpace(filteredData?.hisob?.soni)
+								: addSpace(product?.amount)
+						}
+						name="Mahsulotlar soni"
+						icon={<Package size={24} color="var(--color-success)" />}
+						iconBgColor={"var(--bg-success-icon)"}
+					/>
+					<InfoItem
+						value={
+							addSpace(
+								roundToNearestThousand(
+									searchSubmitted
+										? +filteredData?.hisob?.umumiyQiymati
+										: product?.sum
+								)
+							) + " so'm"
+						}
+						name="Umumiy summa"
+						icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
+						iconBgColor={"var(--bg-icon-warning)"}
+					/>
+				</div>
+			) : null}
 
 			<Search
 				handleSearch={handleSearch}
