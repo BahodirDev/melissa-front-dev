@@ -8,7 +8,7 @@ import product, {
 import { addDebt as addDebtToClient } from "../reducers/client"
 import "./sell debt.css"
 import { useDispatch, useSelector } from "react-redux"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { downloadFile, get, patch, post } from "../../customHook/api"
 import { setData as setDataClient } from "../reducers/client"
 import { setData as setDataCurrency } from "../reducers/currency"
@@ -45,11 +45,14 @@ const SellDebt = ({
 	setSDModalVisible,
 	SDModalDisplay,
 	setSDModalDisplay,
+	activeElementIndex,
+	setActiveElementIndex,
 }) => {
 	const { store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
 
 	const [isDebtVisible, setIsDebtVisible] = useState(false)
+	const nextInputRef = useRef(null)
 
 	const [btnLoading, setBtnLoading] = useState(false)
 	const [submitted, setSubmitted] = useState(false)
@@ -80,6 +83,12 @@ const SellDebt = ({
 	const [productPD, setProductPD] = useState(0)
 	const [givenDate, setGivenDate] = useState("")
 	const [paidDate, setPaidDate] = useState("")
+
+	useEffect(() => {
+		if (nextInputRef.current) {
+			nextInputRef.current.focus()
+		}
+	}, [activeElementIndex])
 
 	const getData = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
@@ -285,6 +294,7 @@ const SellDebt = ({
 		setClientObj({})
 		setProductQ(0)
 		setProductP(0)
+		setActiveElementIndex(0)
 
 		setProductList([])
 		setProducts([])
@@ -315,6 +325,7 @@ const SellDebt = ({
 		setProductObj({})
 		setProductQ(0)
 		setProductP(0)
+		setActiveElementIndex(4)
 
 		setSubmitted(false)
 	}
@@ -935,7 +946,11 @@ const SellDebt = ({
 										)
 									}
 									value={storeObj?.store_name ? storeObj?.store_name : null}
-									onChange={handleStoreChange}
+									onChange={(e) => {
+										handleStoreChange(e)
+										setActiveElementIndex(2)
+									}}
+									ref={activeElementIndex === 1 ? nextInputRef : null}
 								>
 									{store?.data.length
 										? store?.data.map((item, idx) => {
@@ -988,9 +1003,11 @@ const SellDebt = ({
 											  )}`
 											: null
 									}
-									onChange={(e) =>
+									onChange={(e) => {
 										e ? setClientObj(JSON.parse(e)) : setClientObj({})
-									}
+										setActiveElementIndex(3)
+									}}
+									ref={activeElementIndex === 2 ? nextInputRef : null}
 								>
 									{/* <Select.Option
 										value={JSON.stringify({
@@ -1042,7 +1059,10 @@ const SellDebt = ({
 									value={
 										deliverObj?.deliver_name ? deliverObj?.deliver_name : null
 									}
-									onChange={handleDeliverChange}
+									onChange={(e) => {
+										handleDeliverChange(e)
+										setActiveElementIndex(3)
+									}}
 								>
 									{deliver?.data?.length
 										? deliver?.data.map((item, idx) => {
@@ -1101,6 +1121,7 @@ const SellDebt = ({
 											: null
 									}
 									onChange={(e) => {
+										setActiveElementIndex(4)
 										setProductQ(0)
 
 										if (e) {
@@ -1113,6 +1134,7 @@ const SellDebt = ({
 											)
 										} else setProductObj({})
 									}}
+									ref={activeElementIndex === 3 ? nextInputRef : null}
 									notFoundContent={
 										productListLoading ? <Spin size="small" /> : null
 									}
@@ -1199,6 +1221,7 @@ const SellDebt = ({
 											setProductQ(e.target.value)
 										}
 									}}
+									ref={activeElementIndex === 4 ? nextInputRef : null}
 								/>
 								{submitted && numberCheck(productQ) !== null && (
 									<Info size={20} />

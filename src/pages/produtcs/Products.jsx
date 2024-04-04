@@ -83,6 +83,8 @@ export default function Products() {
 	const [limit, setLimit] = useState(20)
 	const [totalPages, setTotalPage] = useState(1)
 	const didMount = useRef(false)
+	const [activeElementIndex, setActiveElementIndex] = useState(0)
+	const nextInputRef = useRef(null)
 
 	// new
 	const [newGoodsId, setNewGoodsId] = useState({})
@@ -95,6 +97,12 @@ export default function Products() {
 	const [newProductPrice, setNewProductPrice] = useState()
 	const [newPercentId, setNewPercentId] = useState({})
 	const [newDate, setNewDate] = useState("")
+
+	useEffect(() => {
+		if (nextInputRef.current) {
+			nextInputRef.current.focus()
+		}
+	}, [activeElementIndex])
 
 	const getData1 = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
@@ -288,6 +296,7 @@ export default function Products() {
 		setNewProductPrice(0)
 		setNewDate("")
 		setObjId("")
+		setActiveElementIndex(0)
 
 		setBtnLoading(false)
 		setSubmitted(false)
@@ -359,6 +368,7 @@ export default function Products() {
 		setBtnLoading(false)
 		setObjId("")
 		setNewDate("")
+		setActiveElementIndex(1)
 
 		setSubmitted(false)
 	}
@@ -437,7 +447,9 @@ export default function Products() {
 						onChange={(e) => {
 							e ? setNewDeliverId(JSON.parse(e)) : setNewDeliverId({})
 							getGoodsList(e ? JSON.parse(e)?.deliver_id : null)
+							setActiveElementIndex(2)
 						}}
+						ref={activeElementIndex === 1 ? nextInputRef : null}
 					>
 						{deliver.data?.length
 							? deliver.data.map((item, idx) => {
@@ -493,9 +505,11 @@ export default function Products() {
 								? `${newGoodsId?.goods_name} - ${newGoodsId?.goods_code}`
 								: null
 						}
-						onChange={(e) =>
+						onChange={(e) => {
 							e ? setNewGoodsId(JSON.parse(e)) : setNewGoodsId({})
-						}
+							setActiveElementIndex(3)
+						}}
+						ref={activeElementIndex === 2 ? nextInputRef : null}
 					>
 						{goodList?.length
 							? goodList.map((item, idx) => {
@@ -543,9 +557,11 @@ export default function Products() {
 							)
 						}
 						value={newStoreId?.store_name ? newStoreId?.store_name : null}
-						onChange={(e) =>
+						onChange={(e) => {
 							e ? setNewStoreId(JSON.parse(e)) : setNewStoreId({})
-						}
+							setActiveElementIndex(4)
+						}}
+						ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => {
@@ -574,6 +590,7 @@ export default function Products() {
 						className="input"
 						value={newBoxQ ? newBoxQ : ""}
 						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
+						ref={activeElementIndex === 4 ? nextInputRef : null}
 					/>
 					{/* {submitted && numberCheckAllow0(newBoxQ) !== null && (
 						<Info size={20} />

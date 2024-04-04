@@ -20,6 +20,7 @@ export default function MainPage() {
 	const [SDModalVisible, setSDModalVisible] = useState(false)
 	const [SDModalDisplay, setSDModalDisplay] = useState("none")
 	const [activeSectionIndex, setActiveSectionIndex] = useState(0)
+	const [activeElementIndex, setActiveElementIndex] = useState(0)
 
 	useEffect(() => {
 		get("/currency/currency-list").then((data) => {
@@ -92,6 +93,7 @@ export default function MainPage() {
 					setshowDropdown("")
 					setAddModalVisible(false)
 					setAddModalDisplay("none")
+					setActiveElementIndex(1)
 					setSDModalVisible((prevVisible) => {
 						if (prevVisible) {
 							setTimeout(() => {
@@ -160,6 +162,7 @@ export default function MainPage() {
 					e.stopPropagation()
 					setshowDropdown("")
 					setMiniModal("")
+					setActiveElementIndex(1)
 					setSDModalVisible(true)
 					setSDModalDisplay("grid")
 				}}
@@ -191,6 +194,8 @@ export default function MainPage() {
 						setSDModalVisible={setSDModalVisible}
 						SDModalDisplay={SDModalDisplay}
 						setSDModalDisplay={setSDModalDisplay}
+						activeElementIndex={activeElementIndex}
+						setActiveElementIndex={setActiveElementIndex}
 					/>
 					<Outlet
 						context={[

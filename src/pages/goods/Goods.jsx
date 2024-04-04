@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
@@ -41,6 +41,8 @@ export default function Goods() {
 	const state = useSelector((state) => state.good)
 	const deliver = useSelector((state) => state.deliver)
 	const dispatch = useDispatch()
+	const [activeElementIndex, setActiveElementIndex] = useState(0)
+	const nextInputRef = useRef(null)
 
 	// filter
 	const [filteredData, setFilteredData] = useState([])
@@ -55,6 +57,12 @@ export default function Goods() {
 	const [newGoodCode, setNewGoodCode] = useState("")
 	const [newDeliver, setNewDeliver] = useState("")
 	const [imageFile, setImageFile] = useState(null)
+
+	useEffect(() => {
+		if (nextInputRef.current) {
+			nextInputRef.current.focus()
+		}
+	}, [activeElementIndex])
 
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
@@ -199,6 +207,7 @@ export default function Goods() {
 		setNewGoodCode("")
 		setNewDeliver("")
 		setImageFile(null)
+		setActiveElementIndex(0)
 
 		setObjId("")
 		setBtn_loading(false)
@@ -239,6 +248,7 @@ export default function Goods() {
 		setNewGoodName("")
 		setNewGoodCode("")
 		setNewDeliver("")
+		setActiveElementIndex(1)
 
 		setObjId("")
 		setBtn_loading(false)
@@ -351,9 +361,11 @@ export default function Goods() {
 								  )}`
 								: null
 						}
-						onChange={(e) =>
+						onChange={(e) => {
 							e ? setNewDeliver(JSON.parse(e)) : setNewDeliver({})
-						}
+							setActiveElementIndex(2)
+						}}
+						ref={activeElementIndex === 1 ? nextInputRef : null}
 					>
 						{deliver.data?.length
 							? deliver.data.map((item, idx) => {
@@ -398,6 +410,7 @@ export default function Goods() {
 						className="input"
 						value={newGoodName}
 						onChange={(e) => setNewGoodName(e.target.value)}
+						ref={activeElementIndex === 2 ? nextInputRef : null}
 					/>
 					{submitted && stringCheck(newGoodName.trim()) !== null && (
 						<Info size={20} />
