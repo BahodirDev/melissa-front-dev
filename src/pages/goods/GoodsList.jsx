@@ -76,6 +76,7 @@ function GoodsList({
 												O'chirish <Trash size={20} />
 											</button>
 										</div>
+
 									</div>
 								</div>
 							) : null}

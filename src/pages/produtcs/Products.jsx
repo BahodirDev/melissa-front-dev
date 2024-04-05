@@ -198,6 +198,7 @@ export default function Products() {
 			newProductPrice > 0 &&
 			newProductCost > 0 &&
 			newPerBox > 0
+
 		) {
 			let newProductObj = {
 				goods_id: newGoodsId?.goods_id,
@@ -205,6 +206,7 @@ export default function Products() {
 				store_id: newStoreId?.store_id,
 				products_count_cost: +newProductCost,
 				products_box_count: newBoxQ ? +newBoxQ : 0,
+
 				each_box_count: +newPerBox,
 				out_of_box: +newProductQ,
 				currency_id: currency?.data[0]?.currency_id,
@@ -256,7 +258,7 @@ export default function Products() {
 							toast.error("Nomalum server xatolik")
 						}
 						setBtnLoading(false)
-						// console.log(data)
+
 					})
 				}
 			}
@@ -583,6 +585,7 @@ export default function Products() {
 					</div>
 				</div>
 				<div className={`input-wrapper modal-form regular`}>
+
 					<label>Quti</label>
 					<input
 						type="text"
@@ -602,6 +605,7 @@ export default function Products() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newPerBox) !== null && "error"
+
 					}`}
 				>
 					<label>Har bir qutida</label>
@@ -618,11 +622,13 @@ export default function Products() {
 					{submitted && numberCheck(newPerBox) !== null && <Info size={20} />}
 					<div className="validation-field">
 						<span>{submitted && numberCheck(newPerBox)}</span>
+
 					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
 						!objId && submitted && numberCheck(newProductQ) !== null && "error"
+
 					}`}
 				>
 					<label>Jami</label>
@@ -640,6 +646,7 @@ export default function Products() {
 					)}
 					<div className="validation-field">
 						<span>{!objId && submitted && numberCheck(newProductQ)}</span>
+
 					</div>
 				</div>
 				<div
@@ -653,7 +660,9 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newProductCost ? newProductCost : ""}
-						onChange={(e) => setNewProductCost(e.target.value)}
+						onChange={(e) =>
+							setNewProductCost(e.target.value.replace(/[^0-9]/g, ""))
+						}
 					/>
 					{submitted && numberCheck(newProductCost) !== null && (
 						<Info size={20} />
@@ -673,7 +682,9 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newProductPrice ? newProductPrice : ""}
-						onChange={(e) => setNewProductPrice(e.target.value)}
+						onChange={(e) =>
+							setNewProductPrice(e.target.value.replace(/[^0-9]/g, ""))
+						}
 					/>
 					{submitted && numberCheck(newProductPrice) !== null && (
 						<Info size={20} />

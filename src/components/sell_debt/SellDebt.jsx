@@ -129,7 +129,7 @@ const SellDebt = ({
 			setStoreObj(obj)
 			setProductListLoading(true)
 
-			get(`/products/products-by-storeId/${obj?.store_id}`).then((data) => {
+			get(`/products/products-by-storeid/${obj?.store_id}`).then((data) => {
 				if (data?.status === 200) {
 					setProducts(data?.data)
 				} else {
@@ -743,6 +743,7 @@ const SellDebt = ({
 									} else {
 										setProductQ(e.target.value)
 									}
+
 								}}
 								ref={activeElementIndex === 4 ? nextInputRef : null}
 							/>
@@ -751,6 +752,7 @@ const SellDebt = ({
 							)}
 							<div className="validation-field">
 								<span>{submitted && numberCheck(productQ)}</span>
+
 							</div>
 						</div>
 						<div
@@ -786,6 +788,7 @@ const SellDebt = ({
 							<div className="validation-field">
 								<span>{submitted && numberCheck(productP)}</span>
 							</div>
+
 						</div>
 						<div className="input-wrapper modal-form regular">
 							<label>Umumiy narx: </label>
@@ -817,6 +820,7 @@ const SellDebt = ({
 							</button>
 						</div>
 					</>
+
 				</div>
 			</div>
 		</div>
