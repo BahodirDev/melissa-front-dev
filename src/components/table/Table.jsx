@@ -50,6 +50,7 @@ const AntTable = ({
 				products_box_count: Math.ceil(item?.products_box_count),
 				per_box: item?.each_box_count,
 				products_count: Math.ceil(+item?.products_count),
+
 				products_count_cost:
 					addComma(item?.products_count_cost) +
 					item?.currency_id?.currency_symbol,
