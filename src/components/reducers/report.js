@@ -9,6 +9,8 @@ export const reportSlice = createSlice({
 		benefit: 0,
 		income: 0,
 		outcome: 0,
+		qtyIn: 0,
+		qtyOut: 0,
 	},
 	reducers: {
 		setData: (state, action) => {
@@ -43,6 +45,12 @@ export const reportSlice = createSlice({
 		},
 		setCapital: (state, action) => {
 			state.capital = action.payload
+		},
+		setQtyIn: (state, action) => {
+			state.qtyIn = action.payload
+		},
+		setQtyOut: (state, action) => {
+			state.qtyOut = action.payload
 		},
 		setBenefit: (state, action) => {
 			state.benefit = action.payload
@@ -79,5 +87,7 @@ export const {
 	setIncome,
 	setOutcome,
 	editDate,
+	setQtyIn,
+	setQtyOut,
 } = reportSlice.actions
 export default reportSlice.reducer

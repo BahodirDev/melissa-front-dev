@@ -20,6 +20,8 @@ import {
 	setIncome,
 	setLoading,
 	setOutcome,
+	setQtyIn,
+	setQtyOut,
 } from "../../components/reducers/report"
 import AntReportTable from "../../components/report_table/report_table"
 import { get, patch, post, remove } from "../../customHook/api"
@@ -27,7 +29,7 @@ import "./report.css"
 import { toast } from "react-toastify"
 import InfoItem from "../../components/info_item/InfoItem"
 import Search from "../../components/search/Search"
-import { ArrowDown, ArrowUp, CurrencyDollar } from "@phosphor-icons/react"
+import { ArrowDown, ArrowUp, Cube, CurrencyDollar } from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment"
 import AddModal from "../../components/add/AddModal"
@@ -103,6 +105,8 @@ export default function Reports() {
 						dispatch(setCapital(data?.data?.hisob?.totalProductCost))
 						dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
 						dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
+						dispatch(setQtyIn(data?.data?.hisob?.totalInput))
+						dispatch(setQtyOut(data?.data?.hisob?.totalOuput))
 					} else {
 						setTotalPage(1)
 						toast.error("Nomalum server xatolik", { toastId: "" })
@@ -426,11 +430,14 @@ export default function Reports() {
 					value={
 						addSpace(
 							searchSubmitted
-								? roundToNearestThousand(+filteredData?.hisob?.totalProductCost)
-								: roundToNearestThousand(report.capital)
+								? roundToNearestThousand(
+										+filteredData?.hisob?.totalCostMinus -
+											filteredData?.hisob?.totalCostPilus
+								  )
+								: roundToNearestThousand(report.outcome - report.income)
 						) + " so'm"
 					}
-					name="Foyda"
+					name="Mavjud summa"
 					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
 				/>
@@ -455,6 +462,45 @@ export default function Reports() {
 						) + " so'm"
 					}
 					name="Chiqim"
+					icon={<ArrowUp size={24} color="var(--color-warning)" />}
+					iconBgColor={"var(--bg-icon-warning)"}
+				/>
+				<InfoItem
+					value={
+						addSpace(
+							searchSubmitted
+								? roundToNearestThousand(+filteredData?.hisob?.totalProductCost)
+								: roundToNearestThousand(report.capital)
+						) + " so'm"
+					}
+					name="Foyda"
+					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
+					iconBgColor={"var(--bg-icon)"}
+				/>
+				<InfoItem
+					value={addSpace(
+						searchSubmitted
+							? filteredData?.hisob?.totalInput -
+									filteredData?.hisob?.totalOuput
+							: report.qtyIn - report.qtyOut
+					)}
+					name="Mavjud mahsulotlar soni"
+					icon={<Cube size={24} color="var(--color-primary)" />}
+					iconBgColor={"var(--bg-icon)"}
+				/>
+				<InfoItem
+					value={addSpace(
+						searchSubmitted ? filteredData?.hisob?.totalInput : report.qtyIn
+					)}
+					name="Kirgan mahsulotlar soni"
+					icon={<ArrowDown size={24} color="var(--color-success)" />}
+					iconBgColor={"var(--bg-success-icon)"}
+				/>
+				<InfoItem
+					value={addSpace(
+						searchSubmitted ? filteredData?.hisob?.totalOuput : report.qtyOut
+					)}
+					name="Chiqqan mahsulotlar soni"
 					icon={<ArrowUp size={24} color="var(--color-warning)" />}
 					iconBgColor={"var(--bg-icon-warning)"}
 				/>
