@@ -22,25 +22,7 @@ export default function MainPage() {
 	const [activeSectionIndex, setActiveSectionIndex] = useState(0)
 	const [activeElementIndex, setActiveElementIndex] = useState(0)
 
-	useEffect(() => {
-		get("/currency/currency-list").then((data) => {
-			if (data?.response?.status === 401) {
-				localStorage.removeItem("id")
-				localStorage.removeItem("name")
-				localStorage.removeItem("role")
-				localStorage.removeItem("user")
-				navigate("/login")
-			}
-		})
-
-		if (!localStorage.getItem("user")) {
-			localStorage.removeItem("id")
-			localStorage.removeItem("name")
-			localStorage.removeItem("role")
-			localStorage.removeItem("user")
-			navigate("/login")
-		}
-
+	const removeLinkFocus = () => {
 		switch (url.pathname) {
 			case "/":
 				setActiveSectionIndex(0)
@@ -76,6 +58,28 @@ export default function MainPage() {
 				setActiveSectionIndex(10)
 				break
 		}
+	}
+
+	useEffect(() => {
+		get("/currency/currency-list").then((data) => {
+			if (data?.response?.status === 401) {
+				localStorage.removeItem("id")
+				localStorage.removeItem("name")
+				localStorage.removeItem("role")
+				localStorage.removeItem("user")
+				navigate("/login")
+			}
+		})
+
+		if (!localStorage.getItem("user")) {
+			localStorage.removeItem("id")
+			localStorage.removeItem("name")
+			localStorage.removeItem("role")
+			localStorage.removeItem("user")
+			navigate("/login")
+		}
+
+		removeLinkFocus()
 	}, [url])
 
 	useEffect(() => {
@@ -94,6 +98,7 @@ export default function MainPage() {
 					setAddModalVisible(false)
 					setAddModalDisplay("none")
 					setActiveElementIndex(1)
+					inputRef?.current?.blur()
 					setSDModalVisible((prevVisible) => {
 						if (prevVisible) {
 							setTimeout(() => {
@@ -123,27 +128,19 @@ export default function MainPage() {
 				} else if (e.ctrlKey && e.key === "ArrowUp") {
 					e.preventDefault()
 					setActiveSectionIndex((prev) => (prev === 0 ? 10 : prev - 1))
+					inputRef?.current?.blur()
 				} else if (e.ctrlKey && e.key === "ArrowDown") {
 					e.preventDefault()
 					setActiveSectionIndex((prev) => (prev === 10 ? 0 : prev + 1))
+					inputRef?.current?.blur()
 				}
 			},
 			true
 		)
-
-		// // ask before refresh
-		// const handleBeforeUnload = (event) => {
-		// 	const confirmationMessage = "Are you sure you want to leave?"
-		// 	;(event || window.event).returnValue = confirmationMessage
-		// 	return confirmationMessage
-		// }
-		// window.addEventListener("beforeunload", handleBeforeUnload)
-		// return () => {
-		// 	window.removeEventListener("beforeunload", handleBeforeUnload)
-		// }
 	}, [])
 
 	const closeAllModals = () => {
+		removeLinkFocus()
 		setshowDropdown("")
 		setMiniModal("")
 		setAddModalVisible(false)
