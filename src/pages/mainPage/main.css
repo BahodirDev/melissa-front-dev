@@ -6,6 +6,9 @@
 	padding: 16px 0 0 16px;
 	background-color: var(--bg-neutral);
 }
+.home-con.dark {
+	background-color: var(--d-bg-neutral);
+}
 
 .main-div {
 	width: 100%;
@@ -13,9 +16,110 @@
 	flex-direction: column;
 }
 
+.top-menu {
+	width: calc(100% - 16px);
+	height: 60px;
+	margin-bottom: 16px;
+	box-shadow: var(--shadow-md);
+	border-radius: var(--radius-lg);
+	background-color: var(--bg-light);
+	display: flex;
+	justify-content: space-between;
+	padding: 0 18px;
+}
+.top-menu.dark {
+	background-color: var(--d-bg-light);
+}
+.top-menu svg {
+	margin-top: 18px;
+	cursor: pointer;
+}
+.top-menu.dark svg {
+	color: var(--d-color-secondary);
+}
+.top-menu-right {
+	display: flex;
+}
+.top-menu-right svg {
+	margin: 18px;
+}
+.top-menu .user-info {
+	width: 40px;
+	height: 40px;
+	margin-top: 10px;
+	position: relative;
+}
+.top-menu .user-info img {
+	border-radius: 50%;
+	cursor: pointer;
+	object-fit: contain;
+	width: 100%;
+	height: 100%;
+}
+.user-info-modal-pointer {
+	position: absolute;
+	top: 50px;
+	right: 10px;
+	z-index: 4;
+	width: 0;
+	height: 0;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-bottom: 15px solid var(--bg-light);
+}
+.top-menu.dark .user-info-modal-pointer {
+	border-bottom: 15px solid var(--d-bg-light);
+}
+.user-info-modal {
+	width: 180px;
+	background-color: var(--bg-light);
+	box-shadow: var(--shadow-dark);
+	border-radius: var(--radius-md);
+	position: absolute;
+	top: 60px;
+	right: -10px;
+	z-index: 3;
+	padding: 12px;
+}
+.top-menu.dark .user-info-modal {
+	background-color: var(--d-bg-light);
+	color: var(--d-color-secondary);
+}
+.top-menu.dark .user-info-modal svg {
+	color: var(--color-light);
+}
+.user-info-modal p {
+	font-size: var(--text-lg);
+}
+.user-info-modal span {
+	font-size: var(--text-md);
+}
+.btn-logout {
+	padding: 4px 4px;
+	width: 100%;
+	margin-top: 4px;
+	border: none;
+	color: var(--color-light);
+	background: var(--bg-primary);
+	border-radius: var(--radius-sm);
+	transition: 0.2s;
+}
+.top-menu.dark .btn-logout {
+	background: var(--d-bg-primary);
+}
+.btn-logout:hover {
+	background: var(--bg-secondary);
+}
+.top-menu.dark .btn-logout:hover {
+	background: var(--d-bg-secondary);
+}
+.btn-logout svg {
+	padding: 0 !important;
+	margin: 0 !important;
+}
 .content {
 	width: 100%;
-	height: calc(100dvh - 18px);
+	height: calc(100dvh - 94px);
 	overflow: hidden;
 	overflow-y: auto;
 	padding-right: 20px;
@@ -41,11 +145,19 @@
 	bottom: 32px;
 	z-index: 9;
 	padding: 8px !important;
-	background-color: var(--color-primary) !important;
+	background-color: var(--bg-primary) !important;
 	transition: 0.1s;
+	right: 26px;
+	bottom: 26px;
+}
+.dark .modal-toggle-btn {
+	background-color: var(--d-bg-primary) !important;
 }
 .modal-toggle-btn:hover {
-	background-color: var(--bg-primary) !important;
+	background-color: var(--bg-secondary) !important;
+}
+.dark .modal-toggle-btn:hover {
+	background-color: var(--d-bg-secondary) !important;
 }
 
 .hidden {

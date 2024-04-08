@@ -45,6 +45,7 @@ export default function Currency() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const [objId, setObjId] = useState("")
 	const [submitted, setSubmitted] = useState(false)
@@ -201,16 +202,12 @@ export default function Currency() {
 	return (
 		<>
 			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
 				name={objId ? "Pul birligi tahrirlash" : "Pul birligi qo'shish"}
 			>
 				<div
 					className={`input-wrapper modal-form ${
 						submitted && stringCheck(newName.name) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Valyuta nomi</label>
 					<Select
@@ -235,7 +232,11 @@ export default function Currency() {
 					>
 						{currency.list.length
 							? currency.list.map((item, idx) => (
-									<Select.Option key={idx} value={JSON.stringify(item)}>
+									<Select.Option
+										key={idx}
+										value={JSON.stringify(item)}
+										className={` ${darkMode ? "dark" : null}`}
+									>
 										<div>
 											<span>{item?.currency?.name} - </span>
 											<span>{item?.name}</span>
@@ -254,7 +255,7 @@ export default function Currency() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newAmount) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Qiymat</label>
 					<input
@@ -271,7 +272,7 @@ export default function Currency() {
 				</div>
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn  ${darkMode ? "dark" : null}`}
 						disabled={buttonLoader}
 						onClick={addNewCurrency}
 					>
@@ -285,7 +286,10 @@ export default function Currency() {
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
@@ -296,7 +300,8 @@ export default function Currency() {
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Valyutalar soni"
 					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -304,6 +309,7 @@ export default function Currency() {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{state?.loading ? (
@@ -315,6 +321,7 @@ export default function Currency() {
 					editCurrency={editCurrency}
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

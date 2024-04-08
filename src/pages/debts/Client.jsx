@@ -31,6 +31,8 @@ const Client = ({ getData }) => {
 		miniModal,
 		setMiniModal,
 		sidebar,
+		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
@@ -231,8 +233,8 @@ const Client = ({ getData }) => {
 							: addSpace(state?.debt?.quantity)
 					}
 					name="Umumiy summa"
-					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
-					iconBgColor={"var(--bg-icon-warning)"}
+					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
+					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>
 
@@ -254,6 +256,7 @@ const Client = ({ getData }) => {
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
 					sidebar={sidebar}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

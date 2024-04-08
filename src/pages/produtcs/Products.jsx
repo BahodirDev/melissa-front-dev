@@ -61,6 +61,7 @@ export default function Products() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const { product, good, currency, deliver, store } = useSelector(
 		(state) => state
@@ -194,11 +195,10 @@ export default function Products() {
 			newGoodsId.goods_id &&
 			newDeliverId.deliver_id &&
 			newStoreId.store_id &&
-			currency?.data?.length &&
+			newPercentId.currency_name &&
 			newProductPrice > 0 &&
 			newProductCost > 0 &&
 			newPerBox > 0
-
 		) {
 			let newProductObj = {
 				goods_id: newGoodsId?.goods_id,
@@ -209,7 +209,7 @@ export default function Products() {
 
 				each_box_count: +newPerBox,
 				out_of_box: +newProductQ,
-				currency_id: currency?.data[0]?.currency_id,
+				currency_id: newPercentId?.currency_id,
 				products_count_price: +newProductPrice,
 				products_count: +newProductQ,
 			}
@@ -258,7 +258,6 @@ export default function Products() {
 							toast.error("Nomalum server xatolik")
 						}
 						setBtnLoading(false)
-
 					})
 				}
 			}
@@ -410,15 +409,13 @@ export default function Products() {
 		})
 	}
 
+	const defaultCurrency = currency?.data.filter(
+		(item) => item.currency_name === "So'm"
+	)
+
 	return (
 		<>
-			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
-				name={objId ? "Mahsulot tahrirlash" : "Mahsulot qo'shish"}
-			>
+			<AddModal name={objId ? "Mahsulot tahrirlash" : "Mahsulot qo'shish"}>
 				<div
 					className={`input-wrapper modal-form ${
 						submitted &&
@@ -540,6 +537,71 @@ export default function Products() {
 						</span>
 					</div>
 				</div>
+
+				<div
+					className={`input-wrapper modal-form ${
+						submitted && stringCheck(newGoodsId?.goods_name) !== null && "error"
+					}`}
+				>
+					<label>Pul birligi</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Pul birligi tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newPercentId?.currency_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							newPercentId?.currency_name
+								? `${newPercentId?.currency_name} - ${newPercentId?.currency_amount}${newPercentId?.currency_symbol}`
+								: null
+						}
+						onChange={(e) => {
+							e ? setNewPercentId(JSON.parse(e)) : setNewPercentId({})
+							setActiveElementIndex(4)
+						}}
+						ref={activeElementIndex === 3 ? nextInputRef : null}
+						// defaultValue={
+						// 	defaultCurrency[0]?.currency_name
+						// 		? JSON.stringify(defaultCurrency[0])
+						// 		: undefined
+						// }
+					>
+						{currency?.data?.length
+							? currency?.data.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											value={JSON.stringify(item)}
+											// defaultOpen={item?.currency_name === "So'm"}
+										>
+											<div>
+												<span>
+													{item?.currency_name} - {item?.currency_amount}
+													{item?.currency_symbol}
+												</span>
+											</div>
+										</Select.Option>
+									)
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newPercentId?.currency_name,
+									"Valyuta tanlash majburiy"
+								)}
+						</span>
+					</div>
+				</div>
+
 				<div
 					className={`input-wrapper modal-form ${
 						submitted && stringCheck(newStoreId?.store_name) !== null && "error"
@@ -561,9 +623,9 @@ export default function Products() {
 						value={newStoreId?.store_name ? newStoreId?.store_name : null}
 						onChange={(e) => {
 							e ? setNewStoreId(JSON.parse(e)) : setNewStoreId({})
-							setActiveElementIndex(4)
+							setActiveElementIndex(5)
 						}}
-						ref={activeElementIndex === 3 ? nextInputRef : null}
+						ref={activeElementIndex === 4 ? nextInputRef : null}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => {
@@ -585,7 +647,6 @@ export default function Products() {
 					</div>
 				</div>
 				<div className={`input-wrapper modal-form regular`}>
-
 					<label>Quti</label>
 					<input
 						type="text"
@@ -593,7 +654,7 @@ export default function Products() {
 						className="input"
 						value={newBoxQ ? newBoxQ : ""}
 						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
-						ref={activeElementIndex === 4 ? nextInputRef : null}
+						ref={activeElementIndex === 5 ? nextInputRef : null}
 					/>
 					{/* {submitted && numberCheckAllow0(newBoxQ) !== null && (
 						<Info size={20} />
@@ -605,7 +666,6 @@ export default function Products() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newPerBox) !== null && "error"
-
 					}`}
 				>
 					<label>Har bir qutida</label>
@@ -622,13 +682,11 @@ export default function Products() {
 					{submitted && numberCheck(newPerBox) !== null && <Info size={20} />}
 					<div className="validation-field">
 						<span>{submitted && numberCheck(newPerBox)}</span>
-
 					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
 						!objId && submitted && numberCheck(newProductQ) !== null && "error"
-
 					}`}
 				>
 					<label>Jami</label>
@@ -646,7 +704,6 @@ export default function Products() {
 					)}
 					<div className="validation-field">
 						<span>{!objId && submitted && numberCheck(newProductQ)}</span>
-
 					</div>
 				</div>
 				<div
@@ -661,7 +718,7 @@ export default function Products() {
 						className="input"
 						value={newProductCost ? newProductCost : ""}
 						onChange={(e) =>
-							setNewProductCost(e.target.value.replace(/[^0-9]/g, ""))
+							setNewProductCost(e.target.value.replace(/[^0-9.]/g, ""))
 						}
 					/>
 					{submitted && numberCheck(newProductCost) !== null && (
@@ -683,7 +740,7 @@ export default function Products() {
 						className="input"
 						value={newProductPrice ? newProductPrice : ""}
 						onChange={(e) =>
-							setNewProductPrice(e.target.value.replace(/[^0-9]/g, ""))
+							setNewProductPrice(e.target.value.replace(/[^0-9.]/g, ""))
 						}
 					/>
 					{submitted && numberCheck(newProductPrice) !== null && (
@@ -807,8 +864,8 @@ export default function Products() {
 								: addSpace(product?.amount)
 						}
 						name="Mahsulotlar soni"
-						icon={<Package size={24} color="var(--color-success)" />}
-						iconBgColor={"var(--bg-success-icon)"}
+						icon={<Package size={24} color="var(--color-primary)" />}
+						iconBgColor={"var(--bg-icon)"}
 					/>
 					<InfoItem
 						value={
@@ -821,8 +878,8 @@ export default function Products() {
 							) + " so'm"
 						}
 						name="Umumiy summa"
-						icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
-						iconBgColor={"var(--bg-icon-warning)"}
+						icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
+						iconBgColor={"var(--bg-icon)"}
 					/>
 				</div>
 			) : null}
@@ -850,6 +907,7 @@ export default function Products() {
 						setAddModalVisible={setAddModalVisible}
 						setAddModalDisplay={setAddModalDisplay}
 						addOnTop={addOnTop}
+						darkMode={darkMode}
 					/>
 
 					<Pagination

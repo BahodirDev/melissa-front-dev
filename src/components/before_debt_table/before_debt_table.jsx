@@ -24,6 +24,7 @@ const ODebtTable = ({
 	showDropdown,
 	setshowDropdown,
 	sidebar,
+	darkMode,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -106,7 +107,8 @@ const ODebtTable = ({
 									record?.id,
 									record?.count,
 									record?.currencyAmount,
-									record?.deliver
+									record?.deliver,
+									darkMode
 								)
 							}
 						>
@@ -123,7 +125,8 @@ const ODebtTable = ({
 										<span>{record?.deliver}</span> qarzni
 									</>,
 									closeDebt,
-									record?.id
+									record?.id,
+									darkMode
 								)
 							}
 						>
@@ -140,7 +143,8 @@ const ODebtTable = ({
 										<span>{record?.deliver}</span> qarzni
 									</>,
 									deleteDebt,
-									record?.id
+									record?.id,
+									darkMode
 								)
 							}
 						>
@@ -166,11 +170,7 @@ const ODebtTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr}
-				pagination={{
-					showSizeChanger: false,
-					position: ["bottomLeft"],
-					pageSize: 20,
-				}}
+				pagination={false}
 			/>
 		</div>
 	)

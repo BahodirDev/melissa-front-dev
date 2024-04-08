@@ -6,6 +6,9 @@
 	position: relative;
 	background-color: rgb(245, 240, 240);
 }
+.loader.dark {
+	background: var(--d-bg-icon);
+}
 .loader .loaderBar {
 	width: 0;
 	height: 4px;

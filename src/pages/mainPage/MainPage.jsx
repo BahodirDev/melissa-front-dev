@@ -1,11 +1,21 @@
+import user_image from "../../assets/img/user.jpg"
 import { useEffect, useRef, useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import Sidebar from "../../components/sidebar/Sidebar"
 import SSidebar from "../../components/ssidebar/SSidebar"
 import { get } from "../../customHook/api"
 import "./main.css"
-import { Plus } from "@phosphor-icons/react"
+import {
+	ArrowLineLeft,
+	ArrowLineRight,
+	MoonStars,
+	Plus,
+	SignOut,
+	SunDim,
+} from "@phosphor-icons/react"
 import SellDebt from "../../components/sell_debt/SellDebt"
+import { employee_role } from "../employees/employee_role"
+import { log_out } from "../../components/log_out/delete_modal"
 
 export default function MainPage() {
 	const [sidebar, setSidebar] = useState(true)
@@ -21,6 +31,11 @@ export default function MainPage() {
 	const [SDModalDisplay, setSDModalDisplay] = useState("none")
 	const [activeSectionIndex, setActiveSectionIndex] = useState(0)
 	const [activeElementIndex, setActiveElementIndex] = useState(0)
+	const [infoModal, setInfoModal] = useState(false)
+	const [darkMode, setDarkMode] = useState(() => {
+		const savedDarkMode = localStorage.getItem("darkMode")
+		return savedDarkMode ? JSON.parse(savedDarkMode) : false
+	})
 
 	const removeLinkFocus = () => {
 		switch (url.pathname) {
@@ -83,6 +98,10 @@ export default function MainPage() {
 	}, [url])
 
 	useEffect(() => {
+		localStorage.setItem("darkMode", JSON.stringify(darkMode))
+	}, [darkMode])
+
+	useEffect(() => {
 		setUserInfo({
 			userToken: localStorage.getItem("user"),
 			role: JSON.parse(localStorage.getItem("role")),
@@ -119,10 +138,10 @@ export default function MainPage() {
 						setSDModalDisplay("none")
 					}, 300)
 					inputRef.current?.focus()
-				} else if (e.ctrlKey && e.key === ",") {
+				} else if (e.ctrlKey && e.key === "ArrowLeft") {
 					e.preventDefault()
 					setSidebar(false)
-				} else if (e.ctrlKey && e.key === ".") {
+				} else if (e.ctrlKey && e.key === "ArrowRight") {
 					e.preventDefault()
 					setSidebar(true)
 				} else if (e.ctrlKey && e.key === "ArrowUp") {
@@ -141,6 +160,7 @@ export default function MainPage() {
 
 	const closeAllModals = () => {
 		removeLinkFocus()
+		setInfoModal(false)
 		setshowDropdown("")
 		setMiniModal("")
 		setAddModalVisible(false)
@@ -152,7 +172,10 @@ export default function MainPage() {
 	}
 
 	return (
-		<div className="home-con" onClick={closeAllModals}>
+		<div
+			className={`home-con ${darkMode ? "dark" : null}`}
+			onClick={closeAllModals}
+		>
 			<button
 				className="primary-btn modal-toggle-btn"
 				onClick={(e) => {
@@ -166,12 +189,14 @@ export default function MainPage() {
 			>
 				<Plus size={24} />
 			</button>
+
 			{sidebar ? (
 				<Sidebar
 					setSidebar={setSidebar}
 					sidebar={sidebar}
 					userInfo={userInfo}
 					activeSectionIndex={activeSectionIndex}
+					darkMode={darkMode}
 				/>
 			) : (
 				<SSidebar
@@ -179,9 +204,53 @@ export default function MainPage() {
 					sidebar={sidebar}
 					userInfo={userInfo}
 					activeSectionIndex={activeSectionIndex}
+					darkMode={darkMode}
 				/>
 			)}
+
 			<div className="main-div">
+				<div className={`top-menu ${darkMode ? "dark" : null}`}>
+					{sidebar ? (
+						<ArrowLineLeft size={24} onClick={() => setSidebar(!sidebar)} />
+					) : (
+						<ArrowLineRight size={24} onClick={() => setSidebar(!sidebar)} />
+					)}
+
+					<div className="top-menu-right">
+						{darkMode ? (
+							<SunDim size={24} onClick={() => setDarkMode(!darkMode)} />
+						) : (
+							<MoonStars size={24} onClick={() => setDarkMode(!darkMode)} />
+						)}
+						<div className="user-info" onClick={(e) => e.stopPropagation()}>
+							<img
+								src={user_image}
+								alt="xodim-rasm"
+								onClick={() => setInfoModal(!infoModal)}
+							/>
+							{infoModal ? (
+								<>
+									<div className="user-info-modal-pointer"></div>
+									<div className="user-info-modal">
+										<p>{userInfo?.name ? userInfo?.name : "Xodim"}</p>
+										<span>{employee_role(userInfo?.role)}</span>
+										<button
+											title="Hisobdan chiqish"
+											onClick={(e) => {
+												log_out(e, navigate, darkMode)
+											}}
+											className="btn-logout"
+										>
+											Saytdan chiqish &nbsp;
+											<SignOut size={24} />
+										</button>
+									</div>
+								</>
+							) : null}
+						</div>
+					</div>
+				</div>
+
 				<div
 					className="content"
 					style={{ overflowY: (addModalVisible || SDModalVisible) && "hidden" }}
@@ -193,6 +262,7 @@ export default function MainPage() {
 						setSDModalDisplay={setSDModalDisplay}
 						activeElementIndex={activeElementIndex}
 						setActiveElementIndex={setActiveElementIndex}
+						darkMode={darkMode}
 					/>
 					<Outlet
 						context={[
@@ -207,6 +277,7 @@ export default function MainPage() {
 							setMiniModal,
 							sidebar,
 							userInfo,
+							darkMode,
 						]}
 					/>
 				</div>

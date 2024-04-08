@@ -24,6 +24,7 @@ export default function Sidebar({
 	sidebar,
 	userInfo,
 	activeSectionIndex,
+	darkMode,
 }) {
 	const navigate = useNavigate()
 	const [userRole, setUserRole] = useState(0)
@@ -83,7 +84,7 @@ export default function Sidebar({
 	}, [activeSectionIndex])
 
 	return (
-		<div className="sidebar">
+		<div className={`sidebar ${darkMode ? "dark" : null}`}>
 			<div className="sicon">
 				<h1 type="button" onClick={() => setSidebar((prev) => !prev)}>
 					Melissa Kids
@@ -247,27 +248,6 @@ export default function Sidebar({
 						<i className="fa-solid fa-gear"></i>
 					</NavLink>
 				</li> */}
-
-				<li className="logout">
-					<div className="user__info">
-						<div className="user__image">
-							<img src={user_image} alt="xodim-rasm" />
-						</div>
-						<div className="user__about">
-							<p>{userInfo?.name ? userInfo?.name : "Xodim"}</p>
-							<span>{employee_role(userInfo?.role)}</span>
-						</div>
-						<a
-							href="#"
-							title="Hisobdan chiqish"
-							onClick={(e) => {
-								log_out(e, navigate)
-							}}
-						>
-							<SignOut size={24} />
-						</a>
-					</div>
-				</li>
 			</ul>
 		</div>
 	)

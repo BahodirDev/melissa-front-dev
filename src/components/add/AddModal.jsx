@@ -1,16 +1,28 @@
 import { X } from "@phosphor-icons/react"
 import "./add modal.css"
+import { useOutletContext } from "react-router-dom"
 
-const AddModal = ({
-	addModalVisible,
-	setAddModalVisible,
-	addModalDisplay,
-	setAddModalDisplay,
-	name,
-	children,
-}) => {
+const AddModal = ({ name, children }) => {
+	const [
+		inputRef,
+		showDropdown,
+		setshowDropdown,
+		addModalVisible,
+		setAddModalVisible,
+		addModalDisplay,
+		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+		userInfo,
+		darkMode,
+	] = useOutletContext()
+
 	return (
-		<div className="add-modal-wrapper" style={{ display: addModalDisplay }}>
+		<div
+			className={`add-modal-wrapper ${darkMode ? "dark" : null}`}
+			style={{ display: addModalDisplay }}
+		>
 			<div
 				className={`add-modal ${addModalVisible ? "fade-in" : "fade-out"}`}
 				onClick={(e) => e.stopPropagation()}
@@ -24,7 +36,7 @@ const AddModal = ({
 							}, 300)
 						}}
 					>
-						<X size={20} />
+						<X size={20} className={`${darkMode ? "phosphor-icon" : null}`} />
 					</button>
 					<h4>{name}</h4>
 				</div>

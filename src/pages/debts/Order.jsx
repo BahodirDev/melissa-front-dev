@@ -38,6 +38,8 @@ const Order = ({ getData }) => {
 		miniModal,
 		setMiniModal,
 		sidebar,
+		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const state = useSelector((state) => state)
 	const dispatch = useDispatch()
@@ -231,13 +233,7 @@ const Order = ({ getData }) => {
 
 	return (
 		<>
-			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
-				name={objId ? "Qarzdorlik tahrirlash" : "Qarzdorlik kiritish"}
-			>
+			<AddModal name={objId ? "Qarzdorlik tahrirlash" : "Qarzdorlik kiritish"}>
 				<div
 					className={`input-wrapper modal-form ${
 						submitted && stringCheck(beforeGood?.goods_name) !== null && "error"
@@ -605,8 +601,8 @@ const Order = ({ getData }) => {
 							: addSpace(state?.oDebt?.quantity)
 					}
 					name="Umumiy summa"
-					icon={<CurrencyDollar size={24} color="var(--color-warning)" />}
-					iconBgColor={"var(--bg-icon-warning)"}
+					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
+					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>
 
@@ -628,6 +624,7 @@ const Order = ({ getData }) => {
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
 					sidebar={sidebar}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

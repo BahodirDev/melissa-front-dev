@@ -22,6 +22,7 @@ const ClientsInfo = () => {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 
 	const loc = useLocation()
@@ -102,6 +103,7 @@ const ClientsInfo = () => {
 					data={list}
 					removeFromList={removeFromList}
 					userInfo={userInfo?.role}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

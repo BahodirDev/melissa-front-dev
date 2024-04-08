@@ -12,6 +12,7 @@ export default function EmployeeList({
 	editEmp,
 	showDropdown,
 	setshowDropdown,
+	darkMode,
 }) {
 	const [loc, setLoc] = useState(true)
 
@@ -64,7 +65,8 @@ export default function EmployeeList({
 													Xodim <span>{item?.user_name}</span>ni
 												</>,
 												deleteEmp,
-												item?.user_id
+												item?.user_id,
+												darkMode
 											)
 										}
 									>

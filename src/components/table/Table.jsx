@@ -28,6 +28,7 @@ const AntTable = ({
 	setAddModalVisible,
 	setAddModalDisplay,
 	addOnTop,
+	darkMode,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -52,14 +53,19 @@ const AntTable = ({
 				products_count: Math.ceil(+item?.products_count),
 
 				products_count_cost:
-					addComma(item?.products_count_cost) +
-					item?.currency_id?.currency_symbol,
+					addComma(
+						item?.products_count_cost * item?.currency_id?.currency_amount
+					) + " so'm",
 				products_count_price:
-					addComma(item?.products_count_price) +
-					item?.currency_id?.currency_symbol,
+					addComma(
+						item?.products_count_price * item?.currency_id?.currency_amount
+					) + " so'm",
 				total_price:
-					addComma(item?.products_count * item?.products_count_cost) +
-					item?.currency_id?.currency_symbol,
+					addComma(
+						item?.products_count *
+							item?.products_count_cost *
+							item?.currency_id?.currency_amount
+					) + " so'm",
 				product_date: `${moment(item?.products_createdat).format(
 					"YYYY/MM/DD hh:mm"
 				)}`,
@@ -78,7 +84,7 @@ const AntTable = ({
 		{
 			title: "Mahsulot",
 			dataIndex: "goods_name",
-			sorter: (a, b) => a.goods_name.localeCompare(b.goods_name),
+			// sorter: (a, b) => a.goods_name.localeCompare(b.goods_name),
 		},
 		{
 			title: "Kod",
@@ -111,12 +117,12 @@ const AntTable = ({
 		{
 			title: "Sana",
 			dataIndex: "product_date",
-			defaultSortOrder: "descend",
-			sorter: (a, b) =>
-				moment(a.product_date).unix() - moment(b.product_date).unix(),
-			render: (text) => {
-				return <>{text.slice(0, 10)}</>
-			},
+			// defaultSortOrder: "descend",
+			// sorter: (a, b) =>
+			// 	moment(a.product_date).unix() - moment(b.product_date).unix(),
+			// render: (text) => {
+			// 	return <>{text.slice(0, 10)}</>
+			// },
 		},
 		{
 			title: "",
@@ -162,7 +168,8 @@ const AntTable = ({
 											Mahsulot <span>{record?.goods_name}</span>ni
 										</>,
 										deleteItem,
-										record?.id
+										record?.id,
+										darkMode
 									)
 								}
 							>
@@ -189,11 +196,6 @@ const AntTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr2}
-				// pagination={{
-				// 	showSizeChanger: false,
-				// 	position: ["bottomLeft"],
-				// 	pageSize: 20,
-				// }}
 				pagination={false}
 			/>
 		</div>

@@ -34,6 +34,7 @@ export default function Store() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const state = useSelector((state) => state.store)
 	const dispatch = useDispatch()
@@ -174,13 +175,7 @@ export default function Store() {
 
 	return (
 		<>
-			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
-				name={objId ? "Ombor tahrirlash" : "Ombor qo'shish"}
-			>
+			<AddModal name={objId ? "Ombor tahrirlash" : "Ombor qo'shish"}>
 				<div
 					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(storeName.trim()) !== null && "error"}
@@ -250,6 +245,7 @@ export default function Store() {
 					editStore={editStore}
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

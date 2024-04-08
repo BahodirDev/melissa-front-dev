@@ -2,35 +2,32 @@ import { Input, Modal } from "antd"
 import { addComma } from "../addComma"
 const { confirm } = Modal
 
-export const payModal = (e, action, id, max, value, name) => {
+export const payModal = (e, action, id, max, value, name, mode = false) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
 		icon: " ",
 		title: (
 			<>
-				<span style={{ float: "left" }}>
-					{name}: {max}
-				</span>
-				<Input
-					type="text"
-					// placeholder={
-					// 	addComma(parseFloat(max.replace(/[^\d.]/g, "")))
-					// }
-					placeholder={max}
-					id="pay-modal-input"
-					pattern="[0-9]*"
-					onInput={(e) => {
-						const maxValue = parseFloat(max.replace(/[^\d.]/g, ""))
-						const inputValue = e.target.value.replace(/,/g, "")
-						if (inputValue > maxValue) {
-							e.target.value = maxValue.toString()
-						}
-						if (/[^0-9.]/.test(inputValue.slice(-1))) {
-							e.target.value = e.target.value.slice(0, -1)
-						}
-					}}
-				/>
+				<div className={`input-wrapper pay-modal ${mode ? "dark" : null}`}>
+					<label>
+						{name}: {max}
+					</label>
+					<Input
+						type="text"
+						placeholder={max}
+						id="pay-modal-input"
+						onInput={(e) => {
+							const maxValue = parseFloat(max.replace(/[^\d]/g, ""))
+							const inputElement = e.target
+							const inputValue = (inputElement.value =
+								inputElement.value.replace(/[^\d]/g, ""))
+							if (inputValue > maxValue) {
+								inputElement.value = maxValue.toString()
+							}
+						}}
+					/>
+				</div>
 			</>
 		),
 		okText: "Kiritish",
@@ -53,19 +50,6 @@ export const payModal = (e, action, id, max, value, name) => {
 			display: "flex",
 			justifyContent: "center",
 		},
-		cancelButtonProps: {
-			style: {
-				color: "var(--color-secondary)",
-				border: "var(--border-primary)",
-				borderRadius: "var(--radius-sm)",
-			},
-		},
-		okButtonProps: {
-			style: {
-				borderRadius: "var(--radius-sm)",
-				backgroundColor: "var(--bg-success)",
-				color: "var(--color-light)",
-			},
-		},
+		className: mode ? "dark" : null,
 	})
 }

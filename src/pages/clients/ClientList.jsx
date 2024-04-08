@@ -19,6 +19,7 @@ function ClientList({
 	setshowDropdown,
 	miniModal,
 	setMiniModal,
+	darkMode,
 }) {
 	const [loc, setLoc] = useState(true)
 	const [loc2, setLoc2] = useState(true)
@@ -88,7 +89,8 @@ function ClientList({
 														Mijoz <span>{item?.clients_name}</span>ni
 													</>,
 													deleteClient,
-													item?.clients_id
+													item?.clients_id,
+													darkMode
 												)
 											}
 										>

@@ -7,6 +7,7 @@ const Search = ({
 	showAddBtn = true,
 	className,
 	clearOnly,
+	darkMode,
 }) => {
 	const [
 		inputRef,
@@ -25,9 +26,9 @@ const Search = ({
 	}
 
 	return (
-		<div className={`search-wrapper ${className}`}>
+		<div className={`search-wrapper ${className} ${darkMode ? "dark" : null}`}>
 			<div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<input
 						type="text"
 						placeholder="Izlash..."
@@ -35,7 +36,10 @@ const Search = ({
 						onKeyPress={handleKeyPress}
 					/>
 				</div>
-				<button className="primary-btn" onClick={handleSearch}>
+				<button
+					className={`primary-btn ${darkMode ? "dark" : null}`}
+					onClick={handleSearch}
+				>
 					Izlash
 				</button>
 				<X size={18} onClick={clearSearch} />
@@ -43,7 +47,7 @@ const Search = ({
 			<div>
 				{showAddBtn && (
 					<button
-						className="primary-btn"
+						className={`primary-btn  ${darkMode ? "dark" : null}`}
 						onClick={(e) => {
 							e.stopPropagation()
 							setshowDropdown("")

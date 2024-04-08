@@ -47,6 +47,7 @@ const SellDebt = ({
 	setSDModalDisplay,
 	activeElementIndex,
 	setActiveElementIndex,
+	darkMode,
 }) => {
 	const { store, client, deliver } = useSelector((state) => state)
 	const dispatch = useDispatch()
@@ -219,7 +220,8 @@ const SellDebt = ({
 								(existingProduct?.count + +productQ) * productP
 						)
 						clear()
-					}
+					},
+					darkMode
 				)
 			} else {
 				let newObj = {
@@ -323,7 +325,7 @@ const SellDebt = ({
 					clearAndClose()
 					toast.success("Mahsulot muvoffaqiyatli sotildi")
 
-					confirmDownloadModal(downloadFile, data?.data?.report_id)
+					confirmDownloadModal(downloadFile, data?.data?.report_id, darkMode)
 				} else if (data?.response?.data?.message === "Mahsulot kam") {
 					let productNames = ""
 					data?.response?.data?.data.forEach((item, idx) => {
@@ -366,11 +368,13 @@ const SellDebt = ({
 	return (
 		<div className="sell-modal-wrapper" style={{ display: SDModalDisplay }}>
 			<div
-				className={`modal-list ${SDModalVisible ? "bounce-in" : "bounce-out"}`}
+				className={`modal-list ${SDModalVisible ? "bounce-in" : "bounce-out"} ${
+					darkMode ? "dark" : null
+				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
 				<>
-					<div className="modal-list-head">
+					<div className={`modal-list-head ${darkMode ? "dark" : null}`}>
 						<h5>Mijoz</h5>
 						<h5>Mahsulot</h5>
 						<h5>Miqdor ({productList?.length})</h5>
@@ -385,7 +389,7 @@ const SellDebt = ({
 									<div
 										className={`modal-list-item ${
 											item?.highlight ? "highlight" : null
-										}`}
+										} ${darkMode ? "dark" : null}`}
 										key={idx}
 									>
 										<h6>
@@ -412,10 +416,10 @@ const SellDebt = ({
 					</div>
 					<button
 						type="button"
-						className="primary-btn sell"
+						className={`primary-btn sell ${darkMode ? "dark" : null}`}
 						disabled={btnLoading}
 						onClick={(e) =>
-							confirmApproveModal("Savdoni tasdiqlaysizmi?", postP)
+							confirmApproveModal("Savdoni tasdiqlaysizmi?", postP, darkMode)
 						}
 					>
 						Sotish
@@ -434,10 +438,10 @@ const SellDebt = ({
 			<div
 				className={`sell-modal ${
 					SDModalVisible ? "fade-in-sd" : "fade-out-sd"
-				}`}
+				} ${darkMode ? "dark" : null}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<div className="sell-modal-top">
+				<div className={`sell-modal-top ${darkMode ? "dark" : null}`}>
 					<button
 						onClick={() => {
 							setSDModalVisible(false)
@@ -446,7 +450,7 @@ const SellDebt = ({
 							}, 300)
 						}}
 					>
-						<X size={20} />
+						<X size={20} className={`${darkMode ? "phosphor-icon" : null}`} />
 					</button>
 					<div>
 						<h4 className={"active"}>Sotish</h4>
@@ -459,14 +463,14 @@ const SellDebt = ({
 								submitted &&
 								stringCheck(storeObj?.store_name) !== null &&
 								"error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Ombor</label>
 							<Select
 								showSearch
 								allowClear
 								placeholder="Ombor tanlang"
-								className="select"
+								className={`select`}
 								disabled={productList?.length}
 								suffixIcon={
 									submitted && stringCheck(storeObj?.store_name) !== null ? (
@@ -485,7 +489,11 @@ const SellDebt = ({
 								{store?.data.length
 									? store?.data.map((item, idx) => {
 											return (
-												<Select.Option key={idx} value={JSON.stringify(item)}>
+												<Select.Option
+													key={idx}
+													value={JSON.stringify(item)}
+													className={`${darkMode ? "dark" : null}`}
+												>
 													<div>
 														<span>{item?.store_name}</span>
 													</div>
@@ -506,7 +514,7 @@ const SellDebt = ({
 								submitted &&
 								stringCheck(clientObj?.clients_name) !== null &&
 								"error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Mijoz</label>
 							<Select
@@ -550,7 +558,9 @@ const SellDebt = ({
 												return (
 													<Select.Option
 														key={idx}
-														className="option-shrink"
+														className={`option-shrink ${
+															darkMode ? "dark" : null
+														}`}
 														value={JSON.stringify(item)}
 													>
 														<div>
@@ -575,13 +585,15 @@ const SellDebt = ({
 								</span>
 							</div>
 						</div>
-						<div className={`input-wrapper modal-form`}>
+						<div
+							className={`input-wrapper modal-form ${darkMode ? "dark" : null}`}
+						>
 							<label>Ta'minotchi tanlang</label>
 							<Select
 								showSearch
 								allowClear
 								placeholder="Ta'minotchi tanlang"
-								className="select"
+								className="select dark"
 								value={
 									deliverObj?.deliver_name ? deliverObj?.deliver_name : null
 								}
@@ -594,7 +606,11 @@ const SellDebt = ({
 									? deliver?.data.map((item, idx) => {
 											if (!item?.isdelete)
 												return (
-													<Select.Option key={idx} value={JSON.stringify(item)}>
+													<Select.Option
+														className={`${darkMode ? "dark" : null}`}
+														key={idx}
+														value={JSON.stringify(item)}
+													>
 														<div>
 															<span>
 																{item?.deliver_name} -{" "}
@@ -612,7 +628,7 @@ const SellDebt = ({
 								submitted &&
 								stringCheck(productObj?.goods_id?.goods_name) !== null &&
 								"error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Mahsulot</label>
 							<Select
@@ -668,7 +684,9 @@ const SellDebt = ({
 												<Select.Option
 													key={idx}
 													value={JSON.stringify(item)}
-													className="option-shrink"
+													className={`option-shrink ${
+														darkMode ? "dark" : null
+													}`}
 												>
 													<div>
 														<span>
@@ -705,7 +723,11 @@ const SellDebt = ({
 								</span>
 							</div>
 						</div>
-						<div className={`input-wrapper modal-form regular`}>
+						<div
+							className={`input-wrapper modal-form regular ${
+								darkMode ? "dark" : null
+							}`}
+						>
 							<label>
 								Quti (
 								{productObj.products_box_count
@@ -718,7 +740,7 @@ const SellDebt = ({
 						<div
 							className={`input-wrapper modal-form regular ${
 								submitted && numberCheck(productQ) !== null && "error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>
 								Dona (
@@ -743,7 +765,6 @@ const SellDebt = ({
 									} else {
 										setProductQ(e.target.value)
 									}
-
 								}}
 								ref={activeElementIndex === 4 ? nextInputRef : null}
 							/>
@@ -752,13 +773,12 @@ const SellDebt = ({
 							)}
 							<div className="validation-field">
 								<span>{submitted && numberCheck(productQ)}</span>
-
 							</div>
 						</div>
 						<div
 							className={`input-wrapper modal-form regular ${
 								submitted && numberCheck(productP) !== null && "error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>
 								Narx (
@@ -788,19 +808,25 @@ const SellDebt = ({
 							<div className="validation-field">
 								<span>{submitted && numberCheck(productP)}</span>
 							</div>
-
 						</div>
-						<div className="input-wrapper modal-form regular">
+						<div
+							className={`input-wrapper modal-form regular ${
+								darkMode ? "dark" : null
+							}`}
+						>
 							<label>Umumiy narx: </label>
 							<span>{addComma(productQ * productP)} so'm</span>
 						</div>
 						<div className="modal-btn-group">
-							<button className="primary-btn" onClick={handelAddToList}>
+							<button
+								className={`primary-btn ${darkMode ? "dark" : null}`}
+								onClick={handelAddToList}
+							>
 								Qo'shish
 							</button>
 							{/* <button className="secondary-btn" onClick={clearAndClose}> */}
 							<button
-								className="secondary-btn"
+								className={`secondary-btn ${darkMode ? "dark" : null}`}
 								onClick={(e) => {
 									if (productList?.length >= 1)
 										confirmCloseModal(
@@ -811,7 +837,8 @@ const SellDebt = ({
 													setSDModalDisplay("none")
 												}, 300)
 											},
-											clearAndClose
+											clearAndClose,
+											darkMode
 										)
 									else clearAndClose()
 								}}
@@ -820,7 +847,6 @@ const SellDebt = ({
 							</button>
 						</div>
 					</>
-
 				</div>
 			</div>
 		</div>

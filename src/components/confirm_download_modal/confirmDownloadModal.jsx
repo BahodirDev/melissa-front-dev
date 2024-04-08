@@ -1,7 +1,7 @@
 import { Modal } from "antd"
 const { confirm } = Modal
 
-export const confirmDownloadModal = (action, id) => {
+export const confirmDownloadModal = (action, id, mode = false) => {
 	confirm({
 		icon: " ",
 		title: <span>Hisobotni yuklab olishni xohlaysizmi?</span>,
@@ -24,20 +24,6 @@ export const confirmDownloadModal = (action, id) => {
 			display: "flex",
 			justifyContent: "center",
 		},
-		cancelButtonProps: {
-			style: {
-				color: "var(--color-secondary)",
-				border: "var(--border-primary)",
-				borderRadius: "var(--radius-sm)",
-			},
-		},
-		okButtonProps: {
-			style: {
-				borderRadius: "var(--radius-sm)",
-				backgroundColor: "var(--bg-success)",
-				color: "var(--color-light)",
-				borderColor: "var(--bg-success)",
-			},
-		},
+		className: mode ? "dark" : null,
 	})
 }

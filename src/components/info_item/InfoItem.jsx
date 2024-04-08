@@ -1,6 +1,6 @@
-const InfoItem = ({ value, name, icon, iconBgColor }) => {
+const InfoItem = ({ value, name, icon, iconBgColor, darkMode }) => {
 	return (
-		<div className="info-item">
+		<div className={`info-item ${darkMode ? "dark" : null}`}>
 			<div>
 				<h3>{isNaN(parseFloat(value)) ? 0 : value}</h3>
 				<h4>{name}</h4>

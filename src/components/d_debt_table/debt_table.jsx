@@ -25,6 +25,7 @@ const DDebtTable = ({
 	showDropdown,
 	setshowDropdown,
 	sidebar,
+	darkMode,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -62,7 +63,7 @@ const DDebtTable = ({
 		{
 			title: "Mijoz",
 			dataIndex: "client",
-			sorter: (a, b) => a.client.localeCompare(b.client),
+			// sorter: (a, b) => a.client.localeCompare(b.client),
 		},
 		{
 			title: "Mahsulot",
@@ -87,11 +88,11 @@ const DDebtTable = ({
 		{
 			title: "To'lanadigan sana",
 			dataIndex: "duedate",
-			defaultSortOrder: "descend",
-			sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
-			render: (text) => {
-				return <>{text.slice(0, 10)}</>
-			},
+			// defaultSortOrder: "descend",
+			// sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+			// render: (text) => {
+			// 	return <>{text.slice(0, 10)}</>
+			// },
 		},
 		{
 			title: "",
@@ -116,7 +117,8 @@ const DDebtTable = ({
 									record?.id,
 									record?.price_total,
 									record?.currencyAmount,
-									record?.name
+									record?.name,
+									darkMode
 								)
 							}
 						>
@@ -133,7 +135,8 @@ const DDebtTable = ({
 										<span>{record?.name}</span> qarzni
 									</>,
 									closeDebt,
-									record?.id
+									record?.id,
+									darkMode
 								)
 							}
 						>
@@ -150,7 +153,8 @@ const DDebtTable = ({
 										<span>{record?.name}</span> qarzni
 									</>,
 									deleteDebt,
-									record?.id
+									record?.id,
+									darkMode
 								)
 							}
 						>
@@ -176,11 +180,7 @@ const DDebtTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr}
-				pagination={{
-					showSizeChanger: false,
-					position: ["bottomLeft"],
-					pageSize: 20,
-				}}
+				pagination={false}
 			/>
 		</div>
 	)

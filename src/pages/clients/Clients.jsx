@@ -32,6 +32,9 @@ export default function Employees() {
 		setAddModalDisplay,
 		miniModal,
 		setMiniModal,
+		sidebar,
+		userInfo,
+		darkMode,
 	] = useOutletContext()
 
 	const [new_name, setNew_name] = useState("")
@@ -179,13 +182,7 @@ export default function Employees() {
 
 	return (
 		<>
-			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
-				name={objId ? "Mijoz tahrirlash" : "Mijoz qo'shish"}
-			>
+			<AddModal name={objId ? "Mijoz tahrirlash" : "Mijoz qo'shish"}>
 				<div
 					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(new_name.trim()) !== null && "error"}
@@ -288,6 +285,7 @@ export default function Employees() {
 					setshowDropdown={setshowDropdown}
 					miniModal={miniModal}
 					setMiniModal={setMiniModal}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

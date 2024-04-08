@@ -19,6 +19,9 @@
 	padding: 30px 30px;
 	overflow: hidden;
 }
+.modal-list.dark {
+	background-color: var(--d-bg-light);
+}
 .modal-list-head {
 	width: 100%;
 	padding: 12px 20px;
@@ -27,12 +30,18 @@
 	gap: 20px;
 	background-color: var(--bg-pagination-btn);
 }
+.modal-list-head.dark {
+	background-color: var(--d-bg-neutral);
+}
 .modal-list-head.debt {
 	grid-template-columns: 80px 160px 70px 80px 120px 80px auto;
 }
 .modal-list-head h5 {
 	font-size: var(--text-md);
 	color: var(--color-dark);
+}
+.modal-list-head.dark h5 {
+	color: var(--d-color-secondary);
 }
 .modal-list-body {
 	width: 100%;
@@ -46,11 +55,17 @@
 	padding: 12px 20px;
 	background-color: var(--bg-light);
 }
+.modal-list-item.dark {
+	background-color: var(--d-bg-light);
+}
 .modal-list-item.debt {
 	grid-template-columns: 80px 160px 70px 80px 120px 100px auto;
 }
 .modal-list-item:nth-child(even) {
 	background-color: var(--bg-neutral);
+}
+.modal-list-item.dark:nth-child(even) {
+	background-color: var(--d-bg-secondary);
 }
 .modal-list-item h6 {
 	font-size: var(--text-md);
@@ -59,6 +74,9 @@
 	display: flex;
 	align-items: flex-end;
 	height: 24px;
+}
+.modal-list-item.dark h6 {
+	color: var(--d-color-secondary);
 }
 .modal-list-item button {
 	border: none;
@@ -72,12 +90,18 @@
 	height: 100%;
 	background-color: var(--bg-light);
 }
+.sell-modal.dark {
+	background-color: var(--d-bg-light);
+}
 .sell-modal-top {
 	width: 100%;
 	height: 110px;
 	background-color: var(--bg-neutral);
 	text-align: right;
 	padding: 24px 16px 27px 32px;
+}
+.sell-modal-top.dark {
+	background-color: var(--d-bg-neutral);
 }
 .sell-modal-top button {
 	cursor: pointer;
@@ -95,6 +119,9 @@
 	cursor: pointer;
 	color: var(--color-accent);
 }
+.sell-modal-top.dark h4 {
+	color: var(--d-color-accent);
+}
 .sell-modal-top h4.active {
 	color: var(--color-primary);
 	cursor: text;
@@ -107,6 +134,9 @@
 }
 .input-wrapper.modal-form.regular span {
 	color: var(--color-secondary);
+}
+.input-wrapper.modal-form.regular.dark span {
+	color: var(--d-color-secondary);
 }
 .highlight {
 	background-color: var(--bg-danger-opacity) !important;

@@ -13,10 +13,16 @@
 	color: var(--color-accent);
 	text-transform: uppercase;
 }
+.card-wrapper.dark .card-item-bottom.currency h6 {
+	color: var(--d-color-accent);
+}
 .card-item-bottom.currency h6 svg {
 	margin-bottom: 3px;
 }
 .card-item-bottom.currency h5 {
 	font-size: var(--text-modal);
 	color: var(--color-secondary);
+}
+.card-wrapper.dark .card-item-bottom.currency h5 {
+	color: var(--d-color-secondary);
 }

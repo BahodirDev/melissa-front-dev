@@ -35,6 +35,7 @@ function Deliver() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const state = useSelector((state) => state.deliver)
 	const dispatch = useDispatch()
@@ -186,10 +187,6 @@ function Deliver() {
 	return (
 		<>
 			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
 				name={objId ? "Ta'minotchi tahrirlash" : "Ta'minotchi qo'shish"}
 			>
 				<div
@@ -289,6 +286,7 @@ function Deliver() {
 					setshowDropdown={setshowDropdown}
 					miniModal={miniModal}
 					setMiniModal={setMiniModal}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

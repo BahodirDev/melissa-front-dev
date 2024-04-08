@@ -22,6 +22,7 @@ export default function SSidebar({
 	sidebar,
 	userInfo,
 	activeSectionIndex,
+	darkMode,
 }) {
 	const navigate = useNavigate()
 	const [userRole, setUserRole] = useState(0)
@@ -81,7 +82,7 @@ export default function SSidebar({
 	}, [activeSectionIndex])
 
 	return (
-		<div className="ssidebar">
+		<div className={`ssidebar ${darkMode ? "dark" : null}`}>
 			<div className="sicon">
 				<h1 type="button" onClick={() => setSidebar((prev) => !prev)}>
 					M
@@ -256,18 +257,6 @@ export default function SSidebar({
 						<i className="fa-solid fa-gear"></i>
 					</NavLink>
 				</li> */}
-
-				<li className="slogout">
-					<a
-						title="Hisobdan chiqish"
-						href="#"
-						onClick={(e) => {
-							log_out(e, navigate)
-						}}
-					>
-						<SignOut size={24} />
-					</a>
-				</li>
 			</ul>
 		</div>
 	)

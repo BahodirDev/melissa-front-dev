@@ -15,6 +15,7 @@ export default function CurrencyList({
 	editCurrency,
 	showDropdown,
 	setshowDropdown,
+	darkMode,
 }) {
 	const [loc, setLoc] = useState(true)
 
@@ -25,7 +26,7 @@ export default function CurrencyList({
 	}
 
 	return data?.length ? (
-		<div className="card-wrapper currency grid">
+		<div className={`card-wrapper currency grid ${darkMode ? "dark" : null}`}>
 			{data.map((item, idx) => {
 				return (
 					<div key={idx} className="card-item currency">
@@ -69,7 +70,8 @@ export default function CurrencyList({
 													<span>{item?.currency_name}</span> pul birligini
 												</>,
 												deleteCurrency,
-												item?.currency_id
+												item?.currency_id,
+												darkMode
 											)
 										}
 									>

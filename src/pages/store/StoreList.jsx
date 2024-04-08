@@ -10,6 +10,7 @@ function StoreList({
 	editStore,
 	showDropdown,
 	setshowDropdown,
+	darkMode,
 }) {
 	const [loc, setLoc] = useState(true)
 
@@ -61,7 +62,8 @@ function StoreList({
 													<span>{item?.store_name}</span> omborni
 												</>,
 												deleteStore,
-												item?.store_id
+												item?.store_id,
+												darkMode
 											)
 										}
 									>

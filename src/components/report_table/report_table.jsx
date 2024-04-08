@@ -21,6 +21,7 @@ const AntReportTable = ({
 	setshowDropdown,
 	deleteReport,
 	editReport,
+	darkMode,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -45,14 +46,14 @@ const AntReportTable = ({
 			data_client: item?.client ? item?.client : "Nomalum",
 			data_price_each:
 				addComma(
-					item?.isenter ? item?.reports_count_cost : item?.reports_count_price
-				) + item?.currency,
+					item?.isenter ? item?.reports_count_cost * item?.currency_amount : item?.reports_count_price * item?.currency_amount
+				) + " so'm",
 			data_price_total:
 				addComma(
 					item?.isenter
-						? item?.reports_count_cost * item?.reports_count
-						: item?.reports_total_cost
-				) + item?.currency,
+						? item?.reports_count_cost * item?.reports_count * item?.currency_amount
+						: item?.reports_total_cost * item?.currency_amount
+				) + " so'm",
 			data_date: `${moment(item?.reports_createdat).format(
 				"YYYY/MM/DD hh:mm"
 			)}`,
@@ -72,7 +73,7 @@ const AntReportTable = ({
 			title: "Mahsulot",
 			dataIndex: "data_product",
 			// defaultSortOrder: "ascend",
-			sorter: (a, b) => a.data_product.localeCompare(b.data_product),
+			// sorter: (a, b) => a.data_product.localeCompare(b.data_product),
 		},
 		{
 			title: "Kod",
@@ -115,11 +116,11 @@ const AntReportTable = ({
 		{
 			title: "Sana",
 			dataIndex: "data_date",
-			defaultSortOrder: "descend",
-			sorter: (a, b) => moment(a.data_date).unix() - moment(b.data_date).unix(),
-			render: (text) => {
-				return <>{text}</>
-			},
+			// defaultSortOrder: "descend",
+			// sorter: (a, b) => moment(a.data_date).unix() - moment(b.data_date).unix(),
+			// render: (text) => {
+			// 	return <>{text}</>
+			// },
 		},
 		{
 			title: "",
@@ -158,7 +159,8 @@ const AntReportTable = ({
 											hisobotni
 										</>,
 										deleteReport,
-										record?.id
+										record?.id,
+										darkMode
 									)
 								}
 							>
@@ -184,12 +186,6 @@ const AntReportTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr2}
-				// pagination={{
-				// 	showSizeChanger: false,
-				// 	position: ["bottomLeft"],
-				// 	pageSize: 20,
-				// 	onChange: customPageChange,
-				// }}
 				pagination={false}
 			/>
 		</div>

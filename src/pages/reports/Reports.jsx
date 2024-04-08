@@ -51,6 +51,7 @@ export default function Reports() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const navigate = useNavigate()
 	const { report, store, client, deliver } = useSelector((state) => state)
@@ -261,13 +262,7 @@ export default function Reports() {
 
 	return (
 		<>
-			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
-				name="Hisobot tahrirlash"
-			>
+			<AddModal name="Hisobot tahrirlash">
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && stringCheck(newDate) !== null && "error"
@@ -307,7 +302,7 @@ export default function Reports() {
 				</div>
 			</AddModal>
 
-			<div className="filter-wrapper report">
+			<div className={`filter-wrapper report ${darkMode ? "dark" : null}`}>
 				<div className="input-wrapper">
 					<Select
 						placeholder="Kirim Chiqim"
@@ -349,6 +344,30 @@ export default function Reports() {
 										</div>
 									</Select.Option>
 							  ))
+							: null}
+					</Select>
+				</div>
+				<div className="input-wrapper">
+					<Select
+						showSearch
+						allowClear
+						placeholder="Sotuvchi"
+						className="select"
+						disabled
+						// value={deliverId ? deliverId : null}
+						// onChange={(e) => setDeliverId(e)}
+					>
+						{deliver.data?.length
+							? deliver.data.map((item, idx) => {
+									if (!item?.isdelete)
+										return (
+											<Select.Option key={idx} value={item.deliver_name}>
+												<div>
+													<span>{item?.deliver_name}</span>
+												</div>
+											</Select.Option>
+										)
+							  })
 							: null}
 					</Select>
 				</div>
@@ -426,7 +445,7 @@ export default function Reports() {
 			</div>
 
 			<div className="info-wrapper">
-				<InfoItem
+				{/* <InfoItem
 					value={
 						addSpace(
 							searchSubmitted
@@ -440,7 +459,7 @@ export default function Reports() {
 					name="Mavjud summa"
 					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
 					iconBgColor={"var(--bg-icon)"}
-				/>
+				/> */}
 				<InfoItem
 					value={
 						addSpace(
@@ -451,7 +470,7 @@ export default function Reports() {
 					}
 					name="Kirim"
 					icon={<ArrowDown size={24} color="var(--color-success)" />}
-					iconBgColor={"var(--bg-success-icon)"}
+					iconBgColor={"var(--bg-icon)"}
 				/>
 				<InfoItem
 					value={
@@ -462,8 +481,8 @@ export default function Reports() {
 						) + " so'm"
 					}
 					name="Chiqim"
-					icon={<ArrowUp size={24} color="var(--color-warning)" />}
-					iconBgColor={"var(--bg-icon-warning)"}
+					icon={<ArrowUp size={24} color="var(--color-danger)" />}
+					iconBgColor={"var(--bg-icon)"}
 				/>
 				<InfoItem
 					value={
@@ -494,15 +513,15 @@ export default function Reports() {
 					)}
 					name="Kirgan mahsulotlar soni"
 					icon={<ArrowDown size={24} color="var(--color-success)" />}
-					iconBgColor={"var(--bg-success-icon)"}
+					iconBgColor={"var(--bg-icon)"}
 				/>
 				<InfoItem
 					value={addSpace(
 						searchSubmitted ? filteredData?.hisob?.totalOuput : report.qtyOut
 					)}
 					name="Chiqqan mahsulotlar soni"
-					icon={<ArrowUp size={24} color="var(--color-warning)" />}
-					iconBgColor={"var(--bg-icon-warning)"}
+					icon={<ArrowUp size={24} color="var(--color-danger)" />}
+					iconBgColor={"var(--bg-icon)"}
 				/>
 			</div>
 
@@ -525,6 +544,7 @@ export default function Reports() {
 						setshowDropdown={setshowDropdown}
 						deleteReport={deleteReport}
 						editReport={editReport}
+						darkMode={darkMode}
 					/>
 
 					<Pagination

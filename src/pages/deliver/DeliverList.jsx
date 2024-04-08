@@ -18,6 +18,7 @@ function DeliverList({
 	setshowDropdown,
 	miniModal,
 	setMiniModal,
+	darkMode,
 }) {
 	const [loc, setLoc] = useState(true)
 	const [loc2, setLoc2] = useState(true)
@@ -72,7 +73,8 @@ function DeliverList({
 														Ta'minotchi <span>{item?.deliver_name}</span>ni
 													</>,
 													deleteSup,
-													item?.deliver_id
+													item?.deliver_id,
+													darkMode
 												)
 											}
 										>

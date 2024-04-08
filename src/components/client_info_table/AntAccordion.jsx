@@ -9,7 +9,7 @@ import { downloadFile, remove } from "../../customHook/api"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 const { Panel } = Collapse
 
-const AntdAccordion = ({ data, removeFromList, userInfo }) => {
+const AntdAccordion = ({ data, removeFromList, userInfo, darkMode }) => {
 	const deleteReport = (id) => {
 		remove(`files/files-delete/${id}`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
@@ -41,7 +41,8 @@ const AntdAccordion = ({ data, removeFromList, userInfo }) => {
 										onClick={() =>
 											confirmDownloadModal(
 												downloadFile,
-												item?.unique_file_table_id
+												item?.unique_file_table_id,
+												darkMode
 											)
 										}
 										className="download-btn accordion"
@@ -65,7 +66,8 @@ const AntdAccordion = ({ data, removeFromList, userInfo }) => {
 													dagi faylni
 												</>,
 												deleteReport,
-												item?.unique_file_table_id
+												item?.unique_file_table_id,
+												darkMode
 											)
 										}
 									>

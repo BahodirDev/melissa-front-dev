@@ -7,12 +7,18 @@
 	height: 100dvh;
 	background-color: var(--bg-opacity);
 }
+.add-modal-wrapper.dark {
+	background-color: var(--d-bg-opacity);
+}
 
 .add-modal {
 	float: right;
 	width: 0;
 	height: 100%;
 	background-color: var(--bg-light);
+}
+.add-modal-wrapper.dark .add-modal {
+	background-color: var(--d-bg-light);
 }
 
 .modal-top {
@@ -21,6 +27,9 @@
 	background-color: var(--bg-neutral);
 	text-align: right;
 	padding: 24px 16px 27px 32px;
+}
+.add-modal-wrapper.dark .modal-top {
+	background-color: var(--d-bg-neutral);
 }
 
 .modal-top button {

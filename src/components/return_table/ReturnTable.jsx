@@ -14,6 +14,7 @@ const ReturnTable = ({
 	showDropdown,
 	setshowDropdown,
 	sidebar,
+	darkMode,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -75,8 +76,8 @@ const ReturnTable = ({
 		{
 			title: "Sana",
 			dataIndex: "data",
-			defaultSortOrder: "descend",
-			sorter: (a, b) => moment(a.data).unix() - moment(b.data).unix(),
+			// defaultSortOrder: "descend",
+			// sorter: (a, b) => moment(a.data).unix() - moment(b.data).unix(),
 		},
 		{
 			title: "",
@@ -113,7 +114,8 @@ const ReturnTable = ({
 										Mahsulot <span>{record?.name}</span>ni
 									</>,
 									deleteItem,
-									record?.id
+									record?.id,
+									darkMode
 								)
 							}
 						>
@@ -139,11 +141,7 @@ const ReturnTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr2}
-				pagination={{
-					showSizeChanger: false,
-					position: ["bottomLeft"],
-					pageSize: 20,
-				}}
+				pagination={false}
 			/>
 		</div>
 	)

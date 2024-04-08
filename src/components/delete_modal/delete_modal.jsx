@@ -1,7 +1,7 @@
 import { Modal } from "antd"
 const { confirm } = Modal
 
-export const productDeleteConfirm = (e, name, action, id) => {
+export const productDeleteConfirm = (e, name, action, id, mode = false) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
@@ -31,19 +31,6 @@ export const productDeleteConfirm = (e, name, action, id) => {
 			display: "flex",
 			justifyContent: "center",
 		},
-		cancelButtonProps: {
-			style: {
-				color: "var(--color-secondary)",
-				border: "var(--border-primary)",
-				borderRadius: "var(--radius-sm)",
-			},
-		},
-		okButtonProps: {
-			style: {
-				borderRadius: "var(--radius-sm)",
-				backgroundColor: "var(--bg-danger)",
-				color: "var(--color-light)",
-			},
-		},
+		className: mode ? "dark" : null,
 	})
 }

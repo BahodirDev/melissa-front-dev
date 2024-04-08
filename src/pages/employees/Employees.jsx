@@ -48,6 +48,11 @@ export default function Employees() {
 		setAddModalVisible,
 		addModalDisplay,
 		setAddModalDisplay,
+		miniModal,
+		setMiniModal,
+		sidebar,
+		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const state = useSelector((state) => state.users)
 	const dispatch = useDispatch()
@@ -212,13 +217,7 @@ export default function Employees() {
 
 	return (
 		<>
-			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
-				name={objId ? "Xodim tahrirlash" : "Xodim qo'shish"}
-			>
+			<AddModal name={objId ? "Xodim tahrirlash" : "Xodim qo'shish"}>
 				<div
 					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(new_name.trim()) !== null && "error"}
@@ -284,9 +283,21 @@ export default function Employees() {
 						value={new_job?.length ? new_job : null}
 						onChange={(e) => setNew_job(e)}
 					>
-						<Select.Option value="1">Admin</Select.Option>
-						<Select.Option value="2">Sotuvchi</Select.Option>
-						<Select.Option value="3">Kassir</Select.Option>
+						<Select.Option value="1">
+							<div>
+								<span>Admin</span>
+							</div>
+						</Select.Option>
+						<Select.Option value="2">
+							<div>
+								<span>Sotuvchi</span>
+							</div>
+						</Select.Option>
+						<Select.Option value="3">
+							<div>
+								<span>Kassir</span>
+							</div>
+						</Select.Option>
 					</Select>
 					<div className="validation-field">
 						<span>
@@ -382,6 +393,7 @@ export default function Employees() {
 					editEmp={editEmp}
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

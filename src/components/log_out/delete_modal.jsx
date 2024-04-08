@@ -1,7 +1,7 @@
 import { Modal } from "antd"
 const { confirm } = Modal
 
-export const log_out = (e, action) => {
+export const log_out = (e, action, mode = false) => {
 	const rect = e.target.getBoundingClientRect()
 
 	confirm({
@@ -21,8 +21,10 @@ export const log_out = (e, action) => {
 		width: 350,
 		style: {
 			position: "absolute",
-			top: rect.top - 170,
-			left: rect.left + 0,
+			top: "40%",
+			left: "50%",
+			transform: "translateY(-50%)",
+			transform: "translateX(-50%)",
 			textAlign: "center",
 			padding: 0,
 			borderRadius: "var(--radius-lg)",
@@ -31,19 +33,6 @@ export const log_out = (e, action) => {
 			display: "flex",
 			justifyContent: "center",
 		},
-		cancelButtonProps: {
-			style: {
-				color: "var(--color-secondary)",
-				border: "var(--border-primary)",
-				borderRadius: "var(--radius-sm)",
-			},
-		},
-		okButtonProps: {
-			style: {
-				borderRadius: "var(--radius-sm)",
-				backgroundColor: "var(--bg-danger)",
-				color: "var(--color-light)",
-			},
-		},
+		className: mode ? "dark" : null,
 	})
 }

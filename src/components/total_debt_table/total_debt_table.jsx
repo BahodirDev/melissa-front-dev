@@ -24,6 +24,7 @@ const NDebtTable = ({
 	showDropdown,
 	setshowDropdown,
 	sidebar,
+	darkMode,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -67,18 +68,18 @@ const NDebtTable = ({
 		{
 			title: "Berilgan sana",
 			dataIndex: "date",
-			render: (text) => {
-				return <>{moment(text).format("YYYY/MM/DD")}</>
-			},
+			// render: (text) => {
+			// 	return <>{moment(text).format("YYYY/MM/DD")}</>
+			// },
 		},
 		{
 			title: "To'lanadigan sana",
 			dataIndex: "duedate",
-			defaultSortOrder: "ascend",
-			sorter: (a, b) => moment(a.duedate) - moment(b.duedate),
-			render: (text) => {
-				return <>{moment(text).format("YYYY/MM/DD")}</>
-			},
+			// defaultSortOrder: "ascend",
+			// sorter: (a, b) => moment(a.duedate) - moment(b.duedate),
+			// render: (text) => {
+			// 	return <>{moment(text).format("YYYY/MM/DD")}</>
+			// },
 		},
 		{
 			title: "",
@@ -106,7 +107,8 @@ const NDebtTable = ({
 									record?.total_id,
 									record?.price,
 									1,
-									record?.client
+									record?.client,
+									darkMode
 								)
 							}
 						>
@@ -123,7 +125,8 @@ const NDebtTable = ({
 										<span>{record?.client}</span> qarzni
 									</>,
 									closeDebt,
-									record?.total_id
+									record?.total_id,
+									darkMode
 								)
 							}
 						>
@@ -140,7 +143,8 @@ const NDebtTable = ({
 										<span>{record?.client}</span> qarzni
 									</>,
 									deleteDebt,
-									record?.total_id
+									record?.total_id,
+									darkMode
 								)
 							}
 						>
@@ -166,11 +170,7 @@ const NDebtTable = ({
 					emptyText: <NoData />,
 				}}
 				dataSource={arr}
-				pagination={{
-					showSizeChanger: false,
-					position: ["bottomLeft"],
-					pageSize: 20,
-				}}
+				pagination={false}
 			/>
 		</div>
 	)

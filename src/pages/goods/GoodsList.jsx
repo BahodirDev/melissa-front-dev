@@ -16,6 +16,7 @@ function GoodsList({
 	showDropdown,
 	setshowDropdown,
 	userInfo,
+	darkMode,
 }) {
 	const [loc, setLoc] = useState(true)
 
@@ -69,14 +70,14 @@ function GoodsList({
 															<span>{item?.goods_name}</span> kategoriyani
 														</>,
 														deleteGood,
-														item?.goods_id
+														item?.goods_id,
+														darkMode
 													)
 												}
 											>
 												O'chirish <Trash size={20} />
 											</button>
 										</div>
-
 									</div>
 								</div>
 							) : null}

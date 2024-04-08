@@ -36,6 +36,7 @@ export default function Goods() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const navigate = useNavigate()
 	const state = useSelector((state) => state.good)
@@ -209,7 +210,6 @@ export default function Goods() {
 		setImageFile(null)
 		setActiveElementIndex(0)
 
-
 		setObjId("")
 		setBtn_loading(false)
 		setSubmitted(false)
@@ -258,13 +258,7 @@ export default function Goods() {
 
 	return (
 		<>
-			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
-				name={objId ? "Kategoriya tahrirlash" : "Kategoriya qo'shish"}
-			>
+			<AddModal name={objId ? "Kategoriya tahrirlash" : "Kategoriya qo'shish"}>
 				<div
 					className={`input-wrapper modal-form ${
 						submitted &&
@@ -297,7 +291,6 @@ export default function Goods() {
 							setActiveElementIndex(2)
 						}}
 						ref={activeElementIndex === 1 ? nextInputRef : null}
-
 					>
 						{deliver.data?.length
 							? deliver.data.map((item, idx) => {
@@ -343,7 +336,6 @@ export default function Goods() {
 						value={newGoodName}
 						onChange={(e) => setNewGoodName(e.target.value)}
 						ref={activeElementIndex === 2 ? nextInputRef : null}
-
 					/>
 					{submitted && stringCheck(newGoodName.trim()) !== null && (
 						<Info size={20} />
@@ -463,6 +455,7 @@ export default function Goods() {
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
 					userInfo={userInfo?.role}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

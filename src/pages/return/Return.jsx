@@ -38,6 +38,7 @@ function Return() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const navigate = useNavigate()
 	const state = useSelector((state) => state)
@@ -225,10 +226,6 @@ function Return() {
 	return (
 		<>
 			<AddModal
-				addModalVisible={addModalVisible}
-				setAddModalVisible={setAddModalVisible}
-				addModalDisplay={addModalDisplay}
-				setAddModalDisplay={setAddModalDisplay}
 				name={
 					objId ? "Qaytgan mahsulot tahrirlash" : "Qaytgan mahsulot qo'shish"
 				}
@@ -513,6 +510,7 @@ function Return() {
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
 					sidebar={sidebar}
+					darkMode={darkMode}
 				/>
 			)}
 		</>

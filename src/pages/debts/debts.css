@@ -26,13 +26,25 @@
 	background: var(--bg-icon);
 }
 
+.debt-switch.dark button:hover {
+	background: var(--bg-secondary);
+}
+
 .debt-switch button:active {
 	transform: scale(0.95);
 	color: var(--color-primary);
 	background: var(--bg-icon);
 }
 
+.debt-switch.dark button:active {
+	background: var(--bg-secondary);
+}
+
 .debt-switch button.active {
 	color: var(--color-primary);
 	background: var(--bg-icon);
+}
+
+.debt-switch.dark button.active {
+	background: var(--bg-light);
 }
