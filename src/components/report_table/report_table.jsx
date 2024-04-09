@@ -33,7 +33,7 @@ const AntReportTable = ({
 
 	let arr2 = data?.map((item, idx) => {
 		return {
-			key: idx,
+			key: idx + 1,
 			id: item?.reports_id,
 			user_info: item?.user_info,
 			data_store: item?.store,
@@ -46,12 +46,16 @@ const AntReportTable = ({
 			data_client: item?.client ? item?.client : "Nomalum",
 			data_price_each:
 				addComma(
-					item?.isenter ? item?.reports_count_cost * item?.currency_amount : item?.reports_count_price * item?.currency_amount
+					item?.isenter
+						? item?.reports_count_cost * item?.currency_amount
+						: item?.reports_count_price * item?.currency_amount
 				) + " so'm",
 			data_price_total:
 				addComma(
 					item?.isenter
-						? item?.reports_count_cost * item?.reports_count * item?.currency_amount
+						? item?.reports_count_cost *
+								item?.reports_count *
+								item?.currency_amount
 						: item?.reports_total_cost * item?.currency_amount
 				) + " so'm",
 			data_date: `${moment(item?.reports_createdat).format(
@@ -61,6 +65,10 @@ const AntReportTable = ({
 	})
 
 	const columns = [
+		{
+			title: "No̱",
+			dataIndex: "key",
+		},
 		{
 			title: "Hodim",
 			dataIndex: "user_info",
@@ -134,7 +142,7 @@ const AntReportTable = ({
 						<div
 							className={`table-item-edit-wrapper extra ${
 								showDropdown === record?.id || "hidden"
-							} ${loc && "top"}`}
+							} ${loc && "top"} ${darkMode ? "dark" : null}`}
 						>
 							<button
 								type="button"

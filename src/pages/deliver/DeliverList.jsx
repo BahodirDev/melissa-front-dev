@@ -31,7 +31,7 @@ function DeliverList({
 	}
 
 	return data?.length ? (
-		<div className="card-wrapper deliver grid">
+		<div className={`card-wrapper deliver grid ${darkMode ? "dark" : null}`}>
 			{data.map((item, idx) => {
 				if (!item?.isdelete) {
 					return (
@@ -109,7 +109,7 @@ function DeliverList({
 								<div
 									className={`mini-modal  ${
 										miniModal === item?.deliver_id || "hidden"
-									} ${loc2 && "top"}`}
+									} ${loc2 && "top"} ${darkMode ? "dark" : null}`}
 									onClick={(e) => e.stopPropagation()}
 								>
 									{item?.deliver_debts?.length ? (

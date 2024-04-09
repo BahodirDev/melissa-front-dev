@@ -11,9 +11,19 @@
 	transition: 0.1s;
 }
 
+.clients.dark .card-item-top h3 {
+	color: var(--d-color-secondary);
+	text-decoration-color: var(--d-color-secondary);
+}
+
 .clients .card-item-top h3:hover {
 	color: var(--color-accent);
 	text-decoration-color: var(--color-accent);
+}
+
+.clients.dark .card-item-top h3:hover {
+	color: var(--d-color-input);
+	text-decoration-color: var(--d-color-input);
 }
 
 .clients .card-item-bottom h4 {
@@ -21,9 +31,17 @@
 	color: var(--color-accent);
 }
 
+.clients.dark .card-item-bottom h4 {
+	color: var(--d-color-accent);
+}
+
 .clients .card-item-bottom h5 {
 	font-size: var(--text-sm);
 	color: var(--color-accent);
+}
+
+.clients.dark .card-item-bottom h5 {
+	color: var(--d-color-accent);
 }
 
 .clients .card-item-bottom button {
@@ -61,9 +79,17 @@
 	padding: 30px 40px;
 }
 
+.client-info-div.dark {
+	background-color: var(--d-bg-light);
+}
+
 .client-info-div h2 {
 	color: var(--color-secondary);
 	font-size: var(--text-xl);
+}
+
+.client-info-div.dark h2 {
+	color: var(--d-color-secondary);
 }
 
 .client-info-div h3 {
@@ -73,8 +99,16 @@
 	margin-top: 12px;
 }
 
+.client-info-div.dark h3 {
+	color: var(--d-color-accent);
+}
+
 .client-info-div h3 span {
 	color: var(--color-secondary);
+}
+
+.client-info-div.dark h3 span {
+	color: var(--d-color-secondary);
 }
 
 .antd-collapse {
@@ -84,6 +118,7 @@
 }
 
 .antd-collapse.dark {
+	background-color: var(--d-bg-light);
 	border: var(--border-invisible);
 }
 
@@ -92,15 +127,28 @@
 	justify-content: space-between;
 }
 
-.antd-collapse-header.dark {
-	color: var(--color-secondary);
+.dark .antd-collapse-header {
+	color: var(--d-color-secondary);
 }
 
-.antd-collapse.dark .ant-collapse-expand-icon {
-	color: var(--color-light);
+.antd-collapse.dark .ant-collapse-expand-icon,
+.antd-collapse.dark .download-btn {
+	color: var(--d-color-secondary);
+}
+
+.dark .ant-collapse-item {
+	border: var(--d-border-primary);
+	border-bottom: 0;
+	border-left: 0;
+	border-right: 0;
 }
 
 .ant-collapse-content-box {
 	background: var(--bg-light);
 	color: var(--color-secondary);
+}
+
+.dark .ant-collapse-content-box {
+	background-color: var(--d-bg-neutral);
+	color: var(--d-color-secondary);
 }

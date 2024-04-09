@@ -27,7 +27,7 @@ function GoodsList({
 	}
 
 	return data?.length ? (
-		<div className="card-wrapper goods grid">
+		<div className={`card-wrapper goods grid ${darkMode ? "dark" : null}`}>
 			{data.map((item, idx) => {
 				return (
 					<div key={idx} className="card-item goods">

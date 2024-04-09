@@ -235,9 +235,9 @@ function Return() {
 				) : (
 					<>
 						<div
-							className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(name.trim()) !== null && "error"}
-					`}
+							className={`input-wrapper modal-form regular ${
+								submitted && stringCheck(name.trim()) !== null && "error"
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Mahsulot nomi</label>
 							<input
@@ -257,7 +257,7 @@ function Return() {
 								submitted &&
 								stringCheck(client?.clients_name) !== null &&
 								"error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Mijoz</label>
 							<Select
@@ -287,7 +287,9 @@ function Return() {
 												return (
 													<Select.Option
 														key={idx}
-														className="option-shrink"
+														className={`option-shrink  ${
+															darkMode ? "dark" : null
+														}`}
 														value={JSON.stringify(item)}
 													>
 														<div>
@@ -312,7 +314,7 @@ function Return() {
 						<div
 							className={`input-wrapper modal-form ${
 								submitted && stringCheck(store) !== null && "error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Ombor</label>
 							<Select
@@ -333,7 +335,11 @@ function Return() {
 								{state.store?.data.length
 									? state.store?.data.map((item, idx) => {
 											return (
-												<Select.Option key={idx} value={item?.store_name}>
+												<Select.Option
+													className={` ${darkMode ? "dark" : null}`}
+													key={idx}
+													value={item?.store_name}
+												>
 													<div>
 														<span>{item?.store_name}</span>
 													</div>
@@ -351,7 +357,7 @@ function Return() {
 						<div
 							className={`input-wrapper modal-form regular ${
 								submitted && numberCheck(count) !== null && "error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Soni</label>
 							<input
@@ -369,7 +375,7 @@ function Return() {
 						<div
 							className={`input-wrapper modal-form regular ${
 								submitted && numberCheck(cost) !== null && "error"
-							}`}
+							} ${darkMode ? "dark" : null}`}
 						>
 							<label>Narxi</label>
 							<input
@@ -384,7 +390,11 @@ function Return() {
 								<span>{submitted && numberCheck(cost)}</span>
 							</div>
 						</div>
-						<div className="input-wrapper modal-form regular">
+						<div
+							className={`input-wrapper modal-form regular ${
+								darkMode ? "dark" : null
+							}`}
+						>
 							<label>Izoh</label>
 							<textarea
 								placeholder="Izoh"
@@ -395,7 +405,7 @@ function Return() {
 						</div>
 						<div className="modal-btn-group">
 							<button
-								className="primary-btn"
+								className={`primary-btn ${darkMode ? "dark" : null}`}
 								disabled={btnLoading}
 								onClick={addNewReturn}
 							>
@@ -409,7 +419,10 @@ function Return() {
 									></span>
 								)}
 							</button>
-							<button className="secondary-btn" onClick={clearAndClose}>
+							<button
+								className={`secondary-btn ${darkMode ? "dark" : null}`}
+								onClick={clearAndClose}
+							>
 								Bekor qilish
 							</button>
 						</div>
@@ -417,8 +430,8 @@ function Return() {
 				)}
 			</AddModal>
 
-			<div className="filter-wrapper">
-				<div className="input-wrapper">
+			<div className={`filter-wrapper ${darkMode ? "dark" : null}`}>
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
@@ -430,7 +443,11 @@ function Return() {
 					>
 						{state.store?.data.length
 							? state.store?.data.map((item, idx) => (
-									<Select.Option key={idx} value={item.store_id}>
+									<Select.Option
+										key={idx}
+										value={item.store_id}
+										className={` ${darkMode ? "dark" : null}`}
+									>
 										<div>
 											<span>{item?.store_name}</span>
 										</div>
@@ -439,7 +456,7 @@ function Return() {
 							: null}
 					</Select>
 				</div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
@@ -456,7 +473,7 @@ function Return() {
 											<Select.Option
 												key={idx}
 												value={item.clients_id}
-												className="option-shrink"
+												className={`option-shrink ${darkMode ? "dark" : null}`}
 											>
 												<div>
 													<span>{item?.clients_name} - </span>
@@ -471,11 +488,12 @@ function Return() {
 					</Select>
 				</div>
 				<div className="filter-btn-group">
-					<button type="button" className="filter-btn" disabled>
+					<button
+						type="button"
+						className={`filter-btn ${darkMode ? "dark" : null}`}
+						disabled
+					>
 						Tozalash
-					</button>
-					<button type="button" className="filter-btn" disabled>
-						Saqlash
 					</button>
 				</div>
 			</div>
@@ -489,7 +507,8 @@ function Return() {
 					icon={
 						<ArrowCounterClockwise size={24} color="var(--color-primary)" />
 					}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -498,6 +517,7 @@ function Return() {
 				clearSearch={clearSearch}
 				className={"table-m"}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{state.return?.loading ? (

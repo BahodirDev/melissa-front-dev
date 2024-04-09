@@ -42,7 +42,7 @@ const AntTable = ({
 		data?.length &&
 		data?.map((item, idx) => {
 			return {
-				key: idx,
+				key: idx + 1,
 				id: item?.products_id,
 				deliver_id: item?.deliver_id?.deliver_name,
 				store_id: item?.store_id?.store_name,
@@ -73,6 +73,10 @@ const AntTable = ({
 		})
 
 	const columns = [
+		{
+			title: "No̱",
+			dataIndex: "key",
+		},
 		{
 			title: "Ombor",
 			dataIndex: "store_id",
@@ -136,7 +140,7 @@ const AntTable = ({
 						<div
 							className={`table-item-edit-wrapper extra product ${
 								showDropdown === record?.id || "hidden"
-							} ${loc && "top"}`}
+							} ${loc && "top"} ${darkMode ? "dark" : null}`}
 						>
 							<button
 								type="button"

@@ -178,8 +178,9 @@ export default function Store() {
 			<AddModal name={objId ? "Ombor tahrirlash" : "Ombor qo'shish"}>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(storeName.trim()) !== null && "error"}
-					`}
+					${submitted && stringCheck(storeName.trim()) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Ombor nomi</label>
 					<input
@@ -201,7 +202,7 @@ export default function Store() {
 				</div>
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn ${darkMode ? "dark" : null}`}
 						disabled={btn_loading}
 						onClick={addNewStore}
 					>
@@ -215,7 +216,10 @@ export default function Store() {
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
@@ -226,7 +230,8 @@ export default function Store() {
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Omborlar soni"
 					icon={<Factory size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -234,6 +239,7 @@ export default function Store() {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{state?.loading ? (

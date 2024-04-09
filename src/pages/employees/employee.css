@@ -7,7 +7,15 @@
 	font-size: var(--text-modal);
 }
 
+.dark .card-item-bottom.emp h4 {
+	color: var(--d-color-secondary);
+}
+
 .card-item-bottom.emp h5 {
 	color: var(--color-accent);
 	font-size: var(--text-md);
+}
+
+.dark .card-item-bottom.emp h5 {
+	color: var(--d-color-accent);
 }

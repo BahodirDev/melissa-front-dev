@@ -264,7 +264,7 @@ export default function Goods() {
 						submitted &&
 						stringCheck(newDeliver?.deliver_name) !== null &&
 						"error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Ta'minotchi</label>
 					<Select
@@ -298,7 +298,7 @@ export default function Goods() {
 										return (
 											<Select.Option
 												key={idx}
-												className="option-shrink"
+												className={`option-shrink ${darkMode ? "dark" : null}`}
 												value={JSON.stringify(item)}
 											>
 												<div>
@@ -324,9 +324,9 @@ export default function Goods() {
 					</div>
 				</div>
 				<div
-					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(newGoodName.trim()) !== null && "error"}
-					`}
+					className={`input-wrapper modal-form regular ${
+						submitted && stringCheck(newGoodName.trim()) !== null && "error"
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Kategoriya nomi</label>
 					<input
@@ -349,8 +349,9 @@ export default function Goods() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(newGoodCode.trim()) !== null && "error"}
-					`}
+					${submitted && stringCheck(newGoodCode.trim()) !== null && "error"}  ${
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Kategoriya kodi</label>
 					<input
@@ -409,7 +410,7 @@ export default function Goods() {
 				) : null} */}
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn ${darkMode ? "dark" : null}`}
 						disabled={btn_loading}
 						onClick={addGood}
 					>
@@ -423,7 +424,10 @@ export default function Goods() {
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
@@ -434,7 +438,8 @@ export default function Goods() {
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Kategoriyalar soni"
 					icon={<SquaresFour size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -443,6 +448,7 @@ export default function Goods() {
 				clearSearch={clearSearch}
 				showAddBtn={userInfo?.role === 1}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{state?.loading ? (

@@ -292,7 +292,7 @@ export default function Products() {
 		setNewBoxQ(0)
 		setNewPerBox(0)
 		setNewProductQ(0)
-		setNewPercentId({})
+		// setNewPercentId({})
 		setNewProductCost(0)
 		setNewProductPrice(0)
 		setNewDate("")
@@ -363,7 +363,11 @@ export default function Products() {
 		setNewBoxQ(0)
 		setNewPerBox(0)
 		setNewProductQ(0)
-		setNewPercentId({})
+		// setNewPercentId({})
+		const defaultCurrency = currency?.data.filter(
+			(item) => item?.currency_name === "So'm"
+		)[0]
+		setNewPercentId(defaultCurrency)
 		setNewProductCost(0)
 		setNewProductPrice(0)
 		setBtnLoading(false)
@@ -409,10 +413,6 @@ export default function Products() {
 		})
 	}
 
-	const defaultCurrency = currency?.data.filter(
-		(item) => item.currency_name === "So'm"
-	)
-
 	return (
 		<>
 			<AddModal name={objId ? "Mahsulot tahrirlash" : "Mahsulot qo'shish"}>
@@ -421,7 +421,7 @@ export default function Products() {
 						submitted &&
 						stringCheck(newDeliverId?.deliver_name) !== null &&
 						"error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Ta'minotchi</label>
 					<Select
@@ -456,7 +456,7 @@ export default function Products() {
 										return (
 											<Select.Option
 												key={idx}
-												className="option-shrink"
+												className={`option-shrink ${darkMode ? "dark" : null}`}
 												value={JSON.stringify(item)}
 											>
 												<div>
@@ -484,7 +484,7 @@ export default function Products() {
 				<div
 					className={`input-wrapper modal-form ${
 						submitted && stringCheck(newGoodsId?.goods_name) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Kategoriya</label>
 					<Select
@@ -515,7 +515,7 @@ export default function Products() {
 									return (
 										<Select.Option
 											key={idx}
-											className="option-shrink"
+											className={`option-shrink ${darkMode ? "dark" : null}`}
 											value={JSON.stringify(item)}
 										>
 											<div>
@@ -537,11 +537,10 @@ export default function Products() {
 						</span>
 					</div>
 				</div>
-
 				<div
 					className={`input-wrapper modal-form ${
 						submitted && stringCheck(newGoodsId?.goods_name) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Pul birligi</label>
 					<Select
@@ -558,19 +557,14 @@ export default function Products() {
 						}
 						value={
 							newPercentId?.currency_name
-								? `${newPercentId?.currency_name} - ${newPercentId?.currency_amount}${newPercentId?.currency_symbol}`
+								? `${newPercentId?.currency_name} - ${newPercentId?.currency_amount} so'm`
 								: null
 						}
 						onChange={(e) => {
 							e ? setNewPercentId(JSON.parse(e)) : setNewPercentId({})
-							setActiveElementIndex(4)
+							setActiveElementIndex(3)
 						}}
-						ref={activeElementIndex === 3 ? nextInputRef : null}
-						// defaultValue={
-						// 	defaultCurrency[0]?.currency_name
-						// 		? JSON.stringify(defaultCurrency[0])
-						// 		: undefined
-						// }
+						// ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
 						{currency?.data?.length
 							? currency?.data.map((item, idx) => {
@@ -578,12 +572,11 @@ export default function Products() {
 										<Select.Option
 											key={idx}
 											value={JSON.stringify(item)}
-											// defaultOpen={item?.currency_name === "So'm"}
+											className={` ${darkMode ? "dark" : null}`}
 										>
 											<div>
 												<span>
-													{item?.currency_name} - {item?.currency_amount}
-													{item?.currency_symbol}
+													{item?.currency_name} - {item?.currency_amount} so'm
 												</span>
 											</div>
 										</Select.Option>
@@ -601,11 +594,10 @@ export default function Products() {
 						</span>
 					</div>
 				</div>
-
 				<div
 					className={`input-wrapper modal-form ${
 						submitted && stringCheck(newStoreId?.store_name) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Ombor</label>
 					<Select
@@ -623,14 +615,18 @@ export default function Products() {
 						value={newStoreId?.store_name ? newStoreId?.store_name : null}
 						onChange={(e) => {
 							e ? setNewStoreId(JSON.parse(e)) : setNewStoreId({})
-							setActiveElementIndex(5)
+							setActiveElementIndex(4)
 						}}
-						ref={activeElementIndex === 4 ? nextInputRef : null}
+						ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => {
 									return (
-										<Select.Option key={idx} value={JSON.stringify(item)}>
+										<Select.Option
+											key={idx}
+											value={JSON.stringify(item)}
+											className={` ${darkMode ? "dark" : null}`}
+										>
 											<div>
 												<span>{item?.store_name}</span>
 											</div>
@@ -646,7 +642,11 @@ export default function Products() {
 						</span>
 					</div>
 				</div>
-				<div className={`input-wrapper modal-form regular`}>
+				<div
+					className={`input-wrapper modal-form regular ${
+						darkMode ? "dark" : null
+					}`}
+				>
 					<label>Quti</label>
 					<input
 						type="text"
@@ -654,7 +654,7 @@ export default function Products() {
 						className="input"
 						value={newBoxQ ? newBoxQ : ""}
 						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
-						ref={activeElementIndex === 5 ? nextInputRef : null}
+						ref={activeElementIndex === 4 ? nextInputRef : null}
 					/>
 					{/* {submitted && numberCheckAllow0(newBoxQ) !== null && (
 						<Info size={20} />
@@ -666,7 +666,7 @@ export default function Products() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newPerBox) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Har bir qutida</label>
 					<input
@@ -687,7 +687,7 @@ export default function Products() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						!objId && submitted && numberCheck(newProductQ) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Jami</label>
 					<input
@@ -709,7 +709,7 @@ export default function Products() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newProductCost) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Narx</label>
 					<input
@@ -731,7 +731,7 @@ export default function Products() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newProductPrice) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Sotuv narx</label>
 					<input
@@ -754,7 +754,7 @@ export default function Products() {
 					<div
 						className={`input-wrapper modal-form regular ${
 							submitted && stringCheck(newDate) !== null && "error"
-						}`}
+						} ${darkMode ? "dark" : null}`}
 					>
 						<label>Qabul qilingan sana</label>
 						<input
@@ -772,7 +772,7 @@ export default function Products() {
 				) : null}
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn ${darkMode ? "dark" : null}`}
 						disabled={btnLoading}
 						onClick={addNewProduct}
 					>
@@ -786,14 +786,17 @@ export default function Products() {
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
 			</AddModal>
 
-			<div className="filter-wrapper product">
-				<div className="input-wrapper">
+			<div className={`filter-wrapper product ${darkMode ? "dark" : null}`}>
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
@@ -805,7 +808,11 @@ export default function Products() {
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => (
-									<Select.Option key={idx} value={JSON.stringify(item)}>
+									<Select.Option
+										key={idx}
+										value={JSON.stringify(item)}
+										className={` ${darkMode ? "dark" : null}`}
+									>
 										<div>
 											<span>{item?.store_name}</span>
 										</div>
@@ -814,7 +821,7 @@ export default function Products() {
 							: null}
 					</Select>
 				</div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
@@ -828,7 +835,11 @@ export default function Products() {
 							? deliver.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={JSON.stringify(item)}>
+											<Select.Option
+												key={idx}
+												value={JSON.stringify(item)}
+												className={` ${darkMode ? "dark" : null}`}
+											>
 												<div>
 													<span>{item?.deliver_name}</span>
 												</div>
@@ -855,7 +866,8 @@ export default function Products() {
 						}
 						name="Kategoriyalar soni"
 						icon={<SquaresFour size={24} color="var(--color-primary)" />}
-						iconBgColor={"var(--bg-icon)"}
+						iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+						darkMode={darkMode}
 					/>
 					<InfoItem
 						value={
@@ -865,7 +877,8 @@ export default function Products() {
 						}
 						name="Mahsulotlar soni"
 						icon={<Package size={24} color="var(--color-primary)" />}
-						iconBgColor={"var(--bg-icon)"}
+						iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+						darkMode={darkMode}
 					/>
 					<InfoItem
 						value={
@@ -879,7 +892,8 @@ export default function Products() {
 						}
 						name="Umumiy summa"
 						icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
-						iconBgColor={"var(--bg-icon)"}
+						iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+						darkMode={darkMode}
 					/>
 				</div>
 			) : null}
@@ -890,6 +904,7 @@ export default function Products() {
 				showAddBtn={userInfo?.role === 1}
 				className={"table-m"}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{product?.loading ? (
@@ -914,6 +929,7 @@ export default function Products() {
 						pages={totalPages}
 						currentPage={currentPage}
 						onPageChange={handlePageChange}
+						darkMode={darkMode}
 					/>
 				</>
 			)}

@@ -7,7 +7,15 @@
 	color: var(--color-secondary);
 }
 
+.store.dark .card-item-top h3 {
+	color: var(--d-color-secondary);
+}
+
 .store .card-item-bottom h4 {
 	font-size: var(--text-sm);
 	color: var(--color-accent);
+}
+
+.store.dark .card-item-bottom h4 {
+	color: var(--d-color-accent);
 }

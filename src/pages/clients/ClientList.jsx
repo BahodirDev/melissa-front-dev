@@ -33,7 +33,7 @@ function ClientList({
 	}
 
 	return data?.length ? (
-		<div className="card-wrapper clients grid">
+		<div className={`card-wrapper clients grid ${darkMode ? "dark" : null}`}>
 			{data.map((item, idx) => {
 				if (!item?.isdelete) {
 					return (
@@ -122,7 +122,7 @@ function ClientList({
 								<div
 									className={`mini-modal  ${
 										miniModal === item?.clients_id || "hidden"
-									} ${loc2 && "top"}`}
+									} ${loc2 && "top"} ${darkMode ? "dark" : null}`}
 									onClick={(e) => e.stopPropagation()}
 								>
 									{item?.debts?.length ? (

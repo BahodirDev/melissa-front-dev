@@ -185,8 +185,9 @@ export default function Employees() {
 			<AddModal name={objId ? "Mijoz tahrirlash" : "Mijoz qo'shish"}>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(new_name.trim()) !== null && "error"}
-					`}
+					${submitted && stringCheck(new_name.trim()) !== null && "error"}  ${
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Mijoz ismi</label>
 					<input
@@ -208,8 +209,9 @@ export default function Employees() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && phoneNumberCheck(new_number) !== null && "error"}
-					`}
+					${submitted && phoneNumberCheck(new_number) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Telefon raqam kiriting</label>
 					<PatternFormat
@@ -228,7 +230,11 @@ export default function Employees() {
 						<span>{submitted && phoneNumberCheck(new_number)}</span>
 					</div>
 				</div>
-				<div className="input-wrapper modal-form regular">
+				<div
+					className={`input-wrapper modal-form regular ${
+						darkMode ? "dark" : null
+					}`}
+				>
 					<label>Izoh</label>
 					<textarea
 						placeholder="Izoh"
@@ -239,7 +245,7 @@ export default function Employees() {
 				</div>
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn ${darkMode ? "dark" : null}`}
 						disabled={btn_loading}
 						onClick={addNewClient}
 					>
@@ -253,7 +259,10 @@ export default function Employees() {
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
@@ -264,7 +273,8 @@ export default function Employees() {
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Mijozlar soni"
 					icon={<UsersFour size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -272,6 +282,7 @@ export default function Employees() {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{state?.loading ? (

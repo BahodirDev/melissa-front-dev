@@ -37,7 +37,7 @@ const ODebtTable = ({
 	let arr = data?.length
 		? data.map((item, id) => {
 				return {
-					key: id,
+					key: id + 1,
 					id: item?.deliver_debt_id,
 					cost: addComma(item?.debts_cost) + item?.debts_currency,
 					count: (+item?.debts_count).toFixed(1),
@@ -56,6 +56,10 @@ const ODebtTable = ({
 		: []
 
 	const columns = [
+		{
+			title: "No̱",
+			dataIndex: "key",
+		},
 		{
 			title: "Ta'minotchi",
 			dataIndex: "deliver",

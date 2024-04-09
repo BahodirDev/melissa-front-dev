@@ -219,9 +219,6 @@ const Client = ({ getData }) => {
 					<button type="button" className="filter-btn" disabled>
 						Tozalash
 					</button>
-					<button type="button" className="filter-btn" disabled>
-						Saqlash
-					</button>
 				</div>
 			</div>
 
@@ -234,7 +231,8 @@ const Client = ({ getData }) => {
 					}
 					name="Umumiy summa"
 					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -243,6 +241,7 @@ const Client = ({ getData }) => {
 				clearSearch={clearSearch}
 				showAddBtn={false}
 				className={"table-m"}
+				darkMode={darkMode}
 			/>
 
 			{state.debt?.loading ? (

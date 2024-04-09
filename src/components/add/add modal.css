@@ -108,8 +108,8 @@
 	top: calc(50% + 4px);
 	transform: translateY(-50%);
 }
-.input-wrapper.modal-form.error .validation-field span {
-	color: var(--color-danger);
+.input-wrapper .validation-field span {
+	color: var(--color-danger) !important;
 	font-weight: var(--weight-thin);
 	font-size: var(--text-md);
 }

@@ -28,7 +28,7 @@ const ReturnTable = ({
 		data?.length &&
 		data?.map((item, idx) => {
 			return {
-				key: idx,
+				key: idx + 1,
 				id: item?.return_id,
 				name: item?.return_name,
 				store: item?.return_store,
@@ -45,6 +45,10 @@ const ReturnTable = ({
 		})
 
 	const columns = [
+		{
+			title: "No̱",
+			dataIndex: "key",
+		},
 		{
 			title: "Ombor",
 			dataIndex: "store",
@@ -90,7 +94,7 @@ const ReturnTable = ({
 					<div
 						className={`table-item-edit-wrapper small ${
 							showDropdown === record?.id || "hidden"
-						} ${loc && "top"}`}
+						} ${loc && "top"} ${darkMode ? "dark" : null}`}
 					>
 						<button
 							type="button"

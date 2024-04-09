@@ -40,7 +40,7 @@ const DebtTable = ({
 		data?.map((item, idx) => {
 			if (!item?.isdone) {
 				arr.push({
-					key: idx,
+					key: idx + 1,
 					id: item?.debts_id,
 					name: item?.client?.clients_name,
 					client:
@@ -64,9 +64,12 @@ const DebtTable = ({
 
 	const columns = [
 		{
+			title: "No̱",
+			dataIndex: "key",
+		},
+		{
 			title: "Mijoz",
 			dataIndex: "client",
-			// sorter: (a, b) => a.client.localeCompare(b.client),
 		},
 		{
 			title: "Mahsulot",
@@ -108,7 +111,7 @@ const DebtTable = ({
 					<div
 						className={`table-item-edit-wrapper ${
 							showDropdown === record?.id || "hidden"
-						} ${loc && "top"}`}
+						} ${loc && "top"} ${darkMode ? "dark" : null}`}
 					>
 						<button
 							type="button"

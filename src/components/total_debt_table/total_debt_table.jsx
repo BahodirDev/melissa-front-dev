@@ -39,7 +39,7 @@ const NDebtTable = ({
 		data?.map((item, id) => {
 			if (!item?.isdone) {
 				arr.push({
-					key: id,
+					key: id + 1,
 					total_id: item?.debts_id,
 					client: item?.client_name,
 					price: addComma(item?.price),
@@ -53,6 +53,10 @@ const NDebtTable = ({
 		})
 
 	const columns = [
+		{
+			title: "No̱",
+			dataIndex: "key",
+		},
 		{
 			title: "Haridor",
 			dataIndex: "client",

@@ -266,7 +266,7 @@ export default function Reports() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && stringCheck(newDate) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Qayd qilingan sana</label>
 					<input
@@ -282,52 +282,64 @@ export default function Reports() {
 				</div>
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn ${darkMode ? "dark" : null}`}
 						disabled={btnLoading}
 						onClick={updateReport}
 					>
 						Saqlash
 						{btnLoading && (
 							<span
-								className="spinner-grow spinner-grow-sm"
+								className={`spinner-grow spinner-grow-sm`}
 								role="status"
 								aria-hidden="true"
 								style={{ marginLeft: "5px" }}
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
 			</AddModal>
 
 			<div className={`filter-wrapper report ${darkMode ? "dark" : null}`}>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						placeholder="Kirim Chiqim"
 						className="select"
 						value={selectedIncomeOutcome}
 						onChange={(e) => setSelectedIncomeOutcome(e)}
 					>
-						<Select.Option value="all">
+						<Select.Option
+							value="all"
+							className={`${darkMode ? "dark" : null}`}
+						>
 							<div>
 								<span>Barchasi</span>
 							</div>
 						</Select.Option>
-						<Select.Option value="income">
+						<Select.Option
+							value="income"
+							className={`${darkMode ? "dark" : null}`}
+						>
 							<div>
 								<span>Kirim</span>
 							</div>
 						</Select.Option>
-						<Select.Option value="outcome">
+						<Select.Option
+							value="outcome"
+							className={`${darkMode ? "dark" : null}`}
+						>
 							<div>
 								<span>Chiqim</span>
 							</div>
 						</Select.Option>
 					</Select>
 				</div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
@@ -338,7 +350,11 @@ export default function Reports() {
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => (
-									<Select.Option key={idx} value={item.store_name}>
+									<Select.Option
+										key={idx}
+										value={item.store_name}
+										className={`${darkMode ? "dark" : null}`}
+									>
 										<div>
 											<span>{item?.store_name}</span>
 										</div>
@@ -347,21 +363,23 @@ export default function Reports() {
 							: null}
 					</Select>
 				</div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
 						placeholder="Sotuvchi"
 						className="select"
 						disabled
-						// value={deliverId ? deliverId : null}
-						// onChange={(e) => setDeliverId(e)}
 					>
 						{deliver.data?.length
 							? deliver.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={item.deliver_name}>
+											<Select.Option
+												key={idx}
+												value={item.deliver_name}
+												className={`${darkMode ? "dark" : null}`}
+											>
 												<div>
 													<span>{item?.deliver_name}</span>
 												</div>
@@ -371,7 +389,7 @@ export default function Reports() {
 							: null}
 					</Select>
 				</div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
@@ -384,7 +402,11 @@ export default function Reports() {
 							? deliver.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
-											<Select.Option key={idx} value={item.deliver_name}>
+											<Select.Option
+												key={idx}
+												value={item.deliver_name}
+												className={`${darkMode ? "dark" : null}`}
+											>
 												<div>
 													<span>{item?.deliver_name}</span>
 												</div>
@@ -394,7 +416,7 @@ export default function Reports() {
 							: null}
 					</Select>
 				</div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Select
 						showSearch
 						allowClear
@@ -410,7 +432,7 @@ export default function Reports() {
 											<Select.Option
 												key={idx}
 												value={item.clients_name}
-												className="option-shrink"
+												className={`option-shrink ${darkMode ? "dark" : null}`}
 											>
 												<div>
 													<span>{item?.clients_name} - </span>
@@ -424,7 +446,7 @@ export default function Reports() {
 							: null}
 					</Select>
 				</div>
-				<div className="input-wrapper">
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
 					<Space direction="vertical" size={12}>
 						<RangePicker
 							allowClear
@@ -435,7 +457,11 @@ export default function Reports() {
 					</Space>
 				</div>
 				<div className="filter-btn-group">
-					<button type="button" className="filter-btn" onClick={clearFilter}>
+					<button
+						type="button"
+						className={`filter-btn ${darkMode ? "dark" : null}`}
+						onClick={clearFilter}
+					>
 						Tozalash
 					</button>
 					{/* <button type="button" className="filter-btn" onClick={handleFilter}>
@@ -445,21 +471,6 @@ export default function Reports() {
 			</div>
 
 			<div className="info-wrapper">
-				{/* <InfoItem
-					value={
-						addSpace(
-							searchSubmitted
-								? roundToNearestThousand(
-										+filteredData?.hisob?.totalCostMinus -
-											filteredData?.hisob?.totalCostPilus
-								  )
-								: roundToNearestThousand(report.outcome - report.income)
-						) + " so'm"
-					}
-					name="Mavjud summa"
-					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
-				/> */}
 				<InfoItem
 					value={
 						addSpace(
@@ -470,7 +481,8 @@ export default function Reports() {
 					}
 					name="Kirim"
 					icon={<ArrowDown size={24} color="var(--color-success)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 				<InfoItem
 					value={
@@ -482,7 +494,8 @@ export default function Reports() {
 					}
 					name="Chiqim"
 					icon={<ArrowUp size={24} color="var(--color-danger)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 				<InfoItem
 					value={
@@ -494,7 +507,8 @@ export default function Reports() {
 					}
 					name="Foyda"
 					icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 				<InfoItem
 					value={addSpace(
@@ -505,7 +519,8 @@ export default function Reports() {
 					)}
 					name="Mavjud mahsulotlar soni"
 					icon={<Cube size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 				<InfoItem
 					value={addSpace(
@@ -513,7 +528,8 @@ export default function Reports() {
 					)}
 					name="Kirgan mahsulotlar soni"
 					icon={<ArrowDown size={24} color="var(--color-success)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 				<InfoItem
 					value={addSpace(
@@ -521,7 +537,8 @@ export default function Reports() {
 					)}
 					name="Chiqqan mahsulotlar soni"
 					icon={<ArrowUp size={24} color="var(--color-danger)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -530,6 +547,7 @@ export default function Reports() {
 				clearSearch={() => (inputRef.current.value = "")}
 				showAddBtn={false}
 				className={"table-m"}
+				darkMode={darkMode}
 			/>
 
 			{report?.loading ? (
@@ -551,6 +569,7 @@ export default function Reports() {
 						pages={totalPages}
 						currentPage={currentPage}
 						onPageChange={handlePageChange}
+						darkMode={darkMode}
 					/>
 				</>
 			)}

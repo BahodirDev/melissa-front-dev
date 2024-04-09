@@ -1,5 +1,5 @@
 import { Select } from "antd"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import {
 	useInRouterContext,
@@ -52,6 +52,8 @@ export default function Currency() {
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const state = useSelector((state) => state.currency)
 	const dispatch = useDispatch()
+	const [activeElement, setActiveElement] = useState(0)
+	const nextInputRef = useRef(null)
 
 	const handleSearch = () => {
 		if (inputRef.current?.value.length > 0) {
@@ -182,6 +184,7 @@ export default function Currency() {
 	const clearAndClose = () => {
 		setNewName({})
 		setNewAmount("")
+		setActiveElement(0)
 		setObjId("")
 		setSubmitted(false)
 		setButtonLoader(false)
@@ -194,6 +197,7 @@ export default function Currency() {
 	const clearOnly = () => {
 		setNewName({})
 		setNewAmount("")
+		setActiveElement(1)
 		setObjId("")
 		setSubmitted(false)
 		setButtonLoader(false)
@@ -222,13 +226,18 @@ export default function Currency() {
 								<CaretDown size={16} />
 							)
 						}
-						// notFoundContent="nothing here"
 						value={
 							newName.currency
 								? `${newName?.currency?.name} - ${newName?.name}`
 								: null
 						}
-						onChange={(e) => (e ? setNewName(JSON.parse(e)) : setNewName({}))}
+						onChange={(e) => {
+							if (e) {
+								setNewName(JSON.parse(e))
+								setActiveElement(2)
+							} else setNewName({})
+						}}
+						ref={activeElement === 1 ? nextInputRef : null}
 					>
 						{currency.list.length
 							? currency.list.map((item, idx) => (
@@ -264,6 +273,7 @@ export default function Currency() {
 						className="input"
 						value={newAmount ? newAmount : ""}
 						onChange={(e) => setNewAmount(e.target.value)}
+						ref={activeElement === 2 ? nextInputRef : null}
 					/>
 					{submitted && numberCheck(newAmount) !== null && <Info size={20} />}
 					<div className="validation-field">

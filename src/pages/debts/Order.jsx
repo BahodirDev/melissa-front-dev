@@ -587,9 +587,6 @@ const Order = ({ getData }) => {
 					<button type="button" className="filter-btn" disabled>
 						Tozalash
 					</button>
-					<button type="button" className="filter-btn" disabled>
-						Saqlash
-					</button>
 				</div>
 			</div>
 

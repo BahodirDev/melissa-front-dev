@@ -8,9 +8,8 @@
 	border-radius: 32px;
 	background-color: var(--bg-pagination-btn);
 }
-
 .custom-pagination.dark .wrapper {
-	background-color: var(--bg-secondary);
+	background-color: var(--d-bg-light);
 }
 
 .custom-pagination button {
@@ -26,23 +25,26 @@
 	align-items: center;
 	transition: 0.1s;
 }
-
-.custom-pagination.dark button {
-	background-color: var(--bg-secondary);
+.custom-pagination.custom-pagination.dark button {
+	color: var(--d-color-secondary);
+	background-color: var(--d-bg-light);
 }
 
 .custom-pagination button:hover {
 	color: var(--color-primary) !important;
 	background-color: var(--bg-opacity) !important;
 }
-
 .custom-pagination.dark button:hover {
-	background-color: var(--bg-icon) !important;
+	background-color: var(--d-bg-secondary) !important;
 }
 
 .custom-pagination button.active {
 	background-color: var(--bg-primary);
 	color: var(--color-light);
+}
+.custom-pagination.dark button.active {
+	background: var(--d-bg-icon);
+	color: var(--color-primary);
 }
 
 .custom-pagination button.active:hover {
@@ -65,12 +67,15 @@
 .custom-pagination button:disabled {
 	cursor: not-allowed !important;
 }
+.custom-pagination.dark button:disabled {
+	background: var(--d-bg-light);
+}
 
 .custom-pagination button:disabled:hover {
 	color: var(--bg-accent) !important;
 	background-color: var(--bg-pagination-btn) !important;
 }
-
 .custom-pagination.dark button:disabled:hover {
-	background-color: var(--bg-secondary) !important;
+	background: var(--d-bg-light) !important;
+	color: var(--d-color-secondary);
 }

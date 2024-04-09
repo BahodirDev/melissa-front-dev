@@ -31,6 +31,7 @@ function Debts() {
 		setMiniModal,
 		sidebar,
 		userInfo,
+		darkMode,
 	] = useOutletContext()
 	const navigate = useNavigate()
 	const { deliver, currency, good } = useSelector((state) => state)
@@ -82,7 +83,7 @@ function Debts() {
 
 	return (
 		<>
-			<div className="debt-switch">
+			<div className={`debt-switch ${darkMode ? "dark" : null}`}>
 				<button
 					type="button"
 					onClick={handleSectionSwitch}

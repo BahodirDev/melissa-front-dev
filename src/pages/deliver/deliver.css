@@ -7,14 +7,26 @@
 	color: var(--color-secondary);
 }
 
+.deliver.dark .card-item-top h3 {
+	color: var(--d-color-secondary);
+}
+
 .deliver .card-item-bottom h4 {
 	font-size: var(--text-md);
 	color: var(--color-accent);
 }
 
+.deliver.dark .card-item-bottom h4 {
+	color: var(--d-color-accent) !important;
+}
+
 .deliver .card-item-bottom h5 {
 	font-size: var(--text-sm);
 	color: var(--color-accent);
+}
+
+.deliver.dark .card-item-bottom h5 {
+	color: var(--d-color-accent);
 }
 
 .deliver .card-item-bottom button {

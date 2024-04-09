@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import "./pagination.css"
 
-function Pagination({ pages, currentPage, onPageChange }) {
+function Pagination({ pages, currentPage, onPageChange, darkMode }) {
 	const [activePage, setActivePage] = useState(currentPage || 1)
 
 	const handlePageChange = (pageNumber) => {
@@ -75,7 +75,7 @@ function Pagination({ pages, currentPage, onPageChange }) {
 	}
 
 	return (
-		<div className="custom-pagination">
+		<div className={`custom-pagination ${darkMode ? "dark" : null}`}>
 			<button
 				disabled={activePage <= 1 || pages <= 1 || isNaN(pages)}
 				className="page-item previous no"

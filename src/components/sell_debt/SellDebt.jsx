@@ -223,6 +223,7 @@ const SellDebt = ({
 					},
 					darkMode
 				)
+				setActiveElementIndex(3)
 			} else {
 				let newObj = {
 					product_id: productObj?.products_id,
@@ -240,6 +241,7 @@ const SellDebt = ({
 				setProductList([newObj, ...productList])
 				setTotalPriceSellList((prev) => prev + productP * productQ)
 				clear()
+				setActiveElementIndex(3)
 			}
 		}
 	}
@@ -593,7 +595,7 @@ const SellDebt = ({
 								showSearch
 								allowClear
 								placeholder="Ta'minotchi tanlang"
-								className="select dark"
+								className="select"
 								value={
 									deliverObj?.deliver_name ? deliverObj?.deliver_name : null
 								}
@@ -660,10 +662,10 @@ const SellDebt = ({
 										: null
 								}
 								onChange={(e) => {
-									setActiveElementIndex(4)
 									setProductQ(0)
 
 									if (e) {
+										setActiveElementIndex(4)
 										setProductObj(JSON.parse(e))
 										setProductP(
 											roundToNearestHundred(

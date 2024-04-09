@@ -24,7 +24,7 @@ const AntdAccordion = ({ data, removeFromList, userInfo, darkMode }) => {
 	}
 
 	return data?.length ? (
-		<Collapse className="antd-collapse" accordion>
+		<Collapse className={`antd-collapse ${darkMode ? "dark" : null}`} accordion>
 			{data
 				.sort(
 					(a, b) =>

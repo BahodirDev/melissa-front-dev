@@ -220,8 +220,9 @@ export default function Employees() {
 			<AddModal name={objId ? "Xodim tahrirlash" : "Xodim qo'shish"}>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(new_name.trim()) !== null && "error"}
-					`}
+					${submitted && stringCheck(new_name.trim()) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Xodim ismi</label>
 					<input
@@ -243,7 +244,9 @@ export default function Employees() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && phoneNumberCheck(new_number) !== null && "error"}
+					${submitted && phoneNumberCheck(new_number) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}
 					`}
 				>
 					<label>Telefon raqam kiriting</label>
@@ -266,7 +269,7 @@ export default function Employees() {
 				<div
 					className={`input-wrapper modal-form ${
 						submitted && stringCheck(new_job) !== null && "error"
-					}`}
+					} ${darkMode ? "dark" : null}`}
 				>
 					<label>Kasbi</label>
 					<Select
@@ -283,17 +286,17 @@ export default function Employees() {
 						value={new_job?.length ? new_job : null}
 						onChange={(e) => setNew_job(e)}
 					>
-						<Select.Option value="1">
+						<Select.Option value="1" className={`${darkMode ? "dark" : null}`}>
 							<div>
 								<span>Admin</span>
 							</div>
 						</Select.Option>
-						<Select.Option value="2">
+						<Select.Option value="2" className={`${darkMode ? "dark" : null}`}>
 							<div>
 								<span>Sotuvchi</span>
 							</div>
 						</Select.Option>
-						<Select.Option value="3">
+						<Select.Option value="3" className={`${darkMode ? "dark" : null}`}>
 							<div>
 								<span>Kassir</span>
 							</div>
@@ -307,7 +310,9 @@ export default function Employees() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && passwordCheck(new_login.trim()) !== null && "error"}
+					${submitted && passwordCheck(new_login.trim()) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}
 					`}
 				>
 					<label>Login</label>
@@ -327,7 +332,9 @@ export default function Employees() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && passwordCheck(new_password.trim()) !== null && "error"}
+					${submitted && passwordCheck(new_password.trim()) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}
 					`}
 				>
 					<label>Parol</label>
@@ -349,7 +356,7 @@ export default function Employees() {
 				</div>
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn ${darkMode ? "dark" : null}`}
 						disabled={btn_loading}
 						onClick={addNewUser}
 					>
@@ -363,7 +370,10 @@ export default function Employees() {
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
@@ -374,7 +384,8 @@ export default function Employees() {
 					value={searchSubmitted ? filteredUsers.length : state?.quantity}
 					name="Xodimlar soni"
 					icon={<Users size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -382,6 +393,7 @@ export default function Employees() {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{state?.loading ? (

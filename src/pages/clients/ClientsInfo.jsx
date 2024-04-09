@@ -56,34 +56,15 @@ const ClientsInfo = () => {
 
 	return (
 		<>
-			<button type="button" onClick={() => navigate(-1)} className="back-btn">
+			<button
+				type="button"
+				onClick={() => navigate(-1)}
+				className={`back-btn  ${darkMode ? "dark" : null}`}
+			>
 				<CaretLeft size={24} /> <span>Orqaga</span>
 			</button>
-			{/* <div className="filter-wrapper client-info">
-				<div className="input-wrapper">
-					<Space direction="vertical" size={12}>
-						<RangePicker
-							allowClear
-							disabled
-							className="date-picker"
-							value={dateRange}
-							onChange={(e) => setDateRange(e)}
-						/>
-					</Space>
-				</div>
-				<div className="filter-btn-group">
-					<button
-						type="button"
-						disabled
-						className="filter-btn"
-						onClick={() => {}}
-					>
-						Saqlash
-					</button>
-				</div>
-			</div> */}
 
-			<div className="client-info-div">
+			<div className={`client-info-div ${darkMode ? "dark" : null}`}>
 				<h2>{name}</h2>
 				<h3>
 					Izoh: <span>{desc}</span>

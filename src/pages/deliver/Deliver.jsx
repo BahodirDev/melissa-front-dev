@@ -191,8 +191,9 @@ function Deliver() {
 			>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && stringCheck(name.trim()) !== null && "error"}
-					`}
+					${submitted && stringCheck(name.trim()) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Ta'minotchi ismi</label>
 					<input
@@ -211,8 +212,9 @@ function Deliver() {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular 
-					${submitted && phoneNumberCheck(phone) !== null && "error"}
-					`}
+					${submitted && phoneNumberCheck(phone) !== null && "error"} ${
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Telefon raqam kiriting</label>
 					<PatternFormat
@@ -229,7 +231,11 @@ function Deliver() {
 						<span>{submitted && phoneNumberCheck(phone)}</span>
 					</div>
 				</div>
-				<div className="input-wrapper modal-form regular">
+				<div
+					className={`input-wrapper modal-form regular ${
+						darkMode ? "dark" : null
+					}`}
+				>
 					<label>Manzil kiriting</label>
 					<textarea
 						placeholder="Manzil"
@@ -240,7 +246,7 @@ function Deliver() {
 				</div>
 				<div className="modal-btn-group">
 					<button
-						className="primary-btn"
+						className={`primary-btn ${darkMode ? "dark" : null}`}
 						disabled={btn_loading}
 						onClick={addNewDeliver}
 					>
@@ -254,7 +260,10 @@ function Deliver() {
 							></span>
 						)}
 					</button>
-					<button className="secondary-btn" onClick={clearAndClose}>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
 						Bekor qilish
 					</button>
 				</div>
@@ -265,7 +274,8 @@ function Deliver() {
 					value={searchSubmitted ? filteredData.length : state?.quantity}
 					name="Ta'minotchilar soni"
 					icon={<Truck size={24} color="var(--color-primary)" />}
-					iconBgColor={"var(--bg-icon)"}
+					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+					darkMode={darkMode}
 				/>
 			</div>
 
@@ -273,6 +283,7 @@ function Deliver() {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
 			/>
 
 			{state?.loading ? (

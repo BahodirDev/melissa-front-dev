@@ -40,7 +40,7 @@ const DDebtTable = ({
 		data?.map((item, idx) => {
 			if (!item?.isdone) {
 				arr.push({
-					key: idx,
+					key: idx + 1,
 					id: item?.deliver_debt_id,
 					name: item?.deliver?.deliver_name,
 					client:
@@ -61,9 +61,12 @@ const DDebtTable = ({
 
 	const columns = [
 		{
+			title: "No̱",
+			dataIndex: "key",
+		},
+		{
 			title: "Mijoz",
 			dataIndex: "client",
-			// sorter: (a, b) => a.client.localeCompare(b.client),
 		},
 		{
 			title: "Mahsulot",

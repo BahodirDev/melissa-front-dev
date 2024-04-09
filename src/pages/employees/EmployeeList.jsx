@@ -23,7 +23,7 @@ export default function EmployeeList({
 	}
 
 	return data?.length ? (
-		<div className="card-wrapper grid">
+		<div className={`card-wrapper grid ${darkMode ? "dark" : null}`}>
 			{data.map((item, idx) => {
 				return (
 					<div key={idx} className="card-item emp">
