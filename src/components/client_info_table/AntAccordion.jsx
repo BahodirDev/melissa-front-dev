@@ -81,13 +81,13 @@ const AntdAccordion = ({ data, removeFromList, userInfo, darkMode }) => {
 							<tbody>
 								<h6>
 									{item?.files?.length}ta -{" "}
-									{roundToNearestThousand(
-										item?.files?.reduce(
+									{item?.files
+										?.reduce(
 											(totalPrice, product) =>
 												totalPrice + product?.total_price,
 											0
 										)
-									).toLocaleString()}
+										.toLocaleString()}
 									so'm
 								</h6>
 								{item?.files.map((fileInfo, idx) => (
