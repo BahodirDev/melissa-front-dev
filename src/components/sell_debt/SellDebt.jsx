@@ -358,13 +358,19 @@ const SellDebt = ({
 
 	function filterOption(inputValue, option) {
 		const goodsData = JSON.parse(option.props.value)?.goods_id
-		const goodsCode = goodsData?.goods_code
-		const goodsName = goodsData?.goods_name
-		// Check if goods_code or goods_name contains the inputValue
-		return (
-			goodsCode.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
-			goodsName.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+		const goodsNameFirst = goodsData?.goods_name + " " + goodsData?.goods_code
+		const goodsCodeFirst = goodsData?.goods_code + " " + goodsData?.goods_name
+		const inputValueLowerCase = inputValue.toLowerCase()
+
+		const inputWords = inputValueLowerCase.split(" ")
+
+		const allWordsMatch = inputWords.every(
+			(word) =>
+				goodsNameFirst.toLowerCase().includes(word) ||
+				goodsCodeFirst.toLowerCase().includes(word)
 		)
+
+		return allWordsMatch
 	}
 
 	return (
