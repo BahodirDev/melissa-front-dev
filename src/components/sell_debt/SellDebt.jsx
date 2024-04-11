@@ -153,25 +153,27 @@ const SellDebt = ({
 			const obj = JSON.parse(e)
 			setDeliverObj(obj)
 
-			// if (storeObj?.store_id) {
-			// 	get(
-			// 		`products/products-by-params?store_id=${storeObj?.store_id}&deliver_id=${obj?.deliver_id}`
-			// 	).then((data) => {
-			// 		if (data?.status === 200) {
-			// 			setProducts(data?.data)
-			// 		} else {
-			// 			setProducts([])
-			// 		}
-			// 	})
-			// } else {
-			get(`products/products-by-deliverId/${obj?.deliver_id}`).then((data) => {
-				if (data?.status === 200) {
-					setProducts(data?.data)
-				} else {
-					setProducts([])
-				}
-			})
-			// }
+			if (storeObj?.store_id) {
+				get(
+					`products/products-by-params?store_id=${storeObj?.store_id}&deliver_id=${obj?.deliver_id}`
+				).then((data) => {
+					if (data?.status === 200) {
+						setProducts(data?.data)
+					} else {
+						setProducts([])
+					}
+				})
+			} else {
+				get(`products/products-by-deliverId/${obj?.deliver_id}`).then(
+					(data) => {
+						if (data?.status === 200) {
+							setProducts(data?.data)
+						} else {
+							setProducts([])
+						}
+					}
+				)
+			}
 		} else {
 			setDeliverObj({})
 			setProducts([])

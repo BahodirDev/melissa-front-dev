@@ -12,6 +12,7 @@ import {
 import { addZero } from "../../components/addZero"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
+import { setData as setDataUser } from "../../components/reducers/users"
 import {
 	editDate,
 	removeData,
@@ -54,7 +55,9 @@ export default function Reports() {
 		darkMode,
 	] = useOutletContext()
 	const navigate = useNavigate()
-	const { report, store, client, deliver } = useSelector((state) => state)
+	const { report, store, client, deliver, users } = useSelector(
+		(state) => state
+	)
 	const dispatch = useDispatch()
 
 	const [submitted, setSubmitted] = useState(false)
@@ -73,6 +76,7 @@ export default function Reports() {
 	const [storeId, setStoreId] = useState("")
 	const [deliverId, setDeliverId] = useState("")
 	const [clientId, setClientId] = useState("")
+	const [user, setUser] = useState("")
 	const [dateRange, setDateRange] = useState([])
 
 	const getData = (name, setter) => {
@@ -124,6 +128,7 @@ export default function Reports() {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
 
 		getData("deliver", setDataDeliver)
+		getData("users", setDataUser)
 	}, [])
 
 	const clearFilter = () => {
@@ -143,6 +148,7 @@ export default function Reports() {
 		let filterObj = {
 			store: storeId,
 			deliver: deliverId,
+			seller: user,
 			client: clientId,
 			selectedDate: dateRange?.length
 				? dateRange[0].format("YYYY/MM/DD")
@@ -177,7 +183,7 @@ export default function Reports() {
 		} else {
 			didMount.current = true
 		}
-	}, [storeId, deliverId, clientId, dateRange, selectedIncomeOutcome])
+	}, [storeId, deliverId, user, clientId, dateRange, selectedIncomeOutcome])
 
 	const deleteReport = (id) => {
 		remove(`/reports/reports-delete/${id}`).then((data) => {
@@ -369,22 +375,22 @@ export default function Reports() {
 						allowClear
 						placeholder="Sotuvchi"
 						className="select"
-						disabled
+						value={user ? user : null}
+						onChange={(e) => setUser(e)}
 					>
-						{deliver.data?.length
-							? deliver.data.map((item, idx) => {
-									if (!item?.isdelete)
-										return (
-											<Select.Option
-												key={idx}
-												value={item.deliver_name}
-												className={`${darkMode ? "dark" : null}`}
-											>
-												<div>
-													<span>{item?.deliver_name}</span>
-												</div>
-											</Select.Option>
-										)
+						{users?.data?.length
+							? users?.data.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											value={item?.user_name}
+											className={`${darkMode ? "dark" : null}`}
+										>
+											<div>
+												<span>{item?.user_name}</span>
+											</div>
+										</Select.Option>
+									)
 							  })
 							: null}
 					</Select>
