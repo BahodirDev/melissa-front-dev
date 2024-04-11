@@ -18,7 +18,7 @@ import { employee_role } from "../employees/employee_role"
 import { log_out } from "../../components/log_out/delete_modal"
 
 export default function MainPage() {
-	const [sidebar, setSidebar] = useState(true)
+	// const [sidebar, setSidebar] = useState(true)
 	const inputRef = useRef(null)
 	const url = useLocation()
 	const navigate = useNavigate()
@@ -35,6 +35,10 @@ export default function MainPage() {
 	const [darkMode, setDarkMode] = useState(() => {
 		const savedDarkMode = localStorage.getItem("darkMode")
 		return savedDarkMode ? JSON.parse(savedDarkMode) : false
+	})
+	const [sidebar, setSidebar] = useState(() => {
+		const savedSidebar = localStorage.getItem("sidebar")
+		return savedSidebar ? JSON.parse(savedSidebar) : false
 	})
 
 	const removeLinkFocus = () => {
@@ -100,6 +104,10 @@ export default function MainPage() {
 	useEffect(() => {
 		localStorage.setItem("darkMode", JSON.stringify(darkMode))
 	}, [darkMode])
+
+	useEffect(() => {
+		localStorage.setItem("sidebar", JSON.stringify(sidebar))
+	}, [sidebar])
 
 	useEffect(() => {
 		setUserInfo({
