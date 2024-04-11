@@ -207,7 +207,7 @@ export default function Sidebar({
 					<NavLink
 						to="/clients"
 						className={`${
-							activeSectionIndex === 8 && url.pathname !== "/clients"
+							activeSectionIndex === 8 && !url.pathname.startsWith("/clients")
 								? "tabFocus"
 								: null
 						}`}

@@ -214,7 +214,7 @@ export default function SSidebar({
 						to="/clients"
 						title="Mijozlar"
 						className={`${
-							activeSectionIndex === 8 && url.pathname !== "/clients"
+							activeSectionIndex === 8 && !url.pathname.startsWith("/clients")
 								? "tabFocus"
 								: null
 						}`}

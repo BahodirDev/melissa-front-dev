@@ -42,38 +42,38 @@ export default function MainPage() {
 	})
 
 	const removeLinkFocus = () => {
-		switch (url.pathname) {
-			case "/":
+		switch (url.pathname.split("/")[1]) {
+			case "":
 				setActiveSectionIndex(0)
 				break
-			case "/reports":
+			case "reports":
 				setActiveSectionIndex(1)
 				break
-			case "/products":
+			case "products":
 				setActiveSectionIndex(2)
 				break
-			case "/goods":
+			case "goods":
 				setActiveSectionIndex(3)
 				break
-			case "/return":
+			case "return":
 				setActiveSectionIndex(4)
 				break
-			case "/debts":
+			case "debts":
 				setActiveSectionIndex(5)
 				break
-			case "/store":
+			case "store":
 				setActiveSectionIndex(6)
 				break
-			case "/deliver":
+			case "deliver":
 				setActiveSectionIndex(7)
 				break
-			case "/clients":
+			case "clients":
 				setActiveSectionIndex(8)
 				break
-			case "/employees":
+			case "employees":
 				setActiveSectionIndex(9)
 				break
-			case "/currency":
+			case "currency":
 				setActiveSectionIndex(10)
 				break
 		}
