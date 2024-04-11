@@ -22,6 +22,8 @@ const AntReportTable = ({
 	deleteReport,
 	editReport,
 	darkMode,
+	currentPage,
+	limit,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -33,7 +35,7 @@ const AntReportTable = ({
 
 	let arr2 = data?.map((item, idx) => {
 		return {
-			key: idx + 1,
+			key: idx + 1 + (currentPage - 1) * limit,
 			id: item?.reports_id,
 			user_info: item?.user_info,
 			data_store: item?.store,

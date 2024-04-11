@@ -923,6 +923,8 @@ export default function Products() {
 						setAddModalDisplay={setAddModalDisplay}
 						addOnTop={addOnTop}
 						darkMode={darkMode}
+						currentPage={currentPage}
+						limit={limit}
 					/>
 
 					<Pagination

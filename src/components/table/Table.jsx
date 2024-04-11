@@ -29,6 +29,8 @@ const AntTable = ({
 	setAddModalDisplay,
 	addOnTop,
 	darkMode,
+	currentPage,
+	limit,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -42,7 +44,7 @@ const AntTable = ({
 		data?.length &&
 		data?.map((item, idx) => {
 			return {
-				key: idx + 1,
+				key: idx + 1 + (currentPage - 1) * limit,
 				id: item?.products_id,
 				deliver_id: item?.deliver_id?.deliver_name,
 				store_id: item?.store_id?.store_name,

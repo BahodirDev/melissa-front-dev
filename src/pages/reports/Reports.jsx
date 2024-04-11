@@ -563,6 +563,8 @@ export default function Reports() {
 						deleteReport={deleteReport}
 						editReport={editReport}
 						darkMode={darkMode}
+						currentPage={currentPage}
+						limit={limit}
 					/>
 
 					<Pagination
