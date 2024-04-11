@@ -410,10 +410,10 @@
 .and-select-item-option.dark {
 	color: var(--color-light) !important;
 }
-.ant-select-item-option-active {
+.ant-select-dropdown:has(.dark) .ant-select-item-option-active {
 	background: var(--d-bg-icon) !important;
 }
-.ant-select-item-option-selected {
+.ant-select-dropdown:has(.dark) .ant-select-item-option-selected {
 	background-color: var(--d-bg-opacity) !important;
 }
 /* date picker */
