@@ -756,6 +756,9 @@ div.ant-d-table .ant-table {
 	border-bottom-left-radius: var(--radius-lg);
 	border-bottom-right-radius: var(--radius-lg);
 }
+.ant-d-table img {
+	cursor: pointer;
+}
 
 /* head */
 div.ant-d-table .ant-table-thead .ant-table-cell {

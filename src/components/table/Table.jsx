@@ -53,7 +53,7 @@ const AntTable = ({
 				products_box_count: Math.ceil(item?.products_box_count),
 				per_box: item?.each_box_count,
 				products_count: Math.ceil(+item?.products_count),
-
+				img: item?.img_url,
 				products_count_cost:
 					addComma(
 						item?.products_count_cost * item?.currency_id?.currency_amount
@@ -78,6 +78,18 @@ const AntTable = ({
 		{
 			title: "No̱",
 			dataIndex: "key",
+		},
+		{
+			title: "Rasm",
+			height: "40px",
+			render: (text, record) => (
+				<img
+					src={`${record?.img}`}
+					title={`${record?.goods_name}`}
+					height={40}
+					onClick={() => window.open(record?.img)}
+				/>
+			),
 		},
 		{
 			title: "Ombor",
