@@ -9,6 +9,10 @@
 	width: max-content;
 }
 
+.debt-switch.dark {
+	background-color: var(--d-bg-light);
+}
+
 .debt-switch button {
 	border: none;
 	outline: none;
@@ -21,13 +25,17 @@
 	margin: 0 0.5px;
 }
 
+.debt-switch.dark button {
+	color: var(--d-color-secondary);
+}
+
 .debt-switch button:hover {
 	color: var(--color-primary);
 	background: var(--bg-icon);
 }
 
 .debt-switch.dark button:hover {
-	background: var(--bg-secondary);
+	background: var(--d-bg-icon);
 }
 
 .debt-switch button:active {
@@ -36,15 +44,6 @@
 	background: var(--bg-icon);
 }
 
-.debt-switch.dark button:active {
-	background: var(--bg-secondary);
-}
-
 .debt-switch button.active {
 	color: var(--color-primary);
-	background: var(--bg-icon);
-}
-
-.debt-switch.dark button.active {
-	background: var(--bg-light);
 }

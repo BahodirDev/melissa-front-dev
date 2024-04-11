@@ -58,7 +58,8 @@
 	color: var(--color-light);
 }
 .sidebar.dark ul li a.active {
-	background-color: var(--d-bg-secondary);
+	background-color: var(--d-bg-icon);
+	color: var(--color-primary);
 }
 
 .logout {
