@@ -2,6 +2,7 @@
 	float: left;
 	margin: 10px 0;
 	display: flex;
+	margin-right: 10px;
 }
 
 .custom-pagination .wrapper {
