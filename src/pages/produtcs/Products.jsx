@@ -717,9 +717,12 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newProductCost ? newProductCost : ""}
-						onChange={(e) =>
+						onChange={(e) => {
 							setNewProductCost(e.target.value.replace(/[^0-9.]/g, ""))
-						}
+							setNewProductPrice(
+								parseFloat(e.target.value) + parseFloat(e.target.value) * 0.1
+							)
+						}}
 					/>
 					{submitted && numberCheck(newProductCost) !== null && (
 						<Info size={20} />
