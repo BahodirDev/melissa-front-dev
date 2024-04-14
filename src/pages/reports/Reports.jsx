@@ -25,12 +25,24 @@ import {
 	setQtyOut,
 } from "../../components/reducers/report"
 import AntReportTable from "../../components/report_table/report_table"
-import { get, patch, post, remove } from "../../customHook/api"
+import {
+	downloadExcelFile,
+	get,
+	patch,
+	post,
+	remove,
+} from "../../customHook/api"
 import "./report.css"
 import { toast } from "react-toastify"
 import InfoItem from "../../components/info_item/InfoItem"
 import Search from "../../components/search/Search"
-import { ArrowDown, ArrowUp, Cube, CurrencyDollar } from "@phosphor-icons/react"
+import {
+	ArrowDown,
+	ArrowUp,
+	Cube,
+	CurrencyDollar,
+	MicrosoftExcelLogo,
+} from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment"
 import AddModal from "../../components/add/AddModal"
@@ -274,6 +286,15 @@ export default function Reports() {
 		}
 	}
 
+	const handleDownload = () => {
+		const dataToDownload = searchSubmitted ? filteredData?.data : report?.data
+		if (!dataToDownload) {
+			toast.warn("Yuklash uchun ma'lumot mavjud emas") // Assuming toast is for warnings
+			return
+		}
+		downloadExcelFile(dataToDownload)
+	}
+
 	return (
 		<>
 			<AddModal name="Hisobot tahrirlash">
@@ -477,6 +498,13 @@ export default function Reports() {
 						onClick={clearFilter}
 					>
 						Tozalash
+					</button>
+					<button
+						type="button"
+						className={`filter-btn ${darkMode ? "dark" : null}`}
+						onClick={handleDownload}
+					>
+						Yuklab olish <MicrosoftExcelLogo />
 					</button>
 					{/* <button type="button" className="filter-btn" onClick={handleFilter}>
 						Saqlash

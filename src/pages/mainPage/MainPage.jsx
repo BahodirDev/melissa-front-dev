@@ -136,7 +136,7 @@ export default function MainPage() {
 						}
 						return !prevVisible
 					})
-				} else if (e.key === "`") {
+				} else if (e.key === "`" || e.key === "ё") {
 					e.preventDefault()
 					setshowDropdown("")
 					setAddModalVisible(false)

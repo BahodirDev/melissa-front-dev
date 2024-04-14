@@ -427,7 +427,7 @@ const SellDebt = ({
 					<button
 						type="button"
 						className={`primary-btn sell ${darkMode ? "dark" : null}`}
-						disabled={btnLoading}
+						disabled={btnLoading || !productList?.length}
 						onClick={(e) =>
 							confirmApproveModal("Savdoni tasdiqlaysizmi?", postP, darkMode)
 						}

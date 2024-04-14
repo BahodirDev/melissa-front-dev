@@ -479,6 +479,11 @@
 .filter-wrapper.dark .filter-btn:hover {
 	background-color: var(--d-bg-secondary);
 }
+.filter-btn-group {
+	width: 270px;
+	display: flex;
+	justify-content: space-between;
+}
 
 /* .filter-wrapper .input-wrapper .select .ant-select-selector {
 	height: 35px;
