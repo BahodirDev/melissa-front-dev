@@ -85,7 +85,6 @@ const AntTable = ({
 			render: (text, record) => (
 				<img
 					src={`${record?.img}`}
-					title={`${record?.goods_name}`}
 					height={40}
 					onClick={() => window.open(record?.img)}
 				/>
