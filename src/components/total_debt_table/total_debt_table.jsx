@@ -44,9 +44,9 @@ const NDebtTable = ({
 					client: item?.client_name,
 					price: addComma(item?.price),
 					desc: item?.description ? item?.description : "Qo'shimcha ma`lumot",
-					date: `${moment(item?.debts_due_date).format("YYYY/MM/DD hh:mm")}`,
+					date: `${moment(item?.debts_due_date).format("YYYY/MM/DD HH:mm")}`,
 					duedate: `${moment(item?.debts_createdat).format(
-						"YYYY/MM/DD HH:MM"
+						"YYYY/MM/DD HH:mm"
 					)}`,
 				})
 			}

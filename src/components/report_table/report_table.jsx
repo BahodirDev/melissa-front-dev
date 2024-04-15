@@ -61,7 +61,7 @@ const AntReportTable = ({
 						: item?.reports_total_cost * item?.currency_amount
 				) + " so'm",
 			data_date: `${moment(item?.reports_createdat).format(
-				"YYYY/MM/DD hh:mm"
+				"YYYY/MM/DD HH:mm"
 			)}`,
 		}
 	})
