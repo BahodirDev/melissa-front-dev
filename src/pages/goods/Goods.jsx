@@ -22,6 +22,7 @@ import InfoItem from "../../components/info_item/InfoItem"
 import { CaretDown, Info, SquaresFour } from "@phosphor-icons/react"
 import { Select } from "antd"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import Pagination from "../../components/pagination/Pagination"
 
 export default function Goods() {
 	const [
@@ -52,6 +53,11 @@ export default function Goods() {
 	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [imageValidationError, setImageValidationError] = useState(false)
+	const [deliverId, setDeliverId] = useState("")
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPages, setTotalPage] = useState(1)
+	const didMount = useRef(false)
 
 	// new
 	const [newGoodName, setNewGoodName] = useState("")
@@ -65,64 +71,35 @@ export default function Goods() {
 		}
 	}, [activeElementIndex])
 
+	const getData = () => {
+		dispatch(setLoading(true))
+		if (deliverId || inputRef.current?.value.length > 0) {
+			handleSearch()
+		} else {
+			get(`/goods/goods-list?limit=${limit}&page=${currentPage}`).then(
+				(data) => {
+					if (data?.status === 200 || data?.status === 201) {
+						setTotalPage(Math.ceil(data?.data[0]?.full_count / limit))
+						dispatch(setData(data?.data))
+						dispatch(setQuantity())
+					} else {
+						setTotalPage(1)
+						toast.error("Nomalum server xatolik")
+					}
+					dispatch(setLoading(false))
+				}
+			)
+		}
+	}
+
+	useEffect(getData, [currentPage])
+
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
-
-		dispatch(setLoading(true))
-		get("/goods/goods-list").then((data) => {
-			if (data?.status === 201) {
-				dispatch(setData(data?.data))
-				dispatch(setQuantity())
-			} else {
-				toast.error("Nomalum server xatolik")
-			}
-			dispatch(setLoading(false))
-		})
 		get(`/deliver/deliver-list`).then((data) => {
 			dispatch(setDataDeliver(data?.data))
 		})
 	}, [])
-
-	const handleImageChange = (e) => {
-		const allowedExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"]
-		const maxSize = 1024 * 1024
-
-		const selectedImage = e.target.files[0]
-		const fileName = selectedImage.name
-		const fileExtension = fileName.split(".").pop().toLowerCase()
-
-		if (!allowedExtensions.includes(fileExtension)) {
-			setImageValidationError(true)
-			toast.error(
-				"Fayl turi yaroqsiz. Iltimos, jpg, jpeg, png, gif, bmp yoki webp faylini yuklang.",
-				{ toastId: "" }
-			)
-			return false
-		}
-		if (selectedImage.size > maxSize) {
-			setImageValidationError(true)
-			toast.error(
-				"Fayl hajmi chegaradan oshib ketdi (1MB). Iltimos, kichikroq fayl yuklang.",
-				{ toastId: "" }
-			)
-			return false
-		}
-
-		setImageValidationError(false)
-		setImageFile(selectedImage)
-
-		let formData = new FormData()
-		formData.append("id", objId)
-		formData.append("file", selectedImage)
-
-		post("/goods/goods-imgupload", formData).then((data) => {
-			if (data?.status === 201 || data?.status === 200) {
-				toast.success("Rasm muvoffaqiyatli kiritildi", { toastId: "" })
-			} else {
-				toast.error("Nomalum server xatolik", { toastId: "" })
-			}
-		})
-	}
 
 	const addGood = () => {
 		setSubmitted(true)
@@ -136,7 +113,28 @@ export default function Goods() {
 			if (objId) {
 				patch(`/goods/goods-patch/${objId}`, newObj).then((data) => {
 					if (data?.status === 201) {
-						dispatch(editData(data?.data))
+						dispatch(
+							editData({
+								...data?.data,
+								deliver_name: newDeliver?.deliver_name,
+							})
+						)
+
+						if (searchSubmitted) {
+							setFilteredData((prevFilteredData) => {
+								return prevFilteredData.map((item) => {
+									if (item.goods_id === data?.data.goods_id) {
+										return {
+											...item,
+											deliver_name: newDeliver?.deliver_name,
+											goods_name: data?.data?.goods_name,
+											goods_code: data?.data?.goods_code,
+										}
+									}
+									return item
+								})
+							})
+						}
 						clearAndClose()
 						toast.success("Kategoriya muvoffaqiyatli o'zgartirildi")
 					} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
@@ -153,6 +151,9 @@ export default function Goods() {
 						dispatch(setQuantity())
 						clearAndClose()
 						toast.success("Kategoriya muvoffaqiyatli qo'shildi")
+						if (searchSubmitted) {
+							setFilteredData([data?.data, ...filteredData])
+						}
 					} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
 						toast.warn("Bunday kategoriya allaqachon mavjud")
 					} else {
@@ -170,6 +171,11 @@ export default function Goods() {
 			if (data?.status === 200) {
 				dispatch(removeGood(id))
 				dispatch(setQuantity())
+				if (searchSubmitted) {
+					setFilteredData([
+						...filteredData?.filter((item) => item.goods_id !== id),
+					])
+				}
 				toast.success("Kategoriya muvoffaqiyatli o'chirildi")
 				clearAndClose()
 			} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
@@ -220,30 +226,37 @@ export default function Goods() {
 	}
 
 	const handleSearch = () => {
-		if (inputRef.current?.value.length > 0) {
-			dispatch(setLoading(true))
-			setSearchSubmitted(true)
-			post("/goods/goods-search", {
-				search: inputRef.current?.value,
-			}).then((data) => {
-				if (data.status === 200) {
-					setFilteredData(data?.data)
-				} else {
-					toast.error("Nomalum server xatolik")
-				}
-				dispatch(setLoading(false))
-			})
-		} else {
-			setSearchSubmitted(false)
-			setFilteredData([])
+		dispatch(setLoading(true))
+		setSearchSubmitted(true)
+		const deliverObj = deliverId && JSON.parse(deliverId)
+		let filterObj = {
+			deliver_id: deliverObj?.deliver_id,
+			search: inputRef.current?.value,
 		}
+		post(
+			`/goods/goods-search?limit=${limit}&page=${currentPage}`,
+			filterObj
+		).then((data) => {
+			if (data.status === 200) {
+				setTotalPage(Math.ceil(data?.data[0]?.full_count / limit))
+				setFilteredData(data?.data)
+				if (!data?.data?.data?.length) setCurrentPage(1)
+			} else {
+				setTotalPage(1)
+				toast.error("Nomalum server xatolik")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
-	const clearSearch = () => {
-		setSearchSubmitted(false)
-		setFilteredData([])
-		inputRef.current.value = ""
-	}
+	useEffect(() => {
+		setCurrentPage(1)
+		if (didMount.current) {
+			handleSearch()
+		} else {
+			didMount.current = true
+		}
+	}, [deliverId, limit])
 
 	const clearOnly = () => {
 		setNewGoodName("")
@@ -254,6 +267,18 @@ export default function Goods() {
 		setObjId("")
 		setBtn_loading(false)
 		setSubmitted(false)
+	}
+
+	function filterOptionDeliver(inputValue, option) {
+		const data = JSON.parse(option.props.value)?.deliver_name
+		return data.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+	}
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
+		if (deliverId === "" && inputRef.current.value === "") {
+			setSearchSubmitted(false)
+		}
 	}
 
 	return (
@@ -433,6 +458,40 @@ export default function Goods() {
 				</div>
 			</AddModal>
 
+			<div className={`filter-wrapper good ${darkMode ? "dark" : null}`}>
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ta'minotchi"
+						className="select"
+						value={deliverId ? deliverId : null}
+						onChange={(e) => {
+							setDeliverId(e)
+							handleSearch(e && JSON.parse(e))
+						}}
+						filterOption={filterOptionDeliver}
+					>
+						{deliver.data?.length
+							? deliver.data.map((item, idx) => {
+									if (!item?.isdelete)
+										return (
+											<Select.Option
+												key={idx}
+												value={JSON.stringify(item)}
+												className={`${darkMode ? "dark" : null}`}
+											>
+												<div>
+													<span>{item?.deliver_name}</span>
+												</div>
+											</Select.Option>
+										)
+							  })
+							: null}
+					</Select>
+				</div>
+			</div>
+
 			<div className="info-wrapper">
 				<InfoItem
 					value={searchSubmitted ? filteredData.length : state?.quantity}
@@ -444,8 +503,8 @@ export default function Goods() {
 			</div>
 
 			<Search
-				handleSearch={handleSearch}
-				clearSearch={clearSearch}
+				handleSearch={() => handleSearch(deliverId && JSON.parse(deliverId))}
+				clearSearch={() => (inputRef.current.value = "")}
 				showAddBtn={userInfo?.role === 1}
 				clearOnly={clearOnly}
 				darkMode={darkMode}
@@ -454,15 +513,70 @@ export default function Goods() {
 			{state?.loading ? (
 				<Loader />
 			) : (
-				<GoodsList
-					data={searchSubmitted ? filteredData : state?.data}
-					deleteGood={deleteGood}
-					editGood={editGood}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					userInfo={userInfo?.role}
-					darkMode={darkMode}
-				/>
+				<>
+					<GoodsList
+						data={searchSubmitted ? filteredData : state?.data}
+						deleteGood={deleteGood}
+						editGood={editGood}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						userInfo={userInfo?.role}
+						darkMode={darkMode}
+					/>
+
+					<Pagination
+						pages={totalPages}
+						currentPage={currentPage}
+						onPageChange={handlePageChange}
+						darkMode={darkMode}
+					/>
+
+					<div
+						className={`input-wrapper ${
+							darkMode ? "dark" : null
+						} pagination-limit`}
+					>
+						<Select
+							placeholder="Kirim Chiqim"
+							className="select"
+							value={limit}
+							onChange={(e) => setLimit(e)}
+						>
+							<Select.Option
+								value="10"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>10</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="25"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>25</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="50"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>50</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="100"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>100</span>
+								</div>
+							</Select.Option>
+						</Select>
+					</div>
+				</>
 			)}
 		</>
 	)

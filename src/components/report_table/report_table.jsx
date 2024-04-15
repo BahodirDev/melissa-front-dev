@@ -72,12 +72,12 @@ const AntReportTable = ({
 			dataIndex: "key",
 		},
 		{
-			title: "Hodim",
-			dataIndex: "user_info",
-		},
-		{
 			title: "Ombor",
 			dataIndex: "data_store",
+		},
+		{
+			title: "Hodim",
+			dataIndex: "user_info",
 		},
 		{
 			title: "Mahsulot",

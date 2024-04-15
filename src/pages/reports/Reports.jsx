@@ -147,6 +147,7 @@ export default function Reports() {
 		setSelectedIncomeOutcome("all")
 		setStoreId("")
 		setDeliverId("")
+		setUser("")
 		setClientId("")
 		setDateRange([])
 		setSearchSubmitted(false)
@@ -289,7 +290,7 @@ export default function Reports() {
 	const handleDownload = () => {
 		const dataToDownload = searchSubmitted ? filteredData?.data : report?.data
 		if (!dataToDownload) {
-			toast.warn("Yuklash uchun ma'lumot mavjud emas") // Assuming toast is for warnings
+			toast.warn("Yuklash uchun ma'lumot mavjud emas")
 			return
 		}
 		downloadExcelFile(dataToDownload)

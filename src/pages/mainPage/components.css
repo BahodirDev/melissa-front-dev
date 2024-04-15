@@ -406,6 +406,9 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
+.filter-wrapper.good .input-wrapper {
+	width: 200px;
+}
 /* select */
 .filter-wrapper .input-wrapper .select .ant-select-selector {
 	height: 30px;

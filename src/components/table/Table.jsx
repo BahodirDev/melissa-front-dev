@@ -50,7 +50,9 @@ const AntTable = ({
 				store_id: item?.store_id?.store_name,
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
-				products_box_count: Math.ceil(item?.products_box_count),
+				products_box_count: isNaN(item?.products_box_count)
+					? 0
+					: Math.ceil(item?.products_box_count),
 				per_box: item?.each_box_count,
 				products_count: Math.ceil(+item?.products_count),
 				img: item?.img_url,
@@ -95,10 +97,6 @@ const AntTable = ({
 			dataIndex: "store_id",
 		},
 		{
-			title: "Diller",
-			dataIndex: "deliver_id",
-		},
-		{
 			title: "Mahsulot",
 			dataIndex: "goods_name",
 			// sorter: (a, b) => a.goods_name.localeCompare(b.goods_name),
@@ -106,6 +104,10 @@ const AntTable = ({
 		{
 			title: "Kod",
 			dataIndex: "goods_code",
+		},
+		{
+			title: "Ta'minotchi",
+			dataIndex: "deliver_id",
 		},
 		{
 			title: <nobr>Quti</nobr>,

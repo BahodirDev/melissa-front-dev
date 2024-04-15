@@ -21,7 +21,7 @@
 	border-radius: 50%;
 	color: var(--color-secondary);
 	background-color: var(--bg-pagination-btn);
-	font-size: var(--text-lg);
+	font-size: var(--text-md);
 	text-align: center;
 	align-items: center;
 	transition: 0.1s;

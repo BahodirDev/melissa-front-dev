@@ -18,7 +18,7 @@ export const goodSlice = createSlice({
 			state.quantity = state.data.length
 		},
 		addData: (state, action) => {
-			state.data = [...state.data, action.payload]
+			state.data = [action.payload, ...state.data]
 		},
 		fakeLoad: (state, action) => {},
 		editData: (state, action) => {
@@ -31,6 +31,7 @@ export const goodSlice = createSlice({
 
 					goods_name: action.payload?.goods_name,
 					goods_code: action.payload?.goods_code,
+					deliver_name: action.payload?.deliver_name,
 				}
 			}
 		},

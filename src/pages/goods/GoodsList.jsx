@@ -86,7 +86,7 @@ function GoodsList({
 						<div className="card-item-bottom goods">
 							<div className="card-item-bottom__left">
 								<h3>Kod: {item?.goods_code}</h3>
-								<h3>Ta'minotchi: {item?.deliver_name}</h3>
+								<h3>{item?.deliver_name}</h3>
 								<h4>{moment(item?.goods_createdat).format("YYYY/MM/DD")}</h4>
 							</div>
 
