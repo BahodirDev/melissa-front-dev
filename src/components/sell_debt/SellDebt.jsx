@@ -214,7 +214,7 @@ const SellDebt = ({
 						const prevList = productList.filter(
 							(item) => item?.product_id !== productObj?.products_id
 						)
-						setProductList([newObj, ...prevList])
+						setProductList([...prevList, newObj])
 						setTotalPriceSellList(
 							(prev) =>
 								prev -
@@ -240,7 +240,7 @@ const SellDebt = ({
 					currency_amount: productObj?.currency_id?.currency_amount,
 					code: productObj?.goods_id?.goods_code,
 				}
-				setProductList([newObj, ...productList])
+				setProductList([...productList, newObj])
 				setTotalPriceSellList((prev) => prev + productP * productQ)
 				clear()
 				setActiveElementIndex(3)

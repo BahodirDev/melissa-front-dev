@@ -388,6 +388,24 @@ export default function Products() {
 		return data.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
 	}
 
+	function filterOption(inputValue, option) {
+		const goodsData = JSON.parse(option.props.value)
+		console.log(goodsData)
+		const goodsNameFirst = goodsData?.goods_name + " " + goodsData?.goods_code
+		const goodsCodeFirst = goodsData?.goods_code + " " + goodsData?.goods_name
+		const inputValueLowerCase = inputValue.toLowerCase()
+
+		const inputWords = inputValueLowerCase.split(" ")
+
+		const allWordsMatch = inputWords.every(
+			(word) =>
+				goodsNameFirst.toLowerCase().includes(word) ||
+				goodsCodeFirst.toLowerCase().includes(word)
+		)
+
+		return allWordsMatch
+	}
+
 	const addOnTop = (id) => {
 		clearOnly()
 		setshowDropdown("")
@@ -509,6 +527,7 @@ export default function Products() {
 							setActiveElementIndex(3)
 						}}
 						ref={activeElementIndex === 2 ? nextInputRef : null}
+						filterOption={filterOption}
 					>
 						{goodList?.length
 							? goodList.map((item, idx) => {
@@ -653,7 +672,10 @@ export default function Products() {
 						placeholder="Qiymat kiriting"
 						className="input"
 						value={newBoxQ ? newBoxQ : ""}
-						onChange={(e) => setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))}
+						onChange={(e) => {
+							setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))
+							setNewProductQ(newPerBox * e.target.value)
+						}}
 						ref={activeElementIndex === 4 ? nextInputRef : null}
 					/>
 					{/* {submitted && numberCheckAllow0(newBoxQ) !== null && (
