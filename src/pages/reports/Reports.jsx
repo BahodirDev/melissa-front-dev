@@ -288,11 +288,46 @@ export default function Reports() {
 	}
 
 	const handleDownload = () => {
-		const dataToDownload = searchSubmitted ? filteredData?.data : report?.data
+		let dataToDownload
+		if (dateRange?.length) {
+			let filterObj = {
+				store: storeId,
+				deliver: deliverId,
+				seller: user,
+				client: clientId,
+				selectedDate: dateRange?.length
+					? dateRange[0].format("YYYY/MM/DD")
+					: null,
+				finishedDate: dateRange?.length
+					? dateRange[1].format("YYYY/MM/DD")
+					: null,
+				search: inputRef.current?.value,
+			}
+			if (selectedIncomeOutcome === "income") filterObj.isEnter = true
+			else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
+			post(
+				`/reports/reports-filter?limit=${filteredData?.data[0]?.full_count}&page=1`,
+				filterObj
+			).then((data) => {
+				if (data.status === 200) {
+					console.log(data?.data?.data)
+					downloadExcelFile(data?.data?.data)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+			})
+			return
+		} else if (searchSubmitted) {
+			dataToDownload = filteredData?.data
+		} else {
+			dataToDownload = report?.data
+		}
+
 		if (!dataToDownload) {
 			toast.warn("Yuklash uchun ma'lumot mavjud emas")
 			return
 		}
+
 		downloadExcelFile(dataToDownload)
 	}
 
@@ -507,9 +542,6 @@ export default function Reports() {
 					>
 						Yuklab olish <MicrosoftExcelLogo />
 					</button>
-					{/* <button type="button" className="filter-btn" onClick={handleFilter}>
-						Saqlash
-					</button> */}
 				</div>
 			</div>
 

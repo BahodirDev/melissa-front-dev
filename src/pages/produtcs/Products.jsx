@@ -328,6 +328,7 @@ export default function Products() {
 			if (data?.status === 200) {
 				setObjId(id)
 
+				getGoodsList(data?.data?.deliver_id?.deliver_id)
 				setNewGoodsId(data?.data?.goods_id)
 				setNewDeliverId(data?.data?.deliver_id)
 				setNewStoreId(data?.data?.store_id)
