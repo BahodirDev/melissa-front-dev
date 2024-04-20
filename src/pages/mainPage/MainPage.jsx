@@ -40,6 +40,7 @@ export default function MainPage() {
 		const savedSidebar = localStorage.getItem("sidebar")
 		return savedSidebar ? JSON.parse(savedSidebar) : false
 	})
+	const [backspaceCount, setBackspaceCount] = useState(0)
 
 	const removeLinkFocus = () => {
 		switch (url.pathname.split("/")[1]) {
@@ -110,6 +111,12 @@ export default function MainPage() {
 	}, [sidebar])
 
 	useEffect(() => {
+		if (backspaceCount === 2 && inputRef.current) {
+			inputRef.current.value = ""
+		}
+	}, [backspaceCount])
+
+	useEffect(() => {
 		setUserInfo({
 			userToken: localStorage.getItem("user"),
 			role: JSON.parse(localStorage.getItem("role")),
@@ -151,6 +158,11 @@ export default function MainPage() {
 						setSDModalDisplay("none")
 					}, 300)
 					inputRef.current?.focus()
+				} else if (e.key === "Backspace") {
+					setBackspaceCount((prevCount) => prevCount + 1)
+					setTimeout(() => {
+						setBackspaceCount(0)
+					}, 300)
 				} else if (e.ctrlKey && e.key === "ArrowLeft") {
 					e.preventDefault()
 					setSidebar(false)
