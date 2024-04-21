@@ -310,7 +310,6 @@ export default function Reports() {
 				filterObj
 			).then((data) => {
 				if (data.status === 200) {
-					console.log(data?.data?.data)
 					downloadExcelFile(data?.data?.data)
 				} else {
 					toast.error("Nomalum server xatolik")

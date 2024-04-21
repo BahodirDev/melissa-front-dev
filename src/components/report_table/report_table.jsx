@@ -44,7 +44,11 @@ const AntReportTable = ({
 			is_enter: item?.isenter,
 			// data_box: item?.reports_box_count,
 			deliver: item?.deliver ? item?.deliver : "Nomalum",
+			data_boxes: Math.ceil(
+				isNaN(item?.reports_box_count) ? 0 : item?.reports_box_count
+			),
 			data_q: Math.ceil(item?.reports_count),
+			data_per_box: Math.ceil(item?.reports_per_box_count),
 			data_client: item?.client ? item?.client : "Nomalum",
 			data_price_each:
 				addComma(
@@ -96,6 +100,14 @@ const AntReportTable = ({
 		{
 			title: "Haridor",
 			dataIndex: "data_client",
+		},
+		{
+			title: "Quti",
+			dataIndex: "data_boxes",
+		},
+		{
+			title: "Qutida",
+			dataIndex: "data_per_box",
 		},
 		{
 			title: "Miqdor",

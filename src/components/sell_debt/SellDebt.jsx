@@ -210,6 +210,7 @@ const SellDebt = ({
 								productObj?.currency_id?.currency_amount,
 							currency_amount: productObj?.currency_id?.currency_amount,
 							code: productObj?.goods_id?.goods_code,
+							each_box_count: productObj?.each_box_count,
 						}
 						const prevList = productList.filter(
 							(item) => item?.product_id !== productObj?.products_id
@@ -239,6 +240,7 @@ const SellDebt = ({
 						productObj?.currency_id?.currency_amount,
 					currency_amount: productObj?.currency_id?.currency_amount,
 					code: productObj?.goods_id?.goods_code,
+					each_box_count: productObj?.each_box_count,
 				}
 				setProductList([...productList, newObj])
 				setTotalPriceSellList((prev) => prev + productP * productQ)
@@ -306,6 +308,7 @@ const SellDebt = ({
 					code: item?.code,
 					store_id: item?.store_id.store_id,
 					currency_amount: item?.currency_amount,
+					each_box_count: item?.each_box_count,
 				}
 			})
 			patch("/products/products-sale", { products: newArr }).then((data) => {
