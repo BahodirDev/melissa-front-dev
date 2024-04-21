@@ -360,16 +360,24 @@ const SellDebt = ({
 
 	function filterOption(inputValue, option) {
 		const goodsData = JSON.parse(option.props.value)?.goods_id
-		const goodsNameFirst = goodsData?.goods_name
+		const goodsNameFirst = goodsData?.goods_name + " " + goodsData?.goods_code
+		const goodsCodeFirst = goodsData?.goods_code + " " + goodsData?.goods_name
+		const goodsNameFirstDashRemoved = goodsData?.goods_name
 			.replace(/\s|-/g, "")
 			.toLowerCase()
-		const goodsCodeFirst = goodsData?.goods_code
+		const goodsCodeFirstDashRemoved = goodsData?.goods_code
 			.replace(/\s|-/g, "")
 			.toLowerCase()
-		const inputValueLowerCase = inputValue.toLowerCase().replace(/\s+/g, " ")
+
+		const inputValueLowerCase = inputValue.toLowerCase()
 		const inputWords = inputValueLowerCase.split(" ")
+
 		const allWordsMatch = inputWords.every(
-			(word) => goodsNameFirst.includes(word) || goodsCodeFirst.includes(word)
+			(word) =>
+				goodsNameFirst.toLowerCase().includes(word) ||
+				goodsCodeFirst.toLowerCase().includes(word) ||
+				goodsNameFirstDashRemoved.toLowerCase().includes(word) ||
+				goodsCodeFirstDashRemoved.toLowerCase().includes(word)
 		)
 
 		return allWordsMatch
