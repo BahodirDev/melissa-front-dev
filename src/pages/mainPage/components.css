@@ -263,6 +263,11 @@
 .primary-btn.small {
 	padding: 8px;
 }
+.primary-btn.low-height {
+	height: 30px;
+	line-height: 1;
+	margin: 10px;
+}
 .primary-btn.sell {
 	margin: 30px 0;
 	float: right;
@@ -791,7 +796,7 @@ div.ant-d-table .ant-table {
 }
 .stats-table-row {
 	display: flex;
-	justify-content: space-around;
+	flex-direction: row;
 }
 
 /* head */
@@ -834,6 +839,7 @@ div.ant-d-table .ant-table-column-sort {
 div.ant-d-table .ant-table-tbody .ant-table-cell {
 	font-family: SFProRegular;
 	font-weight: var(--weight-thin);
+	padding: 6px !important;
 }
 div.ant-d-table tr:nth-child(odd) {
 	background-color: #fff;
