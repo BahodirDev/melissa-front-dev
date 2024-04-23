@@ -84,12 +84,15 @@ const AntTable = ({
 		{
 			title: "Rasm",
 			height: "40px",
+			width: "40px",
 			render: (text, record) => (
-				<img
-					src={`${record?.img}`}
-					height={40}
-					onClick={() => window.open(record?.img)}
-				/>
+				<div className="table-img-col">
+					<img
+						src={`${record?.img}`}
+						height={40}
+						onClick={() => window.open(record?.img)}
+					/>
+				</div>
 			),
 		},
 		{

@@ -13,6 +13,7 @@ import userReducer from "../reducers/users"
 import noteDebtReducer from "../reducers/noteDebt"
 import orderDebtReducer from "../reducers/orderDebt"
 import authReducer from "../reducers/auth"
+import statsReducer from "../reducers/stats"
 
 export default configureStore({
 	reducer: {
@@ -30,5 +31,6 @@ export default configureStore({
 		nDebt: noteDebtReducer,
 		oDebt: orderDebtReducer,
 		auth: authReducer,
+		stats: statsReducer,
 	},
 })

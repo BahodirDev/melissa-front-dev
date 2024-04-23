@@ -158,11 +158,14 @@ export default function MainPage() {
 						setSDModalDisplay("none")
 					}, 300)
 					inputRef.current?.focus()
-				} else if (e.key === "Backspace") {
+				} else if (
+					e.key === "Backspace" &&
+					inputRef.current === document.activeElement
+				) {
 					setBackspaceCount((prevCount) => prevCount + 1)
 					setTimeout(() => {
 						setBackspaceCount(0)
-					}, 300)
+					}, 200)
 				} else if (e.ctrlKey && e.key === "ArrowLeft") {
 					e.preventDefault()
 					setSidebar(false)

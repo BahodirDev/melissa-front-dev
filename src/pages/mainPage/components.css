@@ -780,8 +780,18 @@ div.ant-d-table .ant-table {
 	border-bottom-left-radius: var(--radius-lg);
 	border-bottom-right-radius: var(--radius-lg);
 }
+.table-img-col {
+	overflow: hidden;
+	width: 40px;
+	height: 40px;
+}
 .ant-d-table img {
+	transform: scale(1.5);
 	cursor: pointer;
+}
+.stats-table-row {
+	display: flex;
+	justify-content: space-around;
 }
 
 /* head */
