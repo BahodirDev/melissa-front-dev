@@ -28,7 +28,7 @@ export const downloadFile = (id) => {
 			const url = window.URL.createObjectURL(blob)
 			const a = document.createElement("a")
 			a.href = url
-			
+
 			const now = new Date()
 			const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
 				.toString()
@@ -66,13 +66,50 @@ export const downloadExcelFile = async (data) => {
 				.toString()
 				.padStart(2, "0")}-${now.getSeconds().toString().padStart(2, "0")}`
 
-			link.setAttribute("download", `Hisobot ${formattedDate}_${formattedTime}.xlsx`)
+			link.setAttribute(
+				"download",
+				`Hisobot ${formattedDate}_${formattedTime}.xlsx`
+			)
 			document.body.appendChild(link)
 			link.click()
 			document.body.removeChild(link)
 		})
 		.catch((error) => {
 			console.error("There was a problem with your Axios request:", error)
+		})
+}
+
+export const downloadNewList = (arr) => {
+	axios
+		.post(
+			`/products/get-pdf`,
+			{ data: arr },
+			{
+				responseType: "blob",
+			}
+		)
+		.then((response) => {
+			const blob = new Blob([response.data], {
+				type: response.headers["content-type"],
+			})
+			const url = window.URL.createObjectURL(blob)
+			const a = document.createElement("a")
+			a.href = url
+
+			const now = new Date()
+			const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+				.toString()
+				.padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`
+			const formattedTime = `${now.getHours().toString().padStart(2, "0")}-${now
+				.getMinutes()
+				.toString()
+				.padStart(2, "0")}-${now.getSeconds().toString().padStart(2, "0")}`
+			a.download = `Royxat ${formattedDate}_${formattedTime}.pdf`
+			a.click()
+			window.URL.revokeObjectURL(url)
+		})
+		.catch((error) => {
+			// Handle errors
 		})
 }
 

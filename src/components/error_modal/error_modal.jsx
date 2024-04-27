@@ -1,5 +1,4 @@
 import { Modal } from "antd"
-import "./error_modal.css"
 
 export const error_modal = (xabar, msg, toggle, setToggle) => {
 	return (

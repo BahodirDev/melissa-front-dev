@@ -168,7 +168,7 @@ export default function SSidebar({
 					<li>
 						<NavLink
 							to="/debts"
-							title="Qarzdorlik"
+							title="Moliya"
 							className={`${
 								activeSectionIndex === 5 && url.pathname !== "/debts"
 									? "tabFocus"

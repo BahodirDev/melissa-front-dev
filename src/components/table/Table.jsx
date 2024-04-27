@@ -31,6 +31,7 @@ const AntTable = ({
 	darkMode,
 	currentPage,
 	limit,
+	temporaryFunction,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -60,6 +61,7 @@ const AntTable = ({
 					addComma(
 						item?.products_count_cost * item?.currency_id?.currency_amount
 					) + " so'm",
+				actual_count: item?.actual_count,
 				products_count_price:
 					addComma(
 						item?.products_count_price * item?.currency_id?.currency_amount
@@ -152,6 +154,13 @@ const AntTable = ({
 			render: (text, record) =>
 				userRole === 1 ? (
 					<div className="table-item-edit-holder">
+						<input
+							type="checkbox"
+							onChange={() => {
+								temporaryFunction(record?.id)
+							}}
+							checked={record?.actual_count > 2}
+						/>
 						<button type="button" onClick={(e) => handleClick(e, record?.id)}>
 							<DotsThreeVertical size={24} />
 						</button>

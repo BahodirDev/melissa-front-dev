@@ -440,6 +440,13 @@ export default function Products() {
 		})
 	}
 
+	const temporaryFunction = (id) => {
+		get(`/products/products-statistics-list/${id}`).then((data) => {
+			if (data?.status === 201) toast.success("Muvoffaqiyatli bajarildi")
+			else console.log(data)
+		})
+	}
+
 	return (
 		<>
 			<AddModal name={objId ? "Mahsulot tahrirlash" : "Mahsulot qo'shish"}>
@@ -959,6 +966,7 @@ export default function Products() {
 						darkMode={darkMode}
 						currentPage={currentPage}
 						limit={limit}
+						temporaryFunction={temporaryFunction}
 					/>
 
 					<Pagination

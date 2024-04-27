@@ -7,6 +7,7 @@
 	font-size: var(--text-modal);
 	margin-top: var(--padding-xl);
 	color: var(--color-accent);
+	margin-top: 50px;
 }
 
 .no-data-wrapper.list {

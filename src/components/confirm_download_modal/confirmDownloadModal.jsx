@@ -4,7 +4,7 @@ const { confirm } = Modal
 export const confirmDownloadModal = (action, id, mode = false) => {
 	confirm({
 		icon: " ",
-		title: <span>Hisobotni yuklab olishni xohlaysizmi?</span>,
+		title: <span>Yuklab olishni xohlaysizmi?</span>,
 		content: "",
 		okText: "Yuklab olish",
 		okType: "success",

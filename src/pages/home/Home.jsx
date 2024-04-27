@@ -18,14 +18,16 @@ import { useNavigate, useOutletContext } from "react-router-dom"
 import { useEffect } from "react"
 
 import "./home.css"
-import { get } from "../../customHook/api"
+import { downloadFile, downloadNewList, get } from "../../customHook/api"
 import { toast } from "react-toastify"
 import AntTable from "../../components/table/Table"
 import { StatsListTable, StatsTable } from "../../components/stats/StatsTable"
 import Loader from "../../components/loader/Loader"
 import Pagination from "../../components/pagination/Pagination"
 import { useDispatch, useSelector } from "react-redux"
-import { setData } from "../../components/reducers/stats"
+import { setData, setQuantity } from "../../components/reducers/stats"
+import { FilePdf } from "@phosphor-icons/react"
+import { confirmDownloadModal } from "../../components/confirm_download_modal/confirmDownloadModal"
 
 ChartJs.register(
 	BarElement,
@@ -98,6 +100,23 @@ export default function Home() {
 		dispatch(setData(state?.data.filter((item) => item?.id !== obj?.id)))
 	}
 
+	const handleQuantityChange = (id, q) => {
+		dispatch(setQuantity({ id, q }))
+	}
+
+	const handleDownload = () => {
+		let newArr = state?.data?.map((item) => {
+			return {
+				deliver: item?.deliver_id,
+				name: item?.goods_name,
+				code: item?.goods_code,
+				price: item?.price,
+				count: item?.products_count,
+			}
+		})
+		confirmDownloadModal(downloadNewList, newArr, darkMode)
+	}
+
 	return loading ? (
 		<Loader />
 	) : (
@@ -114,6 +133,8 @@ export default function Home() {
 				<StatsListTable
 					data={state?.data}
 					removeFromStatsList={removeFromStatsList}
+					handleQuantityChange={handleQuantityChange}
+					darkMode={darkMode}
 				/>
 			</div>
 			<Pagination
@@ -160,8 +181,12 @@ export default function Home() {
 					</Select>
 				</div>
 
-				<button className={`primary-btn low-height ${darkMode ? "dark" : null}`}>
-					Yuklab olish
+				<button
+					className={`primary-btn low-height ${darkMode ? "dark" : null}`}
+					onClick={handleDownload}
+					disabled={!state?.data?.length}
+				>
+					Yuklab olish <FilePdf />
 				</button>
 			</div>
 		</>

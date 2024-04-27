@@ -171,7 +171,7 @@ export default function Sidebar({
 									: null
 							}`}
 						>
-							<HandCoins size={24} /> Qarzdorlik
+							<HandCoins size={24} /> Moliya
 						</NavLink>
 					</li>
 				)}

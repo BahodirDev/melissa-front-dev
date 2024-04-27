@@ -11,7 +11,6 @@ import { setQuantity as setQuantityN } from "../../components/reducers/noteDebt"
 import { setQuantity as setQuantityO } from "../../components/reducers/orderDebt"
 import { get } from "../../customHook/api"
 import Client from "./Client"
-import Order from "./Order"
 import Supplier from "./Supplier"
 import Total from "./Total"
 import "./debts.css"
@@ -42,25 +41,7 @@ function Debts() {
 		dispatch(setPreload(true))
 		get(`/${list}/${list}-list`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
-				if (
-					list === "debts" ||
-					list === "deliver-debts" ||
-					list === "debts-note" ||
-					list === "ordered"
-				) {
-					dispatch(setList(data.data?.data))
-					if (list === "debts") {
-						dispatch(setQuantity(data?.data.amount))
-					} else if (list === "deliver-debts") {
-						dispatch(setQuantityD(data?.data.amount))
-					} else if (list === "debts-note") {
-						dispatch(setQuantityN(data?.data.amount))
-					} else if (list === "ordered") {
-						dispatch(setQuantityO(data?.data.amount))
-					}
-				} else {
-					dispatch(setList(data?.data))
-				}
+				dispatch(setList(data?.data))
 			} else {
 				toast.error("Nomalum server xatolik", { toastId: "" })
 			}
@@ -90,7 +71,7 @@ function Debts() {
 					value="client"
 					className={show === "client" ? "active" : null}
 				>
-					Mijoz
+					Oldi / Berdi
 				</button>
 				<button
 					type="button"
@@ -98,7 +79,7 @@ function Debts() {
 					value="supplier"
 					className={show === "supplier" ? "active" : null}
 				>
-					Ta'minotchi
+					Haqdorlik / Qarzdorlik
 				</button>
 				<button
 					type="button"
@@ -106,15 +87,7 @@ function Debts() {
 					value="total"
 					className={show === "total" ? "active" : null}
 				>
-					Umumiy
-				</button>
-				<button
-					type="button"
-					onClick={handleSectionSwitch}
-					value="order"
-					className={show === "order" ? "active" : null}
-				>
-					Oldindan to'lov
+					Harajatlar
 				</button>
 			</div>
 
@@ -122,10 +95,8 @@ function Debts() {
 				<Client getData={getData} />
 			) : show === "supplier" ? (
 				<Supplier getData={getData} />
-			) : show === "total" ? (
-				<Total getData={getData} />
 			) : (
-				<Order getData={getData} />
+				<Total getData={getData} />
 			)}
 		</>
 	)

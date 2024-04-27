@@ -1,5 +1,6 @@
 import { Checkbox, Table } from "antd"
 import NoData from "../noData/NoData"
+import { addComma } from "../addComma"
 
 export const StatsTable = ({
 	data,
@@ -17,9 +18,13 @@ export const StatsTable = ({
 				id: item?.products_id,
 				deliver_id: item?.deliver_id?.deliver_name,
 				store_id: item?.store_id?.store_name,
+				price:
+					addComma(
+						item?.products_count_price * item?.currency_id?.currency_amount
+					) + " so'm",
 				img: item?.img_url,
-				goods_name:
-					item?.goods_id?.goods_name + " - " + item?.goods_id?.goods_code,
+				goods_name: item?.goods_id?.goods_name,
+				goods_code: item?.goods_id?.goods_code,
 				products_count: Math.ceil(+item?.products_count),
 			}
 		})
@@ -41,11 +46,20 @@ export const StatsTable = ({
 		},
 		{
 			title: "Mahsulot",
-			dataIndex: "goods_name",
+			// dataIndex: "goods_name",
+			render: (text, record) => (
+				<>
+					{record?.goods_name} - {record?.goods_code}
+				</>
+			),
 		},
 		{
 			title: "Ta'minotchi",
 			dataIndex: "deliver_id",
+		},
+		{
+			title: "Narx",
+			dataIndex: "price",
 		},
 		{
 			title: "Miqdor",
@@ -57,7 +71,7 @@ export const StatsTable = ({
 				<Checkbox
 					onChange={(e) => {
 						if (e.target.checked) {
-							addToStatsList(record)
+							addToStatsList({ ...record, products_count: 1 })
 						} else {
 							removeFromStatsList(record)
 						}
@@ -90,7 +104,12 @@ export const StatsTable = ({
 	)
 }
 
-export const StatsListTable = ({ data, removeFromStatsList }) => {
+export const StatsListTable = ({
+	data,
+	removeFromStatsList,
+	handleQuantityChange,
+	darkMode,
+}) => {
 	let arr2 =
 		data?.length &&
 		data?.map((item, idx) => {
@@ -99,9 +118,11 @@ export const StatsListTable = ({ data, removeFromStatsList }) => {
 				id: item?.id,
 				deliver_id: item?.deliver_id,
 				store_id: item?.store_id?.store_name,
+				price: item?.price,
 				img: item?.img,
 				goods_name: item?.goods_name,
-				products_count: Math.ceil(+item?.products_count),
+				goods_code: item?.goods_code,
+				products_count: item?.products_count,
 			}
 		})
 
@@ -122,15 +143,53 @@ export const StatsListTable = ({ data, removeFromStatsList }) => {
 		},
 		{
 			title: "Mahsulot",
-			dataIndex: "goods_name",
+			render: (text, record) => (
+				<>
+					{record?.goods_name} - {record?.goods_code}
+				</>
+			),
 		},
 		{
 			title: "Ta'minotchi",
 			dataIndex: "deliver_id",
 		},
 		{
+			title: "Narx",
+			dataIndex: "price",
+		},
+		{
 			title: "Miqdor",
-			dataIndex: "products_count",
+			render: (text, record) => (
+				<div className={`quantityWrapper ${darkMode ? "dark" : null}`}>
+					<button
+						className="quantityBtn"
+						onClick={() =>
+							handleQuantityChange(record?.id, record?.products_count - 1)
+						}
+					>
+						-
+					</button>
+					<input
+						type="text"
+						className="quantityInput"
+						value={record?.products_count}
+						onChange={(e) => handleQuantityChange(record?.id, e.target.value)}
+						onKeyPress={(e) => {
+							if (isNaN(e.key)) {
+								e.preventDefault()
+							}
+						}}
+					/>
+					<button
+						className="quantityBtn"
+						onClick={() =>
+							handleQuantityChange(record?.id, record?.products_count + 1)
+						}
+					>
+						+
+					</button>
+				</div>
+			),
 		},
 		{
 			title: "",
