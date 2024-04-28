@@ -13,6 +13,7 @@ import { downloadFile, get, patch, post } from "../../customHook/api"
 import { setData as setDataClient } from "../reducers/client"
 import { setData as setDataCurrency } from "../reducers/currency"
 import { setData as setDataDeliver } from "../reducers/deliver"
+import { setData as setDataUser } from "../reducers/users"
 import { setData } from "../reducers/store"
 import { CaretDown, Info, X, XCircle } from "@phosphor-icons/react"
 import { dateCompare, numberCheck, stringCheck } from "../validation"
@@ -88,6 +89,7 @@ const SellDebt = ({
 		getData("store", setData)
 		getData("currency", setDataCurrency)
 		getData("deliver", setDataDeliver)
+		getData("users", setDataUser)
 
 		let storage = localStorage.getItem("sellInfo")
 		let oldSellInfo

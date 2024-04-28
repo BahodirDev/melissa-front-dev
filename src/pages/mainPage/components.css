@@ -78,6 +78,21 @@
 }
 
 /* select */
+.input-of-two {
+	display: flex;
+	flex-direction: row;
+}
+.input-of-two-first .ant-select-selector {
+	width: 100px !important;
+	border-top-right-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
+}
+.input-of-two-first {}
+.input-of-two-second {
+	border-top-left-radius: 0 !important;
+	border-bottom-left-radius: 0 !important;
+}
+
 .input-wrapper .select .ant-select-selector {
 	border-radius: var(--radius-sm);
 	border: var(--border-primary);
