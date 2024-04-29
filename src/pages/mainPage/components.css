@@ -84,13 +84,18 @@
 }
 .input-of-two-first .ant-select-selector {
 	width: 100px !important;
+	border-top-left-radius: 0 !important;
+	border-bottom-left-radius: 0 !important;
+}
+.input-of-two-first svg {
+	color: var(--color-modal-placeholder) !important;
+}
+.input-of-two-second {
 	border-top-right-radius: 0 !important;
 	border-bottom-right-radius: 0 !important;
 }
-.input-of-two-first {}
-.input-of-two-second {
-	border-top-left-radius: 0 !important;
-	border-bottom-left-radius: 0 !important;
+.svgMargin .thisSvg {
+	margin-right: 100px;
 }
 
 .input-wrapper .select .ant-select-selector {
@@ -285,7 +290,7 @@
 	height: 24px;
 	background-color: var(--bg-primary);
 	color: var(--color-light);
-	line-height: 20px;
+	line-height: 10px;
 	outline: none;
 	border: none;
 	border-radius: var(--radius-sm);
@@ -898,6 +903,7 @@ div.ant-d-table .ant-table-tbody .ant-table-cell {
 	font-family: SFProRegular;
 	font-weight: var(--weight-thin);
 	padding: 6px !important;
+	padding-left: 16px !important;
 }
 div.ant-d-table tr:nth-child(odd) {
 	background-color: #fff;
@@ -910,6 +916,7 @@ div.ant-d-table tr:nth-child(even) {
 }
 .table-item-edit-holder {
 	position: relative;
+	display: flex;
 }
 .dark .table-item-edit-holder button {
 	color: var(--d-color-secondary);
@@ -937,7 +944,7 @@ div.ant-d-table tr:nth-child(even) {
 	background-color: var(--d-bg-light);
 }
 .table-item-edit-wrapper.extra {
-	height: 70px;
+	height: 60px;
 	top: -35px;
 }
 .table-item-edit-wrapper.small {
@@ -954,7 +961,7 @@ div.ant-d-table tr:nth-child(even) {
 	border-left: transparent;
 	border-bottom: transparent;
 	position: absolute;
-	bottom: 20px;
+	bottom: 14px;
 	right: -7.5px;
 	transform: rotate(45deg);
 	z-index: -1;
@@ -970,6 +977,7 @@ div.ant-d-table tr:nth-child(even) {
 	justify-content: space-between;
 	place-items: center;
 	padding: 6px 12px;
+	height: 30px;
 	width: 100%;
 	text-align: left;
 	border: none;
@@ -1053,6 +1061,9 @@ div.ant-d-table tr:nth-child(even) {
 .error-modal__btn:hover {
 	background-color: #6601a6;
 }
+
+/* extra info modal */
+
 
 /*  */
 @keyframes fade-in {

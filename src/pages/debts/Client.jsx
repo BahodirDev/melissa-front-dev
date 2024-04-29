@@ -1,14 +1,17 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
 import Search from "../../components/search/Search"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AddModal from "../../components/add/AddModal"
 import { numberCheck, stringCheck } from "../../components/validation"
 import { CaretDown, Info } from "@phosphor-icons/react"
 import { Select } from "antd"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import { toast } from "react-toastify"
+import { get, post } from "../../customHook/api"
+import { DebtTable } from "../../components/debt tables/DebtTable"
 
-const Client = ({ getData }) => {
+const Client = () => {
 	const [
 		inputRef,
 		showDropdown,
@@ -25,21 +28,26 @@ const Client = ({ getData }) => {
 	] = useOutletContext()
 	const { client, deliver, users } = useSelector((state) => state)
 	const dispatch = useDispatch()
-	// console.log(client, deliver, users)
 
+	const [list, setList] = useState([])
 	const [filteredData, setFilteredData] = useState([])
 	const [btn_loading, setBtn_loading] = useState(false)
 	const [objId, setObjId] = useState("")
 	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [loading, setLoading] = useState(false)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPages, setTotalPages] = useState(1)
 
 	// new data
 	const [who, setWho] = useState("client")
 	const [person, setPerson] = useState("")
 	const [type, setType] = useState("cash")
 	const [summa, setSumma] = useState(0)
-	const [isEnter, setIsEnter] = useState(false)
+	const [isEnter, setIsEnter] = useState("income")
 	const [desc, setDesc] = useState("")
+	const [date, setDate] = useState("")
 
 	const handleSearch = () => {}
 
@@ -52,14 +60,68 @@ const Client = ({ getData }) => {
 		if (who && person && type && summa > 0) {
 			setBtn_loading(true)
 			if (objId) {
-				console.log("edit")
+				setBtn_loading(false)
 			} else {
-				console.log("add")
+				let he = person?.clients_id
+					? person?.clients_id
+					: person?.deliver_id
+					? person?.deliver_id
+					: person?.user_id
+				let newObj = {
+					transaction_money: summa,
+					transaction_money_type: type,
+					transaction_type: isEnter,
+					transaction_from: isEnter === "income" ? he : userInfo?.id,
+					transaction_to: isEnter === "income" ? userInfo?.id : he,
+					transaction_status: who,
+					transaction_summary: desc,
+					transaction_created_at: date ? new Date(date).toISOString() : null,
+				}
+				post(`/debts/debts-post`, newObj).then((data) => {
+					if (data?.status === 201) {
+						// dispatch(addData(data?.data))
+						// dispatch(setQuantity())
+						clearAndClose()
+						toast.success("Oldi berdi muvoffaqiyatli kiritildi")
+					} else {
+						toast.error("Nomalum server")
+					}
+					// console.log(data)
+					setBtn_loading(false)
+				})
 			}
 		}
 	}
 
-	const clearAndClose = () => {}
+	const clearAndClose = () => {
+		setWho("client")
+		setPerson("")
+		setType("cash")
+		setSumma(0)
+		setIsEnter("income")
+		setDesc("")
+
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+
+		setAddModalVisible(false)
+		setTimeout(() => {
+			setAddModalDisplay("none")
+		}, 300)
+	}
+
+	useEffect(() => {
+		setLoading(true)
+		get("/debts/debts-list").then((data) => {
+			if (data?.status === 201 || data?.status === 200) {
+				setList(data?.data)
+			} else {
+				toast.error("Nomalur server xatolik")
+			}
+			setLoading(false)
+		})
+	}, [])
 
 	return (
 		<>
@@ -99,7 +161,7 @@ const Client = ({ getData }) => {
 						</Select.Option>
 						<Select.Option
 							className={`${darkMode ? "dark" : null}`}
-							value={"users"}
+							value={"user"}
 						>
 							<div>
 								<span>Xodimlar</span>
@@ -202,7 +264,7 @@ const Client = ({ getData }) => {
 										}
 								  })
 								: null
-							: who === "users"
+							: who === "user"
 							? users?.data?.length
 								? users?.data.map((item, idx) => {
 										if (!item?.isdelete) {
@@ -261,7 +323,7 @@ const Client = ({ getData }) => {
 					>
 						<Select.Option
 							className={`${darkMode ? "dark" : null}`}
-							value={true}
+							value={"income"}
 						>
 							<div>
 								<span>Olindi</span>
@@ -269,7 +331,7 @@ const Client = ({ getData }) => {
 						</Select.Option>
 						<Select.Option
 							className={`${darkMode ? "dark" : null}`}
-							value={false}
+							value={"outcome"}
 						>
 							<div>
 								<span>Berildi</span>
@@ -278,13 +340,25 @@ const Client = ({ getData }) => {
 					</Select>
 				</div>
 				<div
-					className={`input-wrapper modal-form regular ${
+					className={`input-wrapper modal-form regular svgMargin ${
 						darkMode ? "dark" : null
 					} ${submitted && numberCheck(summa) !== null && "error"}`}
 				>
 					<label>Summa / To'lov turi</label>
 
 					<div className="input-of-two">
+						<input
+							type="text"
+							placeholder="Qiymat kiriting"
+							className="input input-of-two-second"
+							value={summa ? summa : ""}
+							onKeyPress={(e) => {
+								if (isNaN(e.key)) {
+									e.preventDefault()
+								}
+							}}
+							onChange={(e) => setSumma(e.target.value)}
+						/>
 						<Select
 							placeholder="To'lov turi"
 							className="select input-of-two-first"
@@ -308,21 +382,11 @@ const Client = ({ getData }) => {
 								</div>
 							</Select.Option>
 						</Select>
-						<input
-							type="text"
-							placeholder="Qiymat kiriting"
-							className="input input-of-two-second"
-							value={summa ? summa : ""}
-							onKeyPress={(e) => {
-								if (isNaN(e.key)) {
-									e.preventDefault()
-								}
-							}}
-							onChange={(e) => setSumma(e.target.value)}
-						/>
 					</div>
 
-					{submitted && numberCheck(summa) !== null && <Info size={20} />}
+					{submitted && numberCheck(summa) !== null && (
+						<Info size={20} className="thisSvg" />
+					)}
 					<div className="validation-field">
 						<span>{submitted && numberCheck(summa)}</span>
 					</div>
@@ -339,6 +403,23 @@ const Client = ({ getData }) => {
 						value={desc}
 						onChange={(e) => setDesc(e.target.value)}
 					></textarea>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && stringCheck(date) !== null && "error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Sana</label>
+					<input
+						type="datetime-local"
+						placeholder="Sana tanlang"
+						className="input date"
+						value={date ? date : ""}
+						onChange={(e) => setDate(e.target.value)}
+					/>
+					<div className="validation-field">
+						<span>{submitted && stringCheck(date)}</span>
+					</div>
 				</div>
 				<div className="modal-btn-group">
 					<button
@@ -369,6 +450,14 @@ const Client = ({ getData }) => {
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}
 				clearOnly={clearOnly}
+				darkMode={darkMode}
+				/>
+
+			<DebtTable
+				data={list}
+				sidebar={sidebar}
+				showDropdown={showDropdown}
+				setshowDropdown={setshowDropdown}
 				darkMode={darkMode}
 			/>
 		</>

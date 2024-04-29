@@ -37,25 +37,12 @@ function Debts() {
 	const dispatch = useDispatch()
 	const [show, setShow] = useState("client")
 
-	const getData = (list, setList, setPreload) => {
-		dispatch(setPreload(true))
-		get(`/${list}/${list}-list`).then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
-				dispatch(setList(data?.data))
-			} else {
-				toast.error("Nomalum server xatolik", { toastId: "" })
-			}
-			dispatch(setPreload(false))
-		})
-	}
-
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
-
-		getData("deliver", setDataDeliver, fakeLoad)
-		getData("goods", setDataGood, fakeLoad)
 		setShow(localStorage.getItem("debt-section"))
 	}, [])
+	if (!localStorage.getItem("debt-section"))
+		localStorage.setItem("debt-section", "client")
 
 	const handleSectionSwitch = (e) => {
 		setShow(e.target.value)
@@ -92,11 +79,11 @@ function Debts() {
 			</div>
 
 			{show === "client" ? (
-				<Client getData={getData} />
+				<Client />
 			) : show === "supplier" ? (
-				<Supplier getData={getData} />
+				<Supplier />
 			) : (
-				<Total getData={getData} />
+				<Total />
 			)}
 		</>
 	)
