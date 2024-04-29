@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react"
 import moment from "moment"
 import { useState } from "react"
+import { productDeleteConfirm } from "../delete_modal/delete_modal"
 
 export const DebtTable = ({
 	data,
@@ -20,6 +21,7 @@ export const DebtTable = ({
 	showDropdown,
 	setshowDropdown,
 	darkMode,
+	handleDelete,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -45,6 +47,7 @@ export const DebtTable = ({
 				to: item?.to_name,
 				summa: addComma(item?.transaction_money),
 				type: item?.transaction_money_type,
+				t_type: item?.transaction_type,
 				desc: item?.transaction_summary ? item?.transaction_summary : "...",
 				date: `${moment(item?.transaction_created_at).format(
 					"YYYY/MM/DD HH:mm"
@@ -120,20 +123,20 @@ export const DebtTable = ({
 						<button
 							type="button"
 							className="table-item-edit-item"
-							// onClick={(e) =>
-							// 	productDeleteConfirm(
-							// 		e,
-							// 		<>
-							// 			<span>
-							// 				{record?.data_product + "-" + record?.data_code}
-							// 			</span>{" "}
-							// 			hisobotni
-							// 		</>,
-							// 		deleteReport,
-							// 		record?.id,
-							// 		darkMode
-							// 	)
-							// }
+							onClick={(e) =>
+								productDeleteConfirm(
+									e,
+									<>
+										<span>
+											{record?.t_type === "income" ? record?.from : record?.to}
+										</span>{" "}
+										qarzdorligini
+									</>,
+									handleDelete,
+									record?.id,
+									darkMode
+								)
+							}
 						>
 							O'chirish <Trash size={20} />
 						</button>
@@ -171,10 +174,8 @@ export const DebtTableEquity = ({ data, sidebar }) => {
 				key: idx + 1,
 				id: item?.transaction_id,
 				name: item?.name,
-				// debt: addComma(+item?.debt_card + +item?.debt_cash),
-				// equity: addComma(+item?.equity_card + +item?.equity_cash),
-				debt: addComma(item?.debt_cash),
-				equity: addComma(item?.equity_cash),
+				debt: addComma(item?.debt),
+				equity: addComma(item?.equity),
 			}
 		})
 

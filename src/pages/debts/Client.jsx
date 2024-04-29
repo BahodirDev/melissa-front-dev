@@ -8,8 +8,9 @@ import { CaretDown, Info } from "@phosphor-icons/react"
 import { Select } from "antd"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import { toast } from "react-toastify"
-import { get, post } from "../../customHook/api"
+import { get, post, remove } from "../../customHook/api"
 import { DebtTable } from "../../components/debt tables/DebtTable"
+import Loader from "../../components/loader/Loader"
 
 const Client = () => {
 	const [
@@ -49,7 +50,17 @@ const Client = () => {
 	const [desc, setDesc] = useState("")
 	const [date, setDate] = useState("")
 
-	const handleSearch = () => {}
+	const handleSearch = () => {
+		setLoading(true)
+		get("/debts/debts-list").then((data) => {
+			if (data?.status === 201 || data?.status === 200) {
+				setList(data?.data)
+			} else {
+				toast.error("Nomalur server xatolik")
+			}
+			setLoading(false)
+		})
+	}
 
 	const clearSearch = () => {}
 
@@ -122,6 +133,21 @@ const Client = () => {
 			setLoading(false)
 		})
 	}, [])
+
+	const handleDelete = (id) => {
+		setLoading(true)
+		remove(`/debts/debts-delete/${id}`).then((data) => {
+			if (data?.status === 200) {
+				// dispatch(removeCurrency(id))
+				// dispatch(setQuantity())
+				toast.success("Oldi / berdi muvoffaqiyatli o'chirildi")
+				clearAndClose()
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+			setLoading(false)
+		})
+	}
 
 	return (
 		<>
@@ -451,15 +477,20 @@ const Client = () => {
 				clearSearch={clearSearch}
 				clearOnly={clearOnly}
 				darkMode={darkMode}
-				/>
-
-			<DebtTable
-				data={list}
-				sidebar={sidebar}
-				showDropdown={showDropdown}
-				setshowDropdown={setshowDropdown}
-				darkMode={darkMode}
 			/>
+
+			{loading ? (
+				<Loader />
+			) : (
+				<DebtTable
+					data={list}
+					sidebar={sidebar}
+					showDropdown={showDropdown}
+					setshowDropdown={setshowDropdown}
+					darkMode={darkMode}
+					handleDelete={handleDelete}
+				/>
+			)}
 		</>
 	)
 }

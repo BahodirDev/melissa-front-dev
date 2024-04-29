@@ -13,6 +13,7 @@ import {
 	DebtTable,
 	DebtTableEquity,
 } from "../../components/debt tables/DebtTable"
+import Loader from "../../components/loader/Loader"
 
 const Supplier = ({ getData }) => {
 	const [
@@ -47,7 +48,11 @@ const Supplier = ({ getData }) => {
 
 	return (
 		<>
-			<DebtTableEquity data={list} sidebar={sidebar} darkMode={darkMode} />
+			{loading ? (
+				<Loader />
+			) : (
+				<DebtTableEquity data={list} sidebar={sidebar} darkMode={darkMode} />
+			)}
 		</>
 	)
 }
