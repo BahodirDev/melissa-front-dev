@@ -147,12 +147,17 @@ export default function Goods() {
 			} else {
 				post("/goods/goods-post", newObj).then((data) => {
 					if (data?.status === 201) {
-						dispatch(addData(data?.data))
+						dispatch(
+							addData({ ...data?.data, deliver_name: newDeliver?.deliver_name })
+						)
 						dispatch(setQuantity())
 						clearAndClose()
 						toast.success("Kategoriya muvoffaqiyatli qo'shildi")
 						if (searchSubmitted) {
-							setFilteredData([data?.data, ...filteredData])
+							setFilteredData([
+								{ ...data?.data, deliver_name: newDeliver?.deliver_name },
+								...filteredData,
+							])
 						}
 					} else if (data?.response?.data?.error === "GOODS_ALREADY_EXIST") {
 						toast.warn("Bunday kategoriya allaqachon mavjud")

@@ -19,6 +19,7 @@ export const goodSlice = createSlice({
 		},
 		addData: (state, action) => {
 			state.data = [action.payload, ...state.data]
+			console.log(action.payload)
 		},
 		fakeLoad: (state, action) => {},
 		editData: (state, action) => {

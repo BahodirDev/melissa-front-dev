@@ -6,6 +6,7 @@ import {
 	CreditCard,
 	CurrencyCircleDollar,
 	DotsThreeVertical,
+	Info,
 	Money,
 	PencilSimple,
 	Trash,
@@ -14,6 +15,7 @@ import {
 import moment from "moment"
 import { useState } from "react"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
+import { useNavigate } from "react-router-dom"
 
 export const DebtTable = ({
 	data,
@@ -24,6 +26,7 @@ export const DebtTable = ({
 	handleDelete,
 }) => {
 	const [loc, setLoc] = useState(true)
+	const navigate = useNavigate()
 
 	const handleClick = (e, id) => {
 		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
@@ -44,11 +47,16 @@ export const DebtTable = ({
 				key: idx + 1,
 				id: item?.transaction_id,
 				from: item?.from_name,
+				from_id: item?.transaction_from,
+				to_id: item?.transaction_to,
 				to: item?.to_name,
+				status: item?.transaction_status,
 				summa: addComma(item?.transaction_money),
 				type: item?.transaction_money_type,
 				t_type: item?.transaction_type,
-				desc: item?.transaction_summary ? item?.transaction_summary : "...",
+				desc: item?.transaction_summary
+					? item?.transaction_summary
+					: "Izoh mavjud emas",
 				date: `${moment(item?.transaction_created_at).format(
 					"YYYY/MM/DD HH:mm"
 				)}`,
@@ -58,11 +66,72 @@ export const DebtTable = ({
 	const columns = [
 		{
 			title: "Kimdan",
-			dataIndex: "from",
+			// dataIndex: "from",
+			render: (text, record) => (
+				<p
+					onClick={() =>
+						record?.t_type === "income" && record?.status === "client"
+							? navigate(`/clients/${record?.from}`, {
+									state: {
+										id: record?.from_id,
+										name: record?.from,
+										desc: "",
+										tel: "",
+										date: "",
+									},
+							  })
+							: null
+					}
+					style={{
+						textDecoration: `${
+							record?.t_type === "income" && record?.status === "client"
+								? "underline"
+								: null
+						}`,
+						cursor: `${
+							record?.t_type === "income" && record?.status === "client"
+								? "pointer"
+								: "default"
+						}`,
+					}}
+				>
+					{record?.from}
+				</p>
+			),
 		},
 		{
 			title: "Kimga",
-			dataIndex: "to",
+			render: (text, record) => (
+				<p
+					onClick={() =>
+						record?.t_type === "outcome" && record?.status === "client"
+							? navigate(`/clients/${record?.to}`, {
+									state: {
+										id: record?.to_id,
+										name: record?.to,
+										desc: "",
+										tel: "",
+										date: "",
+									},
+							  })
+							: null
+					}
+					style={{
+						textDecoration: `${
+							record?.t_type === "outcome" && record?.status === "client"
+								? "underline"
+								: null
+						}`,
+						cursor: `${
+							record?.t_type === "outcome" && record?.status === "client"
+								? "pointer"
+								: "default"
+						}`,
+					}}
+				>
+					{record?.to}
+				</p>
+			),
 		},
 		{
 			title: "Summa",
@@ -85,12 +154,20 @@ export const DebtTable = ({
 		{
 			title: "Izoh",
 			render: (text, record) => (
-				<button
-					className="quantityBtn"
-					onClick={(e) => handleClickSmallInfoModal(e, record?.id)}
-				>
-					<ChatDots size={16} />
-				</button>
+				<>
+					<button
+						className="quantityBtn clickDropdownBtn"
+						onClick={(e) => handleClickSmallInfoModal(e, record?.id)}
+					>
+						<ChatDots size={16} />
+						<div className="clickDropdownContent">
+							<span>
+								<Info size={16} />{" "}
+							</span>
+							{record?.desc}
+						</div>
+					</button>
+				</>
 			),
 		},
 		{

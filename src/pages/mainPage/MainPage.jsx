@@ -165,7 +165,7 @@ export default function MainPage() {
 					setBackspaceCount((prevCount) => prevCount + 1)
 					setTimeout(() => {
 						setBackspaceCount(0)
-					}, 200)
+					}, 150)
 				} else if (e.ctrlKey && e.key === "ArrowLeft") {
 					e.preventDefault()
 					setSidebar(false)

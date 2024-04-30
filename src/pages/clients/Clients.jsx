@@ -297,6 +297,7 @@ export default function Employees() {
 					miniModal={miniModal}
 					setMiniModal={setMiniModal}
 					darkMode={darkMode}
+					userInfo={userInfo}
 				/>
 			)}
 		</>

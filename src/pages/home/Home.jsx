@@ -186,7 +186,7 @@ export default function Home() {
 					onClick={handleDownload}
 					disabled={!state?.data?.length}
 				>
-					Yuklab olish <FilePdf />
+					Yuklab olish <FilePdf size={16} style={{ marginTop: "-4px" }} />
 				</button>
 			</div>
 		</>

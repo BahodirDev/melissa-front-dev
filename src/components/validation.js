@@ -24,6 +24,12 @@ const numberCheckAllow0 = (number) => {
 	else return null
 }
 
+const numberCheckAllowComma = (number) => {
+	if (!number) return "Qiymat kiritish majburiy"
+	else if (!/^[\d,]+$/.test(number)) return "Noto'g'ri qiymat"
+	else return null
+}
+
 const phoneNumberCheck = (number) => {
 	if (!number) return "Raqam kiritish majburiy"
 	else if (number.slice(-1) === "_") return "Noto'g'ri raqam"
@@ -43,6 +49,7 @@ export {
 	stringCheck,
 	numberCheck,
 	numberCheckAllow0,
+	numberCheckAllowComma,
 	phoneNumberCheck,
 	passwordCheck,
 	dateCompare,

@@ -631,9 +631,9 @@
 
 /* saerch */
 .search-wrapper {
-	position: sticky;
+	/* position: sticky;
 	z-index: 2;
-	top: -1px;
+	top: -1px; */
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
@@ -1062,8 +1062,42 @@ div.ant-d-table tr:nth-child(even) {
 	background-color: #6601a6;
 }
 
-/* extra info modal */
-
+/* css only dropdown on click */
+.clickDropdownBtn {
+	position: relative;
+}
+.clickDropdownBtn:focus .clickDropdownContent {
+	visibility: visible;
+	opacity: 1;
+}
+.clickDropdownBtn .clickDropdownContent {
+	position: absolute;
+	right: 40px;
+	bottom: 0;
+	z-index: 1;
+	max-width: 400px;
+	min-width: 200px;
+	max-height: 50px;
+	padding: 10px;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	background-color: var(--bg-light);
+	color: var(--color-dark);
+	box-shadow: var(--shadow-lg);
+	border-radius: var(--radius-md);
+	max-height: 50px;
+	width: max-content;
+	overflow: hidden;
+}
+.clickDropdownBtn .clickDropdownContent span svg {
+	color: var(--color-warning);
+	margin-top: -4px !important;
+}
+.dark .clickDropdownContent {
+	background-color: var(--d-bg-icon);
+	color: var(--d-color-input);
+}
 
 /*  */
 @keyframes fade-in {

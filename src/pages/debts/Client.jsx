@@ -64,7 +64,18 @@ const Client = () => {
 
 	const clearSearch = () => {}
 
-	const clearOnly = () => {}
+	const clearOnly = () => {
+		setWho("client")
+		setPerson("")
+		setType("cash")
+		setSumma(0)
+		setIsEnter("income")
+		setDesc("")
+
+		setObjId("")
+		setSubmitted(false)
+		setBtn_loading(false)
+	}
 
 	const handleAdd = () => {
 		setSubmitted(true)
