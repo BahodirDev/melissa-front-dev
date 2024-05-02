@@ -104,7 +104,6 @@ const AntTable = ({
 		{
 			title: "Mahsulot",
 			dataIndex: "goods_name",
-			// sorter: (a, b) => a.goods_name.localeCompare(b.goods_name),
 		},
 		{
 			title: "Kod",
@@ -141,12 +140,6 @@ const AntTable = ({
 		{
 			title: "Sana",
 			dataIndex: "product_date",
-			// defaultSortOrder: "descend",
-			// sorter: (a, b) =>
-			// 	moment(a.product_date).unix() - moment(b.product_date).unix(),
-			// render: (text) => {
-			// 	return <>{text.slice(0, 10)}</>
-			// },
 		},
 		{
 			title: "",

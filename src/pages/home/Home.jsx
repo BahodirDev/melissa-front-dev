@@ -129,12 +129,14 @@ export default function Home() {
 					addToStatsList={addToStatsList}
 					removeFromStatsList={removeFromStatsList}
 					selected={state?.data}
+					sidebar={sidebar}
 				/>
 				<StatsListTable
 					data={state?.data}
 					removeFromStatsList={removeFromStatsList}
 					handleQuantityChange={handleQuantityChange}
 					darkMode={darkMode}
+					sidebar={sidebar}
 				/>
 			</div>
 			<Pagination

@@ -11,6 +11,7 @@ import { toast } from "react-toastify"
 import { get, post, remove } from "../../customHook/api"
 import { DebtTable } from "../../components/debt tables/DebtTable"
 import Loader from "../../components/loader/Loader"
+import CurrencyInput from "react-currency-input-field"
 
 const Client = () => {
 	const [
@@ -101,8 +102,6 @@ const Client = () => {
 				}
 				post(`/debts/debts-post`, newObj).then((data) => {
 					if (data?.status === 201) {
-						// dispatch(addData(data?.data))
-						// dispatch(setQuantity())
 						clearAndClose()
 						toast.success("Oldi berdi muvoffaqiyatli kiritildi")
 					} else {
@@ -149,8 +148,12 @@ const Client = () => {
 		setLoading(true)
 		remove(`/debts/debts-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				// dispatch(removeCurrency(id))
-				// dispatch(setQuantity())
+				console.log(data)
+				setList((prev) =>
+					prev?.filter(
+						(item) => item?.transaction_id !== data?.data?.transaction_id
+					)
+				)
 				toast.success("Oldi / berdi muvoffaqiyatli o'chirildi")
 				clearAndClose()
 			} else {
@@ -384,17 +387,14 @@ const Client = () => {
 					<label>Summa / To'lov turi</label>
 
 					<div className="input-of-two">
-						<input
-							type="text"
-							placeholder="Qiymat kiriting"
+						<CurrencyInput
+							id="input-example"
+							name="input-name"
 							className="input input-of-two-second"
-							value={summa ? summa : ""}
-							onKeyPress={(e) => {
-								if (isNaN(e.key)) {
-									e.preventDefault()
-								}
-							}}
-							onChange={(e) => setSumma(e.target.value)}
+							placeholder="Qiymat kiriting"
+							groupSeparator={" "}
+							value={summa}
+							onValueChange={(value, name, values) => setSumma(value)}
 						/>
 						<Select
 							placeholder="To'lov turi"
@@ -482,7 +482,6 @@ const Client = () => {
 					</button>
 				</div>
 			</AddModal>
-
 			<Search
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}

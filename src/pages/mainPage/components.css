@@ -1066,6 +1066,9 @@ div.ant-d-table tr:nth-child(even) {
 .clickDropdownBtn {
 	position: relative;
 }
+.clickDropdownBtn svg {
+	pointer-events: none;
+}
 .clickDropdownBtn:focus .clickDropdownContent {
 	visibility: visible;
 	opacity: 1;

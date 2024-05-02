@@ -13,7 +13,7 @@ import {
 	Wallet,
 } from "@phosphor-icons/react"
 import moment from "moment"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import { useNavigate } from "react-router-dom"
 
@@ -32,12 +32,6 @@ export const DebtTable = ({
 		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
 		e.stopPropagation()
 		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
-	}
-
-	const handleClickSmallInfoModal = (e, id) => {
-		// showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
-		// e.stopPropagation()
-		// setLoc(window.innerHeight - e.clientY > 110 ? false : true)
 	}
 
 	let newArr =
@@ -155,10 +149,7 @@ export const DebtTable = ({
 			title: "Izoh",
 			render: (text, record) => (
 				<>
-					<button
-						className="quantityBtn clickDropdownBtn"
-						onClick={(e) => handleClickSmallInfoModal(e, record?.id)}
-					>
+					<button className="quantityBtn clickDropdownBtn">
 						<ChatDots size={16} />
 						<div className="clickDropdownContent">
 							<span>
@@ -244,12 +235,14 @@ export const DebtTable = ({
 }
 
 export const DebtTableEquity = ({ data, sidebar }) => {
+	const navigate = useNavigate()
+
 	let newArr =
 		data?.length &&
 		data?.map((item, idx) => {
 			return {
 				key: idx + 1,
-				id: item?.transaction_id,
+				id: item?.id,
 				name: item?.name,
 				debt: addComma(item?.debt),
 				equity: addComma(item?.equity),
@@ -259,7 +252,38 @@ export const DebtTableEquity = ({ data, sidebar }) => {
 	const columns = [
 		{
 			title: "Shaxs",
-			dataIndex: "name",
+			// dataIndex: "name",
+			render: (text, record) => (
+				<p
+				// onClick={() =>
+				// 	record?.status === "client"
+				// 		? navigate(`/clients/${record?.from}`, {
+				// 				state: {
+				// 					id: record?.id,
+				// 					name: record?.from,
+				// 					desc: "",
+				// 					tel: "",
+				// 					date: "",
+				// 				},
+				// 		  })
+				// 		: null
+				// }
+				// style={{
+				// 	textDecoration: `${
+				// 		record?.t_type === "income" && record?.status === "client"
+				// 			? "underline"
+				// 			: null
+				// 	}`,
+				// 	cursor: `${
+				// 		record?.t_type === "income" && record?.status === "client"
+				// 			? "pointer"
+				// 			: "default"
+				// 	}`,
+				// }}
+				>
+					{record?.name}
+				</p>
+			),
 		},
 		{
 			title: "Haqdorlik",

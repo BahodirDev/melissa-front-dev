@@ -9,6 +9,7 @@ export const StatsTable = ({
 	addToStatsList,
 	removeFromStatsList,
 	selected,
+	sidebar,
 }) => {
 	let arr2 =
 		data?.length &&
@@ -86,7 +87,7 @@ export const StatsTable = ({
 		<div
 			className="ant-d-table"
 			style={{
-				width: "50%",
+				width: sidebar ? "calc(50dvw - 155px)" : "50%",
 				height: "calc(100vh - 150px)",
 				overflow: "auto",
 			}}
@@ -109,6 +110,7 @@ export const StatsListTable = ({
 	removeFromStatsList,
 	handleQuantityChange,
 	darkMode,
+	sidebar,
 }) => {
 	let arr2 =
 		data?.length &&
@@ -206,7 +208,7 @@ export const StatsListTable = ({
 		<div
 			className="ant-d-table"
 			style={{
-				width: "50%",
+				width: sidebar ? "calc(50dvw - 155px)" : "50%",
 				height: "calc(100vh - 150px)",
 				overflow: "auto",
 			}}
