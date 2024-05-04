@@ -50,12 +50,14 @@ const AntReportTable = ({
 			data_q: Math.ceil(item?.reports_count),
 			data_per_box: Math.ceil(item?.reports_per_box_count),
 			data_client: item?.client ? item?.client : "Nomalum",
-			data_price_each:
-				addComma(
-					item?.isenter
-						? item?.reports_count_cost * item?.currency_amount
-						: item?.reports_count_price * item?.currency_amount
-				) + " so'm",
+			data_price_each: item?.isenter
+				? item?.currency === "$"
+					? item?.currency +
+					  item?.reports_count_cost +
+					  " - " +
+					  addComma(item?.reports_count_cost * item?.currency_amount)
+					: addComma(item?.reports_count_cost) + " so'm"
+				: addComma(item?.reports_count_price * item?.currency_amount) + " so'm",
 			data_price_total:
 				addComma(
 					item?.isenter

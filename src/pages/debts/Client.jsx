@@ -99,15 +99,37 @@ const Client = () => {
 					transaction_status: who,
 					transaction_summary: desc,
 					transaction_created_at: date ? new Date(date).toISOString() : null,
+
+					to: userInfo?.clients_name,
+					to_id: userInfo?.clients_id,
+					to_desc: userInfo?.clients_desc,
+					to_tel: userInfo?.clients_nomer,
+					to_date: userInfo?.clients_createdat,
 				}
 				post(`/debts/debts-post`, newObj).then((data) => {
 					if (data?.status === 201) {
 						clearAndClose()
+						console.log(data)
+						setList([
+							{
+								// transaction_id,
+								// details_from: { name, description, nomer, created_at },
+								// transaction_from,
+								// details_to: { name, description, nomer, created_at },
+								// transaction_to,
+								// transaction_status,
+								// transaction_money,
+								// transaction_money_type,
+								// transaction_type,
+								// transaction_summary,
+								// transaction_created_at,
+							},
+							...list,
+						])
 						toast.success("Oldi berdi muvoffaqiyatli kiritildi")
 					} else {
 						toast.error("Nomalum server")
 					}
-					// console.log(data)
 					setBtn_loading(false)
 				})
 			}
@@ -148,7 +170,6 @@ const Client = () => {
 		setLoading(true)
 		remove(`/debts/debts-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				console.log(data)
 				setList((prev) =>
 					prev?.filter(
 						(item) => item?.transaction_id !== data?.data?.transaction_id
@@ -482,6 +503,7 @@ const Client = () => {
 					</button>
 				</div>
 			</AddModal>
+
 			<Search
 				handleSearch={handleSearch}
 				clearSearch={clearSearch}

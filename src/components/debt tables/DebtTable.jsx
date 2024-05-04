@@ -40,10 +40,19 @@ export const DebtTable = ({
 			return {
 				key: idx + 1,
 				id: item?.transaction_id,
-				from: item?.from_name,
+
+				from: item?.details_from?.name,
 				from_id: item?.transaction_from,
+				from_desc: item?.details_from?.description,
+				from_tel: item?.details_from?.nomer,
+				from_date: item?.details_from?.created_at,
+
+				to: item?.details_to?.name,
 				to_id: item?.transaction_to,
-				to: item?.to_name,
+				to_desc: item?.details_to?.description,
+				to_tel: item?.details_to?.nomer,
+				to_date: item?.details_to?.created_at,
+
 				status: item?.transaction_status,
 				summa: addComma(item?.transaction_money),
 				type: item?.transaction_money_type,
@@ -69,9 +78,9 @@ export const DebtTable = ({
 									state: {
 										id: record?.from_id,
 										name: record?.from,
-										desc: "",
-										tel: "",
-										date: "",
+										desc: record?.from_desc,
+										tel: record?.from_tel,
+										date: record?.from_date,
 									},
 							  })
 							: null
@@ -85,7 +94,7 @@ export const DebtTable = ({
 						cursor: `${
 							record?.t_type === "income" && record?.status === "client"
 								? "pointer"
-								: "default"
+								: "auto"
 						}`,
 					}}
 				>
@@ -103,9 +112,9 @@ export const DebtTable = ({
 									state: {
 										id: record?.to_id,
 										name: record?.to,
-										desc: "",
-										tel: "",
-										date: "",
+										desc: record?.to_desc,
+										tel: record?.to_tel,
+										date: record?.to_date,
 									},
 							  })
 							: null
@@ -119,7 +128,7 @@ export const DebtTable = ({
 						cursor: `${
 							record?.t_type === "outcome" && record?.status === "client"
 								? "pointer"
-								: "default"
+								: "auto"
 						}`,
 					}}
 				>
@@ -237,13 +246,21 @@ export const DebtTable = ({
 export const DebtTableEquity = ({ data, sidebar }) => {
 	const navigate = useNavigate()
 
+	console.log(data)
+
 	let newArr =
 		data?.length &&
 		data?.map((item, idx) => {
 			return {
 				key: idx + 1,
 				id: item?.id,
-				name: item?.name,
+				status: item?.details?.status,
+
+				name: item?.details?.name,
+				name_id: item?.id,
+				name_desc: item?.details?.description,
+				name_tel: item?.details?.nomer,
+
 				debt: addComma(item?.debt),
 				equity: addComma(item?.equity),
 			}
@@ -252,34 +269,27 @@ export const DebtTableEquity = ({ data, sidebar }) => {
 	const columns = [
 		{
 			title: "Shaxs",
-			// dataIndex: "name",
 			render: (text, record) => (
 				<p
-				// onClick={() =>
-				// 	record?.status === "client"
-				// 		? navigate(`/clients/${record?.from}`, {
-				// 				state: {
-				// 					id: record?.id,
-				// 					name: record?.from,
-				// 					desc: "",
-				// 					tel: "",
-				// 					date: "",
-				// 				},
-				// 		  })
-				// 		: null
-				// }
-				// style={{
-				// 	textDecoration: `${
-				// 		record?.t_type === "income" && record?.status === "client"
-				// 			? "underline"
-				// 			: null
-				// 	}`,
-				// 	cursor: `${
-				// 		record?.t_type === "income" && record?.status === "client"
-				// 			? "pointer"
-				// 			: "default"
-				// 	}`,
-				// }}
+					onClick={() =>
+						record?.status === "client"
+							? navigate(`/clients/${record?.from}`, {
+									state: {
+										id: record?.name_id,
+										name: record?.name,
+										desc: record?.name_desc,
+										tel: record?.name_tel,
+										date: record?.name_date,
+									},
+							  })
+							: null
+					}
+					style={{
+						textDecoration: `${
+							record?.status === "client" ? "underline" : null
+						}`,
+						cursor: `${record?.status === "client" ? "pointer" : "auto"}`,
+					}}
 				>
 					{record?.name}
 				</p>

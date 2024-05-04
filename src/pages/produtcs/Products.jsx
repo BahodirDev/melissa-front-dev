@@ -443,7 +443,10 @@ export default function Products() {
 	const temporaryFunction = (id) => {
 		get(`/products/products-statistics-list/${id}`).then((data) => {
 			if (data?.status === 201) toast.success("Muvoffaqiyatli bajarildi")
-			else console.log(data)
+			else {
+				toast.error("Nomalum server xatolik")
+				// console.log(data)
+			}
 		})
 	}
 

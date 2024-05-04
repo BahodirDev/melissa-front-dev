@@ -58,9 +58,14 @@ const AntTable = ({
 				products_count: Math.ceil(+item?.products_count),
 				img: item?.img_url,
 				products_count_cost:
-					addComma(
-						item?.products_count_cost * item?.currency_id?.currency_amount
-					) + " so'm",
+					item?.currency_id?.currency_symbol === "$"
+						? item?.currency_id?.currency_symbol +
+						  item?.products_count_cost +
+						  " - " +
+						  addComma(
+								item?.products_count_cost * item?.currency_id?.currency_amount
+						  )
+						: addComma(item?.products_count_cost) + " so'm",
 				actual_count: item?.actual_count,
 				products_count_price:
 					addComma(
