@@ -102,6 +102,17 @@ export const productSlice = createSlice({
 
 			if (index !== -1) state.dataProduct.splice(index, 1)
 		},
+		editCount: (state, action) => {
+			const index = state.dataProduct.findIndex(
+				(item) => item.products_id === action.payload
+			)
+			if (index !== -1) {
+				state.dataProduct[index] = {
+					...state.dataProduct[index],
+					actual_count: 3,
+				}
+			}
+		},
 	},
 })
 
@@ -114,5 +125,6 @@ export const {
 	addData,
 	editData,
 	removeProduct,
+	editCount,
 } = productSlice.actions
 export default productSlice.reducer

@@ -18,10 +18,12 @@ const apiRequest = async (method, endpoint, data) => {
 	}
 }
 
-export const downloadFile = (id) => {
-	axios
-		.get(`/products/products-sale-file/${id}`, { responseType: "blob" })
-		.then((response) => {
+export const downloadFile = async (id) => {
+	try {
+		const response = await axios.get(`/products/products-sale-file/${id}`, {
+			responseType: "blob",
+		})
+		if (response.status === 200 || response?.status === 201) {
 			const blob = new Blob([response.data], {
 				type: response.headers["content-type"],
 			})
@@ -40,19 +42,25 @@ export const downloadFile = (id) => {
 			a.download = `Royxat ${formattedDate}_${formattedTime}.pdf`
 			a.click()
 			window.URL.revokeObjectURL(url)
-		})
+		} else {
+			toast.error("Nomalum server xatolik")
+		}
+	} catch (error) {
+		toast.error("Nomalum server xatolik")
+	}
 }
 
 export const downloadExcelFile = async (data) => {
-	const fileUrl = `${process.env.REACT_APP_URL}reports/reports-file-download`
+	try {
+		const fileUrl = `${process.env.REACT_APP_URL}reports/reports-file-download`
 
-	axios({
-		url: fileUrl,
-		method: "POST",
-		responseType: "blob",
-		data: { data },
-	})
-		.then((response) => {
+		const response = await axios.post(
+			fileUrl,
+			{ data },
+			{ responseType: "blob" }
+		)
+
+		if (response.status === 200 || response?.status === 201) {
 			const url = window.URL.createObjectURL(new Blob([response.data]))
 			const link = document.createElement("a")
 			link.href = url
@@ -73,10 +81,12 @@ export const downloadExcelFile = async (data) => {
 			document.body.appendChild(link)
 			link.click()
 			document.body.removeChild(link)
-		})
-		.catch((error) => {
-			console.error("There was a problem with your Axios request:", error)
-		})
+		} else {
+			toast.error("Nomalum server xatolik")
+		}
+	} catch (error) {
+		toast.error("Nomalum server xatolik")
+	}
 }
 
 export const downloadNewList = (arr) => {
@@ -89,27 +99,34 @@ export const downloadNewList = (arr) => {
 			}
 		)
 		.then((response) => {
-			const blob = new Blob([response.data], {
-				type: response.headers["content-type"],
-			})
-			const url = window.URL.createObjectURL(blob)
-			const a = document.createElement("a")
-			a.href = url
+			if (response.status === 200 || 201) {
+				const blob = new Blob([response.data], {
+					type: response.headers["content-type"],
+				})
+				const url = window.URL.createObjectURL(blob)
+				const a = document.createElement("a")
+				a.href = url
 
-			const now = new Date()
-			const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-				.toString()
-				.padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`
-			const formattedTime = `${now.getHours().toString().padStart(2, "0")}-${now
-				.getMinutes()
-				.toString()
-				.padStart(2, "0")}-${now.getSeconds().toString().padStart(2, "0")}`
-			a.download = `Royxat ${formattedDate}_${formattedTime}.pdf`
-			a.click()
-			window.URL.revokeObjectURL(url)
+				const now = new Date()
+				const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+					.toString()
+					.padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`
+				const formattedTime = `${now
+					.getHours()
+					.toString()
+					.padStart(2, "0")}-${now
+					.getMinutes()
+					.toString()
+					.padStart(2, "0")}-${now.getSeconds().toString().padStart(2, "0")}`
+				a.download = `Royxat ${formattedDate}_${formattedTime}.pdf`
+				a.click()
+				window.URL.revokeObjectURL(url)
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
 		})
 		.catch((error) => {
-			// Handle errors
+			toast.error("Nomalum server xatolik")
 		})
 }
 

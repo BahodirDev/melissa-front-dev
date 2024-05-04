@@ -14,6 +14,7 @@ import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { setData as setDataGood } from "../../components/reducers/good"
 import {
 	addData,
+	editCount,
 	editData,
 	removeProduct,
 	setAmount,
@@ -440,14 +441,27 @@ export default function Products() {
 		})
 	}
 
-	const temporaryFunction = (id) => {
-		get(`/products/products-statistics-list/${id}`).then((data) => {
-			if (data?.status === 201) toast.success("Muvoffaqiyatli bajarildi")
-			else {
-				toast.error("Nomalum server xatolik")
-				// console.log(data)
-			}
-		})
+	const temporaryFunction = (id, count) => {
+		if (count < 3)
+			get(`/products/products-statistics-list/${id}`).then((data) => {
+				if (data?.status === 201) {
+					toast.success("Muvoffaqiyatli bajarildi")
+					dispatch(editCount(id))
+					if (searchSubmitted) {
+						const index = filteredData?.data.findIndex(
+							(item) => item.products_id === id
+						)
+						if (index !== -1) {
+							const updatedData = [...filteredData.data]
+							updatedData[index] = { ...updatedData[index], actual_count: 3 }
+							setFilteredData({ ...filteredData, data: updatedData })
+						}
+					}
+				} else {
+					toast.error("Nomalum server xatolik")
+					// console.log(data)
+				}
+			})
 	}
 
 	return (

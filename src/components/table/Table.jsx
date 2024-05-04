@@ -155,7 +155,7 @@ const AntTable = ({
 						<input
 							type="checkbox"
 							onChange={() => {
-								temporaryFunction(record?.id)
+								temporaryFunction(record?.id, record?.actual_count)
 							}}
 							checked={record?.actual_count > 2}
 						/>

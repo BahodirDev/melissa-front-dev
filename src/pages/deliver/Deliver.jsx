@@ -140,7 +140,7 @@ function Deliver() {
 				toast.success("Ta'minotchi muvoffaqiyatli o'chirildi")
 				clearAndClose()
 			} else if (data?.response?.data?.error === "PRODUCT_FOUND") {
-				toast.warn("Bu ta'minotchida qarzdorlik mavjud")
+				toast.warn("Bu ta'minotchida mahsulot mavjud")
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
