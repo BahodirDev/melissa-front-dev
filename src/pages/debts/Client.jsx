@@ -90,6 +90,7 @@ const Client = () => {
 					: person?.deliver_id
 					? person?.deliver_id
 					: person?.user_id
+
 				let newObj = {
 					transaction_money: summa,
 					transaction_money_type: type,
@@ -99,20 +100,12 @@ const Client = () => {
 					transaction_status: who,
 					transaction_summary: desc,
 					transaction_created_at: date ? new Date(date).toISOString() : null,
-
-					to: userInfo?.clients_name,
-					to_id: userInfo?.clients_id,
-					to_desc: userInfo?.clients_desc,
-					to_tel: userInfo?.clients_nomer,
-					to_date: userInfo?.clients_createdat,
 				}
 				post(`/debts/debts-post`, newObj).then((data) => {
 					if (data?.status === 201) {
-						clearAndClose()
-						console.log(data)
 						setList([
 							{
-								// transaction_id,
+								// transaction_id: data?.data?.id,
 								// details_from: { name, description, nomer, created_at },
 								// transaction_from,
 								// details_to: { name, description, nomer, created_at },
@@ -126,6 +119,8 @@ const Client = () => {
 							},
 							...list,
 						])
+						console.log(data?.data)
+						// clearAndClose()
 						toast.success("Oldi berdi muvoffaqiyatli kiritildi")
 					} else {
 						toast.error("Nomalum server")

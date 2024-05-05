@@ -77,7 +77,7 @@ const AntTable = ({
 							item?.products_count_cost *
 							item?.currency_id?.currency_amount
 					) + " so'm",
-				product_date: `${moment(item?.products_createdat).format(
+				product_date: `${moment(item?.products_updatedat).format(
 					"YYYY/MM/DD HH:mm"
 				)}`,
 			}

@@ -246,8 +246,6 @@ export const DebtTable = ({
 export const DebtTableEquity = ({ data, sidebar }) => {
 	const navigate = useNavigate()
 
-	console.log(data)
-
 	let newArr =
 		data?.length &&
 		data?.map((item, idx) => {

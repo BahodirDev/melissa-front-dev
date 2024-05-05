@@ -39,8 +39,12 @@ const AntReportTable = ({
 			id: item?.reports_id,
 			user_info: item?.user_info,
 			data_store: item?.store,
-			data_product: item?.goods_name,
-			data_code: item?.goods_code,
+			data_product: item?.current_goods_name
+				? item?.current_goods_name
+				: item?.goods_name,
+			data_code: item?.current_goods_code
+				? item?.current_goods_code
+				: item?.goods_code,
 			is_enter: item?.isenter,
 			// data_box: item?.reports_box_count,
 			deliver: item?.deliver ? item?.deliver : "Nomalum",

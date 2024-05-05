@@ -18,8 +18,10 @@ import "./client.css"
 import { toast } from "react-toastify"
 import Search from "../../components/search/Search"
 import InfoItem from "../../components/info_item/InfoItem"
-import { Info, UsersFour } from "@phosphor-icons/react"
+import { CaretDown, Info, UsersFour } from "@phosphor-icons/react"
 import AddModal from "../../components/add/AddModal"
+import { Select } from "antd"
+import format_phone_number from "../../components/format_phone_number/format_phone_number"
 
 export default function Employees() {
 	const [
@@ -47,6 +49,7 @@ export default function Employees() {
 	const state = useSelector((state) => state.client)
 	const dispatch = useDispatch()
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [otherClient, setOtherClient] = useState({})
 
 	useEffect(() => {
 		dispatch(setLoading(true))
@@ -97,6 +100,7 @@ export default function Employees() {
 				clients_desc: desc,
 			}
 			if (objId) {
+				// newClient.emerged_id = otherClient?.clients_id
 				patch(`/clients/clients-patch/${objId}`, newClient).then((data) => {
 					if (data?.status === 201) {
 						dispatch(editData(data?.data))
@@ -183,6 +187,52 @@ export default function Employees() {
 	return (
 		<>
 			<AddModal name={objId ? "Mijoz tahrirlash" : "Mijoz qo'shish"}>
+				{objId ? (
+					<div
+						className={`input-wrapper modal-form ${darkMode ? "dark" : null}`}
+					>
+						<label>Mijoz biriktirish</label>
+						<Select
+							showSearch
+							allowClear
+							placeholder="Mijoz tanlang"
+							className="select"
+							value={
+								otherClient?.clients_name
+									? `${otherClient.clients_name} - ${format_phone_number(
+											otherClient.clients_nomer
+									  )}`
+									: null
+							}
+							onChange={(e) =>
+								e ? setOtherClient(JSON.parse(e)) : setOtherClient({})
+							}
+						>
+							{state?.data?.length
+								? state?.data.map((item, idx) => {
+										if (!item?.isdelete) {
+											return (
+												<Select.Option
+													key={idx}
+													className={`option-shrink ${
+														darkMode ? "dark" : null
+													}`}
+													value={JSON.stringify(item)}
+												>
+													<div>
+														<span>{item?.clients_name} - </span>
+														<span>
+															{format_phone_number(item?.clients_nomer)}
+														</span>
+													</div>
+												</Select.Option>
+											)
+										}
+								  })
+								: null}
+						</Select>
+					</div>
+				) : null}
 				<div
 					className={`input-wrapper modal-form regular 
 					${submitted && stringCheck(new_name.trim()) !== null && "error"}  ${
