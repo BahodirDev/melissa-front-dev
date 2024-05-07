@@ -459,8 +459,8 @@ const Client = () => {
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
-						submitted && stringCheck(date) !== null && "error"
-					} ${darkMode ? "dark" : null}`}
+						darkMode ? "dark" : null
+					}`}
 				>
 					<label>Sana</label>
 					<input
@@ -470,9 +470,6 @@ const Client = () => {
 						value={date ? date : ""}
 						onChange={(e) => setDate(e.target.value)}
 					/>
-					<div className="validation-field">
-						<span>{submitted && stringCheck(date)}</span>
-					</div>
 				</div>
 				<div className="modal-btn-group">
 					<button

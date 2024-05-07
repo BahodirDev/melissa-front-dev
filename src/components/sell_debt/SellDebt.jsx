@@ -689,10 +689,8 @@ const SellDebt = ({
 										setActiveElementIndex(4)
 										setProductObj(JSON.parse(e))
 										setProductP(
-											roundToNearestHundred(
-												JSON.parse(e).products_count_price *
-													JSON.parse(e).currency_id.currency_amount
-											)
+											JSON.parse(e).products_count_price *
+												JSON.parse(e).currency_id.currency_amount
 										)
 									} else setProductObj({})
 								}}
@@ -752,12 +750,16 @@ const SellDebt = ({
 							}`}
 						>
 							<label>
-								Quti (
-								{productObj.products_box_count
-									? productObj.products_box_count
-									: 0}
-								) - [{productObj.each_box_count ? productObj.each_box_count : 0}
-								]
+								<b>
+									{productObj.products_box_count
+										? productObj.products_box_count
+										: 0}
+								</b>{" "}
+								quti, har bir qutida{" "}
+								<b>
+									{productObj.each_box_count ? productObj.each_box_count : 0}
+								</b>{" "}
+								dona
 							</label>
 						</div>
 						<div
