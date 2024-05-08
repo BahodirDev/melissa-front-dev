@@ -689,8 +689,10 @@ const SellDebt = ({
 										setActiveElementIndex(4)
 										setProductObj(JSON.parse(e))
 										setProductP(
-											JSON.parse(e).products_count_price *
+											(
+												JSON.parse(e).products_count_price *
 												JSON.parse(e).currency_id.currency_amount
+											).toFixed(0)
 										)
 									} else setProductObj({})
 								}}
