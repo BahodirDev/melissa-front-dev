@@ -217,7 +217,7 @@ const SellDebt = ({
 						const prevList = productList.filter(
 							(item) => item?.product_id !== productObj?.products_id
 						)
-						setProductList([...prevList, newObj])
+						setProductList([newObj, ...prevList])
 						setTotalPriceSellList(
 							(prev) =>
 								prev -
@@ -244,7 +244,7 @@ const SellDebt = ({
 					code: productObj?.goods_id?.goods_code,
 					each_box_count: productObj?.each_box_count,
 				}
-				setProductList([...productList, newObj])
+				setProductList([newObj, ...productList])
 				setTotalPriceSellList((prev) => prev + productP * productQ)
 				clear()
 				setActiveElementIndex(3)
@@ -313,27 +313,11 @@ const SellDebt = ({
 					each_box_count: item?.each_box_count,
 				}
 			})
+			newArr.reverse()
 			patch("/products/products-sale", { products: newArr }).then((data) => {
 				if (data?.status === 200 || data?.status === 201) {
-					get("/products/products-list").then((dataP) => {
-						if (dataP?.status === 200) {
-							dispatch(setDataProduct(dataP?.data?.data))
-							dispatch(setQuantity(dataP?.data?.hisob?.kategoriya))
-							dispatch(setAmount(dataP?.data?.hisob?.soni))
-							dispatch(setSum(dataP?.data?.hisob?.umumiyQiymati))
-						}
-					})
-					get("/reports/reports-list").then((dataR) => {
-						if (dataR?.status === 200) {
-							dispatch(setDataReport(dataR?.data?.data))
-							dispatch(setCapital(dataR?.data?.hisob?.totalProductCost))
-							dispatch(setIncome(dataR?.data?.hisob?.totalCostPilus))
-							dispatch(setOutcome(dataR?.data?.hisob?.totalCostMinus))
-						}
-					})
 					clearAndClose()
 					toast.success("Mahsulot muvoffaqiyatli sotildi")
-
 					confirmDownloadModal(downloadFile, data?.data?.report_id, darkMode)
 				} else if (data?.response?.data?.message === "Mahsulot kam") {
 					let productNames = ""

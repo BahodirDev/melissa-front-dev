@@ -47,7 +47,7 @@ const Client = () => {
 	const [person, setPerson] = useState("")
 	const [type, setType] = useState("cash")
 	const [summa, setSumma] = useState(0)
-	const [isEnter, setIsEnter] = useState("income")
+	const [isEnter, setIsEnter] = useState("outcome")
 	const [desc, setDesc] = useState("")
 	const [date, setDate] = useState("")
 
@@ -70,7 +70,7 @@ const Client = () => {
 		setPerson("")
 		setType("cash")
 		setSumma(0)
-		setIsEnter("income")
+		setIsEnter("outcome")
 		setDesc("")
 
 		setObjId("")
@@ -101,26 +101,79 @@ const Client = () => {
 					transaction_summary: desc,
 					transaction_created_at: date ? new Date(date).toISOString() : null,
 				}
+
 				post(`/debts/debts-post`, newObj).then((data) => {
 					if (data?.status === 201) {
-						setList([
-							{
-								// transaction_id: data?.data?.id,
-								// details_from: { name, description, nomer, created_at },
-								// transaction_from,
-								// details_to: { name, description, nomer, created_at },
-								// transaction_to,
-								// transaction_status,
-								// transaction_money,
-								// transaction_money_type,
-								// transaction_type,
-								// transaction_summary,
-								// transaction_created_at,
-							},
-							...list,
-						])
-						console.log(data?.data)
-						// clearAndClose()
+						let dataObj = {
+							transaction_id: data?.data?.[0]?.transaction_id,
+							transaction_from: data?.data?.[0]?.transaction_from,
+							transaction_to: data?.data?.[0]?.transaction_to,
+							transaction_status: data?.data?.[0]?.transaction_status,
+							transaction_money: data?.data?.[0]?.transaction_money,
+							transaction_money_type: data?.data?.[0]?.transaction_money_type,
+							transaction_type: data?.data?.[0]?.transaction_type,
+							transaction_summary: data?.data?.[0]?.transaction_summary,
+							transaction_created_at: data?.data?.[0]?.transaction_created_at,
+						}
+
+						if (who === "client") {
+							if (isEnter === "income") {
+								dataObj.details_from = {
+									name: person?.clients_name,
+									description: person?.clients_desc,
+									nomer: person?.clients_nomer,
+									created_at: person?.clients_createdat,
+								}
+								dataObj.details_to = {
+									name: userInfo?.name,
+								}
+							} else if (isEnter === "outcome") {
+								dataObj.details_from = {
+									name: userInfo?.name,
+								}
+								dataObj.details_to = {
+									name: person?.clients_name,
+									description: person?.clients_desc,
+									nomer: person?.clients_nomer,
+									created_at: person?.clients_createdat,
+								}
+							}
+						} else if (who === "deliver") {
+							if (isEnter === "income") {
+								dataObj.details_from = {
+									name: person?.deliver_name,
+								}
+								dataObj.details_to = {
+									name: userInfo?.name,
+								}
+							} else if (isEnter === "outcome") {
+								dataObj.details_from = {
+									name: userInfo?.name,
+								}
+								dataObj.details_to = {
+									name: person?.deliver_name,
+								}
+							}
+						} else if (who === "user") {
+							if (isEnter === "income") {
+								dataObj.details_from = {
+									name: person?.user_name,
+								}
+								dataObj.details_to = {
+									name: userInfo?.name,
+								}
+							} else if (isEnter === "outcome") {
+								dataObj.details_from = {
+									name: userInfo?.name,
+								}
+								dataObj.details_to = {
+									name: person?.user_name,
+								}
+							}
+						}
+
+						setList([dataObj, ...list])
+						clearAndClose()
 						toast.success("Oldi berdi muvoffaqiyatli kiritildi")
 					} else {
 						toast.error("Nomalum server")
@@ -136,7 +189,7 @@ const Client = () => {
 		setPerson("")
 		setType("cash")
 		setSumma(0)
-		setIsEnter("income")
+		setIsEnter("outcome")
 		setDesc("")
 
 		setObjId("")
@@ -379,18 +432,18 @@ const Client = () => {
 					>
 						<Select.Option
 							className={`${darkMode ? "dark" : null}`}
-							value={"income"}
-						>
-							<div>
-								<span>Olindi</span>
-							</div>
-						</Select.Option>
-						<Select.Option
-							className={`${darkMode ? "dark" : null}`}
 							value={"outcome"}
 						>
 							<div>
 								<span>Berildi</span>
+							</div>
+						</Select.Option>
+						<Select.Option
+							className={`${darkMode ? "dark" : null}`}
+							value={"income"}
+						>
+							<div>
+								<span>Olindi</span>
 							</div>
 						</Select.Option>
 					</Select>

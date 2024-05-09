@@ -1073,6 +1073,9 @@ div.ant-d-table tr:nth-child(even) {
 	visibility: visible;
 	opacity: 1;
 }
+.clickDropdownBtn:active {
+	transform: scale(0.98);
+}
 .clickDropdownBtn .clickDropdownContent {
 	position: absolute;
 	right: 40px;

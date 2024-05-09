@@ -69,7 +69,6 @@ export const DebtTable = ({
 	const columns = [
 		{
 			title: "Kimdan",
-			// dataIndex: "from",
 			render: (text, record) => (
 				<p
 					onClick={() =>
@@ -89,7 +88,7 @@ export const DebtTable = ({
 						textDecoration: `${
 							record?.t_type === "income" && record?.status === "client"
 								? "underline"
-								: null
+								: "none"
 						}`,
 						cursor: `${
 							record?.t_type === "income" && record?.status === "client"
@@ -123,7 +122,7 @@ export const DebtTable = ({
 						textDecoration: `${
 							record?.t_type === "outcome" && record?.status === "client"
 								? "underline"
-								: null
+								: "none"
 						}`,
 						cursor: `${
 							record?.t_type === "outcome" && record?.status === "client"

@@ -39,7 +39,7 @@
 }
 
 .debt-switch button:active {
-	transform: scale(0.95);
+	transform: scale(0.98);
 	color: var(--color-primary);
 	background: var(--bg-icon);
 }
