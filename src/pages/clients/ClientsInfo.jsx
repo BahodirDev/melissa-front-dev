@@ -85,6 +85,7 @@ const ClientsInfo = () => {
 					removeFromList={removeFromList}
 					userInfo={userInfo?.role}
 					darkMode={darkMode}
+					setList={setList}
 				/>
 			)}
 		</>

@@ -18,6 +18,49 @@ const apiRequest = async (method, endpoint, data) => {
 	}
 }
 
+export const downloadMultipleFiles = (data) => {
+	axios
+		.post(
+			`/products/products-file`,
+			{
+				data,
+			},
+			{
+				responseType: "blob",
+			}
+		)
+		.then((response) => {
+			if (response.status === 200 || 201) {
+				const blob = new Blob([response.data], {
+					type: response.headers["content-type"],
+				})
+				const url = window.URL.createObjectURL(blob)
+				const a = document.createElement("a")
+				a.href = url
+
+				const now = new Date()
+				const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+					.toString()
+					.padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`
+				const formattedTime = `${now
+					.getHours()
+					.toString()
+					.padStart(2, "0")}-${now
+					.getMinutes()
+					.toString()
+					.padStart(2, "0")}-${now.getSeconds().toString().padStart(2, "0")}`
+				a.download = `Royxat ${formattedDate}_${formattedTime}.pdf`
+				a.click()
+				window.URL.revokeObjectURL(url)
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+		})
+		.catch((error) => {
+			toast.error("Nomalum server xatolik")
+		})
+}
+
 export const downloadFile = async (id) => {
 	try {
 		const response = await axios.get(`/products/products-sale-file/${id}`, {
@@ -50,7 +93,7 @@ export const downloadFile = async (id) => {
 	}
 }
 
-export const downloadExcelFile = async (data) => {
+export const downloadExcelFile = async (data, setLoading) => {
 	try {
 		const fileUrl = `${process.env.REACT_APP_URL}reports/reports-file-download`
 
@@ -84,8 +127,10 @@ export const downloadExcelFile = async (data) => {
 		} else {
 			toast.error("Nomalum server xatolik")
 		}
+		setLoading(false)
 	} catch (error) {
 		toast.error("Nomalum server xatolik")
+		setLoading(false)
 	}
 }
 

@@ -80,6 +80,7 @@ export default function Reports() {
 	const [limit, setLimit] = useState(20)
 	const [totalPages, setTotalPage] = useState(1)
 	const didMount = useRef(false)
+	const [downloadBtnLoading, setDownloadBtnLoading] = useState(false)
 
 	// filter
 	const [filteredData, setFilteredData] = useState({})
@@ -288,6 +289,7 @@ export default function Reports() {
 	}
 
 	const handleDownload = () => {
+		setDownloadBtnLoading(true)
 		let dataToDownload
 		if (dateRange?.length) {
 			let filterObj = {
@@ -310,7 +312,7 @@ export default function Reports() {
 				filterObj
 			).then((data) => {
 				if (data.status === 200) {
-					downloadExcelFile(data?.data?.data)
+					downloadExcelFile(data?.data?.data, setDownloadBtnLoading)
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
@@ -327,7 +329,7 @@ export default function Reports() {
 			return
 		}
 
-		downloadExcelFile(dataToDownload)
+		downloadExcelFile(dataToDownload, setDownloadBtnLoading)
 	}
 
 	return (
@@ -538,8 +540,19 @@ export default function Reports() {
 						type="button"
 						className={`filter-btn ${darkMode ? "dark" : null}`}
 						onClick={handleDownload}
+						disabled={downloadBtnLoading}
 					>
-						Yuklab olish <MicrosoftExcelLogo />
+						<nobr>
+							Yuklab olish <MicrosoftExcelLogo />{" "}
+							{downloadBtnLoading ? (
+								<span
+									className="spinner-grow spinner-grow-sm"
+									role="status"
+									aria-hidden="true"
+									style={{ marginLeft: "5px" }}
+								></span>
+							) : null}
+						</nobr>
 					</button>
 				</div>
 			</div>

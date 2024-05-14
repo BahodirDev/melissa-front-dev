@@ -149,15 +149,10 @@ export default function MainPage() {
 					e.key === "~" ||
 					e.key === "Ё"
 				) {
-					e.preventDefault()
-					setshowDropdown("")
-					setAddModalVisible(false)
-					setSDModalVisible(false)
-					setTimeout(() => {
-						setAddModalDisplay("none")
-						setSDModalDisplay("none")
-					}, 300)
-					inputRef.current?.focus()
+					if (!addModalVisible && !SDModalVisible) {
+						e.preventDefault()
+						inputRef.current?.focus()
+					}
 				} else if (
 					e.key === "Backspace" &&
 					inputRef.current === document.activeElement

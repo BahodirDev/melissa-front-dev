@@ -131,8 +131,9 @@ const AntTable = ({
 			dataIndex: "products_count",
 		},
 		{
-			title: <nobr>Narx</nobr>,
-			dataIndex: "products_count_cost",
+			title: userRole === 1 ? <nobr>Narx</nobr> : null,
+			render: (text, record) =>
+				userRole === 1 ? record?.products_count_cost : null,
 		},
 		{
 			title: <nobr>Sotuv narxi</nobr>,
