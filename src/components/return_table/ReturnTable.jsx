@@ -3,7 +3,13 @@ import moment from "moment/moment"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import format_phone_number from "../format_phone_number/format_phone_number"
-import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react"
+import {
+	ChatDots,
+	DotsThreeVertical,
+	Info,
+	PencilSimple,
+	Trash,
+} from "@phosphor-icons/react"
 import { useState } from "react"
 import NoData from "../noData/NoData"
 
@@ -30,17 +36,17 @@ const ReturnTable = ({
 			return {
 				key: idx + 1,
 				id: item?.return_id,
-				name: item?.return_name,
-				store: item?.return_store,
+				name: item?.pack?.product_name + " - " + item?.pack?.product_code,
+				store: item?.pack?.store_name,
 				count: Math.ceil(item?.return_count),
 				cost_each: addComma(item?.return_cost) + " so'm",
 				cost_total: addComma(item?.return_cost * item?.return_count) + " so'm",
 				reason: item?.return_case ? item?.return_case : "Qo'shimcha ma'lumot",
 				client:
-					item?.clients?.clients_name +
+					item?.pack?.client_name +
 					" - " +
-					format_phone_number(item?.clients?.clients_nomer),
-				data: moment(item?.return_createdat).format("YYYY/MM/DD"),
+					format_phone_number(item?.pack?.client_nomer),
+				data: moment(item?.return_createdat).format("YYYY/MM/DD HH:mm"),
 			}
 		})
 
@@ -63,7 +69,19 @@ const ReturnTable = ({
 		},
 		{
 			title: "Izoh",
-			dataIndex: "reason",
+			render: (text, record) => (
+				<>
+					<button className="quantityBtn clickDropdownBtn">
+						<ChatDots size={16} />
+						<div className="clickDropdownContent">
+							<span>
+								<Info size={16} />{" "}
+							</span>
+							{record?.reason}
+						</div>
+					</button>
+				</>
+			),
 		},
 		{
 			title: "Miqdor",

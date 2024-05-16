@@ -218,6 +218,8 @@ export default function Products() {
 				if (newDate) {
 					setBtnLoading(true)
 					newProductObj.products_createdat = newDate
+						? new Date(newDate).toISOString()
+						: new Date().toISOString()
 					patch(`/products/products-patch/${objId}`, newProductObj).then(
 						(data) => {
 							if (data?.status === 200 || data?.status === 201) {
