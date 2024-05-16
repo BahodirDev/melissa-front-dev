@@ -253,7 +253,8 @@ export const DebtTableEquity = ({ data, sidebar }) => {
 				id: item?.id,
 				status: item?.details?.status,
 
-				name: item?.details?.name,
+				// name: item?.details?.name,
+				name: item?.name,
 				name_id: item?.id,
 				name_desc: item?.details?.description,
 				name_tel: item?.details?.nomer,

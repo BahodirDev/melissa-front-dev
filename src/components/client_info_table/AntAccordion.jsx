@@ -14,6 +14,8 @@ import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadM
 import {
 	downloadFile,
 	downloadMultipleFiles,
+	patch,
+	post,
 	remove,
 } from "../../customHook/api"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
@@ -30,6 +32,9 @@ const AntdAccordion = ({
 	const [idList, setIdList] = useState([])
 	const [edit, setEdit] = useState("")
 	const [newList, setNewList] = useState([])
+	const [editArr, setEditArr] = useState([])
+	const [prevCountList, setPrevCountList] = useState([])
+	const [prevObj, setPrevObj] = useState([])
 
 	const handleChange = (e, id) => {
 		if (e.target.checked) {
@@ -55,24 +60,119 @@ const AntdAccordion = ({
 
 	const handleQuantityChange = (id, q) => {
 		const index = data.findIndex((item) => item.unique_file_table_id === edit)
+		if (!newList?.length) {
+			setPrevObj(data[index])
+		}
+
 		if (index !== -1) {
 			let newArr = [...data]
 			newArr[index] = {
 				...newArr[index],
-				files: newArr[index]?.files.map((s, idx) => {
-					if (s.product_id == id) {
+				files: newArr[index]?.files.map((item, idx) => {
+					if (item.product_id === id) {
+						const prevCountIndex = prevCountList.findIndex(
+							(item) => item?.id === id
+						)
+						if (prevCountIndex !== -1) {
+							setPrevCountList(prevCountList)
+						} else {
+							setPrevCountList([
+								...prevCountList,
+								{ id, count: item?.product_count },
+							])
+						}
+
+						const innerIndex = editArr.findIndex(
+							(item) => item?.product_id === id
+						)
+						let prevQuantity = prevCountList[prevCountIndex]?.count ? prevCountList[prevCountIndex]?.count : 0
+						if (innerIndex !== -1) {
+							let updatedNewArr = editArr
+							updatedNewArr[innerIndex] = {
+								...item,
+								prev_count: prevCountList[prevCountIndex]?.count
+									? prevCountList[prevCountIndex]?.count
+									: item?.product_count,
+								product_count:
+									q >= 0 &&
+									q <= item?.sub + prevQuantity
+										? q
+										: q < 0
+										? 0
+										: item?.sub + prevQuantity,
+							}
+							setEditArr(updatedNewArr)
+						} else {
+							setEditArr([
+								...editArr,
+								{
+									...item,
+									prev_count: prevCountList[prevCountIndex]?.count
+										? prevCountList[prevCountIndex]?.count
+										: item?.product_count,
+									product_count:
+										q >= 0 &&
+										q <= item?.sub + prevQuantity
+											? q
+											: q < 0
+											? 0
+											: item?.sub + prevQuantity,
+								},
+							])
+						}
 						return {
-							...s,
-							product_count: q >= 0 ? q : 0,
+							...item,
+							product_count:
+								q >= 0 && q <= item?.sub + prevQuantity
+									? q
+									: q < 0
+									? 0
+									: item?.sub + prevQuantity,
 						}
 					} else {
-						return s
+						return item
 					}
 				}),
 			}
 			setList(newArr)
-			setNewList({})
+			setNewList([0])
 		}
+	}
+
+	const handleEditSave = (id = null) => {
+		if (newList?.length && id === edit) {
+			patch(`/clients/clients-edit-list`, editArr).then((data) => {
+				if (data?.status === 200 || data?.status === 201) {
+					toast.success("Royxat muvffaqiyatli o'zgartirildi")
+					setIdList([])
+					setEdit("")
+					setNewList([])
+					setEditArr([])
+					setPrevCountList([])
+					setPrevObj([])
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+			})
+		} else {
+			setEdit(edit !== id ? id : "")
+		}
+	}
+
+	const cancelEdit = (id) => {
+		if (newList?.length) {
+			const index = data.findIndex((item) => item.unique_file_table_id === id)
+			let newArr = [...data]
+			newArr[index] = prevObj
+			setList(newArr)
+		}
+
+		setEdit("")
+		setIdList([])
+		setEdit("")
+		setNewList([])
+		setEditArr([])
+		setPrevCountList([])
 	}
 
 	return (
@@ -92,43 +192,39 @@ const AntdAccordion = ({
 					className={`antd-collapse ${darkMode ? "dark" : null}`}
 					accordion
 				>
-					{data
-						.sort(
-							(a, b) =>
-								moment(b?.files[0].createdat) - moment(a?.files[0].createdat)
-						)
-						.map((item) => {
-							return (
-								<Panel
-									key={item.key}
-									header={
-										<div className="antd-collapse-header">
-											<div>
-												{moment(item?.files[0].createdat).format(
-													"YYYY/MM/DD HH:mm"
-												)}
-												&nbsp;&nbsp;&nbsp;&nbsp;
-												<input
-													type="checkbox"
-													onChange={(e) =>
-														handleChange(e, item?.unique_file_table_id)
-													}
-												/>
-												<button
-													onClick={() =>
-														confirmDownloadModal(
-															downloadFile,
-															item?.unique_file_table_id,
-															darkMode
-														)
-													}
-													className="download-btn accordion"
-												>
-													<Download size={20} />
-												</button>
-											</div>
-											<div>
-												{/* <button
+					{data?.map((item) => {
+						return (
+							<Panel
+								key={item.key}
+								header={
+									<div className="antd-collapse-header">
+										<div>
+											{moment(item?.files[0].createdat).format(
+												"YYYY/MM/DD HH:mm"
+											)}
+											&nbsp;&nbsp;&nbsp;&nbsp;
+											<input
+												type="checkbox"
+												onChange={(e) =>
+													handleChange(e, item?.unique_file_table_id)
+												}
+											/>
+											<button
+												onClick={() =>
+													confirmDownloadModal(
+														downloadFile,
+														item?.unique_file_table_id,
+														darkMode
+													)
+												}
+												className="download-btn accordion"
+											>
+												<Download size={20} />
+											</button>
+										</div>
+										<div>
+											{/* functioning delete button */}
+											{/* <button
 												type="button"
 												className="accordion-delete__btn"
 												onClick={(e) =>
@@ -150,114 +246,117 @@ const AntdAccordion = ({
 											>
 												O'chirish <Trash size={20} />
 											</button> */}
-											</div>
 										</div>
-									}
-								>
-									<table cellPadding="5px">
+									</div>
+								}
+							>
+								<table cellPadding="5px">
+									<button
+										type="button"
+										className="accordion-delete__btn extra"
+										onClick={() => handleEditSave(item?.unique_file_table_id)}
+									>
+										{edit === item?.unique_file_table_id ? (
+											"Saqlash"
+										) : (
+											<>
+												Tahrirlash <PencilSimpleLine size={20} />
+											</>
+										)}
+									</button>
+									{edit === item?.unique_file_table_id ? (
 										<button
 											type="button"
 											className="accordion-delete__btn"
-											onClick={() =>
-												setEdit(
-													edit !== item?.unique_file_table_id
-														? item?.unique_file_table_id
-														: ""
-												)
-											}
-											disabled
+											style={{ marginLeft: "10px" }}
+											onClick={() => cancelEdit(item?.unique_file_table_id)}
 										>
-											{edit ? (
-												"Saqlash"
-											) : (
-												<>
-													Tahrirlash <PencilSimpleLine size={20} />
-												</>
-											)}
+											Bekor qilish
 										</button>
-										<tbody>
-											<h6>
-												{item?.files?.length}ta -{" "}
-												{item?.files
-													?.reduce(
-														(totalPrice, product) =>
-															totalPrice + product?.total_price,
-														0
-													)
-													.toLocaleString()}
-												so'm
-											</h6>
-											{item?.files.map((fileInfo, idx) => (
-												<tr>
-													<td>
-														&nbsp;&nbsp; {idx + 1} {fileInfo?.goods_name} -{" "}
-														{fileInfo?.goods_code}
-													</td>
-													<td>
-														{edit === item?.unique_file_table_id ? (
-															<div
-																className={`quantityWrapper ${
-																	darkMode ? "dark" : null
-																}`}
+									) : null}
+									<tbody>
+										<h6>
+											{item?.files?.length}ta -{" "}
+											{item?.files
+												?.reduce(
+													(totalPrice, product) =>
+														totalPrice + product?.total_price,
+													0
+												)
+												.toLocaleString()}
+											so'm
+										</h6>
+										{item?.files.map((fileInfo, idx) => (
+											<tr>
+												<td>
+													&nbsp;&nbsp; {idx + 1} {fileInfo?.goods_name} -{" "}
+													{fileInfo?.goods_code}
+												</td>
+												<td>
+													{edit === item?.unique_file_table_id ? (
+														<div
+															className={`quantityWrapper ${
+																darkMode ? "dark" : null
+															}`}
+														>
+															<button
+																className="quantityBtn"
+																onClick={() =>
+																	handleQuantityChange(
+																		fileInfo?.product_id,
+																		fileInfo?.product_count - 1
+																	)
+																}
 															>
-																<button
-																	className="quantityBtn"
-																	onClick={() =>
-																		handleQuantityChange(
-																			fileInfo?.product_id,
-																			fileInfo?.product_count - 1
-																		)
+																-
+															</button>
+															<input
+																type="text"
+																className="quantityInput"
+																value={fileInfo?.product_count}
+																onChange={(e) =>
+																	handleQuantityChange(
+																		fileInfo?.product_id,
+																		e.target.value
+																	)
+																}
+																onKeyPress={(e) => {
+																	if (isNaN(e.key)) {
+																		e.preventDefault()
 																	}
-																>
-																	-
-																</button>
-																<input
-																	type="text"
-																	className="quantityInput"
-																	value={fileInfo?.product_count}
-																	onChange={(e) =>
-																		handleQuantityChange(
-																			fileInfo?.product_id,
-																			e.target.value
-																		)
-																	}
-																	onKeyPress={(e) => {
-																		if (isNaN(e.key)) {
-																			e.preventDefault()
-																		}
-																	}}
-																/>
-																<button
-																	className="quantityBtn"
-																	onClick={() =>
-																		handleQuantityChange(
-																			fileInfo?.product_id,
-																			fileInfo?.product_count + 1
-																		)
-																	}
-																>
-																	+
-																</button>
-															</div>
-														) : (
-															fileInfo?.product_count
-														)}
-													</td>
-													<td>x {addComma(fileInfo?.count_price)}</td>
-													<td>
-														={" "}
-														{addComma(
-															fileInfo?.product_count * fileInfo?.count_price
-														)}{" "}
-														so'm
-													</td>
-												</tr>
-											))}
-										</tbody>
-									</table>
-								</Panel>
-							)
-						})}
+																}}
+															/>
+															<button
+																className="quantityBtn"
+																onClick={() =>
+																	handleQuantityChange(
+																		fileInfo?.product_id,
+																		+fileInfo?.product_count + 1
+																	)
+																}
+															>
+																+
+															</button>
+														</div>
+													) : (
+														fileInfo?.product_count
+													)}
+												</td>
+												<td>x {addComma(fileInfo?.count_price)}</td>
+												<td>
+													={" "}
+													{addComma(
+														fileInfo?.product_count * fileInfo?.count_price
+													)}{" "}
+													so'm
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</Panel>
+						)
+					})}
 				</Collapse>
 			) : (
 				<NoData />
