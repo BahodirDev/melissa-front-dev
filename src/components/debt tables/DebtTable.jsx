@@ -294,7 +294,7 @@ export const DebtTableEquity = ({ data, sidebar }) => {
 			),
 		},
 		{
-			title: "Haqdorlik",
+			title: "Haqdor",
 			render: (text, record) => (
 				<>
 					<CurrencyCircleDollar size={20} color="#4caf50" /> {record?.equity}
@@ -302,7 +302,7 @@ export const DebtTableEquity = ({ data, sidebar }) => {
 			),
 		},
 		{
-			title: "Qarzdorlik",
+			title: "Qarzdor",
 			render: (text, record) => (
 				<>
 					<CurrencyCircleDollar size={20} color="#f44336" /> {record?.debt}

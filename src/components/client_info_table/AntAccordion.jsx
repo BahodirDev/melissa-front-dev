@@ -85,7 +85,9 @@ const AntdAccordion = ({
 						const innerIndex = editArr.findIndex(
 							(item) => item?.product_id === id
 						)
-						let prevQuantity = prevCountList[prevCountIndex]?.count ? prevCountList[prevCountIndex]?.count : 0
+						let prevQuantity = prevCountList[prevCountIndex]?.count
+							? prevCountList[prevCountIndex]?.count
+							: 0
 						if (innerIndex !== -1) {
 							let updatedNewArr = editArr
 							updatedNewArr[innerIndex] = {
@@ -94,8 +96,7 @@ const AntdAccordion = ({
 									? prevCountList[prevCountIndex]?.count
 									: item?.product_count,
 								product_count:
-									q >= 0 &&
-									q <= item?.sub + prevQuantity
+									q >= 0 && q <= item?.sub + prevQuantity
 										? q
 										: q < 0
 										? 0
@@ -111,8 +112,7 @@ const AntdAccordion = ({
 										? prevCountList[prevCountIndex]?.count
 										: item?.product_count,
 									product_count:
-										q >= 0 &&
-										q <= item?.sub + prevQuantity
+										q >= 0 && q <= item?.sub + prevQuantity
 											? q
 											: q < 0
 											? 0
@@ -208,15 +208,17 @@ const AntdAccordion = ({
 												onChange={(e) =>
 													handleChange(e, item?.unique_file_table_id)
 												}
+												onClick={(e) => e.stopPropagation()}
 											/>
 											<button
-												onClick={() =>
+												onClick={(e) => {
+													e.stopPropagation()
 													confirmDownloadModal(
 														downloadFile,
 														item?.unique_file_table_id,
 														darkMode
 													)
-												}
+												}}
 												className="download-btn accordion"
 											>
 												<Download size={20} />

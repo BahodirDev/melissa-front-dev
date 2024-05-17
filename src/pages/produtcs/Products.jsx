@@ -810,26 +810,27 @@ export default function Products() {
 						<span>{submitted && numberCheck(newProductPrice)}</span>
 					</div>
 				</div>
-				{objId ? (
-					<div
-						className={`input-wrapper modal-form regular ${
-							submitted && stringCheck(newDate) !== null && "error"
-						} ${darkMode ? "dark" : null}`}
-					>
-						<label>Qabul qilingan sana</label>
-						<input
-							type="date"
-							placeholder="Sana kiriting"
-							className="input date"
-							value={newDate ? newDate : ""}
-							onChange={(e) => setNewDate(e.target.value)}
-						/>
-						{/* {submitted && stringCheck(newDate) !== null && <Info size={20} />} */}
-						<div className="validation-field">
-							<span>{submitted && stringCheck(newDate)}</span>
-						</div>
-					</div>
-				) : null}
+				{objId
+					? null
+					: // <div
+					  // 	className={`input-wrapper modal-form regular ${
+					  // 		submitted && stringCheck(newDate) !== null && "error"
+					  // 	} ${darkMode ? "dark" : null}`}
+					  // >
+					  // 	<label>Qabul qilingan sana</label>
+					  // 	<input
+					  // 		type="date"
+					  // 		placeholder="Sana kiriting"
+					  // 		className="input date"
+					  // 		value={newDate ? newDate : ""}
+					  // 		onChange={(e) => setNewDate(e.target.value)}
+					  // 	/>
+					  // 	{/* {submitted && stringCheck(newDate) !== null && <Info size={20} />} */}
+					  // 	<div className="validation-field">
+					  // 		<span>{submitted && stringCheck(newDate)}</span>
+					  // 	</div>
+					  // </div>
+					  null}
 				<div className="modal-btn-group">
 					<button
 						className={`primary-btn ${darkMode ? "dark" : null}`}

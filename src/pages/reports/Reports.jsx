@@ -258,6 +258,7 @@ export default function Reports() {
 	}
 
 	const updateReport = () => {
+		setBtnLoading(true)
 		patch(`/reports/reports-patch/${objId}`, {
 			reports_createdat: new Date(newDate).toISOString(),
 		}).then((data) => {

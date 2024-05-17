@@ -49,6 +49,8 @@ function Return() {
 	const [objId, setObjId] = useState("")
 	const [submitted, setSubmitted] = useState(false)
 	const [productListLoading, setProductListLoading] = useState(false)
+	const [activeElementIndex, setActiveElementIndex] = useState(0)
+	const nextInputRef = useRef(null)
 
 	// filter
 	const [filteredData, setFilteredData] = useState({})
@@ -82,6 +84,12 @@ function Return() {
 			dispatch(setLoading(false))
 		})
 	}
+
+	useEffect(() => {
+		if (nextInputRef.current) {
+			nextInputRef.current.focus()
+		}
+	}, [activeElementIndex])
 
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
@@ -176,7 +184,6 @@ function Return() {
 		// setObjId(id)
 		// setAddModalDisplay("block")
 		// setAddModalVisible(true)
-
 		// get(`/return/return-list/${id}`).then((data) => {
 		// 	if (data?.status === 200) {
 		// 		const index = state?.client?.data.findIndex(
@@ -203,6 +210,7 @@ function Return() {
 		setCost(0)
 		setReason("")
 
+		setActiveElementIndex(0)
 		setObjId("")
 		setSubmitted(false)
 		setBtnLoading(false)
@@ -222,8 +230,10 @@ function Return() {
 		setReason("")
 
 		setObjId("")
-		setSubmitted(false)
 		setBtnLoading(false)
+
+		setActiveElementIndex(1)
+		setSubmitted(false)
 	}
 
 	const handleStoreChange = (id) => {
@@ -281,324 +291,314 @@ function Return() {
 					objId ? "Qaytgan mahsulot tahrirlash" : "Qaytgan mahsulot qo'shish"
 				}
 			>
-				{objId && !productObj ? (
-					<Loader />
-				) : (
-					<>
-						<div
-							className={`input-wrapper modal-form ${
-								submitted &&
-								stringCheck(storeObj?.store_name) !== null &&
-								"error"
-							} ${darkMode ? "dark" : null}`}
-						>
-							<label>Ombor</label>
-							<Select
-								showSearch
-								allowClear
-								placeholder="Ombor tanlang"
-								className={`select`}
-								suffixIcon={
-									submitted && stringCheck(storeObj?.store_name) !== null ? (
-										<Info size={20} />
-									) : (
-										<CaretDown size={16} />
+				<div
+					className={`input-wrapper modal-form ${
+						submitted && stringCheck(storeObj?.store_name) !== null && "error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Ombor</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Ombor tanlang"
+						className={`select`}
+						suffixIcon={
+							submitted && stringCheck(storeObj?.store_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={storeObj?.store_name ? storeObj?.store_name : null}
+						onChange={(e) => {
+							handleStoreChange(e)
+							setActiveElementIndex(2)
+						}}
+						ref={activeElementIndex === 1 ? nextInputRef : null}
+					>
+						{state?.store?.data.length
+							? state?.store?.data.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											value={JSON.stringify(item)}
+											className={`${darkMode ? "dark" : null}`}
+										>
+											<div>
+												<span>{item?.store_name}</span>
+											</div>
+										</Select.Option>
 									)
-								}
-								value={storeObj?.store_name ? storeObj?.store_name : null}
-								onChange={handleStoreChange}
-							>
-								{state?.store?.data.length
-									? state?.store?.data.map((item, idx) => {
-											return (
-												<Select.Option
-													key={idx}
-													value={JSON.stringify(item)}
-													className={`${darkMode ? "dark" : null}`}
-												>
-													<div>
-														<span>{item?.store_name}</span>
-													</div>
-												</Select.Option>
-											)
-									  })
-									: null}
-							</Select>
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(storeObj?.store_name, "Ombor tanlash majburiy")}
-								</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form ${
-								submitted &&
-								stringCheck(productObj?.goods_id?.goods_name) !== null &&
-								"error"
-							} ${darkMode ? "dark" : null}`}
-						>
-							<label>Mahsulot</label>
-							<Select
-								showSearch
-								allowClear
-								placeholder={
-									storeObj?.store_name
-										? "Mahsulot tanlang"
-										: "Ombor tanlanmagan"
-								}
-								className="select"
-								filterOption={filterOption}
-								suffixIcon={
-									submitted &&
-									stringCheck(productObj?.goods_id?.goods_name) !== null ? (
-										<Info size={20} />
-									) : (
-										<CaretDown size={16} />
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(storeObj?.store_name, "Ombor tanlash majburiy")}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(productObj?.goods_id?.goods_name) !== null &&
+						"error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Mahsulot</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder={
+							storeObj?.store_name ? "Mahsulot tanlang" : "Ombor tanlanmagan"
+						}
+						className="select"
+						filterOption={filterOption}
+						suffixIcon={
+							submitted &&
+							stringCheck(productObj?.goods_id?.goods_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							productObj?.goods_id?.goods_name
+								? `${productObj.goods_id.goods_name} - ${
+										productObj.goods_id.goods_code
+								  } - ${(
+										productObj?.products_count_price *
+										productObj?.currency_id?.currency_amount
+								  ).toLocaleString()}so'm`
+								: null
+						}
+						onChange={(e) => {
+							setActiveElementIndex(3)
+							if (e) {
+								setProductObj(JSON.parse(e))
+								setCost(JSON.parse(e)?.products_count_price)
+							} else setProductObj({})
+						}}
+						ref={activeElementIndex === 2 ? nextInputRef : null}
+						notFoundContent={productListLoading ? <Spin size="small" /> : null}
+					>
+						{products?.length
+							? products?.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											value={JSON.stringify(item)}
+											className={`option-shrink ${darkMode ? "dark" : null}`}
+										>
+											<div>
+												<span>
+													<img
+														src={item?.img_url}
+														width={40}
+														height={40}
+														alt=""
+														onClick={() => window.open(item?.img_url)}
+													/>{" "}
+													{item?.goods_id?.goods_name} -{" "}
+													{item?.goods_id?.goods_code} -{" "}
+												</span>
+												<span>
+													{(
+														item?.products_count_price *
+														item?.currency_id?.currency_amount
+													).toLocaleString()}
+													so'm - {item?.deliver_id?.deliver_name}
+												</span>
+											</div>
+										</Select.Option>
 									)
-								}
-								value={
-									productObj?.goods_id?.goods_name
-										? `${productObj.goods_id.goods_name} - ${
-												productObj.goods_id.goods_code
-										  } - ${(
-												productObj?.products_count_price *
-												productObj?.currency_id?.currency_amount
-										  ).toLocaleString()}so'm`
-										: null
-								}
-								onChange={(e) => {
-									if (e) {
-										setProductObj(JSON.parse(e))
-										setCost(JSON.parse(e)?.products_count_price)
-									} else setProductObj({})
-								}}
-								notFoundContent={
-									productListLoading ? <Spin size="small" /> : null
-								}
-							>
-								{products?.length
-									? products?.map((item, idx) => {
-											return (
-												<Select.Option
-													key={idx}
-													value={JSON.stringify(item)}
-													className={`option-shrink ${
-														darkMode ? "dark" : null
-													}`}
-												>
-													<div>
-														<span>
-															<img
-																src={item?.img_url}
-																width={40}
-																height={40}
-																alt=""
-																onClick={() => window.open(item?.img_url)}
-															/>{" "}
-															{item?.goods_id?.goods_name} -{" "}
-															{item?.goods_id?.goods_code} -{" "}
-														</span>
-														<span>
-															{(
-																item?.products_count_price *
-																item?.currency_id?.currency_amount
-															).toLocaleString()}
-															so'm - {item?.deliver_id?.deliver_name}
-														</span>
-													</div>
-												</Select.Option>
-											)
-									  })
-									: null}
-							</Select>
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(
-											productObj?.goods_id?.goods_name,
-											"Mahsulot tanlash majburiy"
-										)}
-								</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form ${
-								submitted &&
-								stringCheck(clientObj?.clients_name) !== null &&
-								"error"
-							} ${darkMode ? "dark" : null}`}
-						>
-							<label>Mijoz</label>
-							<Select
-								showSearch
-								allowClear
-								placeholder="Mijoz tanlang"
-								className="select"
-								suffixIcon={
-									submitted && stringCheck(clientObj?.clients_name) !== null ? (
-										<Info size={20} />
-									) : (
-										<CaretDown size={16} />
-									)
-								}
-								value={
-									clientObj?.clients_name
-										? `${clientObj.clients_name} - ${format_phone_number(
-												clientObj.clients_nomer
-										  )}`
-										: null
-								}
-								onChange={(e) => {
-									e ? setClientObj(JSON.parse(e)) : setClientObj({})
-								}}
-							>
-								{state?.client?.data?.length
-									? state?.client?.data.map((item, idx) => {
-											if (!item?.isdelete) {
-												return (
-													<Select.Option
-														key={idx}
-														className={`option-shrink ${
-															darkMode ? "dark" : null
-														}`}
-														value={JSON.stringify(item)}
-													>
-														<div>
-															<span>{item?.clients_name} - </span>
-															<span>
-																{format_phone_number(item?.clients_nomer)}
-															</span>
-														</div>
-													</Select.Option>
-												)
-											}
-									  })
-									: null}
-							</Select>
-							<div className="validation-field">
-								<span>
-									{submitted &&
-										stringCheck(
-											clientObj?.clients_name,
-											"Mijoz tanlash majburiy"
-										)}
-								</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular ${
-								submitted && numberCheck(count) !== null && "error"
-							} ${darkMode ? "dark" : null}`}
-						>
-							<label>Dona</label>
-							<input
-								type="text"
-								placeholder="Qiymat kiriting"
-								className="input"
-								value={count ? count : ""}
-								onKeyPress={(e) => {
-									if (isNaN(e.key)) {
-										e.preventDefault()
-									}
-								}}
-								onChange={(e) => {
-									setCount(e.target.value)
-								}}
-							/>
-							{submitted && numberCheck(count) !== null && <Info size={20} />}
-							<div className="validation-field">
-								<span>{submitted && numberCheck(count)}</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular ${
-								submitted && numberCheck(cost) !== null && "error"
-							} ${darkMode ? "dark" : null}`}
-						>
-							<label>
-								Narx (
-								{productObj.products_count_price
-									? (
-											productObj.products_count_price *
-											productObj.currency_id.currency_amount
-									  ).toLocaleString()
-									: 0}
-								so'm )
-							</label>
-							<input
-								type="text"
-								placeholder="Qiymat kiriting"
-								className="input"
-								value={cost ? cost : ""}
-								onKeyPress={(e) => {
-									if (isNaN(e.key)) {
-										e.preventDefault()
-									}
-								}}
-								onChange={(e) => setCost(e.target.value)}
-							/>
-							{submitted && numberCheck(cost) !== null && <Info size={20} />}
-							<div className="validation-field">
-								<span>{submitted && numberCheck(cost)}</span>
-							</div>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular ${
-								darkMode ? "dark" : null
-							}`}
-						>
-							<label>Izoh</label>
-							<textarea
-								placeholder="Izoh"
-								className="desc-input"
-								value={reason}
-								onChange={(e) => setReason(e.target.value)}
-							></textarea>
-						</div>
-						<div
-							className={`input-wrapper modal-form regular ${
-								submitted && stringCheck(createdAt) !== null && "error"
-							} ${darkMode ? "dark" : null}`}
-						>
-							<label>Qayd qilingan sana</label>
-							<input
-								type="date"
-								placeholder="Sana kiriting"
-								className="input date"
-								value={createdAt ? createdAt : ""}
-								onChange={(e) => setCreatedAt(e.target.value)}
-							/>
-							<div className="validation-field">
-								<span>{submitted && stringCheck(createdAt)}</span>
-							</div>
-						</div>
-
-						<div className="modal-btn-group">
-							<button
-								className={`primary-btn ${darkMode ? "dark" : null}`}
-								disabled={btnLoading}
-								onClick={addNewReturn}
-							>
-								{objId ? "Saqlash" : "Qo'shish"}{" "}
-								{btnLoading && (
-									<span
-										className="spinner-grow spinner-grow-sm"
-										role="status"
-										aria-hidden="true"
-										style={{ marginLeft: "5px" }}
-									></span>
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									productObj?.goods_id?.goods_name,
+									"Mahsulot tanlash majburiy"
 								)}
-							</button>
-							<button
-								className={`secondary-btn ${darkMode ? "dark" : null}`}
-								onClick={clearAndClose}
-							>
-								Bekor qilish
-							</button>
-						</div>
-					</>
-				)}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(clientObj?.clients_name) !== null &&
+						"error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Mijoz</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Mijoz tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(clientObj?.clients_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							clientObj?.clients_name
+								? `${clientObj.clients_name} - ${format_phone_number(
+										clientObj.clients_nomer
+								  )}`
+								: null
+						}
+						onChange={(e) => {
+							setActiveElementIndex(4)
+							e ? setClientObj(JSON.parse(e)) : setClientObj({})
+						}}
+						ref={activeElementIndex === 3 ? nextInputRef : null}
+					>
+						{state?.client?.data?.length
+							? state?.client?.data.map((item, idx) => {
+									if (!item?.isdelete) {
+										return (
+											<Select.Option
+												key={idx}
+												className={`option-shrink ${darkMode ? "dark" : null}`}
+												value={JSON.stringify(item)}
+											>
+												<div>
+													<span>{item?.clients_name} - </span>
+													<span>
+														{format_phone_number(item?.clients_nomer)}
+													</span>
+												</div>
+											</Select.Option>
+										)
+									}
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(clientObj?.clients_name, "Mijoz tanlash majburiy")}
+						</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && numberCheck(count) !== null && "error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Dona</label>
+					<input
+						type="text"
+						placeholder="Qiymat kiriting"
+						className="input"
+						value={count ? count : ""}
+						onKeyPress={(e) => {
+							if (isNaN(e.key)) {
+								e.preventDefault()
+							}
+						}}
+						onChange={(e) => {
+							setCount(e.target.value)
+						}}
+						ref={activeElementIndex === 4 ? nextInputRef : null}
+					/>
+					{submitted && numberCheck(count) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && numberCheck(count)}</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && numberCheck(cost) !== null && "error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>
+						Narx (
+						{productObj.products_count_price
+							? (
+									productObj.products_count_price *
+									productObj.currency_id.currency_amount
+							  ).toLocaleString()
+							: 0}
+						so'm )
+					</label>
+					<input
+						type="text"
+						placeholder="Qiymat kiriting"
+						className="input"
+						value={cost ? cost : ""}
+						onKeyPress={(e) => {
+							if (isNaN(e.key)) {
+								e.preventDefault()
+							}
+						}}
+						onChange={(e) => setCost(e.target.value)}
+					/>
+					{submitted && numberCheck(cost) !== null && <Info size={20} />}
+					<div className="validation-field">
+						<span>{submitted && numberCheck(cost)}</span>
+					</div>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						darkMode ? "dark" : null
+					}`}
+				>
+					<label>Izoh</label>
+					<textarea
+						placeholder="Izoh"
+						className="desc-input"
+						value={reason}
+						onChange={(e) => setReason(e.target.value)}
+					></textarea>
+				</div>
+				<div
+					className={`input-wrapper modal-form regular ${
+						submitted && stringCheck(createdAt) !== null && "error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Qayd qilingan sana</label>
+					<input
+						type="date"
+						placeholder="Sana kiriting"
+						className="input date"
+						value={createdAt ? createdAt : ""}
+						onChange={(e) => setCreatedAt(e.target.value)}
+					/>
+					<div className="validation-field">
+						<span>{submitted && stringCheck(createdAt)}</span>
+					</div>
+				</div>
+
+				<div className="modal-btn-group">
+					<button
+						className={`primary-btn ${darkMode ? "dark" : null}`}
+						disabled={btnLoading}
+						onClick={addNewReturn}
+					>
+						{objId ? "Saqlash" : "Qo'shish"}{" "}
+						{btnLoading && (
+							<span
+								className="spinner-grow spinner-grow-sm"
+								role="status"
+								aria-hidden="true"
+								style={{ marginLeft: "5px" }}
+							></span>
+						)}
+					</button>
+					<button
+						className={`secondary-btn ${darkMode ? "dark" : null}`}
+						onClick={clearAndClose}
+					>
+						Bekor qilish
+					</button>
+				</div>
 			</AddModal>
 
 			<div className={`filter-wrapper ${darkMode ? "dark" : null}`}>

@@ -517,7 +517,7 @@ const Client = () => {
 				>
 					<label>Sana</label>
 					<input
-						type="datetime-local"
+						type="date"
 						placeholder="Sana tanlang"
 						className="input date"
 						value={date ? date : ""}
