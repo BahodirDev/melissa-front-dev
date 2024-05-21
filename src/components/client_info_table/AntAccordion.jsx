@@ -226,10 +226,11 @@ const AntdAccordion = ({
 										</div>
 										<div>
 											{/* functioning delete button */}
-											{/* <button
+											<button
 												type="button"
 												className="accordion-delete__btn"
-												onClick={(e) =>
+												onClick={(e) => {
+													e.stopPropagation()
 													productDeleteConfirm(
 														e,
 														<>
@@ -244,10 +245,10 @@ const AntdAccordion = ({
 														item?.unique_file_table_id,
 														darkMode
 													)
-												}
+												}}
 											>
 												O'chirish <Trash size={20} />
-											</button> */}
+											</button>
 										</div>
 									</div>
 								}
