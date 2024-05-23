@@ -9,6 +9,7 @@ export const confirmCloseModal = (msg, saveAndClose, close, mode = false) => {
 		okType: "danger",
 		cancelText: "Saqlash",
 		width: 300,
+		autoFocusButton: "cancel",
 		onOk() {
 			close()
 		},

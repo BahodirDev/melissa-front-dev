@@ -793,7 +793,13 @@ export default function Products() {
 						submitted && numberCheck(newProductPrice) !== null && "error"
 					} ${darkMode ? "dark" : null}`}
 				>
-					<label>Sotuv narx</label>
+					<label>
+						Sotuv narx -{" "}
+						{/* {addComma(newPercentId?.currency_amount * newProductPrice ? newProductPrice : 0)} */}
+						{isNaN(newPercentId?.currency_amount * newProductPrice)
+							? 0
+							: addComma(newPercentId?.currency_amount * newProductPrice)}
+					</label>
 					<input
 						type="text"
 						placeholder="Qiymat kiriting"
