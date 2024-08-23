@@ -8,6 +8,7 @@ const Search = ({
 	className,
 	clearOnly,
 	darkMode,
+	handleDeepSearch = false,
 }) => {
 	const [
 		inputRef,
@@ -38,7 +39,9 @@ const Search = ({
 				</div>
 				<button
 					className={`primary-btn ${darkMode ? "dark" : null}`}
-					onClick={handleSearch}
+					onClick={() => {
+						handleDeepSearch ? handleDeepSearch() : handleSearch()
+					}}
 				>
 					Izlash
 				</button>

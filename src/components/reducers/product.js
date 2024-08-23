@@ -104,12 +104,12 @@ export const productSlice = createSlice({
 		},
 		editCount: (state, action) => {
 			const index = state.dataProduct.findIndex(
-				(item) => item.products_id === action.payload
+				(item) => item.products_id === action.payload?.id
 			)
 			if (index !== -1) {
 				state.dataProduct[index] = {
 					...state.dataProduct[index],
-					actual_count: 3,
+					actual_count: action.payload?.count > 2 ? 0 : 3,
 				}
 			}
 		},

@@ -444,26 +444,51 @@ export default function Products() {
 	}
 
 	const temporaryFunction = (id, count) => {
-		if (count < 3)
-			get(`/products/products-statistics-list/${id}`).then((data) => {
-				if (data?.status === 201) {
-					toast.success("Muvoffaqiyatli bajarildi")
-					dispatch(editCount(id))
-					if (searchSubmitted) {
-						const index = filteredData?.data.findIndex(
-							(item) => item.products_id === id
-						)
-						if (index !== -1) {
-							const updatedData = [...filteredData.data]
-							updatedData[index] = { ...updatedData[index], actual_count: 3 }
-							setFilteredData({ ...filteredData, data: updatedData })
+		get(`/products/products-statistics-list/${id}`).then((data) => {
+			if (data?.status === 201) {
+				toast.success("Muvoffaqiyatli bajarildi")
+				dispatch(editCount(id, count))
+				if (searchSubmitted) {
+					const index = filteredData?.data.findIndex(
+						(item) => item.products_id === id
+					)
+					if (index !== -1) {
+						const updatedData = [...filteredData.data]
+						updatedData[index] = {
+							...updatedData[index],
+							actual_count: count > 2 ? 0 : 3,
 						}
+
+						setFilteredData({ ...filteredData, data: updatedData })
 					}
+				}
+			} else {
+				toast.error("Nomalum server xatolik")
+			}
+		})
+	}
+
+	const handleSubtract = (id, value, store_id, price) => {
+		if (value > 0) {
+			let newObj = {
+				return_item_id: id,
+				return_store_id: store_id,
+				return_count: value,
+				return_cost: price,
+				return_case: "",
+				return_createdat: new Date().toISOString(),
+				status: "NOT FIXED",
+				from_product: true,
+			}
+
+			post("/return/return-post", newObj).then((data) => {
+				if (data?.status === 200) {
+					toast.success("Mahsulot muvoffaqiyatli ayirildi")
 				} else {
 					toast.error("Nomalum server xatolik")
-					// console.log(data)
 				}
 			})
+		}
 	}
 
 	return (
@@ -616,9 +641,9 @@ export default function Products() {
 						}
 						onChange={(e) => {
 							e ? setNewPercentId(JSON.parse(e)) : setNewPercentId({})
-							setActiveElementIndex(3)
+							setActiveElementIndex(4)
 						}}
-						// ref={activeElementIndex === 3 ? nextInputRef : null}
+						ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
 						{currency?.data?.length
 							? currency?.data.map((item, idx) => {
@@ -669,9 +694,9 @@ export default function Products() {
 						value={newStoreId?.store_name ? newStoreId?.store_name : null}
 						onChange={(e) => {
 							e ? setNewStoreId(JSON.parse(e)) : setNewStoreId({})
-							setActiveElementIndex(4)
+							setActiveElementIndex(5)
 						}}
-						ref={activeElementIndex === 3 ? nextInputRef : null}
+						ref={activeElementIndex === 4 ? nextInputRef : null}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => {
@@ -711,7 +736,7 @@ export default function Products() {
 							setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))
 							setNewProductQ(newPerBox * e.target.value)
 						}}
-						ref={activeElementIndex === 4 ? nextInputRef : null}
+						ref={activeElementIndex === 5 ? nextInputRef : null}
 					/>
 					{/* {submitted && numberCheckAllow0(newBoxQ) !== null && (
 						<Info size={20} />
@@ -993,6 +1018,7 @@ export default function Products() {
 						currentPage={currentPage}
 						limit={limit}
 						temporaryFunction={temporaryFunction}
+						handleSubtract={handleSubtract}
 					/>
 
 					<Pagination
@@ -1008,10 +1034,13 @@ export default function Products() {
 						} pagination-limit`}
 					>
 						<Select
-							placeholder="Kirim Chiqim"
+							placeholder="Miqdor"
 							className="select"
 							value={limit}
-							onChange={(e) => setLimit(e)}
+							onChange={(e) => {
+								setLimit(e)
+								setCurrentPage(1)
+							}}
 						>
 							<Select.Option
 								value="10"

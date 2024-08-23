@@ -15,7 +15,7 @@ export const goodSlice = createSlice({
 			state.loading = action.payload
 		},
 		setQuantity: (state, action) => {
-			state.quantity = state.data.length
+			state.quantity = action.payload
 		},
 		addData: (state, action) => {
 			state.data = [action.payload, ...state.data]

@@ -15,7 +15,7 @@ export const clientSlice = createSlice({
 			state.loading = action.payload
 		},
 		setQuantity: (state, action) => {
-			state.quantity = state.data.filter((item) => !item?.isdelete).length
+			state.quantity = action.payload
 		},
 		addData: (state, action) => {
 			state.data = [...state.data, action.payload]

@@ -22,6 +22,7 @@ import { CaretDown, Info, UsersFour } from "@phosphor-icons/react"
 import AddModal from "../../components/add/AddModal"
 import { Select } from "antd"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import Pagination from "../../components/pagination/Pagination"
 
 export default function Employees() {
 	const [
@@ -39,6 +40,7 @@ export default function Employees() {
 		darkMode,
 	] = useOutletContext()
 
+	const [clientList, setClientList] = useState([])
 	const [new_name, setNew_name] = useState("")
 	const [new_number, setNew_number] = useState("")
 	const [desc, setDesc] = useState("")
@@ -50,19 +52,53 @@ export default function Employees() {
 	const dispatch = useDispatch()
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [otherClient, setOtherClient] = useState({})
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPages, setTotalPage] = useState(1)
 
 	useEffect(() => {
 		dispatch(setLoading(true))
-		get("/clients/clients-list").then((data) => {
+		get(`/clients/clients-lists?limit=${limit}&page=${currentPage}`).then(
+			(data) => {
+				if (data?.status === 201 || data?.status === 200) {
+					setClientList(data?.data?.data)
+					setTotalPage(Math.ceil(data?.data?.clients / limit))
+					dispatch(setQuantity(data?.data?.clients))
+				} else {
+					toast.error("Nomalur server xatolik")
+					setTotalPage(1)
+				}
+				dispatch(setLoading(false))
+			}
+		)
+
+		get(`/clients/clients-list`).then((data) => {
 			if (data?.status === 201 || data?.status === 200) {
-				dispatch(setData(data?.data))
-				dispatch(setQuantity())
+				dispatch(setData(data?.data?.data))
 			} else {
 				toast.error("Nomalur server xatolik")
 			}
+
 			dispatch(setLoading(false))
 		})
 	}, [])
+
+	useEffect(() => {
+		dispatch(setLoading(true))
+		get(`/clients/clients-lists?limit=${limit}&page=${currentPage}`).then(
+			(data) => {
+				if (data?.status === 201 || data?.status === 200) {
+					setClientList(data?.data?.data)
+					setTotalPage(Math.ceil(data?.data?.clients / limit))
+					dispatch(setQuantity(data?.data?.clients))
+				} else {
+					toast.error("Nomalur server xatolik")
+					setTotalPage(1)
+				}
+				dispatch(setLoading(false))
+			}
+		)
+	}, [currentPage, limit])
 
 	const handleSearch = () => {
 		if (inputRef.current?.value.length > 0) {
@@ -72,7 +108,7 @@ export default function Employees() {
 				search: inputRef.current?.value,
 			}).then((data) => {
 				if (data.status === 200) {
-					setFilteredData(data?.data)
+					setFilteredData(data?.data?.data)
 				} else {
 					toast.error("Nomalum server xatolik")
 				}
@@ -182,6 +218,17 @@ export default function Employees() {
 		setObjId("")
 		setSubmitted(false)
 		setBtn_loading(false)
+	}
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
+		// if (
+		// 	searchStoreId === "" &&
+		// 	searchDeliverId === "" &&
+		// 	inputRef.current.value === ""
+		// ) {
+		// 	setSearchSubmitted(false)
+		// }
 	}
 
 	return (
@@ -338,17 +385,81 @@ export default function Employees() {
 			{state?.loading ? (
 				<Loader />
 			) : (
-				<ClientList
-					data={searchSubmitted ? filteredData : state?.data}
-					deleteClient={deleteClient}
-					editClient={editClient}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					miniModal={miniModal}
-					setMiniModal={setMiniModal}
-					darkMode={darkMode}
-					userInfo={userInfo}
-				/>
+				<>
+					<ClientList
+						data={searchSubmitted ? filteredData : clientList}
+						deleteClient={deleteClient}
+						editClient={editClient}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						miniModal={miniModal}
+						setMiniModal={setMiniModal}
+						darkMode={darkMode}
+						userInfo={userInfo}
+					/>
+
+					{searchSubmitted ? (
+						<></>
+					) : (
+						<>
+							<Pagination
+								pages={totalPages}
+								currentPage={currentPage}
+								onPageChange={handlePageChange}
+								darkMode={darkMode}
+							/>
+
+							<div
+								className={`input-wrapper ${
+									darkMode ? "dark" : null
+								} pagination-limit`}
+							>
+								<Select
+									placeholder="Kirim Chiqim"
+									className="select"
+									value={limit}
+									onChange={(e) => {
+										setLimit(e)
+										setCurrentPage(1)
+									}}
+								>
+									<Select.Option
+										value="10"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>10</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="25"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>25</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="50"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>50</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="100"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>100</span>
+										</div>
+									</Select.Option>
+								</Select>
+							</div>
+						</>
+					)}
+				</>
 			)}
 		</>
 	)

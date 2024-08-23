@@ -82,6 +82,13 @@ const SellDebt = ({
 				dispatch(dispatch1(data?.data))
 			}
 		})
+		if (name === "clients") {
+			get(`/${name}/${name}-list`).then((data) => {
+				if (data?.status === 200 || data?.status === 201) {
+					dispatch(dispatch1(data?.data?.data))
+				}
+			})
+		}
 	}
 
 	useEffect(() => {
@@ -660,9 +667,9 @@ const SellDebt = ({
 									productObj?.goods_id?.goods_name
 										? `${productObj.goods_id.goods_name} - ${
 												productObj.goods_id.goods_code
-										  } - ${(
+										  } - ${Math.round(
 												productObj?.products_count_price *
-												productObj?.currency_id?.currency_amount
+													productObj?.currency_id?.currency_amount
 										  ).toLocaleString()}so'm`
 										: null
 								}
@@ -708,9 +715,9 @@ const SellDebt = ({
 														</span>
 														<span>
 															{item?.goods_id?.goods_code} -{" "}
-															{(
+															{Math.round(
 																item?.products_count_price *
-																item?.currency_id?.currency_amount
+																	item?.currency_id?.currency_amount
 															).toLocaleString()}
 															so'm
 														</span>
@@ -794,9 +801,9 @@ const SellDebt = ({
 							<label>
 								Narx (
 								{productObj.products_count_price
-									? (
+									? Math.round(
 											productObj.products_count_price *
-											productObj.currency_id.currency_amount
+												productObj.currency_id.currency_amount
 									  ).toLocaleString()
 									: 0}
 								so'm )

@@ -9,6 +9,7 @@ import {
 	FileText,
 	HandCoins,
 	Recycle,
+	SecurityCamera,
 	SignOut,
 	SquaresFour,
 	Truck,
@@ -17,7 +18,6 @@ import {
 	Warehouse,
 } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { employee_role } from "../../pages/employees/employee_role"
 
 export default function Sidebar({
 	setSidebar,
@@ -67,9 +67,12 @@ export default function Sidebar({
 						navigate("/clients")
 						break
 					case 9:
-						navigate("/employees")
+						navigate("/monitoring")
 						break
 					case 10:
+						navigate("/employees")
+						break
+					case 11:
 						navigate("/currency")
 						break
 				}
@@ -215,12 +218,24 @@ export default function Sidebar({
 						<UsersFour size={24} /> Mijozlar
 					</NavLink>
 				</li>
+				<li>
+					<NavLink
+						to="/monitoring"
+						className={`${
+							activeSectionIndex === 9 && url.pathname !== "/monitoring"
+								? "tabFocus"
+								: null
+						}`}
+					>
+						<SecurityCamera size={24} style={{transform: 'rotateY(180deg)'}} /> Monitoring
+					</NavLink>
+				</li>
 				{userRole === 1 && (
 					<li>
 						<NavLink
 							to="/employees"
 							className={`${
-								activeSectionIndex === 9 && url.pathname !== "/employees"
+								activeSectionIndex === 10 && url.pathname !== "/employees"
 									? "tabFocus"
 									: null
 							}`}
@@ -234,7 +249,7 @@ export default function Sidebar({
 						<NavLink
 							to="/currency"
 							className={`${
-								activeSectionIndex === 10 && url.pathname !== "/currency"
+								activeSectionIndex === 11 && url.pathname !== "/currency"
 									? "tabFocus"
 									: null
 							}`}

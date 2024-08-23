@@ -25,6 +25,8 @@ import AddModal from "../../components/add/AddModal"
 import InfoItem from "../../components/info_item/InfoItem"
 import { ArrowCounterClockwise, CaretDown, Info } from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
+import moment from "moment"
+import Pagination from "../../components/pagination/Pagination"
 
 function Return() {
 	const [
@@ -42,7 +44,7 @@ function Return() {
 		darkMode,
 	] = useOutletContext()
 	const navigate = useNavigate()
-	const state = useSelector((state) => state)
+	const { store, client } = useSelector((state) => state)
 	const dispatch = useDispatch()
 
 	const [btnLoading, setBtnLoading] = useState(false)
@@ -52,6 +54,13 @@ function Return() {
 	const [activeElementIndex, setActiveElementIndex] = useState(0)
 	const nextInputRef = useRef(null)
 
+	const [returnList, setReturnList] = useState([])
+	const [loading, setLoading] = useState(false)
+	const [returnQ, setReturnQ] = useState(0)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPages, setTotalPage] = useState(1)
+
 	// filter
 	const [filteredData, setFilteredData] = useState({})
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
@@ -59,6 +68,7 @@ function Return() {
 	const [searchDeliverId, setSearchDeliverId] = useState("")
 	const [searchGoodId, setSearchGoodId] = useState("")
 	const [products, setProducts] = useState([])
+	const didMount = useRef(false)
 
 	// new
 	const [productObj, setProductObj] = useState({})
@@ -67,22 +77,45 @@ function Return() {
 	const [count, setCount] = useState(0)
 	const [cost, setCost] = useState(0)
 	const [reason, setReason] = useState("")
+	const [status, setStatus] = useState("KUTILMOQDA")
 	const [createdAt, setCreatedAt] = useState("")
 	const [newDate, setNewDate] = useState("")
 
 	const getData = (list, action) => {
-		dispatch(setLoading(true))
+		setLoading(true)
 		get(`/${list}/${list}-list`).then((data) => {
 			if (data?.status === 200 || data?.status === 201) {
 				dispatch(action(data?.data))
-				if (list === "return") {
-					dispatch(setQuantity())
-				}
 			} else {
 				toast.error("Nomalum server xatolik", { toastId: "" })
 			}
-			dispatch(setLoading(false))
+			setLoading(false)
 		})
+	}
+
+	const getReturnData = () => {
+		setLoading(true)
+		if (
+			searchStoreId ||
+			searchDeliverId ||
+			inputRef.current?.value.length > 0
+		) {
+			handleSearch()
+		} else {
+			get(`/return/return-list?limit=${limit}&page=${currentPage}`).then(
+				(data) => {
+					if (data?.status === 200 || data?.status === 201) {
+						setReturnList(data?.data?.data)
+						setReturnQ(data?.data?.return)
+						setTotalPage(Math.ceil(data?.data?.return / limit))
+					} else {
+						toast.error("Nomalum server xatolik", { toastId: "" })
+						setTotalPage(1)
+					}
+					setLoading(false)
+				}
+			)
+		}
 	}
 
 	useEffect(() => {
@@ -93,9 +126,20 @@ function Return() {
 
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
-		getData("return", setDataReturn)
+		getReturnData()
 		getData("deliver", setDataDeliver)
 	}, [])
+
+	useEffect(() => {
+		setCurrentPage(1)
+		if (didMount.current) {
+			handleSearch()
+		} else {
+			didMount.current = true
+		}
+	}, [searchStoreId, searchDeliverId, limit])
+
+	useEffect(getReturnData, [currentPage])
 
 	const addNewReturn = () => {
 		setSubmitted(true)
@@ -111,26 +155,65 @@ function Return() {
 				return_createdat: createdAt
 					? new Date(createdAt).toISOString()
 					: new Date().toISOString(),
+				from_product: false,
 			}
 			if (objId) {
-				console.log("patch")
-				// patch(`/return/return-patch/${objId}`, newObj).then((data) => {
-				// 	if (data?.status === 201) {
-				// 		// dispatch(editData({ ...data?.data, ...clientObj }))
-				// 		toast.success("Malumot muvoffaqiyatli o'zgartirildi")
-				// 		clearAndClose()
-				// 	} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
-				// 		toast.warn("Bunday mijoz topilmadi")
-				// 	} else {
-				// 		toast.error("Nomalum server xatolik")
-				// 	}
-				// 	setBtnLoading(false)
-				// })
+				patch(`/return/return-patch/${objId}`, newObj).then((data) => {
+					if (data?.status === 200 || data?.status === 201) {
+						patch(`/return/return-pass/${objId}`, { status }).then((datai) => {
+							if (datai?.status === 200 || datai?.status === 201) {
+								let newArr = [...returnList]
+								let objIndex = newArr.findIndex(
+									(item) => item?.return_id === objId
+								)
+								let modifiedObj = {
+									...newArr[objIndex],
+									return_count: data?.data?.return_count,
+									return_cost: data?.data?.return_cost,
+									return_case: data?.data?.return_case,
+									item_status: status,
+									return_createdat: data?.data?.return_createdat,
+								}
+								newArr[objIndex] = modifiedObj
+								setReturnList(newArr)
+
+								if (objId) setFilteredData(newArr)
+								clearAndClose()
+								toast.success("Malumot muvoffaqiyatli o'zgartirildi")
+							} else {
+								toast.error("Nomalum server xatolik")
+							}
+							setBtnLoading(false)
+						})
+					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
+						toast.warn("Bunday mijoz topilmadi")
+					} else {
+						toast.error("Nomalum server xatolik")
+					}
+					setBtnLoading(false)
+				})
 			} else {
 				post("/return/return-post", newObj).then((data) => {
-					if (data?.status === 200) {
-						// dispatch(addData({ ...data?.data, ...clientObj }))
-						// dispatch(setQuantity())
+					if (data?.status === 200 || data?.status === 201) {
+						let modifiedObj = {
+							return_id: data?.data?.return_id,
+							return_count: data?.data?.return_count,
+							return_cost: data?.data?.return_cost,
+							return_case: data?.data?.return_case,
+							item_status: data?.data?.item_status,
+							return_createdat: data?.data?.return_createdat,
+							pack: {
+								store_name: storeObj?.store_name,
+								client_name: clientObj?.clients_name,
+								client_nomer: clientObj?.clients_nomer,
+								product_code: productObj?.goods_id?.goods_code,
+								product_name: productObj?.goods_id?.goods_name,
+							},
+						}
+						setReturnList([modifiedObj, ...returnList])
+						setReturnQ((prev) => prev + 1)
+
+						if (objId) setFilteredData([modifiedObj, ...returnList])
 						clearAndClose()
 						toast.success("Mahsulot muvoffaqiyatli qaytarildi")
 					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
@@ -145,31 +228,40 @@ function Return() {
 	}
 
 	const deleteItem = (id) => {
-		dispatch(setLoading(true))
+		setLoading(true)
 		remove(`/return/return-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
-				dispatch(removeReturn(id))
-				dispatch(setQuantity())
+				setReturnList((prev) => prev?.filter((item) => item?.return_id !== id))
+				searchSubmitted &&
+					setFilteredData((prev) =>
+						prev?.filter((item) => item?.return_id !== id)
+					)
+				setReturnQ((prev) => prev - 1)
 				toast.success("Mahsulot muvoffaqiyatli o'chirildi")
 				clearAndClose()
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
-			dispatch(setLoading(false))
+			setLoading(false)
 		})
 	}
 
 	const handleSearch = () => {
-		dispatch(setLoading(true))
+		setLoading(true)
 		setSearchSubmitted(true)
-
-		get(`/return/return-list`).then((data) => {
-			if (data.status === 200 || data?.status === 201) {
-				setFilteredData(data?.data)
+		post(`/return/return-filter?limit=${limit}&page=${currentPage}`, {
+			search: inputRef.current?.value,
+		}).then((data) => {
+			if (data.status === 200) {
+				setTotalPage(Math.ceil(data?.data?.count / limit))
+				setFilteredData(data?.data?.data)
+				setReturnQ(data?.data?.count)
+				if (!data?.data?.data?.length) setCurrentPage(1)
 			} else {
+				setTotalPage(1)
 				toast.error("Nomalum server xatolik")
 			}
-			dispatch(setLoading(false))
+			setLoading(false)
 		})
 	}
 
@@ -180,26 +272,36 @@ function Return() {
 	}
 
 	const editItem = (id) => {
-		// setProductObj({})
-		// setObjId(id)
-		// setAddModalDisplay("block")
-		// setAddModalVisible(true)
-		// get(`/return/return-list/${id}`).then((data) => {
-		// 	if (data?.status === 200) {
-		// 		const index = state?.client?.data.findIndex(
-		// 			(item) => item.clients_id === data?.data?.client_id
-		// 		)
-		// 		setProductObj(data?.data?.return_name)
-		// 		setClientObj(state?.client?.data[index])
-		// 		setStoreObj(data?.data?.return_store)
-		// 		setCount(data?.data?.return_count)
-		// 		setCost(data?.data?.return_cost)
-		// 		setReason(data?.data?.return_case)
-		// 	} else {
-		// 		clearAndClose()
-		// 		toast.error("Nomalum server xatolik")
-		// 	}
-		// })
+		setProductObj({})
+		setObjId(id)
+		setAddModalDisplay("block")
+		setAddModalVisible(true)
+		get(`/return/return-list/${id}`).then((data) => {
+			if (data?.status === 200) {
+				const storeIndex = store?.data?.findIndex(
+					(item) => item?.store_id === data?.data?.return_store_id
+				)
+				const clientIndex = client?.data?.findIndex(
+					(item) => item?.clients_id === data?.data?.client_id
+				)
+				get(`/products/products-list/${data?.data?.return_item_id}`).then(
+					(data) => {
+						if (data?.status === 200) setProductObj(data?.data)
+					}
+				)
+
+				setClientObj(client?.data[clientIndex])
+				setStoreObj(store?.data[storeIndex])
+				setReason(data?.data?.return_case)
+				setCount(data?.data?.return_count)
+				setStatus(data?.data?.item_status)
+				setCost(data?.data?.return_cost)
+				setCreatedAt(moment(data?.data?.return_createdat).format("YYYY-MM-DD"))
+			} else {
+				clearAndClose()
+				toast.error("Nomalum server xatolik")
+			}
+		})
 	}
 
 	const clearAndClose = () => {
@@ -209,6 +311,7 @@ function Return() {
 		setCount(0)
 		setCost(0)
 		setReason("")
+		setCreatedAt("")
 
 		setActiveElementIndex(0)
 		setObjId("")
@@ -284,6 +387,17 @@ function Return() {
 		return allWordsMatch
 	}
 
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
+		if (
+			searchStoreId === "" &&
+			searchDeliverId === "" &&
+			inputRef.current.value === ""
+		) {
+			setSearchSubmitted(false)
+		}
+	}
+
 	return (
 		<>
 			<AddModal
@@ -299,7 +413,7 @@ function Return() {
 					<label>Ombor</label>
 					<Select
 						showSearch
-						allowClear
+						allowClear={!objId}
 						placeholder="Ombor tanlang"
 						className={`select`}
 						suffixIcon={
@@ -316,19 +430,35 @@ function Return() {
 						}}
 						ref={activeElementIndex === 1 ? nextInputRef : null}
 					>
-						{state?.store?.data.length
-							? state?.store?.data.map((item, idx) => {
-									return (
-										<Select.Option
-											key={idx}
-											value={JSON.stringify(item)}
-											className={`${darkMode ? "dark" : null}`}
-										>
-											<div>
-												<span>{item?.store_name}</span>
-											</div>
-										</Select.Option>
-									)
+						{store?.data.length
+							? store?.data.map((item, idx) => {
+									if (objId) {
+										if (idx < 1)
+											return (
+												<Select.Option
+													key={idx}
+													value={JSON.stringify(item)}
+													className={`${darkMode ? "dark" : null}`}
+													disabled
+												>
+													<div>
+														<span>{item?.store_name}</span>
+													</div>
+												</Select.Option>
+											)
+									} else {
+										return (
+											<Select.Option
+												key={idx}
+												value={JSON.stringify(item)}
+												className={`${darkMode ? "dark" : null}`}
+											>
+												<div>
+													<span>{item?.store_name}</span>
+												</div>
+											</Select.Option>
+										)
+									}
 							  })
 							: null}
 					</Select>
@@ -349,7 +479,7 @@ function Return() {
 					<label>Mahsulot</label>
 					<Select
 						showSearch
-						allowClear
+						allowClear={!objId}
 						placeholder={
 							storeObj?.store_name ? "Mahsulot tanlang" : "Ombor tanlanmagan"
 						}
@@ -367,9 +497,9 @@ function Return() {
 							productObj?.goods_id?.goods_name
 								? `${productObj.goods_id.goods_name} - ${
 										productObj.goods_id.goods_code
-								  } - ${(
+								  } - ${Math.round(
 										productObj?.products_count_price *
-										productObj?.currency_id?.currency_amount
+											productObj?.currency_id?.currency_amount
 								  ).toLocaleString()}so'm`
 								: null
 						}
@@ -377,7 +507,13 @@ function Return() {
 							setActiveElementIndex(3)
 							if (e) {
 								setProductObj(JSON.parse(e))
-								setCost(JSON.parse(e)?.products_count_price)
+								// setCost(JSON.parse(e)?.products_count_price)
+								setCost(
+									(
+										JSON.parse(e).products_count_price *
+										JSON.parse(e).currency_id.currency_amount
+									).toFixed(0)
+								)
 							} else setProductObj({})
 						}}
 						ref={activeElementIndex === 2 ? nextInputRef : null}
@@ -385,34 +521,69 @@ function Return() {
 					>
 						{products?.length
 							? products?.map((item, idx) => {
-									return (
-										<Select.Option
-											key={idx}
-											value={JSON.stringify(item)}
-											className={`option-shrink ${darkMode ? "dark" : null}`}
-										>
-											<div>
-												<span>
-													<img
-														src={item?.img_url}
-														width={40}
-														height={40}
-														alt=""
-														onClick={() => window.open(item?.img_url)}
-													/>{" "}
-													{item?.goods_id?.goods_name} -{" "}
-													{item?.goods_id?.goods_code} -{" "}
-												</span>
-												<span>
-													{(
-														item?.products_count_price *
-														item?.currency_id?.currency_amount
-													).toLocaleString()}
-													so'm - {item?.deliver_id?.deliver_name}
-												</span>
-											</div>
-										</Select.Option>
-									)
+									if (objId) {
+										if (idx < 1)
+											return (
+												<Select.Option
+													key={idx}
+													value={JSON.stringify(item)}
+													className={`option-shrink ${
+														darkMode ? "dark" : null
+													}`}
+													disabled
+												>
+													<div>
+														<span>
+															<img
+																src={item?.img_url}
+																width={40}
+																height={40}
+																alt=""
+																onClick={() => window.open(item?.img_url)}
+															/>{" "}
+															{item?.goods_id?.goods_name} -{" "}
+															{item?.goods_id?.goods_code} -{" "}
+														</span>
+														<span>
+															{Math.round(
+																item?.products_count_price *
+																	item?.currency_id?.currency_amount
+															).toLocaleString()}
+															so'm - {item?.deliver_id?.deliver_name}
+														</span>
+													</div>
+												</Select.Option>
+											)
+									} else {
+										return (
+											<Select.Option
+												key={idx}
+												value={JSON.stringify(item)}
+												className={`option-shrink ${darkMode ? "dark" : null}`}
+											>
+												<div>
+													<span>
+														<img
+															src={item?.img_url}
+															width={40}
+															height={40}
+															alt=""
+															onClick={() => window.open(item?.img_url)}
+														/>{" "}
+														{item?.goods_id?.goods_name} -{" "}
+														{item?.goods_id?.goods_code} -{" "}
+													</span>
+													<span>
+														{Math.round(
+															item?.products_count_price *
+																item?.currency_id?.currency_amount
+														).toLocaleString()}
+														so'm - {item?.deliver_id?.deliver_name}
+													</span>
+												</div>
+											</Select.Option>
+										)
+									}
 							  })
 							: null}
 					</Select>
@@ -459,23 +630,46 @@ function Return() {
 						}}
 						ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
-						{state?.client?.data?.length
-							? state?.client?.data.map((item, idx) => {
+						{client?.data?.length
+							? client?.data?.map((item, idx) => {
 									if (!item?.isdelete) {
-										return (
-											<Select.Option
-												key={idx}
-												className={`option-shrink ${darkMode ? "dark" : null}`}
-												value={JSON.stringify(item)}
-											>
-												<div>
-													<span>{item?.clients_name} - </span>
-													<span>
-														{format_phone_number(item?.clients_nomer)}
-													</span>
-												</div>
-											</Select.Option>
-										)
+										if (objId) {
+											if (idx < 1)
+												return (
+													<Select.Option
+														key={idx}
+														className={`option-shrink ${
+															darkMode ? "dark" : null
+														}`}
+														value={JSON.stringify(item)}
+														disabled
+													>
+														<div>
+															<span>{item?.clients_name} - </span>
+															<span>
+																{format_phone_number(item?.clients_nomer)}
+															</span>
+														</div>
+													</Select.Option>
+												)
+										} else {
+											return (
+												<Select.Option
+													key={idx}
+													className={`option-shrink ${
+														darkMode ? "dark" : null
+													}`}
+													value={JSON.stringify(item)}
+												>
+													<div>
+														<span>{item?.clients_name} - </span>
+														<span>
+															{format_phone_number(item?.clients_nomer)}
+														</span>
+													</div>
+												</Select.Option>
+											)
+										}
 									}
 							  })
 							: null}
@@ -490,7 +684,7 @@ function Return() {
 				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(count) !== null && "error"
-					} ${darkMode ? "dark" : null}`}
+					} ${darkMode ? "dark" : null} ${objId ? "disabled" : null}`}
 				>
 					<label>Dona</label>
 					<input
@@ -507,6 +701,7 @@ function Return() {
 							setCount(e.target.value)
 						}}
 						ref={activeElementIndex === 4 ? nextInputRef : null}
+						disabled={objId}
 					/>
 					{submitted && numberCheck(count) !== null && <Info size={20} />}
 					<div className="validation-field">
@@ -520,10 +715,10 @@ function Return() {
 				>
 					<label>
 						Narx (
-						{productObj.products_count_price
-							? (
+						{productObj?.products_count_price
+							? Math.round(
 									productObj.products_count_price *
-									productObj.currency_id.currency_amount
+										productObj.currency_id.currency_amount
 							  ).toLocaleString()
 							: 0}
 						so'm )
@@ -545,6 +740,83 @@ function Return() {
 						<span>{submitted && numberCheck(cost)}</span>
 					</div>
 				</div>
+				{objId ? (
+					<div
+						className={`input-wrapper modal-form ${
+							submitted && stringCheck(status) !== null && "error"
+						} ${darkMode ? "dark" : null}`}
+					>
+						<label>Status</label>
+						<Select
+							placeholder="Status tanlang"
+							className={`select`}
+							// suffixIcon={
+							// 	submitted && stringCheck(storeObj?.store_name) !== null ? (
+							// 		<Info size={20} />
+							// 	) : (
+							// 		<CaretDown size={16} />
+							// 	)
+							// }
+							value={status ? status : null}
+							onChange={(e) => setStatus(e)}
+						>
+							<Select.Option
+								value="KUTILMOQDA"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>Kutilmoqda</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="FIXING"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>Tuzatilmoqda</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="FIXED"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>Tuzatildi</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="RETURNED_TOCLIENT"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>Klientga qaytib berildi</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="RETURNED_TODELIVER"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>Dillerga qaytib berildi</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="NOT FIXED"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>Yaroqsiz</span>
+								</div>
+							</Select.Option>
+						</Select>
+						<div className="validation-field">
+							<span>
+								{submitted &&
+									stringCheck(storeObj?.store_name, "Ombor tanlash majburiy")}
+							</span>
+						</div>
+					</div>
+				) : null}
 				<div
 					className={`input-wrapper modal-form regular ${
 						darkMode ? "dark" : null
@@ -612,8 +884,8 @@ function Return() {
 						onChange={(e) => setSearchStoreId(e)}
 						disabled
 					>
-						{state.store?.data.length
-							? state.store?.data.map((item, idx) => (
+						{store?.data.length
+							? store?.data.map((item, idx) => (
 									<Select.Option
 										key={idx}
 										value={item.store_id}
@@ -637,8 +909,8 @@ function Return() {
 						onChange={(e) => setSearchDeliverId(e)}
 						disabled
 					>
-						{state.client?.data.length
-							? state.client?.data.map((item, idx) => {
+						{client?.data.length
+							? client?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (
 											<Select.Option
@@ -671,9 +943,7 @@ function Return() {
 
 			<div className="info-wrapper">
 				<InfoItem
-					value={
-						searchSubmitted ? filteredData.length : state?.return?.quantity
-					}
+					value={searchSubmitted ? filteredData.length : returnQ}
 					name="Qaytgan mahsulotlar soni"
 					icon={
 						<ArrowCounterClockwise size={24} color="var(--color-primary)" />
@@ -691,18 +961,76 @@ function Return() {
 				darkMode={darkMode}
 			/>
 
-			{state.return?.loading ? (
+			{loading ? (
 				<Loader />
 			) : (
-				<ReturnTable
-					data={searchSubmitted ? filteredData : state.return.dataReturn}
-					deleteItem={deleteItem}
-					editItem={editItem}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					sidebar={sidebar}
-					darkMode={darkMode}
-				/>
+				<>
+					<ReturnTable
+						data={searchSubmitted ? filteredData : returnList}
+						deleteItem={deleteItem}
+						editItem={editItem}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						sidebar={sidebar}
+						darkMode={darkMode}
+					/>
+
+					<Pagination
+						pages={totalPages}
+						currentPage={currentPage}
+						onPageChange={handlePageChange}
+						darkMode={darkMode}
+					/>
+
+					<div
+						className={`input-wrapper ${
+							darkMode ? "dark" : null
+						} pagination-limit`}
+					>
+						<Select
+							placeholder="Miqdor"
+							className="select"
+							value={limit}
+							onChange={(e) => {
+								setLimit(e)
+								setCurrentPage(1)
+							}}
+						>
+							<Select.Option
+								value="10"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>10</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="25"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>25</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="50"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>50</span>
+								</div>
+							</Select.Option>
+							<Select.Option
+								value="100"
+								className={`${darkMode ? "dark" : null}`}
+							>
+								<div>
+									<span>100</span>
+								</div>
+							</Select.Option>
+						</Select>
+					</div>
+				</>
 			)}
 		</>
 	)

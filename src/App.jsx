@@ -21,6 +21,7 @@ import {
 import "react-toastify/dist/ReactToastify.css"
 import { ToastContainer } from "react-toastify"
 import { useEffect, useState } from "react"
+import Monitoring from "./pages/monitoring/Monitoring"
 
 export default function App() {
 	return (
@@ -49,6 +50,7 @@ export default function App() {
 						<Route index element={<Clients />} />
 						<Route path=":id" element={<ClientsInfo />} />
 					</Route>
+					<Route path="/monitoring" element={<Monitoring />} />
 					<Route path="/return" element={<Return />} />
 					<Route path="/debts" element={<Debts />} />
 				</Route>

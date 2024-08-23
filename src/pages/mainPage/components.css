@@ -25,6 +25,9 @@
 	font-size: var(--text-md);
 	color: var(--color-secondary);
 }
+.input-wrapper input:disabled {
+	cursor: not-allowed;
+}
 .input-wrapper.dark input {
 	border: var(--d-border-primary) !important;
 	background-color: var(--d-bg-input);
@@ -402,6 +405,9 @@
 	border: none;
 	padding: 2px 18px;
 	transition: 0.1s;
+}
+.accordion-delete__btn:disabled {
+	cursor: not-allowed;
 }
 .accordion-delete__btn.extra {
 	background-color: var(--bg-primary);
@@ -941,6 +947,9 @@ div.ant-d-table tr:nth-child(even) {
 	border-radius: var(--radius-lg);
 	display: grid;
 	grid-template-rows: auto auto auto;
+}
+.table-item-scroll {
+	overflow-y: scroll;
 }
 .table-item-edit-wrapper.dark {
 	border: var(--d-border-primary);

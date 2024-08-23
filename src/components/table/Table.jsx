@@ -1,10 +1,11 @@
 import { Table } from "antd"
 import moment from "moment/moment"
-import { addComma } from "../addComma"
+import { addComma, addCommaWithToFixed, addSpace } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
 import NoData from "../noData/NoData"
 import {
 	CirclesThreePlus,
+	DotsThreeCircleVertical,
 	DotsThreeVertical,
 	FilePlus,
 	FolderNotchPlus,
@@ -13,9 +14,12 @@ import {
 	Plus,
 	PlusCircle,
 	PlusSquare,
+	StackMinus,
+	Star,
 	Trash,
 } from "@phosphor-icons/react"
 import { useState } from "react"
+import { subtractModal } from "../pay_modal/pay_modal"
 
 const AntTable = ({
 	data,
@@ -32,6 +36,7 @@ const AntTable = ({
 	currentPage,
 	limit,
 	temporaryFunction,
+	handleSubtract,
 }) => {
 	const [loc, setLoc] = useState(true)
 
@@ -49,6 +54,7 @@ const AntTable = ({
 				id: item?.products_id,
 				deliver_id: item?.deliver_id?.deliver_name,
 				store_id: item?.store_id?.store_name,
+				store: item?.store_id?.store_id,
 				goods_code: item?.goods_id?.goods_code,
 				goods_name: item?.goods_id?.goods_name,
 				products_box_count: isNaN(item?.products_box_count)
@@ -60,7 +66,7 @@ const AntTable = ({
 				products_count_cost:
 					item?.currency_id?.currency_symbol === "$"
 						? item?.currency_id?.currency_symbol +
-						  item?.products_count_cost +
+						  addCommaWithToFixed(item?.products_count_cost) +
 						  " - " +
 						  addComma(
 								item?.products_count_cost * item?.currency_id?.currency_amount
@@ -77,6 +83,8 @@ const AntTable = ({
 							item?.products_count_cost *
 							item?.currency_id?.currency_amount
 					) + " so'm",
+				total_price_value:
+					item?.products_count_price * item?.currency_id?.currency_amount,
 				product_date: `${moment(item?.products_updatedat).format(
 					"YYYY/MM/DD HH:mm"
 				)}`,
@@ -153,13 +161,6 @@ const AntTable = ({
 			render: (text, record) =>
 				userRole === 1 ? (
 					<div className="table-item-edit-holder">
-						<input
-							type="checkbox"
-							onChange={() => {
-								temporaryFunction(record?.id, record?.actual_count)
-							}}
-							checked={record?.actual_count > 2}
-						/>
 						<button type="button" onClick={(e) => handleClick(e, record?.id)}>
 							<DotsThreeVertical size={24} />
 						</button>
@@ -168,44 +169,78 @@ const AntTable = ({
 								showDropdown === record?.id || "hidden"
 							} ${loc && "top"} ${darkMode ? "dark" : null}`}
 						>
-							<button
-								type="button"
-								className="table-item-edit-item"
-								onClick={(e) => {
-									e.stopPropagation()
-									addOnTop(record?.id)
-								}}
-							>
-								Qo'shish <CirclesThreePlus size={20} />
-							</button>
-							<button
-								type="button"
-								className="table-item-edit-item"
-								onClick={(e) => {
-									e.stopPropagation()
-									editProduct(record?.id)
-								}}
-							>
-								Tahrirlash <PencilSimple size={20} />
-							</button>
-							<button
-								type="button"
-								className="table-item-edit-item"
-								onClick={(e) =>
-									productDeleteConfirm(
-										e,
-										<>
-											Mahsulot <span>{record?.goods_name}</span>ni
-										</>,
-										deleteItem,
-										record?.id,
-										darkMode
-									)
-								}
-							>
-								O'chirish
-								<Trash size={20} />
-							</button>
+							<div className="table-item-scroll">
+								<button
+									type="button"
+									className="table-item-edit-item"
+									onClick={(e) => {
+										e.stopPropagation()
+										addOnTop(record?.id)
+									}}
+								>
+									Qo'shish <CirclesThreePlus size={20} />
+								</button>
+								<button
+									type="button"
+									className="table-item-edit-item"
+									onClick={(e) => {
+										e.stopPropagation()
+										editProduct(record?.id)
+									}}
+								>
+									Tahrirlash <PencilSimple size={20} />
+								</button>
+								<button
+									type="button"
+									className="table-item-edit-item"
+									onClick={() =>
+										temporaryFunction(record?.id, record?.actual_count)
+									}
+								>
+									Saqlash
+									{record?.actual_count > 2 ? (
+										<Star size={20} color="yellow" />
+									) : (
+										<Star size={20} />
+									)}
+								</button>
+								<button
+									type="button"
+									className="table-item-edit-item"
+									onClick={(e) =>
+										subtractModal(
+											e,
+											handleSubtract,
+											record?.products_count,
+											record?.id,
+											record?.store,
+											record?.total_price_value,
+											darkMode
+										)
+									}
+								>
+									Ayirish
+									<StackMinus size={20} />
+								</button>
+								<button
+									type="button"
+									className="table-item-edit-item"
+									onClick={(e) =>
+										productDeleteConfirm(
+											e,
+											<>
+												Mahsulot <span>{record?.goods_name}</span>ni
+											</>,
+											deleteItem,
+											record?.id,
+											darkMode
+										)
+									}
+								>
+									O'chirish
+									<Trash size={20} />
+								</button>
+							</div>
 						</div>
 					</div>
 				) : null,

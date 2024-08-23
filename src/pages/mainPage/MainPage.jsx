@@ -71,11 +71,14 @@ export default function MainPage() {
 			case "clients":
 				setActiveSectionIndex(8)
 				break
-			case "employees":
+			case "monitoring":
 				setActiveSectionIndex(9)
 				break
-			case "currency":
+			case "employees":
 				setActiveSectionIndex(10)
+				break
+			case "currency":
+				setActiveSectionIndex(11)
 				break
 		}
 	}
@@ -143,12 +146,7 @@ export default function MainPage() {
 						}
 						return !prevVisible
 					})
-				} else if (
-					e.key === "`" ||
-					e.key === "ё" ||
-					e.key === "~" ||
-					e.key === "Ё"
-				) {
+				} else if ((e.ctrlKey && e.key === "k") || (e.ctrlKey && e.key === "л")) {
 					if (!addModalVisible && !SDModalVisible) {
 						e.preventDefault()
 						inputRef.current?.focus()
@@ -169,11 +167,11 @@ export default function MainPage() {
 					setSidebar(true)
 				} else if (e.ctrlKey && e.key === "ArrowUp") {
 					e.preventDefault()
-					setActiveSectionIndex((prev) => (prev === 0 ? 10 : prev - 1))
+					setActiveSectionIndex((prev) => (prev === 0 ? 11 : prev - 1))
 					inputRef?.current?.blur()
 				} else if (e.ctrlKey && e.key === "ArrowDown") {
 					e.preventDefault()
-					setActiveSectionIndex((prev) => (prev === 10 ? 0 : prev + 1))
+					setActiveSectionIndex((prev) => (prev === 11 ? 0 : prev + 1))
 					inputRef?.current?.blur()
 				}
 			},
@@ -301,6 +299,8 @@ export default function MainPage() {
 							sidebar,
 							userInfo,
 							darkMode,
+							setSDModalVisible,
+							setSDModalDisplay,
 						]}
 					/>
 				</div>

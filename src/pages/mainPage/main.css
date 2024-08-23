@@ -147,8 +147,8 @@
 	padding: 8px !important;
 	background-color: var(--bg-primary) !important;
 	transition: 0.1s;
-	right: 26px;
-	bottom: 26px;
+	right: 20px;
+	bottom: 20px;
 }
 .dark .modal-toggle-btn {
 	background-color: var(--d-bg-primary) !important;

@@ -120,6 +120,7 @@ export default function Reports() {
 					if (data?.status === 201 || data?.status === 200) {
 						setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 						dispatch(setData(data?.data?.data))
+
 						dispatch(setCapital(data?.data?.hisob?.totalProductCost))
 						dispatch(setIncome(data?.data?.hisob?.totalCostPilus))
 						dispatch(setOutcome(data?.data?.hisob?.totalCostMinus))
@@ -333,6 +334,41 @@ export default function Reports() {
 		downloadExcelFile(dataToDownload, setDownloadBtnLoading)
 	}
 
+	const handleDeepSearch = () => {
+		dispatch(setLoading(true))
+		setSearchSubmitted(true)
+		let filterObj = {
+			store: storeId,
+			deliver: deliverId,
+			seller: user,
+			client: clientId,
+			selectedDate: dateRange?.length
+				? dateRange[0].format("YYYY/MM/DD")
+				: null,
+			finishedDate: dateRange?.length
+				? dateRange[1].format("YYYY/MM/DD")
+				: null,
+			search: inputRef.current?.value,
+			exact: true,
+		}
+		if (selectedIncomeOutcome === "income") filterObj.isEnter = true
+		else if (selectedIncomeOutcome === "outcome") filterObj.isEnter = false
+		post(
+			`/reports/reports-filter?limit=${limit}&page=${currentPage}`,
+			filterObj
+		).then((data) => {
+			if (data.status === 200) {
+				setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
+				setFilteredData(data?.data)
+				if (!data?.data?.data?.length) setCurrentPage(1)
+			} else {
+				setTotalPage(1)
+				toast.error("Nomalum server xatolik")
+			}
+			dispatch(setLoading(false))
+		})
+	}
+
 	return (
 		<>
 			<AddModal name="Hisobot tahrirlash">
@@ -440,7 +476,7 @@ export default function Reports() {
 					<Select
 						showSearch
 						allowClear
-						placeholder="Sotuvchi"
+						placeholder="Xodim"
 						className="select"
 						value={user ? user : null}
 						onChange={(e) => setUser(e)}
@@ -636,6 +672,7 @@ export default function Reports() {
 				showAddBtn={false}
 				className={"table-m"}
 				darkMode={darkMode}
+				handleDeepSearch={handleDeepSearch}
 			/>
 
 			{report?.loading ? (
@@ -671,7 +708,10 @@ export default function Reports() {
 							placeholder="Kirim Chiqim"
 							className="select"
 							value={limit}
-							onChange={(e) => setLimit(e)}
+							onChange={(e) => {
+								setLimit(e)
+								setCurrentPage(1)
+							}}
 						>
 							<Select.Option
 								value="10"

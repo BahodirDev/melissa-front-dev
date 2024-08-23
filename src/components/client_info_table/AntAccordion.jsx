@@ -8,6 +8,8 @@ import {
 	FilePdf,
 	Pen,
 	PencilSimpleLine,
+	PersonSimpleSnowboard,
+	ShoppingCart,
 	Trash,
 } from "@phosphor-icons/react"
 import { confirmDownloadModal } from "../confirm_download_modal/confirmDownloadModal"
@@ -28,6 +30,11 @@ const AntdAccordion = ({
 	userInfo,
 	darkMode,
 	setList,
+	clientId,
+	setSDModalVisible,
+	setSDModalDisplay,
+	setshowDropdown,
+	setMiniModal,
 }) => {
 	const [idList, setIdList] = useState([])
 	const [edit, setEdit] = useState("")
@@ -46,12 +53,26 @@ const AntdAccordion = ({
 	}
 
 	const deleteReport = (id) => {
-		remove(`files/files-delete/${id}`).then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
-				removeFromList(id)
-				toast.success("Fayl muvoffaqiyatli o'chirildi")
-			} else if (data?.response?.status === 404) {
-				toast.warn("Bunday fayl topilmadi")
+		const newArr = id?.files.map((item) => ({
+			...item,
+			prev_count: item?.product_count,
+			product_count: 0,
+		}))
+
+		patch(`/clients/clients-edit-list`, newArr).then((dat) => {
+			if (dat?.status === 200 || dat?.status === 201) {
+				toast.success("Royxat muvffaqiyatli o'chirildi")
+				setIdList([])
+				setEdit("")
+				setNewList([])
+				setEditArr([])
+				setPrevCountList([])
+				setPrevObj([])
+				setList(
+					data.filter(
+						(item) => item?.unique_file_table_id !== id?.unique_file_table_id
+					)
+				)
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
@@ -88,19 +109,27 @@ const AntdAccordion = ({
 						let prevQuantity = prevCountList[prevCountIndex]?.count
 							? prevCountList[prevCountIndex]?.count
 							: 0
+
+						let prevQ = prevQuantity ? prevQuantity : item?.product_count
+
+						let newQ =
+							q >= 0 && q <= item?.sub + prevQ
+								? q
+								: q < 0
+								? 0
+								: q > item?.sub + prevQ
+								? item?.sub + prevQ
+								: 0
+
 						if (innerIndex !== -1) {
 							let updatedNewArr = editArr
 							updatedNewArr[innerIndex] = {
 								...item,
+								client_id: clientId,
 								prev_count: prevCountList[prevCountIndex]?.count
 									? prevCountList[prevCountIndex]?.count
 									: item?.product_count,
-								product_count:
-									q >= 0 && q <= item?.sub + prevQuantity
-										? q
-										: q < 0
-										? 0
-										: item?.sub + prevQuantity,
+								product_count: newQ,
 							}
 							setEditArr(updatedNewArr)
 						} else {
@@ -108,26 +137,18 @@ const AntdAccordion = ({
 								...editArr,
 								{
 									...item,
+									client_id: clientId,
 									prev_count: prevCountList[prevCountIndex]?.count
 										? prevCountList[prevCountIndex]?.count
 										: item?.product_count,
-									product_count:
-										q >= 0 && q <= item?.sub + prevQuantity
-											? q
-											: q < 0
-											? 0
-											: item?.sub + prevQuantity,
+									product_count: newQ,
 								},
 							])
 						}
+
 						return {
 							...item,
-							product_count:
-								q >= 0 && q <= item?.sub + prevQuantity
-									? q
-									: q < 0
-									? 0
-									: item?.sub + prevQuantity,
+							product_count: newQ,
 						}
 					} else {
 						return item
@@ -173,6 +194,19 @@ const AntdAccordion = ({
 		setNewList([])
 		setEditArr([])
 		setPrevCountList([])
+	}
+
+	const handleResell = (e, id) => {
+		e.stopPropagation()
+		setshowDropdown("")
+		setMiniModal("")
+		setSDModalVisible(true)
+		setSDModalDisplay("grid")
+
+		let arrIndex = data?.findIndex((item) => item?.unique_file_table_id === id)
+		// console.log(data[arrIndex]?.files)
+		// setResellList(data[arrIndex]?.files)
+		// console.log(data[arrIndex]?.files)
 	}
 
 	return (
@@ -225,7 +259,17 @@ const AntdAccordion = ({
 											</button>
 										</div>
 										<div>
-											{/* functioning delete button */}
+											<button
+												type="button"
+												className="accordion-delete__btn"
+												onClick={(e) =>
+													handleResell(e, item?.unique_file_table_id)
+												}
+												disabled
+											>
+												Qayta sotish <ShoppingCart size={20} />
+											</button>{" "}
+											&nbsp;
 											<button
 												type="button"
 												className="accordion-delete__btn"
@@ -242,7 +286,7 @@ const AntdAccordion = ({
 															dagi faylni
 														</>,
 														deleteReport,
-														item?.unique_file_table_id,
+														item,
 														darkMode
 													)
 												}}

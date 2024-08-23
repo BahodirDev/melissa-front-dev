@@ -1,4 +1,4 @@
-import { Table } from "antd"
+import { Badge, Space, Table } from "antd"
 import moment from "moment/moment"
 import { addComma } from "../addComma"
 import { productDeleteConfirm } from "../delete_modal/delete_modal"
@@ -42,11 +42,9 @@ const ReturnTable = ({
 				cost_each: addComma(item?.return_cost) + " so'm",
 				cost_total: addComma(item?.return_cost * item?.return_count) + " so'm",
 				reason: item?.return_case ? item?.return_case : "Qo'shimcha ma'lumot",
-				client:
-					item?.pack?.client_name +
-					" - " +
-					format_phone_number(item?.pack?.client_nomer),
+				client: item?.pack?.client_name,
 				data: moment(item?.return_createdat).format("YYYY/MM/DD HH:mm"),
+				status: item?.item_status,
 			}
 		})
 
@@ -96,6 +94,29 @@ const ReturnTable = ({
 			dataIndex: "cost_total",
 		},
 		{
+			title: "Status",
+			// dataIndex: "status",
+			render: (text, record) => (
+				<>
+					<Space>
+						{record?.status === "FIXING" ? (
+							<Badge count="Tuzatilmoqda" color="yellow" />
+						) : record?.status === "FIXED" ? (
+							<Badge count="Tuzatildi" color="yellow" />
+						) : record?.status === "RETURNED_TODELIVER" ? (
+							<Badge count="Dillerga qaytib berildi" color="green" />
+						) : record?.status === "RETURNED_TOCLIENT" ? (
+							<Badge count="Klientga qaytib berildi" color="green" />
+						) : record?.status === "NOT FIXED" ? (
+							<Badge count="Yaroqsiz" color="red" />
+						) : record?.status === "KUTILMOQDA" ? (
+							<Badge count="Kutilmoqda" color="yellow" />
+						) : null}
+					</Space>
+				</>
+			),
+		},
+		{
 			title: "Sana",
 			dataIndex: "data",
 			// defaultSortOrder: "descend",
@@ -110,7 +131,7 @@ const ReturnTable = ({
 						<DotsThreeVertical size={24} />
 					</button>
 					<div
-						className={`table-item-edit-wrapper small ${
+						className={`table-item-edit-wrapper extra ${
 							showDropdown === record?.id || "hidden"
 						} ${loc && "top"} ${darkMode ? "dark" : null}`}
 					>

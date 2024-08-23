@@ -79,9 +79,9 @@ export default function Goods() {
 			get(`/goods/goods-list?limit=${limit}&page=${currentPage}`).then(
 				(data) => {
 					if (data?.status === 200 || data?.status === 201) {
-						setTotalPage(Math.ceil(data?.data[0]?.full_count / limit))
-						dispatch(setData(data?.data))
-						dispatch(setQuantity())
+						setTotalPage(Math.ceil(data?.data?.goods / limit))
+						dispatch(setData(data?.data?.data))
+						dispatch(setQuantity(data?.data?.goods))
 					} else {
 						setTotalPage(1)
 						toast.error("Nomalum server xatolik")
@@ -92,7 +92,7 @@ export default function Goods() {
 		}
 	}
 
-	useEffect(getData, [currentPage])
+	useEffect(getData, [currentPage, limit])
 
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
@@ -103,7 +103,7 @@ export default function Goods() {
 
 	const addGood = () => {
 		setSubmitted(true)
-		if (newGoodName && newGoodCode && newDeliver) {
+		if (newGoodName && newGoodCode && Object.keys(newDeliver)?.length !== 0) {
 			setBtn_loading(true)
 			let newObj = {
 				goods_name: newGoodName.trim(),
@@ -243,9 +243,9 @@ export default function Goods() {
 			filterObj
 		).then((data) => {
 			if (data.status === 200) {
-				setTotalPage(Math.ceil(data?.data[0]?.full_count / limit))
-				setFilteredData(data?.data)
-				if (!data?.data?.length) setCurrentPage(1)
+				setTotalPage(Math.ceil(data?.data?.goods / limit))
+				setFilteredData(data?.data?.data)
+				if (!data?.data?.data?.length) setCurrentPage(1)
 			} else {
 				setTotalPage(1)
 				toast.error("Nomalum server xatolik")
@@ -545,7 +545,10 @@ export default function Goods() {
 							placeholder="Kirim Chiqim"
 							className="select"
 							value={limit}
-							onChange={(e) => setLimit(e)}
+							onChange={(e) => {
+								setLimit(e)
+								setCurrentPage(1)
+							}}
 						>
 							<Select.Option
 								value="10"
