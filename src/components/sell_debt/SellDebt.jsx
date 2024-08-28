@@ -15,7 +15,15 @@ import { setData as setDataCurrency } from "../reducers/currency"
 import { setData as setDataDeliver } from "../reducers/deliver"
 import { setData as setDataUser } from "../reducers/users"
 import { setData } from "../reducers/store"
-import { CaretDown, Info, X, XCircle } from "@phosphor-icons/react"
+import {
+	ArrowDown,
+	ArrowUp,
+	CaretDown,
+	Check,
+	Info,
+	X,
+	XCircle,
+} from "@phosphor-icons/react"
 import { dateCompare, numberCheck, stringCheck } from "../validation"
 import { Select, Spin } from "antd"
 import format_phone_number from "../format_phone_number/format_phone_number"
@@ -61,6 +69,9 @@ const SellDebt = ({
 	const [products, setProducts] = useState([])
 	const [totalPriceSellList, setTotalPriceSellList] = useState(0)
 	const [productListLoading, setProductListLoading] = useState(false)
+	const [priceFilter, setPriceFilter] = useState(null)
+	const [dateFilter, setDateFilter] = useState(null)
+	const [showZeroFilter, setShowZeroFilter] = useState(false)
 
 	// new sell
 	const [storeObj, setStoreObj] = useState({})
@@ -78,17 +89,13 @@ const SellDebt = ({
 
 	const getData = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
-			if (data?.status === 200 || data?.status === 201) {
+			if (data?.status === 201 || data?.status === 200) {
 				dispatch(dispatch1(data?.data))
-			}
-		})
-		if (name === "clients") {
-			get(`/${name}/${name}-list`).then((data) => {
-				if (data?.status === 200 || data?.status === 201) {
+				if (name === "clients") {
 					dispatch(dispatch1(data?.data?.data))
 				}
-			})
-		}
+			}
+		})
 	}
 
 	useEffect(() => {
@@ -129,10 +136,56 @@ const SellDebt = ({
 		}
 	}, [productList])
 
+	useEffect(() => {
+		if (storeObj?.store_id) {
+			if (deliverObj?.deliver_id) {
+				setProductListLoading(true)
+				get(
+					`products/products-by-params?store_id=${storeObj?.store_id}&deliver_id=${deliverObj?.deliver_id}&date=${dateFilter}&price=${priceFilter}&zero=${showZeroFilter}`
+				).then((data) => {
+					if (data?.status === 200) {
+						setProducts(data?.data)
+					} else {
+						setProducts([])
+					}
+					setProductListLoading(false)
+				})
+			} else {
+				setProductListLoading(true)
+				get(
+					`/products/products-by-storeid/${storeObj?.store_id}?date=${dateFilter}&price=${priceFilter}&zero=${showZeroFilter}`
+				).then((data) => {
+					if (data?.status === 200) {
+						setProducts(data?.data)
+					} else {
+						setProducts([])
+					}
+					setProductListLoading(false)
+				})
+			}
+		} else {
+			if (deliverObj?.deliver_id) {
+				setProductListLoading(true)
+				get(
+					`products/products-by-deliverId/${deliverObj?.deliver_id}?date=${dateFilter}&price=${priceFilter}&zero=${showZeroFilter}`
+				).then((data) => {
+					if (data?.status === 200) {
+						setProducts(data?.data)
+					} else {
+						setProducts([])
+					}
+					setProductListLoading(false)
+				})
+			}
+		}
+	}, [priceFilter, dateFilter, showZeroFilter])
+
 	const handleStoreChange = (id) => {
 		setProductObj({})
 		setProductQ(0)
 		setDeliverObj({})
+		setPriceFilter(null)
+		setDateFilter(null)
 
 		if (id) {
 			const obj = JSON.parse(id)
@@ -157,6 +210,8 @@ const SellDebt = ({
 	const handleDeliverChange = (e) => {
 		setProductObj({})
 		setProductQ(0)
+		setPriceFilter(null)
+		setDateFilter(null)
 
 		if (e) {
 			const obj = JSON.parse(e)
@@ -356,6 +411,8 @@ const SellDebt = ({
 
 	function filterOption(inputValue, option) {
 		const goodsData = JSON.parse(option.props.value)?.goods_id
+		const deliverData = JSON.parse(option.props.value)?.deliver_id
+
 		const goodsNameFirst = goodsData?.goods_name + " " + goodsData?.goods_code
 		const goodsCodeFirst = goodsData?.goods_code + " " + goodsData?.goods_name
 		const goodsNameFirstDashRemoved = goodsData?.goods_name
@@ -364,6 +421,18 @@ const SellDebt = ({
 		const goodsCodeFirstDashRemoved = goodsData?.goods_code
 			.replace(/\s|-/g, "")
 			.toLowerCase()
+		const goodsNameFirstDeliver =
+			goodsData?.goods_name +
+			" " +
+			goodsData?.goods_code +
+			" " +
+			deliverData?.deliver_name
+		const goodsCodeFirstDeliver =
+			goodsData?.goods_code +
+			" " +
+			goodsData?.goods_name +
+			" " +
+			deliverData?.deliver_name
 
 		const inputValueLowerCase = inputValue.toLowerCase()
 		const inputWords = inputValueLowerCase.split(" ")
@@ -373,7 +442,9 @@ const SellDebt = ({
 				goodsNameFirst.toLowerCase().includes(word) ||
 				goodsCodeFirst.toLowerCase().includes(word) ||
 				goodsNameFirstDashRemoved.toLowerCase().includes(word) ||
-				goodsCodeFirstDashRemoved.toLowerCase().includes(word)
+				goodsCodeFirstDashRemoved.toLowerCase().includes(word) ||
+				goodsNameFirstDeliver.toLowerCase().includes(word) ||
+				goodsCodeFirstDeliver.toLowerCase().includes(word)
 		)
 
 		return allWordsMatch
@@ -557,17 +628,8 @@ const SellDebt = ({
 								}}
 								ref={activeElementIndex === 2 ? nextInputRef : null}
 							>
-								{/* <Select.Option
-										value={JSON.stringify({
-											clients_name: "Yangi mijoz",
-											clients_nomer: "000000000000",
-											clients_id: "",
-										})}
-									>
-										Yangi mijoz - (00) 000 00 00
-									</Select.Option> */}
 								{client?.data?.length
-									? client?.data.map((item, idx) => {
+									? client?.data?.map((item, idx) => {
 											if (!item?.isdelete) {
 												return (
 													<Select.Option
@@ -644,7 +706,54 @@ const SellDebt = ({
 								"error"
 							} ${darkMode ? "dark" : null}`}
 						>
-							<label>Mahsulot</label>
+							<div className="modal-form_row">
+								<label>Mahsulot</label>
+								<div className="sell-modal__dropdown">
+									<span className="sell-modal_dropwon-title">Saralash</span>
+									<div
+										className={`sell-modal__dropdown__wrapper ${
+											darkMode ? "dark" : null
+										}`}
+									>
+										<ul>
+											<li
+												onClick={() =>
+													setDateFilter(
+														dateFilter === "OLDEST" ? "NEWEST" : "OLDEST"
+													)
+												}
+											>
+												Eng yangi{" "}
+												{dateFilter === "OLDEST" ? (
+													<ArrowUp size={16} />
+												) : (
+													<ArrowDown size={16} />
+												)}
+											</li>
+											<li
+												onClick={() =>
+													setPriceFilter(
+														priceFilter === "CHEAPEST"
+															? "EXPENSIVE"
+															: "CHEAPEST"
+													)
+												}
+											>
+												Eng arzon{" "}
+												{priceFilter === "CHEAPEST" ? (
+													<ArrowUp size={16} />
+												) : (
+													<ArrowDown size={16} />
+												)}
+											</li>
+											<li onClick={() => setShowZeroFilter(!showZeroFilter)}>
+												Tugagan{" "}
+												{showZeroFilter ? <Check size={16} /> : <X size={16} />}
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
 							<Select
 								showSearch
 								allowClear

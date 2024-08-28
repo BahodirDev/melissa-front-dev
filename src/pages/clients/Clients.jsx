@@ -71,16 +71,6 @@ export default function Employees() {
 				dispatch(setLoading(false))
 			}
 		)
-
-		get(`/clients/clients-list`).then((data) => {
-			if (data?.status === 201 || data?.status === 200) {
-				dispatch(setData(data?.data?.data))
-			} else {
-				toast.error("Nomalur server xatolik")
-			}
-
-			dispatch(setLoading(false))
-		})
 	}, [])
 
 	useEffect(() => {

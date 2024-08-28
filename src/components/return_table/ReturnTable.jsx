@@ -102,7 +102,7 @@ const ReturnTable = ({
 						{record?.status === "FIXING" ? (
 							<Badge count="Tuzatilmoqda" color="yellow" />
 						) : record?.status === "FIXED" ? (
-							<Badge count="Tuzatildi" color="yellow" />
+							<Badge count="Tuzatildi" color="green" />
 						) : record?.status === "RETURNED_TODELIVER" ? (
 							<Badge count="Dillerga qaytib berildi" color="green" />
 						) : record?.status === "RETURNED_TOCLIENT" ? (

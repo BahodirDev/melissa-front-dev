@@ -143,7 +143,7 @@ function Return() {
 
 	const addNewReturn = () => {
 		setSubmitted(true)
-		if (productObj && clientObj && storeObj && count > 0 && cost > 0) {
+		if (productObj && storeObj && count > 0 && cost > 0) {
 			setBtnLoading(true)
 			let newObj = {
 				return_item_id: productObj?.products_id,
@@ -201,7 +201,9 @@ function Return() {
 							return_cost: data?.data?.return_cost,
 							return_case: data?.data?.return_case,
 							item_status: data?.data?.item_status,
-							return_createdat: data?.data?.return_createdat,
+							return_createdat: data?.data?.return_createdat
+								? data?.data?.return_createdat
+								: new Date(),
 							pack: {
 								store_name: storeObj?.store_name,
 								client_name: clientObj?.clients_name,
@@ -213,7 +215,7 @@ function Return() {
 						setReturnList([modifiedObj, ...returnList])
 						setReturnQ((prev) => prev + 1)
 
-						if (objId) setFilteredData([modifiedObj, ...returnList])
+						if (objId) setFilteredData([modifiedObj, ...filteredData])
 						clearAndClose()
 						toast.success("Mahsulot muvoffaqiyatli qaytarildi")
 					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
@@ -597,26 +599,13 @@ function Return() {
 						</span>
 					</div>
 				</div>
-				<div
-					className={`input-wrapper modal-form ${
-						submitted &&
-						stringCheck(clientObj?.clients_name) !== null &&
-						"error"
-					} ${darkMode ? "dark" : null}`}
-				>
+				<div className={`input-wrapper modal-form ${darkMode ? "dark" : null}`}>
 					<label>Mijoz</label>
 					<Select
 						showSearch
 						allowClear
 						placeholder="Mijoz tanlang"
 						className="select"
-						suffixIcon={
-							submitted && stringCheck(clientObj?.clients_name) !== null ? (
-								<Info size={20} />
-							) : (
-								<CaretDown size={16} />
-							)
-						}
 						value={
 							clientObj?.clients_name
 								? `${clientObj.clients_name} - ${format_phone_number(
@@ -674,12 +663,6 @@ function Return() {
 							  })
 							: null}
 					</Select>
-					<div className="validation-field">
-						<span>
-							{submitted &&
-								stringCheck(clientObj?.clients_name, "Mijoz tanlash majburiy")}
-						</span>
-					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
