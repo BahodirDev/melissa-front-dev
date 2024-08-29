@@ -26,7 +26,8 @@
 	width: 100%;
 	padding: 12px 20px;
 	display: grid;
-	grid-template-columns: 120px 160px 80px 100px 140px auto;
+	/* grid-template-columns: 120px 160px 80px 100px 140px auto; */
+	grid-template-columns: 280px 80px 100px 140px auto;
 	gap: 20px;
 	background-color: var(--bg-pagination-btn);
 }
@@ -50,7 +51,8 @@
 }
 .modal-list-item {
 	display: grid;
-	grid-template-columns: 120px 160px 80px 100px 140px auto;
+	/* grid-template-columns: 120px 160px 80px 100px 140px auto; */
+	grid-template-columns: 280px 80px 100px 140px auto;
 	gap: 20px;
 	padding: 12px 20px;
 	background-color: var(--bg-light);

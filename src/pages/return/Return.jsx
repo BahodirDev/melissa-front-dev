@@ -64,8 +64,8 @@ function Return() {
 	// filter
 	const [filteredData, setFilteredData] = useState({})
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
-	const [searchStoreId, setSearchStoreId] = useState("")
-	const [searchDeliverId, setSearchDeliverId] = useState("")
+	const [searchStoreId, setSearchStoreId] = useState(null)
+	const [searchDeliverId, setSearchDeliverId] = useState(null)
 	const [searchGoodId, setSearchGoodId] = useState("")
 	const [products, setProducts] = useState([])
 	const didMount = useRef(false)
@@ -144,7 +144,6 @@ function Return() {
 	const addNewReturn = () => {
 		setSubmitted(true)
 		if (productObj && storeObj && count > 0 && cost > 0) {
-			setBtnLoading(true)
 			let newObj = {
 				return_item_id: productObj?.products_id,
 				return_store_id: storeObj?.store_id,
@@ -158,6 +157,7 @@ function Return() {
 				from_product: false,
 			}
 			if (objId) {
+				setBtnLoading(true)
 				patch(`/return/return-patch/${objId}`, newObj).then((data) => {
 					if (data?.status === 200 || data?.status === 201) {
 						patch(`/return/return-pass/${objId}`, { status }).then((datai) => {
@@ -193,38 +193,41 @@ function Return() {
 					setBtnLoading(false)
 				})
 			} else {
-				post("/return/return-post", newObj).then((data) => {
-					if (data?.status === 200 || data?.status === 201) {
-						let modifiedObj = {
-							return_id: data?.data?.return_id,
-							return_count: data?.data?.return_count,
-							return_cost: data?.data?.return_cost,
-							return_case: data?.data?.return_case,
-							item_status: data?.data?.item_status,
-							return_createdat: data?.data?.return_createdat
-								? data?.data?.return_createdat
-								: new Date(),
-							pack: {
-								store_name: storeObj?.store_name,
-								client_name: clientObj?.clients_name,
-								client_nomer: clientObj?.clients_nomer,
-								product_code: productObj?.goods_id?.goods_code,
-								product_name: productObj?.goods_id?.goods_name,
-							},
-						}
-						setReturnList([modifiedObj, ...returnList])
-						setReturnQ((prev) => prev + 1)
+				if (clientObj?.clients_name) {
+					setBtnLoading(true)
+					post("/return/return-post", newObj).then((data) => {
+						if (data?.status === 200 || data?.status === 201) {
+							let modifiedObj = {
+								return_id: data?.data?.return_id,
+								return_count: data?.data?.return_count,
+								return_cost: data?.data?.return_cost,
+								return_case: data?.data?.return_case,
+								item_status: data?.data?.item_status,
+								return_createdat: data?.data?.return_createdat
+									? data?.data?.return_createdat
+									: new Date(),
+								pack: {
+									store_name: storeObj?.store_name,
+									client_name: clientObj?.clients_name,
+									client_nomer: clientObj?.clients_nomer,
+									product_code: productObj?.goods_id?.goods_code,
+									product_name: productObj?.goods_id?.goods_name,
+								},
+							}
+							setReturnList([modifiedObj, ...returnList])
+							setReturnQ((prev) => prev + 1)
 
-						if (objId) setFilteredData([modifiedObj, ...filteredData])
-						clearAndClose()
-						toast.success("Mahsulot muvoffaqiyatli qaytarildi")
-					} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
-						toast.warn("Bunday mijoz topilmadi")
-					} else {
-						toast.error("Nomalum server xatolik")
-					}
-					setBtnLoading(false)
-				})
+							if (objId) setFilteredData([modifiedObj, ...filteredData])
+							clearAndClose()
+							toast.success("Mahsulot muvoffaqiyatli qaytarildi")
+						} else if (data?.response?.data?.error === "CLIENTS_NOT_FOUND") {
+							toast.warn("Bunday mijoz topilmadi")
+						} else {
+							toast.error("Nomalum server xatolik")
+						}
+						setBtnLoading(false)
+					})
+				}
 			}
 		}
 	}
@@ -253,6 +256,8 @@ function Return() {
 		setSearchSubmitted(true)
 		post(`/return/return-filter?limit=${limit}&page=${currentPage}`, {
 			search: inputRef.current?.value,
+			store: searchStoreId,
+			client: searchDeliverId,
 		}).then((data) => {
 			if (data.status === 200) {
 				setTotalPage(Math.ceil(data?.data?.count / limit))
@@ -400,6 +405,16 @@ function Return() {
 		}
 	}
 
+	const clearFilter = () => {
+		setSearchDeliverId(null)
+		setSearchStoreId(null)
+
+		setSearchSubmitted(false)
+		setFilteredData([])
+		inputRef.current.value = ""
+		getReturnData()
+	}
+
 	return (
 		<>
 			<AddModal
@@ -431,6 +446,7 @@ function Return() {
 							setActiveElementIndex(2)
 						}}
 						ref={activeElementIndex === 1 ? nextInputRef : null}
+						disabled={objId}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => {
@@ -441,7 +457,6 @@ function Return() {
 													key={idx}
 													value={JSON.stringify(item)}
 													className={`${darkMode ? "dark" : null}`}
-													disabled
 												>
 													<div>
 														<span>{item?.store_name}</span>
@@ -520,6 +535,7 @@ function Return() {
 						}}
 						ref={activeElementIndex === 2 ? nextInputRef : null}
 						notFoundContent={productListLoading ? <Spin size="small" /> : null}
+						disabled={objId}
 					>
 						{products?.length
 							? products?.map((item, idx) => {
@@ -532,7 +548,6 @@ function Return() {
 													className={`option-shrink ${
 														darkMode ? "dark" : null
 													}`}
-													disabled
 												>
 													<div>
 														<span>
@@ -599,7 +614,14 @@ function Return() {
 						</span>
 					</div>
 				</div>
-				<div className={`input-wrapper modal-form ${darkMode ? "dark" : null}`}>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						!objId &&
+						stringCheck(clientObj?.clients_name) !== null &&
+						"error"
+					} ${darkMode ? "dark" : null}`}
+				>
 					<label>Mijoz</label>
 					<Select
 						showSearch
@@ -618,6 +640,16 @@ function Return() {
 							e ? setClientObj(JSON.parse(e)) : setClientObj({})
 						}}
 						ref={activeElementIndex === 3 ? nextInputRef : null}
+						suffixIcon={
+							submitted &&
+							!objId &&
+							stringCheck(clientObj?.clients_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						disabled={objId}
 					>
 						{client?.data?.length
 							? client?.data?.map((item, idx) => {
@@ -631,7 +663,6 @@ function Return() {
 															darkMode ? "dark" : null
 														}`}
 														value={JSON.stringify(item)}
-														disabled
 													>
 														<div>
 															<span>{item?.clients_name} - </span>
@@ -663,6 +694,13 @@ function Return() {
 							  })
 							: null}
 					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								!objId &&
+								stringCheck(clientObj?.clients_name, "Mijoz tanlash majburiy")}
+						</span>
+					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular ${
@@ -864,8 +902,7 @@ function Return() {
 						placeholder="Ombor"
 						className="select"
 						value={searchStoreId ? searchStoreId : null}
-						onChange={(e) => setSearchStoreId(e)}
-						disabled
+						onChange={(e) => setSearchStoreId(e ? e : null)}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => (
@@ -889,8 +926,7 @@ function Return() {
 						placeholder="Mijoz"
 						className="select"
 						value={searchDeliverId ? searchDeliverId : null}
-						onChange={(e) => setSearchDeliverId(e)}
-						disabled
+						onChange={(e) => setSearchDeliverId(e ? e : null)}
 					>
 						{client?.data.length
 							? client?.data.map((item, idx) => {
@@ -917,7 +953,7 @@ function Return() {
 					<button
 						type="button"
 						className={`filter-btn ${darkMode ? "dark" : null}`}
-						disabled
+						onClick={clearFilter}
 					>
 						Tozalash
 					</button>
@@ -958,61 +994,65 @@ function Return() {
 						darkMode={darkMode}
 					/>
 
-					<Pagination
-						pages={totalPages}
-						currentPage={currentPage}
-						onPageChange={handlePageChange}
-						darkMode={darkMode}
-					/>
+					{totalPages > 1 ? (
+						<>
+							<Pagination
+								pages={totalPages}
+								currentPage={currentPage}
+								onPageChange={handlePageChange}
+								darkMode={darkMode}
+							/>
 
-					<div
-						className={`input-wrapper ${
-							darkMode ? "dark" : null
-						} pagination-limit`}
-					>
-						<Select
-							placeholder="Miqdor"
-							className="select"
-							value={limit}
-							onChange={(e) => {
-								setLimit(e)
-								setCurrentPage(1)
-							}}
-						>
-							<Select.Option
-								value="10"
-								className={`${darkMode ? "dark" : null}`}
+							<div
+								className={`input-wrapper ${
+									darkMode ? "dark" : null
+								} pagination-limit`}
 							>
-								<div>
-									<span>10</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="25"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>25</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="50"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>50</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="100"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>100</span>
-								</div>
-							</Select.Option>
-						</Select>
-					</div>
+								<Select
+									placeholder="Miqdor"
+									className="select"
+									value={limit}
+									onChange={(e) => {
+										setLimit(e)
+										setCurrentPage(1)
+									}}
+								>
+									<Select.Option
+										value="10"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>10</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="25"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>25</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="50"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>50</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="100"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>100</span>
+										</div>
+									</Select.Option>
+								</Select>
+							</div>
+						</>
+					) : null}
 				</>
 			)}
 		</>

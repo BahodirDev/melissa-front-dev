@@ -390,7 +390,7 @@ export default function Employees() {
 
 					{searchSubmitted ? (
 						<></>
-					) : (
+					) : totalPages > 1 ? (
 						<>
 							<Pagination
 								pages={totalPages}
@@ -448,7 +448,7 @@ export default function Employees() {
 								</Select>
 							</div>
 						</>
-					)}
+					) : null}
 				</>
 			)}
 		</>

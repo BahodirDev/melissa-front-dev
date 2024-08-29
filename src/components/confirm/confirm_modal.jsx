@@ -33,14 +33,15 @@ export const confirmApproveModal = (msg, action, mode = false) => {
 		okType: "success",
 		cancelText: "Bekor qilish",
 		width: 300,
+		autoFocusButton: null,
 		onOk() {
 			action()
 		},
 		onCancel() {},
 		width: 350,
 		bodyStyle: {
-			// display: "flex",
-			// justifyContent: "center",
+			display: "flex",
+			justifyContent: "center",
 		},
 		style: {
 			top: "50%",
@@ -67,6 +68,10 @@ export const confirmReturnTF = (msg, action, mode = false) => {
 				resolve(undefined) // Reject with false when user clicks Cancel
 			},
 			width: 350,
+			bodyStyle: {
+				display: "flex",
+				justifyContent: "center",
+			},
 			style: {
 				top: "50%",
 				transform: "translateY(-50%)",

@@ -161,20 +161,22 @@ const AntdAccordion = ({
 	}
 
 	const handleEditSave = (id = null) => {
+		console.log(editArr)
+
 		if (newList?.length && id === edit) {
-			patch(`/clients/clients-edit-list`, editArr).then((data) => {
-				if (data?.status === 200 || data?.status === 201) {
-					toast.success("Royxat muvffaqiyatli o'zgartirildi")
-					setIdList([])
-					setEdit("")
-					setNewList([])
-					setEditArr([])
-					setPrevCountList([])
-					setPrevObj([])
-				} else {
-					toast.error("Nomalum server xatolik")
-				}
-			})
+		// 	patch(`/clients/clients-edit-list`, editArr).then((data) => {
+		// 		if (data?.status === 200 || data?.status === 201) {
+		// 			toast.success("Royxat muvffaqiyatli o'zgartirildi")
+		// 			setIdList([])
+		// 			setEdit("")
+		// 			setNewList([])
+		// 			setEditArr([])
+		// 			setPrevCountList([])
+		// 			setPrevObj([])
+		// 		} else {
+		// 			toast.error("Nomalum server xatolik")
+		// 		}
+		// 	})
 		} else {
 			setEdit(edit !== id ? id : "")
 		}
@@ -259,7 +261,7 @@ const AntdAccordion = ({
 											</button>
 										</div>
 										<div>
-											<button
+											{/* <button
 												type="button"
 												className="accordion-delete__btn"
 												onClick={(e) =>
@@ -268,7 +270,7 @@ const AntdAccordion = ({
 												disabled
 											>
 												Qayta sotish <ShoppingCart size={20} />
-											</button>{" "}
+											</button>{" "} */}
 											&nbsp;
 											<button
 												type="button"
@@ -323,7 +325,7 @@ const AntdAccordion = ({
 									) : null}
 									<tbody>
 										<h6>
-											{item?.files?.length}ta -{" "}
+											{item?.files?.length} hil -{" "}
 											{item?.files
 												?.reduce(
 													(totalPrice, product) =>
@@ -389,7 +391,7 @@ const AntdAccordion = ({
 														fileInfo?.product_count
 													)}
 												</td>
-												<td>x {addComma(fileInfo?.count_price)}</td>
+												<td>x &nbsp; {addComma(fileInfo?.count_price)}</td>
 												<td>
 													={" "}
 													{addComma(

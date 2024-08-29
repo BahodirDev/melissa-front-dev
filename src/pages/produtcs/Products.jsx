@@ -38,6 +38,8 @@ import AddModal from "../../components/add/AddModal"
 import InfoItem from "../../components/info_item/InfoItem"
 import {
 	ArrowCounterClockwise,
+	ArrowDown,
+	ArrowUp,
 	CaretDown,
 	CurrencyDollar,
 	Info,
@@ -48,6 +50,7 @@ import Search from "../../components/search/Search"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment"
 import Pagination from "../../components/pagination/Pagination"
+import { confirmApproveModal } from "../../components/confirm/confirm_modal"
 
 export default function Products() {
 	const [
@@ -80,6 +83,8 @@ export default function Products() {
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [searchStoreId, setSearchStoreId] = useState("")
 	const [searchDeliverId, setSearchDeliverId] = useState("")
+	const [priceFilter, setPriceFilter] = useState(null)
+	const [dateFilter, setDateFilter] = useState(null)
 
 	const [currentPage, setCurrentPage] = useState(1)
 	const [limit, setLimit] = useState(20)
@@ -149,6 +154,8 @@ export default function Products() {
 	const clearFilter = () => {
 		setSearchStoreId("")
 		setSearchDeliverId("")
+		setPriceFilter(null)
+		setDateFilter(null)
 		setSearchSubmitted(false)
 		setFilteredData([])
 		inputRef.current.value = ""
@@ -166,7 +173,7 @@ export default function Products() {
 			search: inputRef.current?.value,
 		}
 		post(
-			`/products/products-filter?limit=${limit}&page=${currentPage}`,
+			`/products/products-filter?date=${dateFilter}&price=${priceFilter}&limit=${limit}&page=${currentPage}`,
 			filterObj
 		).then((data) => {
 			if (data.status === 200) {
@@ -188,10 +195,11 @@ export default function Products() {
 		} else {
 			didMount.current = true
 		}
-	}, [searchStoreId, searchDeliverId, limit])
+	}, [searchStoreId, searchDeliverId, limit, dateFilter, priceFilter])
 
 	const addNewProduct = () => {
 		setSubmitted(true)
+
 		if (
 			newGoodsId.goods_id &&
 			newDeliverId.deliver_id &&
@@ -201,53 +209,58 @@ export default function Products() {
 			newProductCost > 0 &&
 			newPerBox > 0
 		) {
-			let newProductObj = {
-				goods_id: newGoodsId?.goods_id,
-				deliver_id: newDeliverId?.deliver_id,
-				store_id: newStoreId?.store_id,
-				products_count_cost: +newProductCost,
-				products_box_count: newBoxQ ? +newBoxQ : 0,
-
-				each_box_count: +newPerBox,
-				out_of_box: +newProductQ,
-				currency_id: newPercentId?.currency_id,
-				products_count_price: +newProductPrice,
-				products_count: +newProductQ,
-			}
-			if (objId) {
-				if (newDate) {
-					setBtnLoading(true)
-					newProductObj.products_createdat = newDate
-						? new Date(newDate).toISOString()
-						: new Date().toISOString()
-					patch(`/products/products-patch/${objId}`, newProductObj).then(
-						(data) => {
-							if (data?.status === 200 || data?.status === 201) {
-								// dispatch(
-								// 	editData({
-								// 		...data?.data,
-								// 		...newGoodsId,
-								// 		...newDeliverId,
-								// 		...newStoreId,
-								// 		...currency?.data[0],
-								// 	})
-								// )
-								clearAndClose()
-								toast.success("Mahsulot muvoffaqiyatli o'zgartirildi")
-							} else {
-								toast.error("Nomalum server xatolik")
-							}
-							setBtnLoading(false)
-						}
-					)
-				}
+			if (newPercentId?.currency_code === "UZS" && newProductPrice < 1000) {
+				// alert
+				confirmApproveModal(
+					`Sotuv narxi ${newPercentId?.currency_code === "USD" ? "$" : ""} ${
+						newProductPrice * newPercentId?.currency_amount
+					} ${newPercentId?.currency_code === "UZS" ? "so'm" : ""}mi?`,
+					handleAddProduct,
+					darkMode
+				)
+			} else if (
+				newPercentId?.currency_code === "USD" &&
+				newProductPrice > 100
+			) {
+				// alert
+				confirmApproveModal(
+					`Sotuv narxi ${addComma(
+						newProductPrice * newPercentId?.currency_amount
+					)} so'mmi?`,
+					handleAddProduct,
+					darkMode
+				)
 			} else {
-				if (newProductQ > 0) {
-					setBtnLoading(true)
-					post("/products/products-post", newProductObj).then((data) => {
-						if (data?.status === 201) {
+				// fine
+				handleAddProduct()
+			}
+		}
+	}
+
+	const handleAddProduct = () => {
+		let newProductObj = {
+			goods_id: newGoodsId?.goods_id,
+			deliver_id: newDeliverId?.deliver_id,
+			store_id: newStoreId?.store_id,
+			products_count_cost: +newProductCost,
+			products_box_count: newBoxQ ? +newBoxQ : 0,
+			each_box_count: +newPerBox,
+			out_of_box: +newProductQ,
+			currency_id: newPercentId?.currency_id,
+			products_count_price: +newProductPrice,
+			products_count: +newProductQ,
+		}
+		if (objId) {
+			if (newDate) {
+				setBtnLoading(true)
+				newProductObj.products_createdat = newDate
+					? new Date(newDate).toISOString()
+					: new Date().toISOString()
+				patch(`/products/products-patch/${objId}`, newProductObj).then(
+					(data) => {
+						if (data?.status === 200 || data?.status === 201) {
 							// dispatch(
-							// 	addData({
+							// 	editData({
 							// 		...data?.data,
 							// 		...newGoodsId,
 							// 		...newDeliverId,
@@ -256,13 +269,35 @@ export default function Products() {
 							// 	})
 							// )
 							clearAndClose()
-							toast.success("Mahsulot muvoffaqiyatli qo'shildi")
+							toast.success("Mahsulot muvoffaqiyatli o'zgartirildi")
 						} else {
 							toast.error("Nomalum server xatolik")
 						}
 						setBtnLoading(false)
-					})
-				}
+					}
+				)
+			}
+		} else {
+			if (newProductQ > 0) {
+				setBtnLoading(true)
+				post("/products/products-post", newProductObj).then((data) => {
+					if (data?.status === 201) {
+						// dispatch(
+						// 	addData({
+						// 		...data?.data,
+						// 		...newGoodsId,
+						// 		...newDeliverId,
+						// 		...newStoreId,
+						// 		...currency?.data[0],
+						// 	})
+						// )
+						clearAndClose()
+						toast.success("Mahsulot muvoffaqiyatli qo'shildi")
+					} else {
+						toast.error("Nomalum server xatolik")
+					}
+					setBtnLoading(false)
+				})
 			}
 		}
 	}
@@ -354,7 +389,9 @@ export default function Products() {
 		if (
 			searchStoreId === "" &&
 			searchDeliverId === "" &&
-			inputRef.current.value === ""
+			inputRef.current.value === "" &&
+			!dateFilter &&
+			!priceFilter
 		) {
 			setSearchSubmitted(false)
 		}
@@ -618,63 +655,6 @@ export default function Products() {
 				</div>
 				<div
 					className={`input-wrapper modal-form ${
-						submitted && stringCheck(newGoodsId?.goods_name) !== null && "error"
-					} ${darkMode ? "dark" : null}`}
-				>
-					<label>Pul birligi</label>
-					<Select
-						showSearch
-						allowClear
-						placeholder="Pul birligi tanlang"
-						className="select"
-						suffixIcon={
-							submitted && stringCheck(newPercentId?.currency_name) !== null ? (
-								<Info size={20} />
-							) : (
-								<CaretDown size={16} />
-							)
-						}
-						value={
-							newPercentId?.currency_name
-								? `${newPercentId?.currency_name} - ${newPercentId?.currency_amount} so'm`
-								: null
-						}
-						onChange={(e) => {
-							e ? setNewPercentId(JSON.parse(e)) : setNewPercentId({})
-							setActiveElementIndex(4)
-						}}
-						ref={activeElementIndex === 3 ? nextInputRef : null}
-					>
-						{currency?.data?.length
-							? currency?.data.map((item, idx) => {
-									return (
-										<Select.Option
-											key={idx}
-											value={JSON.stringify(item)}
-											className={` ${darkMode ? "dark" : null}`}
-										>
-											<div>
-												<span>
-													{item?.currency_name} - {item?.currency_amount} so'm
-												</span>
-											</div>
-										</Select.Option>
-									)
-							  })
-							: null}
-					</Select>
-					<div className="validation-field">
-						<span>
-							{submitted &&
-								stringCheck(
-									newPercentId?.currency_name,
-									"Valyuta tanlash majburiy"
-								)}
-						</span>
-					</div>
-				</div>
-				<div
-					className={`input-wrapper modal-form ${
 						submitted && stringCheck(newStoreId?.store_name) !== null && "error"
 					} ${darkMode ? "dark" : null}`}
 				>
@@ -694,9 +674,9 @@ export default function Products() {
 						value={newStoreId?.store_name ? newStoreId?.store_name : null}
 						onChange={(e) => {
 							e ? setNewStoreId(JSON.parse(e)) : setNewStoreId({})
-							setActiveElementIndex(5)
+							setActiveElementIndex(4)
 						}}
-						ref={activeElementIndex === 4 ? nextInputRef : null}
+						ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
 						{store?.data.length
 							? store?.data.map((item, idx) => {
@@ -736,7 +716,7 @@ export default function Products() {
 							setNewBoxQ(e.target.value.replace(/[^0-9]/g, ""))
 							setNewProductQ(newPerBox * e.target.value)
 						}}
-						ref={activeElementIndex === 5 ? nextInputRef : null}
+						ref={activeElementIndex === 4 ? nextInputRef : null}
 					/>
 					{/* {submitted && numberCheckAllow0(newBoxQ) !== null && (
 						<Info size={20} />
@@ -789,6 +769,65 @@ export default function Products() {
 					</div>
 				</div>
 				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(newPercentId?.currency_name) !== null &&
+						"error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Pul birligi</label>
+					<Select
+						showSearch
+						allowClear
+						placeholder="Pul birligi tanlang"
+						className="select"
+						suffixIcon={
+							submitted && stringCheck(newPercentId?.currency_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+						value={
+							newPercentId?.currency_name
+								? `${newPercentId?.currency_name} - ${newPercentId?.currency_amount} so'm`
+								: null
+						}
+						onChange={(e) => {
+							e ? setNewPercentId(JSON.parse(e)) : setNewPercentId({})
+							setActiveElementIndex(5)
+						}}
+						// ref={activeElementIndex === 3 ? nextInputRef : null}
+					>
+						{currency?.data?.length
+							? currency?.data.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											value={JSON.stringify(item)}
+											className={` ${darkMode ? "dark" : null}`}
+										>
+											<div>
+												<span>
+													{item?.currency_name} - {item?.currency_amount} so'm
+												</span>
+											</div>
+										</Select.Option>
+									)
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newPercentId?.currency_name,
+									"Valyuta tanlash majburiy"
+								)}
+						</span>
+					</div>
+				</div>
+				<div
 					className={`input-wrapper modal-form regular ${
 						submitted && numberCheck(newProductCost) !== null && "error"
 					} ${darkMode ? "dark" : null}`}
@@ -805,6 +844,7 @@ export default function Products() {
 								parseFloat(e.target.value) + parseFloat(e.target.value) * 0.1
 							)
 						}}
+						ref={activeElementIndex === 5 ? nextInputRef : null}
 					/>
 					{submitted && numberCheck(newProductCost) !== null && (
 						<Info size={20} />
@@ -941,6 +981,66 @@ export default function Products() {
 							: null}
 					</Select>
 				</div>
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
+					<Select
+						allowClear
+						placeholder="Sana"
+						className="select"
+						value={dateFilter}
+						onChange={(e) => setDateFilter(e)}
+					>
+						<Select.Option
+							value="NEWEST"
+							className={` ${darkMode ? "dark" : null}`}
+						>
+							<div>
+								<span>
+									Eng yangi <ArrowDown size={16} />
+								</span>
+							</div>
+						</Select.Option>
+						<Select.Option
+							value="OLDEST"
+							className={` ${darkMode ? "dark" : null}`}
+						>
+							<div>
+								<span>
+									Eng eski <ArrowDown size={16} />
+								</span>
+							</div>
+						</Select.Option>
+					</Select>
+				</div>
+				<div className={`input-wrapper ${darkMode ? "dark" : null}`}>
+					<Select
+						allowClear
+						placeholder="Narx"
+						className="select"
+						value={priceFilter}
+						onChange={(e) => setPriceFilter(e)}
+					>
+						<Select.Option
+							value="CHEAPEST"
+							className={` ${darkMode ? "dark" : null}`}
+						>
+							<div>
+								<span>
+									Eng arzon <ArrowDown size={16} />
+								</span>
+							</div>
+						</Select.Option>
+						<Select.Option
+							value="EXPENSIVE"
+							className={` ${darkMode ? "dark" : null}`}
+						>
+							<div>
+								<span>
+									Eng qimmat <ArrowDown size={16} />
+								</span>
+							</div>
+						</Select.Option>
+					</Select>
+				</div>
 				<div className="filter-btn-group">
 					<button type="button" className="filter-btn" onClick={clearFilter}>
 						Tozalash
@@ -1021,61 +1121,65 @@ export default function Products() {
 						handleSubtract={handleSubtract}
 					/>
 
-					<Pagination
-						pages={totalPages}
-						currentPage={currentPage}
-						onPageChange={handlePageChange}
-						darkMode={darkMode}
-					/>
+					{totalPages > 1 ? (
+						<>
+							<Pagination
+								pages={totalPages}
+								currentPage={currentPage}
+								onPageChange={handlePageChange}
+								darkMode={darkMode}
+							/>
 
-					<div
-						className={`input-wrapper ${
-							darkMode ? "dark" : null
-						} pagination-limit`}
-					>
-						<Select
-							placeholder="Miqdor"
-							className="select"
-							value={limit}
-							onChange={(e) => {
-								setLimit(e)
-								setCurrentPage(1)
-							}}
-						>
-							<Select.Option
-								value="10"
-								className={`${darkMode ? "dark" : null}`}
+							<div
+								className={`input-wrapper ${
+									darkMode ? "dark" : null
+								} pagination-limit`}
 							>
-								<div>
-									<span>10</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="25"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>25</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="50"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>50</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="100"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>100</span>
-								</div>
-							</Select.Option>
-						</Select>
-					</div>
+								<Select
+									placeholder="Miqdor"
+									className="select"
+									value={limit}
+									onChange={(e) => {
+										setLimit(e)
+										setCurrentPage(1)
+									}}
+								>
+									<Select.Option
+										value="10"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>10</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="25"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>25</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="50"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>50</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="100"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>100</span>
+										</div>
+									</Select.Option>
+								</Select>
+							</div>
+						</>
+					) : null}
 				</>
 			)}
 		</>

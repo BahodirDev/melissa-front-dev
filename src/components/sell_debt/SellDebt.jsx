@@ -460,7 +460,7 @@ const SellDebt = ({
 			>
 				<>
 					<div className={`modal-list-head ${darkMode ? "dark" : null}`}>
-						<h5>Mijoz</h5>
+						{/* <h5>Mijoz</h5> */}
 						<h5>Mahsulot</h5>
 						<h5>Miqdor ({productList?.length})</h5>
 						<h5>Narx</h5>
@@ -477,11 +477,11 @@ const SellDebt = ({
 										} ${darkMode ? "dark" : null}`}
 										key={idx}
 									>
-										<h6>
+										{/* <h6>
 											{idx + 1} {item?.client.clients_name}
-										</h6>
+										</h6> */}
 										<h6>
-											{item.product_name} - {item.code}
+											{idx + 1} {item.product_name} - {item.code}
 										</h6>
 										<h6>{item.count}</h6>
 										<h6>{addComma(item.price)}</h6>
@@ -889,6 +889,7 @@ const SellDebt = ({
 										: 0
 									if (+e.target.value > +maxValue) {
 										setProductQ(maxValue)
+										toast.error(`${maxValue} dona qolgan holos`)
 									} else {
 										setProductQ(e.target.value)
 									}

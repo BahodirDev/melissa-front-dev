@@ -692,61 +692,65 @@ export default function Reports() {
 						limit={limit}
 					/>
 
-					<Pagination
-						pages={totalPages}
-						currentPage={currentPage}
-						onPageChange={handlePageChange}
-						darkMode={darkMode}
-					/>
+					{totalPages > 1 ? (
+						<>
+							<Pagination
+								pages={totalPages}
+								currentPage={currentPage}
+								onPageChange={handlePageChange}
+								darkMode={darkMode}
+							/>
 
-					<div
-						className={`input-wrapper ${
-							darkMode ? "dark" : null
-						} pagination-limit`}
-					>
-						<Select
-							placeholder="Kirim Chiqim"
-							className="select"
-							value={limit}
-							onChange={(e) => {
-								setLimit(e)
-								setCurrentPage(1)
-							}}
-						>
-							<Select.Option
-								value="10"
-								className={`${darkMode ? "dark" : null}`}
+							<div
+								className={`input-wrapper ${
+									darkMode ? "dark" : null
+								} pagination-limit`}
 							>
-								<div>
-									<span>10</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="25"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>25</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="50"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>50</span>
-								</div>
-							</Select.Option>
-							<Select.Option
-								value="100"
-								className={`${darkMode ? "dark" : null}`}
-							>
-								<div>
-									<span>100</span>
-								</div>
-							</Select.Option>
-						</Select>
-					</div>
+								<Select
+									placeholder="Kirim Chiqim"
+									className="select"
+									value={limit}
+									onChange={(e) => {
+										setLimit(e)
+										setCurrentPage(1)
+									}}
+								>
+									<Select.Option
+										value="10"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>10</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="25"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>25</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="50"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>50</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="100"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>100</span>
+										</div>
+									</Select.Option>
+								</Select>
+							</div>
+						</>
+					) : null}
 				</>
 			)}
 		</>

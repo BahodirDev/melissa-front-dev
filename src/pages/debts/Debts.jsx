@@ -41,6 +41,7 @@ function Debts() {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
 		setShow(localStorage.getItem("debt-section"))
 	}, [])
+
 	if (!localStorage.getItem("debt-section"))
 		localStorage.setItem("debt-section", "client")
 

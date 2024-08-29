@@ -85,6 +85,7 @@ const AntTable = ({
 					) + " so'm",
 				total_price_value:
 					item?.products_count_price * item?.currency_id?.currency_amount,
+				// prevCost: addComma(item?.products_prev_cost),
 				product_date: `${moment(item?.products_updatedat).format(
 					"YYYY/MM/DD HH:mm"
 				)}`,

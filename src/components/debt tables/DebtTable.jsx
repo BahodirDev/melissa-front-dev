@@ -1,6 +1,6 @@
 import { Checkbox, Table } from "antd"
 import NoData from "../noData/NoData"
-import { addComma } from "../addComma"
+import { addComma, addCommaWithTwoFixed } from "../addComma"
 import {
 	ChatDots,
 	CreditCard,
@@ -14,7 +14,7 @@ import {
 } from "@phosphor-icons/react"
 import moment from "moment"
 import { useEffect, useState } from "react"
-import { productDeleteConfirm } from "../delete_modal/delete_modal"
+import { transactionDeleteConfirm } from "../delete_modal/delete_modal"
 import { useNavigate } from "react-router-dom"
 
 export const DebtTable = ({
@@ -54,7 +54,12 @@ export const DebtTable = ({
 				to_date: item?.details_to?.created_at,
 
 				status: item?.transaction_status,
-				summa: addComma(item?.transaction_money),
+				summa: `${item?.transaction_currency === "Dollar" ? "$ " : ""} ${
+					item?.transaction_currency === "Dollar"
+						? addCommaWithTwoFixed(item?.transaction_money)
+						: addComma(item?.transaction_money)
+				} ${item?.transaction_currency === "Dollar" ? "" : " so'm"}`,
+				summ: item?.transaction_money,
 				type: item?.transaction_money_type,
 				t_type: item?.transaction_type,
 				desc: item?.transaction_summary
@@ -200,7 +205,7 @@ export const DebtTable = ({
 							type="button"
 							className="table-item-edit-item"
 							onClick={(e) =>
-								productDeleteConfirm(
+								transactionDeleteConfirm(
 									e,
 									<>
 										<span>
@@ -210,6 +215,9 @@ export const DebtTable = ({
 									</>,
 									handleDelete,
 									record?.id,
+									record?.t_type,
+									record?.status,
+									record?.summ,
 									darkMode
 								)
 							}

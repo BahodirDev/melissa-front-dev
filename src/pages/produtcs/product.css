@@ -21,7 +21,7 @@
 }
 
 .filter-wrapper.product {
-	grid-template-columns: 200px 200px auto;
+	grid-template-columns: 200px 200px 200px 200px 60px;
 }
 
 .table-item-edit-wrapper.product {

@@ -28,7 +28,7 @@ const Client = () => {
 		userInfo,
 		darkMode,
 	] = useOutletContext()
-	const { client, deliver, users } = useSelector((state) => state)
+	const { client, deliver, users, currency } = useSelector((state) => state)
 	const dispatch = useDispatch()
 
 	const [list, setList] = useState([])
@@ -50,6 +50,7 @@ const Client = () => {
 	const [isEnter, setIsEnter] = useState("outcome")
 	const [desc, setDesc] = useState("")
 	const [date, setDate] = useState("")
+	const [newCurrency, setNewCurrency] = useState({})
 
 	const handleSearch = () => {
 		setLoading(true)
@@ -66,6 +67,10 @@ const Client = () => {
 	const clearSearch = () => {}
 
 	const clearOnly = () => {
+		setNewCurrency(
+			currency?.data?.filter((item) => item?.currency_symbol === "so'm")[0]
+		)
+
 		setWho("client")
 		setPerson("")
 		setType("cash")
@@ -80,7 +85,7 @@ const Client = () => {
 
 	const handleAdd = () => {
 		setSubmitted(true)
-		if (who && person && type && summa > 0) {
+		if (who && person && type && summa > 0 && newCurrency?.currency_name) {
 			setBtn_loading(true)
 			if (objId) {
 				setBtn_loading(false)
@@ -100,6 +105,7 @@ const Client = () => {
 					transaction_status: who,
 					transaction_summary: desc,
 					transaction_created_at: date ? new Date(date).toISOString() : null,
+					transaction_currency: newCurrency?.currency_name,
 				}
 
 				post(`/debts/debts-post`, newObj).then((data) => {
@@ -114,6 +120,7 @@ const Client = () => {
 							transaction_type: data?.data?.[0]?.transaction_type,
 							transaction_summary: data?.data?.[0]?.transaction_summary,
 							transaction_created_at: data?.data?.[0]?.transaction_created_at,
+							transaction_currency: data?.data?.[0]?.transaction_currency,
 						}
 
 						if (who === "client") {
@@ -214,9 +221,11 @@ const Client = () => {
 		})
 	}, [])
 
-	const handleDelete = (id) => {
+	const handleDelete = (id, type, status, summa) => {
 		setLoading(true)
-		remove(`/debts/debts-delete/${id}`).then((data) => {
+		remove(
+			`/debts/debts-delete/${id}?transaction_status=${status}&transaction_type=${type}&transaction_money=${summa}`
+		).then((data) => {
 			if (data?.status === 200) {
 				setList((prev) =>
 					prev?.filter(
@@ -447,6 +456,62 @@ const Client = () => {
 							</div>
 						</Select.Option>
 					</Select>
+				</div>
+				<div
+					className={`input-wrapper modal-form ${
+						submitted &&
+						stringCheck(newCurrency?.currency_name) !== null &&
+						"error"
+					} ${darkMode ? "dark" : null}`}
+				>
+					<label>Pul birligi</label>
+					<Select
+						showSearch
+						placeholder="Pul birligi tanlang"
+						className="select"
+						value={
+							newCurrency?.currency_name
+								? `${newCurrency?.currency_name} - ${newCurrency?.currency_amount} so'm`
+								: null
+						}
+						onChange={(e) => {
+							e ? setNewCurrency(JSON.parse(e)) : setNewCurrency({})
+						}}
+						suffixIcon={
+							submitted && stringCheck(newCurrency?.currency_name) !== null ? (
+								<Info size={20} />
+							) : (
+								<CaretDown size={16} />
+							)
+						}
+					>
+						{currency?.data?.length
+							? currency?.data.map((item, idx) => {
+									return (
+										<Select.Option
+											key={idx}
+											value={JSON.stringify(item)}
+											className={` ${darkMode ? "dark" : null}`}
+										>
+											<div>
+												<span>
+													{item?.currency_name} - {item?.currency_amount} so'm
+												</span>
+											</div>
+										</Select.Option>
+									)
+							  })
+							: null}
+					</Select>
+					<div className="validation-field">
+						<span>
+							{submitted &&
+								stringCheck(
+									newCurrency?.currency_name,
+									"Valyuta tanlash majburiy"
+								)}
+						</span>
+					</div>
 				</div>
 				<div
 					className={`input-wrapper modal-form regular svgMargin ${
