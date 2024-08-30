@@ -1,6 +1,11 @@
 import { DatePicker, Select, Space } from "antd"
 import { useEffect, useState } from "react"
-import { useLocation, useNavigate, useOutletContext } from "react-router-dom"
+import {
+	useLocation,
+	useNavigate,
+	useOutletContext,
+	useParams,
+} from "react-router-dom"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import moment from "moment/moment"
 import ClientInfoTable from "../../components/client_info_table/AntAccordion"
@@ -10,6 +15,7 @@ import { CaretLeft } from "@phosphor-icons/react"
 import AntdAccordion from "../../components/client_info_table/AntAccordion"
 import { toast } from "react-toastify"
 import Pagination from "../../components/pagination/Pagination"
+import { addComma, addCommaWithTwoFixed } from "../../components/addComma"
 
 const ClientsInfo = () => {
 	const [
@@ -38,29 +44,39 @@ const ClientsInfo = () => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [limit, setLimit] = useState(20)
 	const [totalPages, setTotalPage] = useState(1)
+	const [clientInfo, setClientInfo] = useState({})
 
-	const { id, name, desc, tel, date } = loc.state
+	const userId = useParams()
 
 	useEffect(() => {
 		setLoading(true)
-		get(
-			`/clients/clients-reports-list/${id}?limit=${limit}&page=${currentPage}`
-		).then((data) => {
+
+		get(`/clients/clients-list/${userId?.id}`).then((data) => {
+			setClientInfo(data?.data)
+
 			if (data?.status === 200) {
-				setList(data?.data?.data)
-				setTotalPage(Math.ceil(data?.data?.files / limit))
+				get(
+					`/clients/clients-reports-list/${userId?.id}?limit=${limit}&page=${currentPage}`
+				).then((data) => {
+					if (data?.status === 200) {
+						setList(data?.data?.data)
+						setTotalPage(Math.ceil(data?.data?.files / limit))
+					} else {
+						toast.error("Nomalur server xatolik")
+						setTotalPage(1)
+					}
+					setLoading(false)
+				})
 			} else {
 				toast.error("Nomalur server xatolik")
-				setTotalPage(1)
 			}
-			setLoading(false)
 		})
 	}, [])
 
 	useEffect(() => {
 		setLoading(true)
 		get(
-			`/clients/clients-reports-list/${id}?limit=${limit}&page=${currentPage}`
+			`/clients/clients-reports-list/${userId?.id}?limit=${limit}&page=${currentPage}`
 		).then((data) => {
 			if (data?.status === 200) {
 				setList(data.data?.data)
@@ -105,16 +121,39 @@ const ClientsInfo = () => {
 			</button>
 
 			<div className={`client-info-div ${darkMode ? "dark" : null}`}>
-				<h2>{name}</h2>
-				<h3>
-					Izoh: <span>{desc}</span>
-				</h3>
-				<h3>
-					Tel: <span>{format_phone_number(tel)}</span>
-				</h3>
-				<h3>
-					Yaratilgan sana: <span>{moment(date).format("YYYY.MM.DD")}</span>
-				</h3>
+				<h2>{clientInfo?.clients_name}</h2>
+				<div>
+					<h3>
+						Izoh: <span>{clientInfo?.clients_desc}</span>
+					</h3>
+					<h3>
+						{clientInfo?.dollar_debt - clientInfo?.dollar_equity < 0
+							? `Haqdor: $ ${addCommaWithTwoFixed(
+									Math.abs(clientInfo?.dollar_debt - clientInfo?.dollar_equity)
+							  )}`
+							: `Qarzdor: $ ${addCommaWithTwoFixed(
+									Math.abs(clientInfo?.dollar_debt - clientInfo?.dollar_equity)
+							  )}`}
+					</h3>
+					<h3>
+						Tel: <span>{format_phone_number(clientInfo?.clients_nomer)}</span>
+					</h3>
+					<h3>
+						{clientInfo?.sum_debt - clientInfo?.sum_equity < 0
+							? `Haqdor: ${addComma(
+									Math.abs(clientInfo?.sum_debt - clientInfo?.sum_equity)
+							  )} so'm`
+							: `Qarzdor: ${addComma(
+									Math.abs(clientInfo?.sum_debt - clientInfo?.sum_equity)
+							  )} so'm`}
+					</h3>
+					<h3>
+						Yaratilgan sana:{" "}
+						<span>
+							{moment(clientInfo?.clients_createdat).format("YYYY.MM.DD")}
+						</span>
+					</h3>
+				</div>
 			</div>
 
 			{loading ? (
@@ -127,7 +166,7 @@ const ClientsInfo = () => {
 						userInfo={userInfo?.role}
 						darkMode={darkMode}
 						setList={setList}
-						clientId={id}
+						clientId={"id"}
 						setSDModalVisible={setSDModalVisible}
 						setSDModalDisplay={setSDModalDisplay}
 						setshowDropdown={setshowDropdown}

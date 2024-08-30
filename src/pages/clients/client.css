@@ -79,6 +79,11 @@
 	padding: 30px 40px;
 }
 
+.client-info-div div {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
 .client-info-div.dark {
 	background-color: var(--d-bg-light);
 }

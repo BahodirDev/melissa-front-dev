@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import { Link, useNavigate } from "react-router-dom"
+import { addComma, addCommaWithTwoFixed } from "../../components/addComma"
 
 function ClientList({
 	data,
@@ -42,17 +43,18 @@ function ClientList({
 							<div className="card-item-top">
 								<div>
 									<h3
-										onClick={() =>
-											navigate(item?.clients_name, {
-												state: {
-													id: item?.clients_id,
-													name: item?.clients_name,
-													tel: item?.clients_nomer,
-													desc: item?.clients_desc,
-													date: item?.clients_createdat,
-												},
-											})
-										}
+										// onClick={() =>
+										// 	navigate(item?.clients_name, {
+										// 		state: {
+										// 			id: item?.clients_id,
+										// 			name: item?.clients_name,
+										// 			tel: item?.clients_nomer,
+										// 			desc: item?.clients_desc,
+										// 			date: item?.clients_createdat,
+										// 		},
+										// 	})
+										// }
+										onClick={() => navigate(item?.clients_id)}
 									>
 										{item?.clients_name}
 									</h3>
@@ -132,11 +134,26 @@ function ClientList({
 									} ${loc2 && "top"} ${darkMode ? "dark" : null}`}
 									onClick={(e) => e.stopPropagation()}
 								>
-									{item?.debts?.length ? (
+									{/* {item?.debts?.length ? (
 										<ClientDebtList data={item?.debts} />
 									) : (
 										<h4>Qarzdorlik mavjud emas</h4>
-									)}
+									)} */}
+									{item?.dollar_debt - item?.dollar_equity < 0
+										? `Haqdor: $ ${addCommaWithTwoFixed(
+												Math.abs(item?.dollar_debt - item?.dollar_equity)
+										  )}`
+										: `Qarzdor: $ ${addCommaWithTwoFixed(
+												Math.abs(item?.dollar_debt - item?.dollar_equity)
+										  )}`}
+									<br />
+									{item?.sum_debt - item?.sum_equity < 0
+										? `Haqdor: ${addComma(
+												Math.abs(item?.sum_debt - item?.sum_equity)
+										  )} so'm`
+										: `Qarzdor: ${addComma(
+												Math.abs(item?.sum_debt - item?.sum_equity)
+										  )} so'm`}
 								</div>
 							</div>
 						</div>

@@ -161,22 +161,36 @@ const AntdAccordion = ({
 	}
 
 	const handleEditSave = (id = null) => {
-		console.log(editArr)
+		const result = editArr.reduce(
+			(sum, item) =>
+				sum +
+				item.prev_count * item?.count_price -
+				item.product_count * item?.count_price,
+			0
+		)
+
+		let newArr = data
+		const arrIndex = newArr?.findIndex(
+			(item) => item?.unique_file_table_id === id
+		)
 
 		if (newList?.length && id === edit) {
-		// 	patch(`/clients/clients-edit-list`, editArr).then((data) => {
-		// 		if (data?.status === 200 || data?.status === 201) {
-		// 			toast.success("Royxat muvffaqiyatli o'zgartirildi")
-		// 			setIdList([])
-		// 			setEdit("")
-		// 			setNewList([])
-		// 			setEditArr([])
-		// 			setPrevCountList([])
-		// 			setPrevObj([])
-		// 		} else {
-		// 			toast.error("Nomalum server xatolik")
-		// 		}
-		// 	})
+			patch(`/clients/clients-edit-list`, editArr).then((data) => {
+				if (data?.status === 200 || data?.status === 201) {
+					toast.success("Royxat muvffaqiyatli o'zgartirildi")
+					setIdList([])
+					setEdit("")
+					setNewList([])
+					setEditArr([])
+					setPrevCountList([])
+					setPrevObj([])
+
+					newArr[arrIndex].total = newArr[arrIndex].total - result
+					setList(newArr)
+				} else {
+					toast.error("Nomalum server xatolik")
+				}
+			})
 		} else {
 			setEdit(edit !== id ? id : "")
 		}
@@ -325,14 +339,7 @@ const AntdAccordion = ({
 									) : null}
 									<tbody>
 										<h6>
-											{item?.files?.length} hil -{" "}
-											{item?.files
-												?.reduce(
-													(totalPrice, product) =>
-														totalPrice + product?.total_price,
-													0
-												)
-												.toLocaleString()}
+											{item?.files?.length} hil - {addComma(item?.total)}
 											so'm
 										</h6>
 										{item?.files.map((fileInfo, idx) => (
