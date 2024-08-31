@@ -54,8 +54,8 @@ export default function Store() {
 		dispatch(setLoading(true))
 		get("/store/store-list").then((data) => {
 			if (data?.status === 201) {
-				dispatch(setData(data?.data))
-				dispatch(setQuantity())
+				dispatch(setData(data?.data?.data))
+				dispatch(setQuantity(data?.data?.stores))
 			} else {
 				toast.error("Nomalum server xatolik")
 			}

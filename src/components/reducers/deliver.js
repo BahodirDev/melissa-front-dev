@@ -15,8 +15,7 @@ export const deliverSlice = createSlice({
 			state.loading = action.payload
 		},
 		setQuantity: (state, action) => {
-			const filteredItems = state.data.filter((item) => !item?.isdelete)
-			state.quantity = filteredItems.length
+			state.quantity = action.payload
 		},
 		addData: (state, action) => {
 			state.data = [...state.data, action.payload]

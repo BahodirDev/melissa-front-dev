@@ -146,7 +146,10 @@ export default function MainPage() {
 						}
 						return !prevVisible
 					})
-				} else if ((e.ctrlKey && e.key === "k") || (e.ctrlKey && e.key === "л")) {
+				} else if (
+					(e.ctrlKey && e.key === "k") ||
+					(e.ctrlKey && e.key === "л")
+				) {
 					if (!addModalVisible && !SDModalVisible) {
 						e.preventDefault()
 						inputRef.current?.focus()

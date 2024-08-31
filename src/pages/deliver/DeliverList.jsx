@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react"
 import format_phone_number from "../../components/format_phone_number/format_phone_number"
 import DeliverDebtList from "./DeliverDebtList"
+import { addComma, addCommaWithTwoFixed } from "../../components/addComma"
 
 function DeliverList({
 	data,
@@ -112,11 +113,26 @@ function DeliverList({
 									} ${loc2 && "top"} ${darkMode ? "dark" : null}`}
 									onClick={(e) => e.stopPropagation()}
 								>
-									{item?.deliver_debts?.length ? (
+									{/* {item?.deliver_debts?.length ? (
 										<DeliverDebtList data={item?.deliver_debts} />
 									) : (
 										<h4>Qarzdorlik mavjud emas</h4>
-									)}
+									)} */}
+									{item?.dollar_debt - item?.dollar_equity < 0
+										? `Haqdor: $ ${addCommaWithTwoFixed(
+												Math.abs(item?.dollar_debt - item?.dollar_equity)
+										  )}`
+										: `Qarzdor: $ ${addCommaWithTwoFixed(
+												Math.abs(item?.dollar_debt - item?.dollar_equity)
+										  )}`}
+									<br />
+									{item?.sum_debt - item?.sum_equity < 0
+										? `Haqdor: ${addComma(
+												Math.abs(item?.sum_debt - item?.sum_equity)
+										  )} so'm`
+										: `Qarzdor: ${addComma(
+												Math.abs(item?.sum_debt - item?.sum_equity)
+										  )} so'm`}
 								</div>
 							</div>
 						</div>

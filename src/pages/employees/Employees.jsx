@@ -64,8 +64,8 @@ export default function Employees() {
 		dispatch(setLoading(true))
 		get("/users/users-list").then((data) => {
 			if (data?.status === 201) {
-				dispatch(setData(data?.data))
-				dispatch(setQuantity())
+				dispatch(setData(data?.data?.data))
+				dispatch(setQuantity(data?.data?.users))
 			} else {
 				toast.error("Nomalum server xatolik")
 			}
@@ -136,6 +136,14 @@ export default function Employees() {
 		dispatch(setLoading(true))
 		remove(`/users/users-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
+				if (userInfo?.id === id) {
+					// localStorage.clear()
+					localStorage.removeItem("id")
+					localStorage.removeItem("name")
+					localStorage.removeItem("role")
+					localStorage.removeItem("user")
+					navigate("/login")
+				}
 				dispatch(removeEmp(id))
 				dispatch(setQuantity())
 				toast.success("Xodim muvoffaqiyatli o'chirildi")
@@ -406,6 +414,8 @@ export default function Employees() {
 					showDropdown={showDropdown}
 					setshowDropdown={setshowDropdown}
 					darkMode={darkMode}
+					miniModal={miniModal}
+					setMiniModal={setMiniModal}
 				/>
 			)}
 		</>

@@ -56,8 +56,8 @@ function Deliver() {
 		dispatch(setLoading(true))
 		get("/deliver/deliver-list").then((data) => {
 			if (data?.status === 201) {
-				dispatch(setData(data?.data))
-				dispatch(setQuantity())
+				dispatch(setData(data?.data?.data))
+				dispatch(setQuantity(data?.data?.deliver))
 			} else {
 				toast.error("Nomalum server xatolik")
 			}

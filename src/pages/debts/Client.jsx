@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useOutletContext } from "react-router-dom"
 import Search from "../../components/search/Search"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import AddModal from "../../components/add/AddModal"
 import { numberCheck, stringCheck } from "../../components/validation"
 import { CaretDown, Info } from "@phosphor-icons/react"
@@ -12,6 +12,7 @@ import { get, post, remove } from "../../customHook/api"
 import { DebtTable } from "../../components/debt tables/DebtTable"
 import Loader from "../../components/loader/Loader"
 import CurrencyInput from "react-currency-input-field"
+import Pagination from "../../components/pagination/Pagination"
 
 const Client = () => {
 	const [
@@ -38,9 +39,12 @@ const Client = () => {
 	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [loading, setLoading] = useState(false)
+	const [activeElementIndex, setActiveElementIndex] = useState(0)
+	const nextInputRef = useRef(null)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [limit, setLimit] = useState(20)
-	const [totalPages, setTotalPages] = useState(1)
+	const [totalPage, setTotalPage] = useState(1)
+	const didMount = useRef(false)
 
 	// new data
 	const [who, setWho] = useState("client")
@@ -54,17 +58,34 @@ const Client = () => {
 
 	const handleSearch = () => {
 		setLoading(true)
-		get("/debts/debts-list").then((data) => {
-			if (data?.status === 201 || data?.status === 200) {
-				setList(data?.data)
+		setSearchSubmitted(true)
+
+		post(`/debts/debts-filter?limit=${limit}&page=${currentPage}`, {
+			search: inputRef.current?.value,
+		}).then((response) => {
+			if (response.status === 200) {
+				const { data } = response
+
+				setTotalPage(Math.ceil(data?.debts / limit))
+				setFilteredData(data?.data)
+				if (!data?.data?.length) setCurrentPage(1)
 			} else {
-				toast.error("Nomalur server xatolik")
+				setTotalPage(1)
+				toast.error("Nomalum server xatolik")
 			}
 			setLoading(false)
 		})
 	}
 
-	const clearSearch = () => {}
+	useEffect(() => {
+		if (nextInputRef.current) {
+			nextInputRef.current.focus()
+		}
+	}, [activeElementIndex])
+
+	const clearSearch = () => {
+		inputRef.current.value = ""
+	}
 
 	const clearOnly = () => {
 		setNewCurrency(
@@ -78,6 +99,7 @@ const Client = () => {
 		setIsEnter("outcome")
 		setDesc("")
 
+		setActiveElementIndex(1)
 		setObjId("")
 		setSubmitted(false)
 		setBtn_loading(false)
@@ -199,6 +221,7 @@ const Client = () => {
 		setIsEnter("outcome")
 		setDesc("")
 
+		setActiveElementIndex(0)
 		setObjId("")
 		setSubmitted(false)
 		setBtn_loading(false)
@@ -209,29 +232,44 @@ const Client = () => {
 		}, 300)
 	}
 
-	useEffect(() => {
+	const getData = () => {
 		setLoading(true)
-		get("/debts/debts-list").then((data) => {
-			if (data?.status === 201 || data?.status === 200) {
-				setList(data?.data)
-			} else {
-				toast.error("Nomalur server xatolik")
-			}
-			setLoading(false)
-		})
-	}, [])
+		if (inputRef.current?.value.length > 0) {
+			handleSearch()
+		} else {
+			get(`/debts/debts-list?limit=${limit}&page=${currentPage}`).then(
+				(data) => {
+					if (data?.status === 200 || data?.status === 201) {
+						setTotalPage(Math.ceil(data?.data?.debts / limit))
+						setList(data?.data?.data)
+					} else {
+						setTotalPage(1)
+						toast.error("Nomalum server xatolik")
+					}
+					setLoading(false)
+				}
+			)
+		}
+	}
 
-	const handleDelete = (id, type, status, summa) => {
+	useEffect(getData, [currentPage])
+
+	useEffect(() => {
+		setCurrentPage(1)
+		if (didMount.current) {
+			handleSearch()
+		} else {
+			didMount.current = true
+		}
+	}, [limit])
+
+	const handleDelete = (id, type, status, summa, currency) => {
 		setLoading(true)
 		remove(
-			`/debts/debts-delete/${id}?transaction_status=${status}&transaction_type=${type}&transaction_money=${summa}`
+			`/debts/debts-delete/${id}?transaction_status=${status}&transaction_type=${type}&transaction_money=${summa}&transaction_currency=${currency}`
 		).then((data) => {
 			if (data?.status === 200) {
-				setList((prev) =>
-					prev?.filter(
-						(item) => item?.transaction_id !== data?.data?.transaction_id
-					)
-				)
+				setList((prev) => prev?.filter((item) => item?.transaction_id !== id))
 				toast.success("Oldi / berdi muvoffaqiyatli o'chirildi")
 				clearAndClose()
 			} else {
@@ -239,6 +277,13 @@ const Client = () => {
 			}
 			setLoading(false)
 		})
+	}
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
+		if (inputRef.current.value === "") {
+			setSearchSubmitted(false)
+		}
 	}
 
 	return (
@@ -259,7 +304,9 @@ const Client = () => {
 						onChange={(e) => {
 							setWho(e)
 							setPerson({})
+							setActiveElementIndex(2)
 						}}
+						ref={activeElementIndex === 1 ? nextInputRef : null}
 					>
 						<Select.Option
 							className={`${darkMode ? "dark" : null}`}
@@ -334,7 +381,11 @@ const Client = () => {
 								  )}`
 								: null
 						}
-						onChange={(e) => (e ? setPerson(JSON.parse(e)) : setPerson({}))}
+						onChange={(e) => {
+							e ? setPerson(JSON.parse(e)) : setPerson({})
+							setActiveElementIndex(3)
+						}}
+						ref={activeElementIndex === 2 ? nextInputRef : null}
 					>
 						{who === "client"
 							? client?.data?.length
@@ -437,7 +488,11 @@ const Client = () => {
 						placeholder="Kimdan"
 						className="select select-of-two-first"
 						value={isEnter}
-						onChange={(e) => setIsEnter(e)}
+						onChange={(e) => {
+							setIsEnter(e)
+							setActiveElementIndex(4)
+						}}
+						ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
 						<Select.Option
 							className={`${darkMode ? "dark" : null}`}
@@ -476,6 +531,7 @@ const Client = () => {
 						}
 						onChange={(e) => {
 							e ? setNewCurrency(JSON.parse(e)) : setNewCurrency({})
+							setActiveElementIndex(5)
 						}}
 						suffixIcon={
 							submitted && stringCheck(newCurrency?.currency_name) !== null ? (
@@ -484,6 +540,7 @@ const Client = () => {
 								<CaretDown size={16} />
 							)
 						}
+						ref={activeElementIndex === 4 ? nextInputRef : null}
 					>
 						{currency?.data?.length
 							? currency?.data.map((item, idx) => {
@@ -529,6 +586,7 @@ const Client = () => {
 							groupSeparator={" "}
 							value={summa}
 							onValueChange={(value, name, values) => setSumma(value)}
+							ref={activeElementIndex === 5 ? nextInputRef : null}
 						/>
 						<Select
 							placeholder="To'lov turi"
@@ -624,14 +682,76 @@ const Client = () => {
 			{loading ? (
 				<Loader />
 			) : (
-				<DebtTable
-					data={list}
-					sidebar={sidebar}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					darkMode={darkMode}
-					handleDelete={handleDelete}
-				/>
+				<>
+					<DebtTable
+						data={searchSubmitted ? filteredData : list}
+						sidebar={sidebar}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						darkMode={darkMode}
+						handleDelete={handleDelete}
+					/>
+
+					{totalPage > 1 ? (
+						<>
+							<Pagination
+								pages={totalPage}
+								currentPage={currentPage}
+								onPageChange={handlePageChange}
+								darkMode={darkMode}
+							/>
+
+							<div
+								className={`input-wrapper ${
+									darkMode ? "dark" : null
+								} pagination-limit`}
+							>
+								<Select
+									placeholder="Miqdor"
+									className="select"
+									value={limit}
+									onChange={(e) => {
+										setLimit(e)
+										setCurrentPage(1)
+									}}
+								>
+									<Select.Option
+										value="10"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>10</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="25"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>25</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="50"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>50</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="100"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>100</span>
+										</div>
+									</Select.Option>
+								</Select>
+							</div>
+						</>
+					) : null}
+				</>
 			)}
 		</>
 	)

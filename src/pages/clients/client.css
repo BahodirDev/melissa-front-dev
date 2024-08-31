@@ -52,7 +52,19 @@
 	transition: 0.1s;
 }
 
+.emp .card-item-bottom button {
+	color: var(--color-success);
+	border: none;
+	background: none;
+	text-align: left;
+	transition: 0.1s;
+}
+
 .clients.dark .card-item-bottom button {
+	color: var(--color-primary);
+}
+
+.emp.dark .card-item-bottom button {
 	color: var(--color-primary);
 }
 

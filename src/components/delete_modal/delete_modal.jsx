@@ -43,6 +43,7 @@ export const transactionDeleteConfirm = (
 	type,
 	status,
 	summa,
+	currency,
 	mode = false
 ) => {
 	const rect = e.target.getBoundingClientRect()
@@ -58,7 +59,7 @@ export const transactionDeleteConfirm = (
 		cancelText: "Bekor qilish",
 		width: 300,
 		onOk() {
-			action(id, type, status, summa)
+			action(id, type, status, summa, currency)
 		},
 		onCancel() {},
 		width: 350,
