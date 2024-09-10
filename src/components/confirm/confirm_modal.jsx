@@ -21,6 +21,10 @@ export const confirmCloseModal = (msg, saveAndClose, close, mode = false) => {
 			display: "flex",
 			justifyContent: "center",
 		},
+		style: {
+			top: "50%",
+			transform: "translateY(-50%)",
+		},
 		className: mode ? "dark" : null,
 	})
 }

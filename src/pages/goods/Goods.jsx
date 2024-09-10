@@ -96,8 +96,8 @@ export default function Goods() {
 
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
-		get(`/deliver/deliver-list`).then((data) => {
-			dispatch(setDataDeliver(data?.data))
+		get(`/deliver/deliver-list?limit=${null}&page=${null}`).then((data) => {
+			dispatch(setDataDeliver(data?.data?.data))
 		})
 	}, [])
 

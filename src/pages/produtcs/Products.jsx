@@ -147,7 +147,6 @@ export default function Products() {
 	useEffect(getData, [currentPage])
 
 	useEffect(() => {
-		getData1("deliver", setDataDeliver)
 		getData1("goods", setDataGood)
 	}, [])
 

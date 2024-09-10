@@ -25,21 +25,9 @@ import { CaretDown, Info, Users } from "@phosphor-icons/react"
 import Search from "../../components/search/Search"
 import AddModal from "../../components/add/AddModal"
 import { toast } from "react-toastify"
+import Pagination from "../../components/pagination/Pagination"
 
 export default function Employees() {
-	const navigate = useNavigate()
-	const [filteredUsers, setFilteredUsers] = useState([])
-	const [btn_loading, setBtn_loading] = useState(false)
-
-	const [new_name, setNew_name] = useState("")
-	const [new_number, setNew_number] = useState("")
-	const [new_job, setNew_job] = useState(0)
-	const [new_login, setNew_login] = useState("")
-	const [new_password, setNew_password] = useState("")
-
-	const [objId, setObjId] = useState("")
-	const [submitted, setSubmitted] = useState(false)
-	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const [
 		inputRef,
 		showDropdown,
@@ -54,24 +42,55 @@ export default function Employees() {
 		userInfo,
 		darkMode,
 	] = useOutletContext()
+	const navigate = useNavigate()
+	const [btn_loading, setBtn_loading] = useState(false)
+
+	const [new_name, setNew_name] = useState("")
+	const [new_number, setNew_number] = useState("")
+	const [new_job, setNew_job] = useState(0)
+	const [new_login, setNew_login] = useState("")
+	const [new_password, setNew_password] = useState("")
+
+	const [objId, setObjId] = useState("")
+	const [submitted, setSubmitted] = useState(false)
+	const [searchSubmitted, setSearchSubmitted] = useState(false)
 	const state = useSelector((state) => state.users)
 	const dispatch = useDispatch()
 	const [userId, setUserId] = useState()
+	const [filteredData, setFilteredData] = useState([])
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPage, setTotalPage] = useState(1)
+	const didMount = useRef(false)
+
+	const getData = () => {
+		dispatch(setLoading(true))
+		if (inputRef.current?.value.length > 0) {
+			handleSearch()
+		} else {
+			get(`/users/users-list?limit=${limit}&page=${currentPage}`).then(
+				(data) => {
+					if (data?.status === 200 || data?.status === 201) {
+						setTotalPage(Math.ceil(data?.data?.users / limit))
+						dispatch(setData(data?.data?.data))
+						dispatch(setQuantity(data?.data?.users))
+					} else {
+						setTotalPage(1)
+						toast.error("Nomalum server xatolik")
+					}
+					dispatch(setLoading(false))
+				}
+			)
+		}
+	}
 
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
 		setUserId(localStorage.getItem("id"))
-		dispatch(setLoading(true))
-		get("/users/users-list").then((data) => {
-			if (data?.status === 201) {
-				dispatch(setData(data?.data?.data))
-				dispatch(setQuantity(data?.data?.users))
-			} else {
-				toast.error("Nomalum server xatolik")
-			}
-			dispatch(setLoading(false))
-		})
+		getData()
 	}, [])
+
+	useEffect(getData, [currentPage])
 
 	const addNewUser = () => {
 		setSubmitted(true)
@@ -172,30 +191,40 @@ export default function Employees() {
 	}
 
 	const handleSearch = () => {
-		if (inputRef.current?.value.length > 0) {
-			dispatch(setLoading(true))
-			setSearchSubmitted(true)
-			post("/users/users-search", { search: inputRef.current?.value }).then(
-				(data) => {
-					if (data.status === 200) {
-						setFilteredUsers(data?.data)
-					} else {
-						toast.error("Nomalum server xatolik")
-					}
-					dispatch(setLoading(false))
-				}
-			)
-		} else {
-			setSearchSubmitted(false)
-			setFilteredUsers([])
-		}
+		dispatch(setLoading(true))
+		setSearchSubmitted(true)
+
+		post(`/users/users-search?limit=${limit}&page=${currentPage}`, {
+			search: inputRef.current?.value,
+		}).then((response) => {
+			if (response.status === 200) {
+				const { data } = response
+
+				setTotalPage(Math.ceil(data?.users / limit))
+				setFilteredData(data?.data)
+				dispatch(setQuantity(data?.users))
+
+				if (!data?.data?.length) setCurrentPage(1)
+			} else {
+				setTotalPage(1)
+				toast.error("Nomalum server xatolik")
+			}
+			dispatch(setLoading(false))
+		})
 	}
 
 	const clearSearch = () => {
-		setSearchSubmitted(false)
-		setFilteredUsers([])
 		inputRef.current.value = ""
 	}
+
+	useEffect(() => {
+		setCurrentPage(1)
+		if (didMount.current) {
+			handleSearch()
+		} else {
+			didMount.current = true
+		}
+	}, [limit])
 
 	const clearAndClose = () => {
 		setNew_name("")
@@ -221,6 +250,13 @@ export default function Employees() {
 		setObjId("")
 		setSubmitted(false)
 		setBtn_loading(false)
+	}
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
+		if (inputRef.current.value === "") {
+			setSearchSubmitted(false)
+		}
 	}
 
 	return (
@@ -389,7 +425,7 @@ export default function Employees() {
 
 			<div className="info-wrapper">
 				<InfoItem
-					value={searchSubmitted ? filteredUsers.length : state?.quantity}
+					value={state?.quantity}
 					name="Xodimlar soni"
 					icon={<Users size={24} color="var(--color-primary)" />}
 					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
@@ -407,16 +443,78 @@ export default function Employees() {
 			{state?.loading ? (
 				<Loader />
 			) : (
-				<EmployeeList
-					data={searchSubmitted ? filteredUsers : state?.data}
-					deleteEmp={deleteUser}
-					editEmp={editEmp}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					darkMode={darkMode}
-					miniModal={miniModal}
-					setMiniModal={setMiniModal}
-				/>
+				<>
+					<EmployeeList
+						data={searchSubmitted ? filteredData : state?.data}
+						deleteEmp={deleteUser}
+						editEmp={editEmp}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						darkMode={darkMode}
+						miniModal={miniModal}
+						setMiniModal={setMiniModal}
+					/>
+
+					{totalPage > 1 ? (
+						<>
+							<Pagination
+								pages={totalPage}
+								currentPage={currentPage}
+								onPageChange={handlePageChange}
+								darkMode={darkMode}
+							/>
+
+							<div
+								className={`input-wrapper ${
+									darkMode ? "dark" : null
+								} pagination-limit`}
+							>
+								<Select
+									placeholder="Miqdor"
+									className="select"
+									value={limit}
+									onChange={(e) => {
+										setLimit(e)
+										setCurrentPage(1)
+									}}
+								>
+									<Select.Option
+										value="10"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>10</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="25"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>25</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="50"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>50</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="100"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>100</span>
+										</div>
+									</Select.Option>
+								</Select>
+							</div>
+						</>
+					) : null}
+				</>
 			)}
 		</>
 	)

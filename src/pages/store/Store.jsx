@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useOutletContext } from "react-router-dom"
 import Loader from "../../components/loader/Loader"
@@ -19,6 +19,8 @@ import AddModal from "../../components/add/AddModal"
 import { Factory, Info } from "@phosphor-icons/react"
 import InfoItem from "../../components/info_item/InfoItem"
 import Search from "../../components/search/Search"
+import Pagination from "../../components/pagination/Pagination"
+import { Select } from "antd"
 
 export default function Store() {
 	const navigate = useNavigate()
@@ -39,55 +41,84 @@ export default function Store() {
 	const state = useSelector((state) => state.store)
 	const dispatch = useDispatch()
 
-	const [filteredData, setFilteredData] = useState([])
 	const [btn_loading, setBtn_loading] = useState(false)
 	const [objId, setObjId] = useState("")
+	const [filteredData, setFilteredData] = useState([])
 	const [submitted, setSubmitted] = useState(false)
 	const [searchSubmitted, setSearchSubmitted] = useState(false)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [limit, setLimit] = useState(20)
+	const [totalPage, setTotalPage] = useState(1)
+	const didMount = useRef(false)
 
 	// new data
 	const [storeName, setStoreName] = useState("")
 
+	const getData = () => {
+		dispatch(setLoading(true))
+		if (inputRef.current?.value.length > 0) {
+			handleSearch()
+		} else {
+			get(`/store/store-list?limit=${limit}&page=${currentPage}`).then(
+				(data) => {
+					if (data?.status === 200 || data?.status === 201) {
+						setTotalPage(Math.ceil(data?.data?.stores / limit))
+						dispatch(setData(data?.data?.data))
+						dispatch(setQuantity(data?.data?.stores))
+					} else {
+						setTotalPage(1)
+						toast.error("Nomalum server xatolik")
+					}
+					dispatch(setLoading(false))
+				}
+			)
+		}
+	}
+
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
+		getData()
+	}, [])
 
+	useEffect(getData, [currentPage])
+
+	const handleSearch = () => {
 		dispatch(setLoading(true))
-		get("/store/store-list").then((data) => {
-			if (data?.status === 201) {
-				dispatch(setData(data?.data?.data))
-				dispatch(setQuantity(data?.data?.stores))
+		setSearchSubmitted(true)
+
+		post(`/store/store-search?limit=${limit}&page=${currentPage}`, {
+			search: inputRef.current?.value,
+		}).then((response) => {
+			if (response.status === 200) {
+				const { data } = response
+
+				setTotalPage(Math.ceil(data?.stores / limit))
+				setFilteredData(data?.data)
+				dispatch(setQuantity(data?.stores))
+
+				if (!data?.data?.length) setCurrentPage(1)
 			} else {
+				setTotalPage(1)
 				toast.error("Nomalum server xatolik")
 			}
 			dispatch(setLoading(false))
 		})
-	}, [])
-
-	const handleSearch = () => {
-		if (inputRef.current?.value.length > 0) {
-			dispatch(setLoading(true))
-			setSearchSubmitted(true)
-			post("/store/store-search", {
-				search: inputRef.current?.value,
-			}).then((data) => {
-				if (data.status === 200) {
-					setFilteredData(data?.data)
-				} else {
-					toast.error("Nomalum server xatolik")
-				}
-				dispatch(setLoading(false))
-			})
-		} else {
-			setSearchSubmitted(false)
-			setFilteredData([])
-		}
 	}
 
 	const clearSearch = () => {
-		setSearchSubmitted(false)
-		setFilteredData([])
+		// setSearchSubmitted(false)
+		// setFilteredData([])
 		inputRef.current.value = ""
 	}
+
+	useEffect(() => {
+		setCurrentPage(1)
+		if (didMount.current) {
+			handleSearch()
+		} else {
+			didMount.current = true
+		}
+	}, [limit])
 
 	const addNewStore = () => {
 		setSubmitted(true)
@@ -173,6 +204,13 @@ export default function Store() {
 		setBtn_loading(false)
 	}
 
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber)
+		if (inputRef.current.value === "") {
+			setSearchSubmitted(false)
+		}
+	}
+
 	return (
 		<>
 			<AddModal name={objId ? "Ombor tahrirlash" : "Ombor qo'shish"}>
@@ -227,7 +265,7 @@ export default function Store() {
 
 			<div className="info-wrapper">
 				<InfoItem
-					value={searchSubmitted ? filteredData.length : state?.quantity}
+					value={state?.quantity}
 					name="Omborlar soni"
 					icon={<Factory size={24} color="var(--color-primary)" />}
 					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
@@ -245,14 +283,76 @@ export default function Store() {
 			{state?.loading ? (
 				<Loader />
 			) : (
-				<StoreList
-					data={searchSubmitted ? filteredData : state?.data}
-					deleteStore={deleteStore}
-					editStore={editStore}
-					showDropdown={showDropdown}
-					setshowDropdown={setshowDropdown}
-					darkMode={darkMode}
-				/>
+				<>
+					<StoreList
+						data={searchSubmitted ? filteredData : state?.data}
+						deleteStore={deleteStore}
+						editStore={editStore}
+						showDropdown={showDropdown}
+						setshowDropdown={setshowDropdown}
+						darkMode={darkMode}
+					/>
+
+					{totalPage > 1 ? (
+						<>
+							<Pagination
+								pages={totalPage}
+								currentPage={currentPage}
+								onPageChange={handlePageChange}
+								darkMode={darkMode}
+							/>
+
+							<div
+								className={`input-wrapper ${
+									darkMode ? "dark" : null
+								} pagination-limit`}
+							>
+								<Select
+									placeholder="Miqdor"
+									className="select"
+									value={limit}
+									onChange={(e) => {
+										setLimit(e)
+										setCurrentPage(1)
+									}}
+								>
+									<Select.Option
+										value="10"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>10</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="25"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>25</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="50"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>50</span>
+										</div>
+									</Select.Option>
+									<Select.Option
+										value="100"
+										className={`${darkMode ? "dark" : null}`}
+									>
+										<div>
+											<span>100</span>
+										</div>
+									</Select.Option>
+								</Select>
+							</div>
+						</>
+					) : null}
+				</>
 			)}
 		</>
 	)

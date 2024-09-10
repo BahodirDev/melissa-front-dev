@@ -8,6 +8,7 @@ import {
 	UserMinus,
 } from "@phosphor-icons/react"
 import moment from "moment/moment"
+import { image_modal } from "../../components/image_modal/image_modal"
 
 function GoodsList({
 	data,
@@ -24,6 +25,15 @@ function GoodsList({
 		showDropdown === id ? setshowDropdown("") : setshowDropdown(id)
 		e.stopPropagation()
 		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
+	}
+
+	const handleAddImage = (id, newImg) => {
+		// goods/goods-imgupload
+		let newObj = {
+			id,
+			file: newImg,
+		}
+		console.log(newObj)
 	}
 
 	return data?.length ? (
@@ -90,7 +100,17 @@ function GoodsList({
 								<h4>{moment(item?.goods_createdat).format("YYYY/MM/DD")}</h4>
 							</div>
 
-							<div className="card-item__image">
+							<div
+								className="card-item__image"
+								// onClick={() => {
+								// 	image_modal(
+								// 		handleAddImage,
+								// 		item?.goods_id,
+								// 		item?.img_url,
+								// 		darkMode
+								// 	)
+								// }}
+							>
 								<img
 									src={item?.img_url}
 									alt=""

@@ -56,6 +56,12 @@
 .input-wrapper.pay-modal.dark input::placeholder {
 	color: var(--d-color-secondary);
 }
+.ant-modal-confirm-body-wrapper div:first-child {
+	width: 100% !important;
+}
+.ant-modal-confirm-body-wrapper {
+	width: 100% !important;
+}
 
 /* textarea */
 .input-wrapper .desc-input {

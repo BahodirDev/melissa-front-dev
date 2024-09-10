@@ -88,14 +88,22 @@ const SellDebt = ({
 	}, [activeElementIndex])
 
 	const getData = (name, dispatch1) => {
-		get(`/${name}/${name}-list`).then((data) => {
-			if (data?.status === 201 || data?.status === 200) {
-				dispatch(dispatch1(data?.data))
-				if (name === "clients") {
+		if (name === "store" || name === "deliver") {
+			get(`/${name}/${name}-list?limit=${null}&page=${null}`).then((data) => {
+				if (data?.status === 201 || data?.status === 200) {
 					dispatch(dispatch1(data?.data?.data))
 				}
-			}
-		})
+			})
+		} else {
+			get(`/${name}/${name}-list`).then((data) => {
+				if (data?.status === 201 || data?.status === 200) {
+					dispatch(dispatch1(data?.data))
+					if (name === "clients" || name === "users") {
+						dispatch(dispatch1(data?.data?.data))
+					}
+				}
+			})
+		}
 	}
 
 	useEffect(() => {
@@ -571,7 +579,7 @@ const SellDebt = ({
 								}}
 								ref={activeElementIndex === 1 ? nextInputRef : null}
 							>
-								{store?.data.length
+								{store?.data?.length
 									? store?.data.map((item, idx) => {
 											return (
 												<Select.Option
@@ -958,7 +966,7 @@ const SellDebt = ({
 								onClick={(e) => {
 									if (productList?.length >= 1)
 										confirmCloseModal(
-											"Ro'yxat o'chirib yuborilsinmi?",
+											"Royxat o'chirib yuborilsinmi?",
 											() => {
 												setSDModalVisible(false)
 												setTimeout(() => {
