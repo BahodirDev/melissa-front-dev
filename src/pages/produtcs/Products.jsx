@@ -677,7 +677,7 @@ export default function Products() {
 						}}
 						ref={activeElementIndex === 3 ? nextInputRef : null}
 					>
-						{store?.data.length
+						{store?.data?.length
 							? store?.data.map((item, idx) => {
 									return (
 										<Select.Option
@@ -937,7 +937,7 @@ export default function Products() {
 						onChange={(e) => setSearchStoreId(e)}
 						filterOption={filterOptionStore}
 					>
-						{store?.data.length
+						{store?.data?.length
 							? store?.data.map((item, idx) => (
 									<Select.Option
 										key={idx}

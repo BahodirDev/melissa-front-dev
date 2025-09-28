@@ -928,7 +928,7 @@ function Return() {
 						value={searchDeliverId ? searchDeliverId : null}
 						onChange={(e) => setSearchDeliverId(e ? e : null)}
 					>
-						{client?.data.length
+						{client?.data?.length
 							? client?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (

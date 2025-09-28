@@ -32,7 +32,6 @@ const AntReportTable = ({
 		e.stopPropagation()
 		setLoc(window.innerHeight - e.clientY > 110 ? false : true)
 	}
-
 	let arr2 = data?.map((item, idx) => {
 		return {
 			key: idx + 1 + (currentPage - 1) * limit,
