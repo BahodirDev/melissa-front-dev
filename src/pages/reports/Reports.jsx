@@ -104,39 +104,6 @@ export default function Reports() {
     });
   };
 
-  //   const getReports = async () => {
-  //     dispatch(setLoading(true));
-  //     if (
-  //       storeId ||
-  //       clientId ||
-  //       dateRange?.length ||
-  //       selectedIncomeOutcome !== "all" ||
-  //       inputRef.current?.value.length > 0
-  //     ) {
-  //       handleSearch();
-  //     } else {
-  //      get(`reports/reports-list?limit=${limit}&page=${currentPage}`).then(
-  //         (data) => {
-  //           if (data?.status === 201 || data?.status === 200) {
-  //             setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit));
-  //             dispatch(setData(data?.data?.data));
-
-  //             // dispatch(setCapital(data?.data?.hisob?.totalProductCost));
-  //             // dispatch(setIncome(data?.data?.hisob?.totalCostPilus));
-  //             // dispatch(setOutcome(data?.data?.hisob?.totalCostMinus));
-  //             // dispatch(setQtyIn(data?.data?.hisob?.totalInput));
-  //             // dispatch(setQtyOut(data?.data?.hisob?.totalOuput));
-  //           } else {
-  //             setTotalPage(1);
-  //             toast.error("Nomalum server xatolik", { toastId: "" });
-  //           }
-  //           dispatch(setLoading(false));
-  //         }
-  //       );
-  //     }
-  //   };
-
-  // editor BahodirDev
   const getReports = async () => {
     dispatch(setLoading(true));
     if (
@@ -148,50 +115,83 @@ export default function Reports() {
     ) {
       handleSearch();
     } else {
-      try {
-        const data = await get(
-          `reports/reports-list?limit=${limit}&page=${currentPage}`
-        );
-        if (data?.status === 200 || data?.status === 201) {
-          setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit));
-          dispatch(setData(data?.data?.data));
-        } else {
-          setTotalPage(1);
-          toast.error("Nomalum server xatolik", { toastId: "" });
+      get(`reports/reports-list?limit=${limit}&page=${currentPage}`).then(
+        (data) => {
+          if (data?.status === 201 || data?.status === 200) {
+            setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit));
+            dispatch(setData(data?.data?.data));
+
+            dispatch(setCapital(data?.data?.hisob?.totalProductCost));
+            dispatch(setIncome(data?.data?.hisob?.totalCostPilus));
+            dispatch(setOutcome(data?.data?.hisob?.totalCostMinus));
+            dispatch(setQtyIn(data?.data?.hisob?.totalInput));
+            dispatch(setQtyOut(data?.data?.hisob?.totalOuput));
+          } else {
+            setTotalPage(1);
+            toast.error("Nomalum server xatolik", { toastId: "" });
+          }
+          dispatch(setLoading(false));
         }
-      } catch (e) {
-        toast.error("Server bilan aloqa yo'q");
-      } finally {
-        dispatch(setLoading(false));
-      }
+      );
     }
   };
 
-  async function getReportDetails() {
-    try {
-      const { data, status } = await get(`/reports/reports-list-sum`);
-      if (status === 200) {
-        dispatch(setDetailsLoading(true));
-        console.log("data in getReportDetails", data);
+  // editor BahodirDev
+  // const getReports = async () => {
+  //   dispatch(setLoading(true));
+  //   if (
+  //     storeId ||
+  //     clientId ||
+  //     dateRange?.length ||
+  //     selectedIncomeOutcome !== "all" ||
+  //     inputRef.current?.value.length > 0
+  //   ) {
+  //     handleSearch();
+  //   } else {
+  //     try {
+  //       const data = await get(
+  //         `reports/reports-list?limit=${limit}&page=${currentPage}`
+  //       );
+  //       if (data?.status === 200 || data?.status === 201) {
+  //         setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit));
+  //         dispatch(setData(data?.data?.data));
+  //       } else {
+  //         setTotalPage(1);
+  //         toast.error("Nomalum server xatolik", { toastId: "" });
+  //       }
+  //     } catch (e) {
+  //       toast.error("Server bilan aloqa yo'q");
+  //     } finally {
+  //       dispatch(setLoading(false));
+  //     }
+  //   }
+  // };
 
-        dispatch(setCapital(data?.totalProductCost));
-        dispatch(setIncome(data?.totalCostPilus));
-        dispatch(setOutcome(data?.totalCostMinus));
-        dispatch(setQtyIn(data?.totalInput));
-        dispatch(setQtyOut(data?.totalOuput));
-        dispatch(setDetailsLoading(false));
-      }
-    } catch (error) {
-      console.log(error);
-      dispatch(setDetailsLoading(false));
-      toast.error("Nomalum server xatolik", { toastId: "" });
-    }
-  }
+  // async function getReportDetails() {
+  //   try {
+  //     const { data, status } = await get(`/reports/reports-list-sum`);
+  //     if (status === 200) {
+  //       dispatch(setDetailsLoading(true));
+  //       console.log("data in getReportDetails", data);
+
+  //       dispatch(setCapital(data?.totalProductCost));
+  //       dispatch(setIncome(data?.totalCostPilus));
+  //       dispatch(setOutcome(data?.totalCostMinus));
+  //       dispatch(setQtyIn(data?.totalInput));
+  //       dispatch(setQtyOut(data?.totalOuput));
+  //       dispatch(setDetailsLoading(false));
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     dispatch(setDetailsLoading(false));
+  //     toast.error("Nomalum server xatolik", { toastId: "" });
+  //   }
+  // }
 
   //   useEffect(getReports, [currentPage]);
   useEffect(() => {
     getReports();
-    getReportDetails();
+    // getReportDetails();
   }, [currentPage]);
 
   useEffect(() => {
@@ -649,83 +649,78 @@ export default function Reports() {
           </button>
         </div>
       </div>
-      {report?.detailsLoading ? (
-        <Loader />
-      ) : (
-        <div className="info-wrapper">
-          <InfoItem
-            value={
-              addSpace(
-                searchSubmitted
-                  ? roundToNearestThousand(+filteredData?.hisob?.totalCostMinus)
-                  : roundToNearestThousand(report.outcome)
-              ) + " so'm"
-            }
-            name="Kirim"
-            icon={<ArrowDown size={24} color="var(--color-success)" />}
-            iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
-            darkMode={darkMode}
-          />
-          <InfoItem
-            value={
-              addSpace(
-                searchSubmitted
-                  ? roundToNearestThousand(+filteredData?.hisob?.totalCostPilus)
-                  : roundToNearestThousand(report.income)
-              ) + " so'm"
-            }
-            name="Chiqim"
-            icon={<ArrowUp size={24} color="var(--color-danger)" />}
-            iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
-            darkMode={darkMode}
-          />
-          <InfoItem
-            value={
-              addSpace(
-                searchSubmitted
-                  ? roundToNearestThousand(
-                      +filteredData?.hisob?.totalProductCost
-                    )
-                  : roundToNearestThousand(report.capital)
-              ) + " so'm"
-            }
-            name="Foyda"
-            icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
-            iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
-            darkMode={darkMode}
-          />
-          <InfoItem
-            value={addSpace(
+
+      <div className="info-wrapper">
+        <InfoItem
+          value={
+            addSpace(
               searchSubmitted
-                ? filteredData?.hisob?.totalInput -
-                    filteredData?.hisob?.totalOuput
-                : report.qtyIn - report.qtyOut
-            )}
-            name="Mavjud mahsulotlar soni"
-            icon={<Cube size={24} color="var(--color-primary)" />}
-            iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
-            darkMode={darkMode}
-          />
-          <InfoItem
-            value={addSpace(
-              searchSubmitted ? filteredData?.hisob?.totalInput : report.qtyIn
-            )}
-            name="Kirgan mahsulotlar soni"
-            icon={<ArrowDown size={24} color="var(--color-success)" />}
-            iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
-            darkMode={darkMode}
-          />
-          <InfoItem
-            value={addSpace(
-              searchSubmitted ? filteredData?.hisob?.totalOuput : report.qtyOut
-            )}
-            name="Chiqqan mahsulotlar soni"
-            icon={<ArrowUp size={24} color="var(--color-danger)" />}
-            iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
-            darkMode={darkMode}
-          />
-        </div>
-      )}
+                ? roundToNearestThousand(+filteredData?.hisob?.totalCostMinus)
+                : roundToNearestThousand(report.outcome)
+            ) + " so'm"
+          }
+          name="Kirim"
+          icon={<ArrowDown size={24} color="var(--color-success)" />}
+          iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+          darkMode={darkMode}
+        />
+        <InfoItem
+          value={
+            addSpace(
+              searchSubmitted
+                ? roundToNearestThousand(+filteredData?.hisob?.totalCostPilus)
+                : roundToNearestThousand(report.income)
+            ) + " so'm"
+          }
+          name="Chiqim"
+          icon={<ArrowUp size={24} color="var(--color-danger)" />}
+          iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+          darkMode={darkMode}
+        />
+        <InfoItem
+          value={
+            addSpace(
+              searchSubmitted
+                ? roundToNearestThousand(+filteredData?.hisob?.totalProductCost)
+                : roundToNearestThousand(report.capital)
+            ) + " so'm"
+          }
+          name="Foyda"
+          icon={<CurrencyDollar size={24} color="var(--color-primary)" />}
+          iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+          darkMode={darkMode}
+        />
+        <InfoItem
+          value={addSpace(
+            searchSubmitted
+              ? filteredData?.hisob?.totalInput -
+                  filteredData?.hisob?.totalOuput
+              : report.qtyIn - report.qtyOut
+          )}
+          name="Mavjud mahsulotlar soni"
+          icon={<Cube size={24} color="var(--color-primary)" />}
+          iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+          darkMode={darkMode}
+        />
+        <InfoItem
+          value={addSpace(
+            searchSubmitted ? filteredData?.hisob?.totalInput : report.qtyIn
+          )}
+          name="Kirgan mahsulotlar soni"
+          icon={<ArrowDown size={24} color="var(--color-success)" />}
+          iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+          darkMode={darkMode}
+        />
+        <InfoItem
+          value={addSpace(
+            searchSubmitted ? filteredData?.hisob?.totalOuput : report.qtyOut
+          )}
+          name="Chiqqan mahsulotlar soni"
+          icon={<ArrowUp size={24} color="var(--color-danger)" />}
+          iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}
+          darkMode={darkMode}
+        />
+      </div>
 
       <Search
         handleSearch={handleSearch}
