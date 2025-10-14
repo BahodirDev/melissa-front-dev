@@ -448,7 +448,7 @@ function Return() {
 						ref={activeElementIndex === 1 ? nextInputRef : null}
 						disabled={objId}
 					>
-						{store?.data.length
+						{store?.data?.length
 							? store?.data.map((item, idx) => {
 									if (objId) {
 										if (idx < 1)
@@ -904,7 +904,7 @@ function Return() {
 						value={searchStoreId ? searchStoreId : null}
 						onChange={(e) => setSearchStoreId(e ? e : null)}
 					>
-						{store?.data.length
+						{store?.data?.length
 							? store?.data.map((item, idx) => (
 									<Select.Option
 										key={idx}
@@ -928,7 +928,7 @@ function Return() {
 						value={searchDeliverId ? searchDeliverId : null}
 						onChange={(e) => setSearchDeliverId(e ? e : null)}
 					>
-						{client?.data.length
+						{client?.data?.length
 							? client?.data.map((item, idx) => {
 									if (!item?.isdelete)
 										return (

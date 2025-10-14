@@ -393,7 +393,7 @@ const SellDebt = ({
 					let productNames = ""
 					data?.response?.data?.data.forEach((item, idx) => {
 						productNames += item?.name
-						if (idx + 1 < data?.response?.data?.data.length)
+						if (idx + 1 < data?.response?.data?.data?.length)
 							productNames += ", "
 					})
 					toast.error(`${productNames} mahsuloti kam`, { autoClose: false })
