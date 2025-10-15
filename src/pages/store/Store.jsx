@@ -61,7 +61,7 @@ export default function Store() {
     } else {
       get(`/store/store-list?limit=${limit}&page=${currentPage}`).then(
         (data) => {
-          log("data store", data);
+          console.log("data store", data);
           if (data?.status === 200 || data?.status === 201) {
             // setTotalPage(Math.ceil(data?.data?.stores / limit))
             setTotalPage(Math.ceil(data?.length / limit));
