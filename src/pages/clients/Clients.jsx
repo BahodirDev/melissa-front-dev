@@ -58,7 +58,7 @@ export default function Employees() {
 
 	useEffect(() => {
 		dispatch(setLoading(true))
-		get(`/clients/clients-lists?limit=${limit}&page=${currentPage}`).then(
+		get(`/clients/clients-list?limit=${limit}&page=${currentPage}`).then(
 			(data) => {
 				if (data?.status === 201 || data?.status === 200) {
 					setClientList(data?.data?.data)
@@ -75,7 +75,7 @@ export default function Employees() {
 
 	useEffect(() => {
 		dispatch(setLoading(true))
-		get(`/clients/clients-lists?limit=${limit}&page=${currentPage}`).then(
+		get(`/clients/clients-list?limit=${limit}&page=${currentPage}`).then(
 			(data) => {
 				if (data?.status === 201 || data?.status === 200) {
 					setClientList(data?.data?.data)
@@ -357,7 +357,7 @@ export default function Employees() {
 
 			<div className="info-wrapper">
 				<InfoItem
-					value={searchSubmitted ? filteredData.length : state?.quantity}
+					value={searchSubmitted ? filteredData?.length : state?.quantity}
 					name="Mijozlar soni"
 					icon={<UsersFour size={24} color="var(--color-primary)" />}
 					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}

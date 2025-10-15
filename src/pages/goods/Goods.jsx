@@ -78,6 +78,8 @@ export default function Goods() {
 		} else {
 			get(`/goods/goods-list?limit=${limit}&page=${currentPage}`).then(
 				(data) => {
+					console.log('Goods data',data);
+					
 					if (data?.status === 200 || data?.status === 201) {
 						setTotalPage(Math.ceil(data?.data?.goods / limit))
 						dispatch(setData(data?.data?.data))
@@ -499,7 +501,7 @@ export default function Goods() {
 
 			<div className="info-wrapper">
 				<InfoItem
-					value={searchSubmitted ? filteredData.length : state?.quantity}
+					value={searchSubmitted ? filteredData?.length : state?.quantity}
 					name="Kategoriyalar soni"
 					icon={<SquaresFour size={24} color="var(--color-primary)" />}
 					iconBgColor={`${darkMode ? "var(--d-bg-icon)" : "var(--bg-icon)"}`}

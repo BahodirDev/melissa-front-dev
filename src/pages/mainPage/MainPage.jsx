@@ -147,8 +147,8 @@ export default function MainPage() {
 						return !prevVisible
 					})
 				} else if (
-					(e.ctrlKey && e.key === "k") ||
-					(e.ctrlKey && e.key === "л")
+					(e.ctrlKey && e.key === "f") ||
+					(e.ctrlKey && e.key === "a")
 				) {
 					if (!addModalVisible && !SDModalVisible) {
 						e.preventDefault()
