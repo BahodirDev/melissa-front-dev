@@ -65,9 +65,12 @@ function Deliver() {
 			get(`/deliver/deliver-list?limit=${limit}&page=${currentPage}`).then(
 				(data) => {
 					if (data?.status === 200 || data?.status === 201) {
-						setTotalPage(Math.ceil(data?.data?.deliver / limit))
-						dispatch(setData(data?.data?.data))
-						dispatch(setQuantity(data?.data?.deliver))
+						// setTotalPage(Math.ceil(data?.data?.deliver / limit))
+						setTotalPage(Math.ceil(data?.data?.length / limit))
+						// dispatch(setData(data?.data?.data))
+						dispatch(setData(data?.data))
+						// dispatch(setQuantity(data?.data?.deliver))
+						dispatch(setQuantity(data?.data?.length))
 					} else {
 						setTotalPage(1)
 						toast.error("Nomalum server xatolik")
@@ -95,11 +98,12 @@ function Deliver() {
 			if (response.status === 200) {
 				const { data } = response
 
-				setTotalPage(Math.ceil(data?.deliver / limit))
-				setFilteredData(data?.data)
-				dispatch(setQuantity(data?.deliver))
+				// setTotalPage(Math.ceil(data?.deliver / limit))
+				setTotalPage(Math.ceil(data?.length / limit))
+				setFilteredData(data || [])
+				dispatch(setQuantity(data?.length))
 
-				if (!data?.data?.length) setCurrentPage(1)
+				if (!data?.length) setCurrentPage(1)
 			} else {
 				setTotalPage(1)
 				toast.error("Nomalum server xatolik")

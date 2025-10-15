@@ -61,9 +61,9 @@ export default function Employees() {
 		get(`/clients/clients-list?limit=${limit}&page=${currentPage}`).then(
 			(data) => {
 				if (data?.status === 201 || data?.status === 200) {
-					setClientList(data?.data?.data)
-					setTotalPage(Math.ceil(data?.data?.clients / limit))
-					dispatch(setQuantity(data?.data?.clients))
+					setClientList(data?.data)
+					setTotalPage(Math.ceil(data?.data?.length / limit))
+					dispatch(setQuantity(data?.data?.length))
 				} else {
 					toast.error("Nomalur server xatolik")
 					setTotalPage(1)
@@ -78,9 +78,9 @@ export default function Employees() {
 		get(`/clients/clients-list?limit=${limit}&page=${currentPage}`).then(
 			(data) => {
 				if (data?.status === 201 || data?.status === 200) {
-					setClientList(data?.data?.data)
-					setTotalPage(Math.ceil(data?.data?.clients / limit))
-					dispatch(setQuantity(data?.data?.clients))
+					setClientList(data?.data)
+					setTotalPage(Math.ceil(data?.data?.length / limit))
+					dispatch(setQuantity(data?.data?.length))
 				} else {
 					toast.error("Nomalur server xatolik")
 					setTotalPage(1)
@@ -98,7 +98,7 @@ export default function Employees() {
 				search: inputRef.current?.value,
 			}).then((data) => {
 				if (data.status === 200) {
-					setFilteredData(data?.data?.data)
+					setFilteredData(data?.data)
 				} else {
 					toast.error("Nomalum server xatolik")
 				}

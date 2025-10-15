@@ -81,9 +81,9 @@ export default function Goods() {
 					console.log('Goods data',data);
 					
 					if (data?.status === 200 || data?.status === 201) {
-						setTotalPage(Math.ceil(data?.data?.goods / limit))
-						dispatch(setData(data?.data?.data))
-						dispatch(setQuantity(data?.data?.goods))
+						setTotalPage(Math.ceil(data?.data?.length / limit))
+						dispatch(setData(data?.data))
+						dispatch(setQuantity(data?.data?.length))
 					} else {
 						setTotalPage(1)
 						toast.error("Nomalum server xatolik")
@@ -99,7 +99,7 @@ export default function Goods() {
 	useEffect(() => {
 		if (localStorage.getItem("role") !== "1") navigate("/*")
 		get(`/deliver/deliver-list?limit=${null}&page=${null}`).then((data) => {
-			dispatch(setDataDeliver(data?.data?.data))
+			dispatch(setDataDeliver(data?.data))
 		})
 	}, [])
 
@@ -245,9 +245,9 @@ export default function Goods() {
 			filterObj
 		).then((data) => {
 			if (data.status === 200) {
-				setTotalPage(Math.ceil(data?.data?.goods / limit))
-				setFilteredData(data?.data?.data)
-				if (!data?.data?.data?.length) setCurrentPage(1)
+				setTotalPage(Math.ceil(data?.data?.length / limit))
+				setFilteredData(data?.data || [])
+				if (!data?.data?.length) setCurrentPage(1)
 			} else {
 				setTotalPage(1)
 				toast.error("Nomalum server xatolik")

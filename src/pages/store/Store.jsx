@@ -64,11 +64,11 @@ export default function Store() {
           console.log("data store", data);
           if (data?.status === 200 || data?.status === 201) {
             // setTotalPage(Math.ceil(data?.data?.stores / limit))
-            setTotalPage(Math.ceil(data?.length / limit));
+            setTotalPage(Math.ceil(data?.data?.length / limit));
             // dispatch(setData(data?.data?.data))
-            dispatch(setData(data || []));
+            dispatch(setData(data?.data || []));
             // dispatch(setQuantity(data?.data?.stores))
-            dispatch(setQuantity(data?.length));
+            dispatch(setQuantity(data?.data?.length));
           } else {
             setTotalPage(1);
             toast.error("Nomalum server xatolik");

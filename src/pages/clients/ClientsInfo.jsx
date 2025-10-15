@@ -59,8 +59,8 @@ const ClientsInfo = () => {
 					`/clients/clients-reports-list/${userId?.id}?limit=${limit}&page=${currentPage}`
 				).then((data) => {
 					if (data?.status === 200) {
-						setList(data?.data?.data)
-						setTotalPage(Math.ceil(data?.data?.files / limit))
+						setList(data?.data)
+						setTotalPage(Math.ceil(data?.data?.length / limit))
 					} else {
 						toast.error("Nomalur server xatolik")
 						setTotalPage(1)
@@ -79,8 +79,8 @@ const ClientsInfo = () => {
 			`/clients/clients-reports-list/${userId?.id}?limit=${limit}&page=${currentPage}`
 		).then((data) => {
 			if (data?.status === 200) {
-				setList(data.data?.data)
-				setTotalPage(Math.ceil(data?.data?.files / limit))
+				setList(data.data)
+				setTotalPage(Math.ceil(data?.data?.length / limit))
 			} else {
 				toast.error("Nomalur server xatolik")
 				setTotalPage(1)
