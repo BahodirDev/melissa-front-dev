@@ -114,7 +114,6 @@ export default function Products() {
 
 	const getData1 = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
-			console.log('goods/deliver in products');
 			
 			dispatch(dispatch1(data?.data))
 		})

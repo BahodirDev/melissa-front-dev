@@ -148,7 +148,9 @@ export default function MainPage() {
 					})
 				} else if (
 					(e.ctrlKey && e.key === "f") ||
-					(e.ctrlKey && e.key === "а")
+					(e.ctrlKey && e.key === "а") ||
+					(e.ctrlKey && e.key === "F") ||
+					(e.ctrlKey && e.key === "А")
 				) {
 					if (!addModalVisible && !SDModalVisible) {
 						e.preventDefault()
