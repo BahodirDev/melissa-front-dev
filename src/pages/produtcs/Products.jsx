@@ -12,6 +12,7 @@ import { error_modal } from "../../components/error_modal/error_modal"
 import Loader from "../../components/loader/Loader"
 import { setData as setDataDeliver } from "../../components/reducers/deliver"
 import { setData as setDataGood } from "../../components/reducers/good"
+import { setData as setDataStore } from "../../components/reducers/store"
 import {
 	addData,
 	editCount,
@@ -113,6 +114,8 @@ export default function Products() {
 
 	const getData1 = (name, dispatch1) => {
 		get(`/${name}/${name}-list`).then((data) => {
+			console.log('goods/deliver in products');
+			
 			dispatch(dispatch1(data?.data))
 		})
 	}
@@ -129,6 +132,7 @@ export default function Products() {
 			get(`/products/products-list?limit=${limit}&page=${currentPage}`).then(
 				(data) => {
 					if (data?.status === 200 || data?.status === 201) {
+						setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 						setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit))
 						dispatch(setDataProduct(data?.data?.data))
 						dispatch(setQuantity(data?.data?.hisob?.kategoriya))
@@ -148,6 +152,8 @@ export default function Products() {
 
 	useEffect(() => {
 		getData1("goods", setDataGood)
+		getData1("deliver", setDataDeliver);
+		getData1("store", setDataStore);
 	}, [])
 
 	const clearFilter = () => {
