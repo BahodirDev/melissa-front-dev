@@ -36,6 +36,7 @@ jobs:
         run: |
           echo "🚀 Uploading build folder to dev server..."
           rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
             ./build/ \
             ${{ secrets.FRONT_SSH_USER }}@${{ secrets.FRONT_SSH_HOST }}:/var/www/html/
 
