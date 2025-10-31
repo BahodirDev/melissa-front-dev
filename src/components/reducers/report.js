@@ -24,7 +24,7 @@ export const reportSlice = createSlice({
       state.detailsLoading = action.payload;
     },
     addData: (state, action) => {
-      state.data = [...state.data, action.payload];
+      state.data = [action.payload, ...state.data];
     },
     editData: (state, action) => {
       const index = state.data.findIndex(

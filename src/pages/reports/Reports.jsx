@@ -117,6 +117,7 @@ export default function Reports() {
     } else {
       get(`reports/reports-list?limit=${limit}&page=${currentPage}`).then(
         (data) => {
+
           if (data?.status === 201 || data?.status === 200) {
             setTotalPage(Math.ceil(data?.data?.data[0]?.full_count / limit));
             dispatch(setData(data?.data?.data));
@@ -319,7 +320,6 @@ export default function Reports() {
     patch(`/reports/reports-patch/${objId}`, {
       reports_createdat: new Date(newDate).toISOString(),
     }).then((data) => {
-      // console.log(data)
       if (data?.status === 200 || data?.status === 201) {
         clearAndClose();
         toast.success("Malumot muvoffaqiyatli o'zgartirildi");
