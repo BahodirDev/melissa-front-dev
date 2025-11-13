@@ -37,6 +37,38 @@
 .top-menu.dark svg {
 	color: var(--d-color-secondary);
 }
+.top-menu-links {
+	display: flex;
+	align-items: center;
+	margin-left: 16px;
+}
+.top-menu-links a {
+	text-decoration: none;
+	color: var(--color-secondary);
+	padding: 8px 16px;
+	border-radius: var(--radius-md);
+	transition: 0.2s;
+	font-size: var(--text-md);
+	font-weight: var(--weight-md);
+}
+.top-menu-links a:hover {
+	background-color: var(--bg-secondary);
+	color: var(--color-light);
+}
+.top-menu-links a.active {
+	background-color: var(--bg-primary);
+	color: var(--color-light);
+}
+.top-menu.dark .top-menu-links a {
+	color: var(--d-color-secondary);
+}
+.top-menu.dark .top-menu-links a:hover {
+	background-color: var(--d-bg-secondary);
+}
+.top-menu.dark .top-menu-links a.active {
+	background-color: var(--d-bg-primary);
+	color: var(--color-light);
+}
 .top-menu-right {
 	display: flex;
 }

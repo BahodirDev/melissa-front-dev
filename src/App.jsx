@@ -25,6 +25,7 @@ import Monitoring from "./pages/monitoring/Monitoring";
 import SocketHandle from "./io/client.io";
 import contextTriggerHandler from "./io/handler/contextTrigger-Handler";
 import { useDispatch } from "react-redux";
+import Statistics from "./pages/statistics/Statistics";
 
 export default function App(url) {
   const dispatch = useDispatch();
@@ -62,6 +63,7 @@ export default function App(url) {
 
         <Route path="/" element={<MainPage />}>
           <Route index element={<Home />} />
+          <Route path="/statistics" element={<Statistics />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/products" element={<Products />} />
           <Route path="/goods" element={<Goods />} />
