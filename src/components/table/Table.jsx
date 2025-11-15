@@ -274,6 +274,9 @@ const AntTable = ({
             record?.dead_limit !== undefined &&
             record?.products_count <= record?.dead_limit
           ) {
+            console.log(record);
+            console.log("dead_limit", record?.dead_limit);
+
             classes.push("product-row-dead-limit");
           }
           return classes.join(" ");
