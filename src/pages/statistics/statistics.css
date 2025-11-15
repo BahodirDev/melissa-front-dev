@@ -13,12 +13,16 @@
 .statistics-page .ant-d-table .ant-table-cell-fix-left {
 	position: sticky !important;
 	left: 0;
-	z-index: 1;
-	background-color: inherit;
+	z-index: 2;
+	background-color: #fff;
+}
+
+.statistics-page.dark .ant-d-table .ant-table-cell-fix-left {
+	background-color: var(--d-bg-light) !important;
 }
 
 .statistics-page .ant-d-table .ant-table-thead .ant-table-cell-fix-left {
-	z-index: 2;
+	z-index: 3;
 	background-color: #eee;
 }
 
@@ -27,7 +31,7 @@
 }
 
 .statistics-page .ant-d-table .ant-table-tbody .ant-table-cell-fix-left {
-	z-index: 1;
+	z-index: 2;
 }
 
 .statistics-page .ant-d-table .ant-table-cell-fix-left-first {
@@ -36,5 +40,30 @@
 
 .statistics-page.dark .ant-d-table .ant-table-cell-fix-left-first {
 	box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.statistics-qty-placeholder {
+	color: #8c8c8c;
+	font-style: italic;
+}
+
+.statistics-page.dark .statistics-qty-placeholder {
+	color: var(--d-color-muted, #9ea4b3);
+}
+
+.statistics-row-selected td {
+	background-color: #ffe2e5 !important;
+	color: #7a0026;
+}
+
+.statistics-page.dark .statistics-row-selected td {
+	background-color: #4b1130 !important;
+	color: #ffabc1;
+}
+
+.statistics-download {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 16px;
 }
 

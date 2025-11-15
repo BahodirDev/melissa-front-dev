@@ -112,6 +112,7 @@ export default function Goods() {
         goods_name: newGoodName.trim(),
         goods_code: newGoodCode.trim(),
         delivery_id: newDeliver?.deliver_id,
+        ...(deadLimit !== "" && { dead_limit: Number(deadLimit) }),
       };
       if (objId) {
         let editObj = {
@@ -411,23 +412,21 @@ export default function Goods() {
             </span>
           </div>
         </div>
-        {objId ? (
-          <div
-            className={`input-wrapper modal-form regular ${
-              darkMode ? "dark" : null
-            }`}
-          >
-            <label>Minimal chegara (minimal soni)</label>
-            <input
-              type="number"
-              placeholder="Minimal chegarani kiriting"
-              className="input"
-              value={deadLimit}
-              onChange={(e) => setDeadLimit(e.target.value)}
-              min="0"
-            />
-          </div>
-        ) : null}
+        <div
+          className={`input-wrapper modal-form regular ${
+            darkMode ? "dark" : null
+          }`}
+        >
+          <label>Minimal chegara (minimal soni)</label>
+          <input
+            type="number"
+            placeholder="Minimal chegarani kiriting"
+            className="input"
+            value={deadLimit}
+            onChange={(e) => setDeadLimit(e.target.value)}
+            min="0"
+          />
+        </div>
 
         {/* {objId ? (
 					<div

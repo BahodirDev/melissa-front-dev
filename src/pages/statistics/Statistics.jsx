@@ -1,110 +1,138 @@
-import React, { useMemo, useState, useEffect } from "react";
-import { Table, Select } from "antd";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { Table, Select, Checkbox } from "antd";
 import { useOutletContext } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { FilePdf } from "@phosphor-icons/react";
 import { addComma } from "../../components/addComma";
 import NoData from "../../components/noData/NoData";
 import Pagination from "../../components/pagination/Pagination";
 import Search from "../../components/search/Search";
 import "./statistics.css";
+import Loader from "../../components/loader/Loader";
+import { get, downloadNewList } from "../../customHook/api";
+import { toast } from "react-toastify";
+import { setData, setQuantity } from "../../components/reducers/stats";
+import { confirmDownloadModal } from "../../components/confirm_download_modal/confirmDownloadModal";
 
-// Fake stores data - this will come from backend
-const generateFakeStores = () => {
-  return [
-    { store_id: 1, store_name: "Home" },
-    { store_id: 2, store_name: "Store" },
-    { store_id: 3, store_name: "Bazzar" },
-  ];
-};
+const USE_MOCK = true;
 
-// Fake data for products statistics
-const generateFakeData = (stores) => {
-  const productNames = [
-    "Laptop HP Pavilion",
-    "iPhone 15 Pro",
-    "Samsung Galaxy S24",
-    "MacBook Air M2",
-    "iPad Pro 12.9",
-    "AirPods Pro",
-    "Monitor LG 27inch",
-    "Keyboard Mechanical",
-    "Mouse Logitech MX",
-    "Webcam Logitech C920",
-    "SSD Samsung 1TB",
-    "RAM Corsair 16GB",
-    "Graphics Card RTX 4070",
-    "Motherboard ASUS",
-    "Power Supply 750W",
-    "Laptop HP Pavilion",
-    "iPhone 15 Pro",
-    "Samsung Galaxy S24",
-    "MacBook Air M2",
-    "iPad Pro 12.9",
-    "AirPods Pro",
-    "Monitor LG 27inch",
-    "Keyboard Mechanical",
-    "Mouse Logitech MX",
-    "Webcam Logitech C920",
-    "SSD Samsung 1TB",
-    "RAM Corsair 16GB",
-    "Graphics Card RTX 4070",
-    "Motherboard ASUS",
-    "Power Supply 750W",
-  ];
+const MOCK_STORES = [
+  { store_id: 1, store_name: "Asosiy ombor", main: true },
+  { store_id: 2, store_name: "Filial ombor" },
+];
 
-  return productNames.map((name, index) => {
-    const pricePerUnit = Math.floor(Math.random() * 5000000) + 1000000;
+const MOCK_DELIVERIES = [
+  { deliver_id: 101, deliver_name: "Texno Supplier" },
+  { deliver_id: 102, deliver_name: "Mobile Market" },
+];
 
-    // Generate stock for each store
-    const storeStocks = {};
-    let totalStockLeft = 0;
-    let totalSoldQuantity = 0;
+const MOCK_PRODUCTS = [
+  {
+    id: 1,
+    name: "HP Pavilion 15",
+    code: "HP-15",
+    min: 120,
+    price: 2500000,
+    deliver: MOCK_DELIVERIES[0],
+  },
+  {
+    id: 2,
+    name: "iPhone 15 Pro",
+    code: "APL-15P",
+    min: 60,
+    price: 15000000,
+    deliver: MOCK_DELIVERIES[1],
+  },
+  {
+    id: 3,
+    name: "Samsung Galaxy S24",
+    code: "SMG-S24",
+    min: 80,
+    price: 9000000,
+    deliver: MOCK_DELIVERIES[1],
+  },
+  {
+    id: 4,
+    name: "MacBook Air M2",
+    code: "APL-M2",
+    min: 50,
+    price: 14000000,
+    deliver: MOCK_DELIVERIES[1],
+  },
+  {
+    id: 5,
+    name: "Logitech MX Master 3",
+    code: "LOG-MX3",
+    min: 90,
+    price: 1200000,
+    deliver: MOCK_DELIVERIES[0],
+  },
+];
 
-    stores.forEach((store) => {
-      const storeStock = Math.floor(Math.random() * 200) + 10;
-      const storeSold = Math.floor(Math.random() * storeStock * 0.6);
-      const storeLeft = storeStock - storeSold;
+const isMainStore = (store) =>
+  Boolean(
+    store &&
+      (store.main === true ||
+        store.is_main === true ||
+        store.dominant === true ||
+        store?.store_main === true)
+  );
 
-      storeStocks[`store_${store.store_id}`] = storeLeft;
-      totalStockLeft += storeLeft;
-      totalSoldQuantity += storeSold;
+const generateMockStats = () => {
+  const list = [];
+  let idx = 1;
+
+  for (let cycle = 0; cycle < 30 && list.length < 120; cycle++) {
+    MOCK_PRODUCTS.forEach((product) => {
+      MOCK_STORES.forEach((store) => {
+        const main = isMainStore(store);
+        const shouldBeLow = main && (cycle + product.id) % 3 !== 0;
+        const lowStockValue = Math.max(
+          0,
+          Math.floor(product.min * 0.2 + Math.random() * product.min * 0.3)
+        );
+        const healthyStockValue = Math.floor(
+          product.min + Math.random() * product.min * 1.5
+        );
+
+        list.push({
+          products_id: idx,
+          goods_id: {
+            goods_id: product.id * 100 + cycle,
+            goods_name: `${product.name} ${cycle + 1}`,
+            goods_code: `${product.code}-${cycle + 1}`,
+            dead_limit: product.min,
+          },
+          store_id: store,
+          deliver_id: product.deliver,
+          products_count: shouldBeLow ? lowStockValue : healthyStockValue,
+          products_count_price: product.price,
+          currency_id: { currency_amount: 1 },
+          img_url: "/assets/img/no data.png",
+        });
+
+        idx += 1;
+      });
     });
-
-    const totalRevenue = totalSoldQuantity * pricePerUnit;
-
-    return {
-      key: index + 1,
-      id: index + 1,
-      productName: name,
-      storeStocks: storeStocks,
-      totalStockLeft: totalStockLeft,
-      soldQuantity: totalSoldQuantity,
-      pricePerUnit: pricePerUnit,
-      totalRevenue: totalRevenue,
-    };
-  });
-};
-
-// Function to get warning color based on stock left
-const getWarningColor = (stockLeft) => {
-  if (stockLeft < 80) {
-    return {
-      backgroundColor: "#fff3cd",
-      color: "#856404",
-    };
   }
-  return {};
+
+  return list.slice(0, 100);
 };
 
-// Function to get warning color for dark mode
-const getWarningColorDark = (stockLeft) => {
-  if (stockLeft < 80) {
-    return {
-      backgroundColor: "#664d03",
-      color: "#ffc107",
-    };
-  }
-  return {};
-};
+const MOCK_STATS = generateMockStats();
+
+const getWarningColor = () => ({
+  backgroundColor: "#fff3cd",
+  color: "#856404",
+});
+
+const getWarningColorDark = () => ({
+  backgroundColor: "#664d03",
+  color: "#ffc107",
+});
+
+const formatPrice = (value) => `${addComma(Math.round(value || 0))} so'm`;
+const formatCount = (value) => `${addComma(Math.max(value || 0, 0))} dona`;
 
 export default function Statistics() {
   const [
@@ -121,98 +149,137 @@ export default function Statistics() {
     userInfo,
     darkMode,
   ] = useOutletContext();
+  const dispatch = useDispatch();
+  const statsSelection = useSelector((state) => state.stats?.data || []);
 
+  const [statsRaw, setStatsRaw] = useState(MOCK_STATS);
+  const [stores, setStores] = useState(MOCK_STORES);
+  const [deliveries, setDeliveries] = useState(MOCK_DELIVERIES);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit] = useState(20);
   const [searchText, setSearchText] = useState("");
-  const [stockFilter, setStockFilter] = useState(null);
-  const [priceFilter, setPriceFilter] = useState(null);
   const [searchSubmitted, setSearchSubmitted] = useState(false);
+  const [selectedStoreIds, setSelectedStoreIds] = useState([]);
+  const [selectedDeliverIds, setSelectedDeliverIds] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Stores will come from backend - using fake data for now
-  const [stores, setStores] = useState(generateFakeStores());
-  // Selected stores to display - default to all stores
-  const [selectedStoreIds, setSelectedStoreIds] = useState(
-    stores.map((store) => store.store_id)
-  );
-  // TODO: Replace with API call when backend is ready
-  // Uncomment the following when backend is ready:
-  // import { get } from "../../customHook/api";
-  // useEffect(() => {
-  //   get('/store/store-list').then((data) => {
-  //     if (data?.status === 200) {
-  //       setStores(data?.data || []);
-  //     }
-  //   });
-  // }, []);
-
-  const allFakeData = useMemo(() => generateFakeData(stores), [stores]);
-
-  // Filter data based on search and filters
-  const filteredData = useMemo(() => {
-    let data = [...allFakeData];
-
-    // Search filter
-    if (searchText) {
-      data = data.filter((item) =>
-        item.productName.toLowerCase().includes(searchText.toLowerCase())
-      );
-    }
-
-    // Stock filter (based on total stock left)
-    if (stockFilter === "low") {
-      data = data.filter((item) => item.totalStockLeft < 80);
-    } else if (stockFilter === "medium") {
-      data = data.filter(
-        (item) => item.totalStockLeft >= 80 && item.totalStockLeft < 200
-      );
-    } else if (stockFilter === "high") {
-      data = data.filter((item) => item.totalStockLeft >= 200);
-    }
-
-    // Price filter
-    if (priceFilter === "low") {
-      data = [...data].sort((a, b) => a.pricePerUnit - b.pricePerUnit);
-    } else if (priceFilter === "high") {
-      data = [...data].sort((a, b) => b.pricePerUnit - a.pricePerUnit);
-    }
-
-    return data;
-  }, [allFakeData, searchText, stockFilter, priceFilter]);
-
-  // Get filtered stores based on selection
-  const visibleStores = useMemo(() => {
-    return stores.filter((store) => selectedStoreIds.includes(store.store_id));
-  }, [stores, selectedStoreIds]);
-
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredData.length / limit);
-  const startIndex = (currentPage - 1) * limit;
-  const endIndex = startIndex + limit;
-  const fakeData = filteredData
-    .slice(startIndex, endIndex)
-    .map((item, index) => {
-      // Flatten store stocks for table columns
-      const flattenedItem = {
-        ...item,
-        key: startIndex + index + 1,
-      };
-
-      // Add store columns to the item (only for visible stores)
-      visibleStores.forEach((store) => {
-        flattenedItem[`store_${store.store_id}`] =
-          item.storeStocks?.[`store_${store.store_id}`] || 0;
-      });
-
-      return flattenedItem;
+  const fetchStores = useCallback(() => {
+    if (USE_MOCK) return setStores(MOCK_STORES);
+    get(`/store/store-list?limit=1000&page=1`).then((data) => {
+      if (
+        data?.status === 200 &&
+        Array.isArray(data?.data) &&
+        data?.data.length
+      ) {
+        setStores(data?.data);
+      } else {
+        setStores(MOCK_STORES);
+      }
     });
+  }, []);
+
+  const fetchDeliveries = useCallback(() => {
+    if (USE_MOCK) return setDeliveries(MOCK_DELIVERIES);
+    get(`/deliver/deliver-list?limit=1000&page=1`).then((data) => {
+      if (
+        data?.status === 200 &&
+        Array.isArray(data?.data) &&
+        data?.data.length
+      ) {
+        setDeliveries(data?.data);
+      } else {
+        setDeliveries(MOCK_DELIVERIES);
+      }
+    });
+  }, []);
+
+  const fetchStatistics = useCallback(() => {
+    const params = new URLSearchParams();
+    params.append("limit", limit);
+    params.append("page", currentPage);
+
+    if (searchSubmitted && searchText) {
+      params.append("search", searchText.trim());
+    }
+
+    if (
+      selectedStoreIds.length &&
+      stores.length &&
+      selectedStoreIds.length !== stores.length
+    ) {
+      params.append("store_id", selectedStoreIds.join(","));
+    }
+
+    if (selectedDeliverIds.length) {
+      params.append("deliver_id", selectedDeliverIds.join(","));
+    }
+
+    if (USE_MOCK) {
+      setStatsRaw(MOCK_STATS);
+      return;
+    }
+
+    const endpoint = params.toString()
+      ? `/products/products-statistics-list?${params.toString()}`
+      : `/products/products-statistics-list`;
+
+    setLoading(true);
+    get(endpoint)
+      .then((data) => {
+        console.log(data);
+        if (
+          data?.status === 200 &&
+          Array.isArray(data?.data) &&
+          data?.data.length
+        ) {
+          setStatsRaw(data?.data);
+        } else if (data && data?.status && data?.status !== 200) {
+          toast.error("Nomalum server xatolik");
+          setStatsRaw(MOCK_STATS);
+        } else {
+          setStatsRaw(MOCK_STATS);
+        }
+      })
+      .catch(() => {
+        toast.error("Nomalum server xatolik");
+        setStatsRaw(MOCK_STATS);
+      })
+      .finally(() => setLoading(false));
+  }, [
+    currentPage,
+    limit,
+    searchSubmitted,
+    searchText,
+    selectedStoreIds,
+    selectedDeliverIds,
+    stores.length,
+  ]);
+
+  useEffect(() => {
+    fetchStores();
+    fetchDeliveries();
+  }, [fetchStores, fetchDeliveries]);
+
+  useEffect(() => {
+    if (stores.length && !selectedStoreIds.length) {
+      setSelectedStoreIds(stores.map((store) => store.store_id));
+    }
+  }, [stores, selectedStoreIds.length]);
+
+  useEffect(() => {
+    fetchStatistics();
+  }, [fetchStatistics]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedStoreIds, selectedDeliverIds]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   const handleSearch = () => {
-    setSearchText(inputRef.current?.value || "");
+    setSearchText(inputRef.current?.value?.trim() || "");
     setSearchSubmitted(true);
     setCurrentPage(1);
   };
@@ -227,9 +294,8 @@ export default function Statistics() {
   };
 
   const clearFilters = () => {
-    setStockFilter(null);
-    setPriceFilter(null);
     setSelectedStoreIds(stores.map((store) => store.store_id));
+    setSelectedDeliverIds([]);
     if (inputRef.current) {
       inputRef.current.value = "";
     }
@@ -239,23 +305,246 @@ export default function Statistics() {
   };
 
   const handleStoreSelection = (selectedIds) => {
-    setSelectedStoreIds(
-      selectedIds.length > 0
-        ? selectedIds
-        : stores.map((store) => store.store_id)
-    );
+    if (selectedIds.length) {
+      setSelectedStoreIds(selectedIds);
+    } else {
+      setSelectedStoreIds(stores.map((store) => store.store_id));
+    }
   };
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [stockFilter, priceFilter, selectedStoreIds]);
+  const handleSupplierSelection = (selectedIds) => {
+    setSelectedDeliverIds(selectedIds);
+  };
 
-  // Update selected stores when stores list changes
-  useEffect(() => {
-    setSelectedStoreIds(stores.map((store) => store.store_id));
-  }, [stores]);
+  const storesOptions = useMemo(
+    () =>
+      stores.map((store) => ({
+        label: store.store_name,
+        value: store.store_id,
+      })),
+    [stores]
+  );
 
-  // Generate columns dynamically based on visible stores
+  const deliverOptions = useMemo(
+    () =>
+      deliveries.map((item) => ({
+        label: item?.deliver_name,
+        value: item?.deliver_id,
+      })),
+    [deliveries]
+  );
+
+  const aggregatedData = useMemo(() => {
+    if (!statsRaw?.length) return [];
+
+    const grouped = new Map();
+
+    statsRaw.forEach((item) => {
+      console.log(item);
+
+      const productId = item?.goods_id?.goods_id;
+      if (!productId) return;
+      const storeId = item?.store_id?.store_id;
+      const storeKey = `store_${storeId}`;
+      const existing = grouped.get(productId) || {
+        id: productId,
+        productName: item?.goods_id?.goods_name || "",
+        productCode: item?.goods_id?.goods_code || "",
+        minimalStockCount: Number(item?.goods_id?.dead_limit) || 0,
+        deliver: item?.deliver_id,
+        storeStocks: {},
+        storeMeta: {},
+        totalStockLeft: 0,
+        pricePerUnit: 0,
+        image: item?.img_url,
+      };
+
+      const stockValue = Math.ceil(Number(item?.products_count) || 0);
+
+      existing.storeStocks[storeKey] =
+        (existing.storeStocks[storeKey] || 0) + stockValue;
+      existing.storeMeta[storeKey] = item?.store_id;
+      existing.totalStockLeft += stockValue;
+
+      const pricePerUnit =
+        Number(item?.products_count_price || 0) *
+        Number(item?.currency_id?.currency_amount || 1);
+      if (pricePerUnit) {
+        existing.pricePerUnit = pricePerUnit;
+      }
+
+      if (!existing.deliver && item?.deliver_id) {
+        existing.deliver = item?.deliver_id;
+      }
+
+      if (!existing.image && item?.img_url) {
+        existing.image = item?.img_url;
+      }
+
+      grouped.set(productId, existing);
+    });
+
+    return Array.from(grouped.values()).map((item) => {
+      const mainStoreStock = Object.entries(item.storeMeta || {}).reduce(
+        (sum, [key, store]) =>
+          isMainStore(store) ? sum + (item.storeStocks?.[key] || 0) : sum,
+        0
+      );
+
+      const recommendedPurchase =
+        item.minimalStockCount > 0
+          ? Math.max(item.minimalStockCount - mainStoreStock, 0)
+          : 0;
+
+      const storeSummary = Object.values(item.storeMeta || {})
+        .map((store) => store?.store_name)
+        .filter(Boolean)
+        .join(", ");
+
+      return {
+        ...item,
+        mainStoreStock,
+        recommendedPurchase,
+        storeSummary,
+      };
+    });
+  }, [statsRaw]);
+
+  const filteredData = useMemo(() => {
+    return aggregatedData.filter((item) => {
+      if (!item.minimalStockCount) {
+        return false;
+      }
+
+      const baselineStock =
+        typeof item.mainStoreStock === "number"
+          ? item.mainStoreStock
+          : item.totalStockLeft;
+
+      if (baselineStock > item.minimalStockCount) {
+        return false;
+      }
+
+      if (searchSubmitted && searchText) {
+        const term = searchText.toLowerCase();
+        const target = `${item.productName} ${item.productCode}`.toLowerCase();
+        if (!target.includes(term)) {
+          return false;
+        }
+      }
+
+      if (selectedDeliverIds.length) {
+        const deliverId = item?.deliver?.deliver_id;
+        if (!deliverId || !selectedDeliverIds.includes(deliverId)) {
+          return false;
+        }
+      }
+
+      if (
+        selectedStoreIds.length &&
+        stores.length &&
+        selectedStoreIds.length !== stores.length
+      ) {
+        const hasStore = selectedStoreIds.some(
+          (storeId) => item.storeStocks?.[`store_${storeId}`]
+        );
+        if (!hasStore) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [
+    aggregatedData,
+    searchSubmitted,
+    searchText,
+    selectedDeliverIds,
+    selectedStoreIds,
+    stores.length,
+  ]);
+
+  const totalPages = useMemo(() => {
+    const pages = Math.ceil(filteredData.length / limit) || 1;
+    return Math.max(pages, 1);
+  }, [filteredData, limit]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const startIndex = (currentPage - 1) * limit;
+  const paginatedData = filteredData
+    .slice(startIndex, startIndex + limit)
+    .map((item, index) => ({
+      ...item,
+      key: startIndex + index + 1,
+      selectionId: `statistics-${item.id}`,
+    }));
+
+  const visibleStores = useMemo(() => {
+    const selectedSet = new Set(selectedStoreIds);
+    return stores.filter(
+      (store) => !selectedSet.size || selectedSet.has(store.store_id)
+    );
+  }, [stores, selectedStoreIds]);
+
+  const isRowSelected = useCallback(
+    (selectionId) => statsSelection.some((item) => item.id === selectionId),
+    [statsSelection]
+  );
+
+  const handleRowSelect = (record, shouldSelect) => {
+    if (shouldSelect) {
+      const prepared = {
+        id: record.selectionId,
+        deliver_id: record?.deliver?.deliver_name || "",
+        store_id: { store_name: record.storeSummary || "Barcha omborlar" },
+        price: formatPrice(record.pricePerUnit),
+        img: record.image,
+        goods_name: record.productName,
+        goods_code: record.productCode,
+        products_count:
+          record.recommendedPurchase > 0 ? record.recommendedPurchase : 1,
+      };
+      const filteredSelection = statsSelection.filter(
+        (item) => item.id !== record.selectionId
+      );
+      dispatch(setData([...filteredSelection, prepared]));
+    } else {
+      dispatch(
+        setData(statsSelection.filter((item) => item.id !== record.selectionId))
+      );
+    }
+  };
+
+  const handleQuantityChange = (id, quantity, maxValue) => {
+    const numeric = Number(quantity);
+    if (Number.isNaN(numeric) || numeric < 0) {
+      return;
+    }
+    const capped =
+      typeof maxValue === "number" && maxValue >= 0
+        ? Math.min(numeric, maxValue)
+        : numeric;
+    dispatch(setQuantity({ id, q: capped }));
+  };
+
+  const handleDownload = () => {
+    if (!statsSelection.length) return;
+    const payload = statsSelection.map((item) => ({
+      deliver: item?.deliver_id,
+      name: item?.goods_name,
+      code: item?.goods_code,
+      price: item?.price,
+      count: item?.products_count,
+    }));
+
+    confirmDownloadModal(downloadNewList, payload, darkMode);
+  };
+
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -265,69 +554,174 @@ export default function Statistics() {
         fixed: "left",
       },
       {
-        title: "Mahsulot nomi",
+        title: "Mahsulot",
         dataIndex: "productName",
         width: 220,
         fixed: "left",
       },
+      {
+        title: "Kod",
+        dataIndex: "productCode",
+        width: 160,
+        fixed: "left",
+      },
+      {
+        title: "Ta'minotchi",
+        width: 180,
+        render: (_, record) => record?.deliver?.deliver_name || "-",
+      },
     ];
 
-    // Add store columns dynamically only for selected stores
     const storeColumns = visibleStores.map((store) => ({
       title: `Qolgan (${store.store_name})`,
       dataIndex: `store_${store.store_id}`,
       width: 150,
-      render: (text, record) => {
-        const stockValue = record.storeStocks?.[`store_${store.store_id}`] || 0;
+      render: (_, record) => {
+        const value = record.storeStocks?.[`store_${store.store_id}`] || 0;
         const warningStyle =
-          stockValue < 80 ? { color: "#ffc107", fontWeight: "bold" } : {};
-        return <span style={warningStyle}>{addComma(stockValue)} dona</span>;
+          record.minimalStockCount &&
+          record.totalStockLeft <= record.minimalStockCount
+            ? { color: "#ffc107", fontWeight: "bold" }
+            : {};
+
+        return <span style={warningStyle}>{formatCount(value)}</span>;
       },
     }));
 
-    // Add other columns
     const otherColumns = [
       {
         title: "Jami qolgan",
         dataIndex: "totalStockLeft",
         width: 140,
-        render: (text) => {
+        render: (_, record) => {
           const warningStyle =
-            text < 80 ? { color: "#ffc107", fontWeight: "bold" } : {};
-          return <span style={warningStyle}>{addComma(text)} dona</span>;
+            record.minimalStockCount &&
+            record.totalStockLeft <= record.minimalStockCount
+              ? { color: "#ffc107", fontWeight: "bold" }
+              : {};
+
+          return (
+            <span style={warningStyle}>
+              {formatCount(record.totalStockLeft)}
+            </span>
+          );
         },
       },
-    //   {
-    //     title: "Sotilgan miqdor",
-    //     dataIndex: "soldQuantity",
-    //     width: 140,
-    //     render: (text) => `${addComma(text)} dona`,
-    //   },
       {
-        title: "Narx (birlik)",
+        title: "Minimal",
+        dataIndex: "minimalStockCount",
+        width: 120,
+        render: (text) => formatCount(text),
+      },
+      {
+        title: "Zakaz (taxminiy)",
+        dataIndex: "recommendedPurchase",
+        width: 170,
+        render: (text) => formatCount(text),
+      },
+      {
+        title: "Narx (dona)",
         dataIndex: "pricePerUnit",
         width: 170,
-        render: (text) => `${addComma(text)} so'm`,
+        render: (text) => formatPrice(text),
       },
-    //   {
-    //     title: "Jami daromad",
-    //     dataIndex: "totalRevenue",
-    //     width: 180,
-    //     render: (text) => (
-    //       <span style={{ fontWeight: "bold", color: "#4caf50" }}>
-    //         {addComma(text)} so'm
-    //       </span>
-    //     ),
-    //   },
+      {
+        title: "Zakaz miqdori",
+        width: 190,
+        render: (_, record) => {
+          const selectedItem = statsSelection.find(
+            (item) => item.id === record.selectionId
+          );
+          if (!selectedItem) {
+            return (
+              <span className="statistics-qty-placeholder">
+                {record.recommendedPurchase
+                  ? `${addComma(record.recommendedPurchase)} dona`
+                  : "—"}
+              </span>
+            );
+          }
+
+          const quantity =
+            Number(selectedItem.products_count) > 0
+              ? selectedItem.products_count
+              : 1;
+          const maxOrder = Number(record.recommendedPurchase) || 0;
+
+          return (
+            <div className={`quantityWrapper ${darkMode ? "dark" : ""}`}>
+              <button
+                className="quantityBtn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleQuantityChange(
+                    selectedItem.id,
+                    Math.max(Number(quantity) - 1, 0),
+                    maxOrder
+                  );
+                }}
+              >
+                -
+              </button>
+              <input
+                type="text"
+                className="quantityInput"
+                value={quantity}
+                onClick={(e) => e.stopPropagation()}
+                onChange={(e) =>
+                  handleQuantityChange(
+                    selectedItem.id,
+                    e.target.value,
+                    maxOrder
+                  )
+                }
+                onKeyPress={(e) => {
+                  if (isNaN(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+              />
+              <button
+                className="quantityBtn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleQuantityChange(
+                    selectedItem.id,
+                    Number(quantity) + 1,
+                    maxOrder
+                  );
+                }}
+              >
+                +
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        title: "Belgilash",
+        width: 120,
+        fixed: "right",
+        render: (_, record) => (
+          <Checkbox
+            checked={isRowSelected(record.selectionId)}
+            onChange={(e) => handleRowSelect(record, e.target.checked)}
+          />
+        ),
+      },
     ];
 
     return [...baseColumns, ...storeColumns, ...otherColumns];
-  }, [visibleStores]);
+  }, [visibleStores, isRowSelected]);
 
-  // Calculate total width for scroll
-  const totalWidth = useMemo(() => {
-    return columns.reduce((sum, col) => sum + (col.width || 100), 0);
-  }, [columns]);
+  const totalWidth = useMemo(
+    () => columns.reduce((sum, col) => sum + (col.width || 100), 0),
+    [columns]
+  );
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className={`statistics-page ${darkMode ? "dark" : null}`}>
@@ -335,92 +729,32 @@ export default function Statistics() {
         <div className={`input-wrapper ${darkMode ? "dark" : null}`}>
           <Select
             mode="multiple"
-            showSearch
             allowClear
+            showSearch
+            optionFilterProp="label"
             placeholder="Omborni tanlang"
             className="select"
             value={selectedStoreIds}
             onChange={handleStoreSelection}
             maxTagCount="responsive"
-            filterOption={(input, option) =>
-              option.children?.props?.children?.props?.children
-                ?.toLowerCase()
-                ?.includes(input.toLowerCase())
-            }
-          >
-            {stores.map((store) => (
-              <Select.Option
-                key={store.store_id}
-                value={store.store_id}
-                className={`${darkMode ? "dark" : null}`}
-              >
-                <div>
-                  <span>{store.store_name}</span>
-                </div>
-              </Select.Option>
-            ))}
-          </Select>
+            options={storesOptions}
+          />
         </div>
         <div className={`input-wrapper ${darkMode ? "dark" : null}`}>
           <Select
+            mode="multiple"
             allowClear
-            placeholder="Qolgan miqdor"
+            showSearch
+            optionFilterProp="label"
+            placeholder="Ta'minotchilar"
             className="select"
-            value={stockFilter}
-            onChange={(e) => setStockFilter(e)}
-          >
-            <Select.Option
-              value="low"
-              className={`${darkMode ? "dark" : null}`}
-            >
-              <div>
-                <span>Kam (80 dan kam)</span>
-              </div>
-            </Select.Option>
-            <Select.Option
-              value="medium"
-              className={`${darkMode ? "dark" : null}`}
-            >
-              <div>
-                <span>O'rtacha (80-200)</span>
-              </div>
-            </Select.Option>
-            <Select.Option
-              value="high"
-              className={`${darkMode ? "dark" : null}`}
-            >
-              <div>
-                <span>Ko'p (200 dan ko'p)</span>
-              </div>
-            </Select.Option>
-          </Select>
+            value={selectedDeliverIds}
+            onChange={handleSupplierSelection}
+            maxTagCount="responsive"
+            options={deliverOptions}
+          />
         </div>
-        <div className={`input-wrapper ${darkMode ? "dark" : null}`}>
-          <Select
-            allowClear
-            placeholder="Narx"
-            className="select"
-            value={priceFilter}
-            onChange={(e) => setPriceFilter(e)}
-          >
-            <Select.Option
-              value="low"
-              className={`${darkMode ? "dark" : null}`}
-            >
-              <div>
-                <span>Arzon</span>
-              </div>
-            </Select.Option>
-            <Select.Option
-              value="high"
-              className={`${darkMode ? "dark" : null}`}
-            >
-              <div>
-                <span>Qimmat</span>
-              </div>
-            </Select.Option>
-          </Select>
-        </div>
+
         <div className="filter-btn-group">
           <button type="button" className="filter-btn" onClick={clearFilters}>
             Tozalash
@@ -447,14 +781,18 @@ export default function Statistics() {
           locale={{
             emptyText: <NoData />,
           }}
-          dataSource={fakeData}
+          dataSource={paginatedData}
           pagination={false}
+          rowClassName={(record) =>
+            isRowSelected(record.selectionId) ? "statistics-row-selected" : ""
+          }
           onRow={(record) => {
             const warningStyle =
-              record.totalStockLeft < 80
+              record.minimalStockCount &&
+              record.totalStockLeft <= record.minimalStockCount
                 ? darkMode
-                  ? getWarningColorDark(record.totalStockLeft)
-                  : getWarningColor(record.totalStockLeft)
+                  ? getWarningColorDark()
+                  : getWarningColor()
                 : {};
             return {
               style: warningStyle,
@@ -462,6 +800,7 @@ export default function Statistics() {
           }}
         />
       </div>
+
       {totalPages > 1 && (
         <Pagination
           pages={totalPages}
@@ -470,6 +809,17 @@ export default function Statistics() {
           darkMode={darkMode}
         />
       )}
+
+      <div className="statistics-download">
+        <button
+          className={`primary-btn low-height ${darkMode ? "dark" : null}`}
+          onClick={handleDownload}
+          disabled={!statsSelection.length}
+        >
+          Yuklab olish <FilePdf size={16} style={{ marginTop: "-4px" }} />
+        </button>
+      </div>
     </div>
+    
   );
 }

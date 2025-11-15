@@ -236,7 +236,7 @@ export default function MainPage() {
       )}
 
       <div className="main-div">
-		{/* top menu */}
+        {/* top menu */}
         {/* <div className={`top-menu ${darkMode ? "dark" : null}`}>
           {sidebar ? (
             <ArrowLineLeft size={24} onClick={() => setSidebar(!sidebar)} />
