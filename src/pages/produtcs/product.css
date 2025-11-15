@@ -57,6 +57,19 @@
 	font-weight: 600 !important;
 }
 
+.ant-d-table .ant-table-tbody>tr.product-row.product-row-dead-limit {
+	background: rgba(255, 99, 132, 0.12) !important;
+	border-left: 4px solid #ff6384;
+}
+
+.ant-d-table
+	.ant-table-tbody
+	> tr.product-row.product-row-dead-limit
+	> td {
+	color: #a3002f;
+	font-weight: 600;
+}
+
 /* Dark mode support */
 .dark .ant-d-table .ant-table-tbody>tr.product-row {
 	transform-origin: center;
@@ -77,4 +90,17 @@
 	background: rgba(19, 19, 54, 0.678) !important;
 	color: #c2cafcae !important;
 	font-weight: 600 !important;
+}
+
+.dark .ant-d-table .ant-table-tbody>tr.product-row.product-row-dead-limit {
+	background: rgba(63, 11, 60, 0.741) !important;
+	border-left: 4px solid #d73aa8;
+}
+
+.dark
+	.ant-d-table
+	.ant-table-tbody
+	> tr.product-row.product-row-dead-limit
+	> td {
+	color: #f4ff61d0 !important;
 }

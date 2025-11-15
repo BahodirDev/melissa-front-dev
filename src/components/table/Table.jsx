@@ -57,6 +57,10 @@ const AntTable = ({
         store: item?.store_id?.store_id,
         goods_code: item?.goods_id?.goods_code,
         goods_name: item?.goods_id?.goods_name,
+        dead_limit:
+          item?.goods_id?.dead_limit === 0 || item?.goods_id?.dead_limit
+            ? Number(item?.goods_id?.dead_limit)
+            : null,
         products_box_count: isNaN(item?.products_box_count)
           ? 0
           : Math.ceil(item?.products_box_count),
@@ -263,7 +267,17 @@ const AntTable = ({
         }}
         dataSource={arr2}
         pagination={false}
-        rowClassName="product-row"
+        rowClassName={(record) => {
+          const classes = ["product-row"];
+          if (
+            record?.dead_limit !== null &&
+            record?.dead_limit !== undefined &&
+            record?.products_count <= record?.dead_limit
+          ) {
+            classes.push("product-row-dead-limit");
+          }
+          return classes.join(" ");
+        }}
       />
     </div>
   );
