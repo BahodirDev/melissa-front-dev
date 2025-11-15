@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import { setData, setQuantity } from "../../components/reducers/stats";
 import { confirmDownloadModal } from "../../components/confirm_download_modal/confirmDownloadModal";
 
-const USE_MOCK = true;
+const USE_MOCK = process.env.REACT_APP_USE_MOCK_STATS === "true";
 
 const MOCK_STORES = [
   { store_id: 1, store_name: "Asosiy ombor", main: true },
@@ -152,9 +152,9 @@ export default function Statistics() {
   const dispatch = useDispatch();
   const statsSelection = useSelector((state) => state.stats?.data || []);
 
-  const [statsRaw, setStatsRaw] = useState(MOCK_STATS);
-  const [stores, setStores] = useState(MOCK_STORES);
-  const [deliveries, setDeliveries] = useState(MOCK_DELIVERIES);
+  const [statsRaw, setStatsRaw] = useState(USE_MOCK ? MOCK_STATS : []);
+  const [stores, setStores] = useState(USE_MOCK ? MOCK_STORES : []);
+  const [deliveries, setDeliveries] = useState(USE_MOCK ? MOCK_DELIVERIES : []);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(20);
   const [searchText, setSearchText] = useState("");
@@ -164,33 +164,43 @@ export default function Statistics() {
   const [loading, setLoading] = useState(false);
 
   const fetchStores = useCallback(() => {
-    if (USE_MOCK) return setStores(MOCK_STORES);
-    get(`/store/store-list?limit=1000&page=1`).then((data) => {
-      if (
-        data?.status === 200 &&
-        Array.isArray(data?.data) &&
-        data?.data.length
-      ) {
-        setStores(data?.data);
-      } else {
-        setStores(MOCK_STORES);
-      }
-    });
+    if (USE_MOCK) {
+      setStores(MOCK_STORES);
+      return;
+    }
+    get(`/store/store-list?limit=1000&page=1`)
+      .then((data) => {
+        if (
+          data?.status === 200 &&
+          Array.isArray(data?.data) &&
+          data?.data.length
+        ) {
+          setStores(data?.data);
+        } else {
+          setStores([]);
+        }
+      })
+      .catch(() => setStores([]));
   }, []);
 
   const fetchDeliveries = useCallback(() => {
-    if (USE_MOCK) return setDeliveries(MOCK_DELIVERIES);
-    get(`/deliver/deliver-list?limit=1000&page=1`).then((data) => {
-      if (
-        data?.status === 200 &&
-        Array.isArray(data?.data) &&
-        data?.data.length
-      ) {
-        setDeliveries(data?.data);
-      } else {
-        setDeliveries(MOCK_DELIVERIES);
-      }
-    });
+    if (USE_MOCK) {
+      setDeliveries(MOCK_DELIVERIES);
+      return;
+    }
+    get(`/deliver/deliver-list?limit=1000&page=1`)
+      .then((data) => {
+        if (
+          data?.status === 200 &&
+          Array.isArray(data?.data) &&
+          data?.data.length
+        ) {
+          setDeliveries(data?.data);
+        } else {
+          setDeliveries([]);
+        }
+      })
+      .catch(() => setDeliveries([]));
   }, []);
 
   const fetchStatistics = useCallback(() => {
@@ -226,23 +236,22 @@ export default function Statistics() {
     setLoading(true);
     get(endpoint)
       .then((data) => {
-        console.log(data);
         if (
           data?.status === 200 &&
           Array.isArray(data?.data) &&
           data?.data.length
         ) {
           setStatsRaw(data?.data);
-        } else if (data && data?.status && data?.status !== 200) {
+        } else if (data?.status && data?.status !== 200) {
           toast.error("Nomalum server xatolik");
-          setStatsRaw(MOCK_STATS);
+          setStatsRaw([]);
         } else {
-          setStatsRaw(MOCK_STATS);
+          setStatsRaw([]);
         }
       })
       .catch(() => {
         toast.error("Nomalum server xatolik");
-        setStatsRaw(MOCK_STATS);
+        setStatsRaw([]);
       })
       .finally(() => setLoading(false));
   }, [
@@ -340,8 +349,6 @@ export default function Statistics() {
     const grouped = new Map();
 
     statsRaw.forEach((item) => {
-      console.log(item);
-
       const productId = item?.goods_id?.goods_id;
       if (!productId) return;
       const storeId = item?.store_id?.store_id;
@@ -357,6 +364,8 @@ export default function Statistics() {
         totalStockLeft: 0,
         pricePerUnit: 0,
         image: item?.img_url,
+        totalBoxes: 0,
+        perBox: item?.each_box_count || 0,
       };
 
       const stockValue = Math.ceil(Number(item?.products_count) || 0);
@@ -365,6 +374,11 @@ export default function Statistics() {
         (existing.storeStocks[storeKey] || 0) + stockValue;
       existing.storeMeta[storeKey] = item?.store_id;
       existing.totalStockLeft += stockValue;
+      const boxCount = Math.ceil(Number(item?.products_box_count) || 0);
+      existing.totalBoxes += boxCount;
+      if (!existing.perBox && item?.each_box_count) {
+        existing.perBox = item?.each_box_count;
+      }
 
       const pricePerUnit =
         Number(item?.products_count_price || 0) *
@@ -405,6 +419,8 @@ export default function Statistics() {
         ...item,
         mainStoreStock,
         recommendedPurchase,
+        totalBoxes: item.totalBoxes,
+        perBox: item.perBox,
         storeSummary,
       };
     });
@@ -614,6 +630,18 @@ export default function Statistics() {
         render: (text) => formatCount(text),
       },
       {
+        title: "Quti",
+        dataIndex: "totalBoxes",
+        width: 110,
+        render: (_, record) => formatCount(record.totalBoxes),
+      },
+      {
+        title: "Har bir qutida",
+        dataIndex: "perBox",
+        width: 140,
+        render: (text) => formatCount(text),
+      },
+      {
         title: "Zakaz (taxminiy)",
         dataIndex: "recommendedPurchase",
         width: 170,
@@ -820,6 +848,5 @@ export default function Statistics() {
         </button>
       </div>
     </div>
-    
   );
 }
