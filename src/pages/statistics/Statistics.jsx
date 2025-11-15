@@ -230,8 +230,8 @@ export default function Statistics() {
     }
 
     const endpoint = params.toString()
-      ? `/products/products-statistics-list?${params.toString()}`
-      : `/products/products-statistics-list`;
+      ? `/products/products-low-stock?${params.toString()}`
+      : `/products/products-low-stock`;
 
     setLoading(true);
     get(endpoint)
@@ -346,6 +346,10 @@ export default function Statistics() {
   const aggregatedData = useMemo(() => {
     if (!statsRaw?.length) return [];
 
+    if (statsRaw[0]?.storeStocks) {
+      return statsRaw;
+    }
+
     const grouped = new Map();
 
     statsRaw.forEach((item) => {
@@ -404,10 +408,11 @@ export default function Statistics() {
           isMainStore(store) ? sum + (item.storeStocks?.[key] || 0) : sum,
         0
       );
+      const baseline = mainStoreStock || item.totalStockLeft;
 
       const recommendedPurchase =
         item.minimalStockCount > 0
-          ? Math.max(item.minimalStockCount - mainStoreStock, 0)
+          ? Math.max(item.minimalStockCount - baseline, 0)
           : 0;
 
       const storeSummary = Object.values(item.storeMeta || {})
@@ -417,7 +422,7 @@ export default function Statistics() {
 
       return {
         ...item,
-        mainStoreStock,
+        mainStoreStock: baseline,
         recommendedPurchase,
         totalBoxes: item.totalBoxes,
         perBox: item.perBox,
