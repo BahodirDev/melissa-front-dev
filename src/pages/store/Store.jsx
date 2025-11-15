@@ -53,6 +53,7 @@ export default function Store() {
 
   // new data
   const [storeName, setStoreName] = useState("");
+  const [storeMain, setStoreMain] = useState(false);
 
   const getData = () => {
     dispatch(setLoading(true));
@@ -127,6 +128,22 @@ export default function Store() {
     }
   }, [limit]);
 
+  const existingMainStoreId = state?.data?.find(
+    (item) => item?.store_main || item?.is_main || item?.main || item?.dominant
+  )?.store_id;
+
+  const handleMainToggle = (checked) => {
+    if (
+      checked &&
+      existingMainStoreId &&
+      (!objId || existingMainStoreId !== objId)
+    ) {
+      toast.warn("Faqat bitta asosiy ombor bo'lishi mumkin");
+      return;
+    }
+    setStoreMain(checked);
+  };
+
   const addNewStore = () => {
     setSubmitted(true);
     if (storeName.length) {
@@ -134,6 +151,7 @@ export default function Store() {
       if (objId) {
         patch(`/store/store-patch/${objId}`, {
           store_name: storeName.trim(),
+          store_main: storeMain,
         }).then((data) => {
           if (data?.status === 201) {
             dispatch(editData(data?.data));
@@ -147,7 +165,10 @@ export default function Store() {
           setBtn_loading(false);
         });
       } else {
-        post("/store/store-post", { store_name: storeName }).then((data) => {
+        post("/store/store-post", {
+          store_name: storeName,
+          store_main: storeMain,
+        }).then((data) => {
           if (data?.status === 201) {
             dispatch(addData(data?.data));
             dispatch(setQuantity());
@@ -185,6 +206,14 @@ export default function Store() {
     const index = state?.data.findIndex((item) => item.store_id === id);
     if (index !== -1) {
       setStoreName(state?.data[index]?.store_name);
+      setStoreMain(
+        Boolean(
+          state?.data[index]?.store_main ||
+            state?.data[index]?.is_main ||
+            state?.data[index]?.main ||
+            state?.data[index]?.dominant
+        )
+      );
       setObjId(id);
       setAddModalDisplay("block");
       setAddModalVisible(true);
@@ -195,6 +224,7 @@ export default function Store() {
 
   const clearAndClose = () => {
     setStoreName("");
+    setStoreMain(false);
     setObjId("");
     setSubmitted(false);
     setBtn_loading(false);
@@ -206,6 +236,7 @@ export default function Store() {
 
   const clearOnly = () => {
     setStoreName("");
+    setStoreMain(false);
     setObjId("");
     setSubmitted(false);
     setBtn_loading(false);
@@ -243,6 +274,34 @@ export default function Store() {
               {submitted &&
                 stringCheck(storeName.trim(), "Nom kiritish majburiy")}
             </span>
+          </div>
+        </div>
+        <div
+          className={`input-wrapper modal-form regular store-main-toggle ${
+            darkMode ? "dark" : null
+          }`}
+        >
+          <div className="toggle-row">
+            <div>
+              <label>Asosiy ombor</label>
+              <p>Statistika sahifasida asosiy sifatida ishlatiladi.</p>
+            </div>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={storeMain}
+                onChange={(e) => handleMainToggle(e.target.checked)}
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+          <div className="validation-field">
+            {existingMainStoreId &&
+              (!objId || existingMainStoreId !== objId) && (
+                <span className="store-main-hint">
+                  Hozirda boshqa asosiy ombor mavjud.
+                </span>
+              )}
           </div>
         </div>
         <div className="modal-btn-group">
