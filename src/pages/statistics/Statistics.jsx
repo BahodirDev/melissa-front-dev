@@ -169,13 +169,14 @@ export default function Statistics() {
       return;
     }
     get(`/store/store-list?limit=1000&page=1`)
-      .then((data) => {
+      .then((response) => {
+        const data = response?.data || response;
         if (
-          data?.status === 200 &&
-          Array.isArray(data?.data) &&
-          data?.data.length
+          (response?.status === 200 || response?.status === 201) &&
+          Array.isArray(data) &&
+          data.length
         ) {
-          setStores(data?.data);
+          setStores(data);
         } else {
           setStores([]);
         }
@@ -189,13 +190,14 @@ export default function Statistics() {
       return;
     }
     get(`/deliver/deliver-list?limit=1000&page=1`)
-      .then((data) => {
+      .then((response) => {
+        const data = response?.data || response;
         if (
-          data?.status === 200 &&
-          Array.isArray(data?.data) &&
-          data?.data.length
+          (response?.status === 200 || response?.status === 201) &&
+          Array.isArray(data) &&
+          data.length
         ) {
-          setDeliveries(data?.data);
+          setDeliveries(data);
         } else {
           setDeliveries([]);
         }
@@ -235,14 +237,15 @@ export default function Statistics() {
 
     setLoading(true);
     get(endpoint)
-      .then((data) => {
+      .then((response) => {
+        const data = response?.data || response;
         if (
-          data?.status === 200 &&
-          Array.isArray(data?.data) &&
-          data?.data.length
+          (response?.status === 200 || !response?.status) &&
+          Array.isArray(data) &&
+          data.length
         ) {
-          setStatsRaw(data?.data);
-        } else if (data?.status && data?.status !== 200) {
+          setStatsRaw(data);
+        } else if (response?.status && response?.status !== 200) {
           toast.error("Nomalum server xatolik");
           setStatsRaw([]);
         } else {
@@ -432,50 +435,54 @@ export default function Statistics() {
   }, [statsRaw]);
 
   const filteredData = useMemo(() => {
-    return aggregatedData.filter((item) => {
-      if (!item.minimalStockCount) {
-        return false;
-      }
-
-      const baselineStock =
-        typeof item.mainStoreStock === "number"
-          ? item.mainStoreStock
-          : item.totalStockLeft;
-
-      if (baselineStock > item.minimalStockCount) {
-        return false;
-      }
-
-      if (searchSubmitted && searchText) {
-        const term = searchText.toLowerCase();
-        const target = `${item.productName} ${item.productCode}`.toLowerCase();
-        if (!target.includes(term)) {
+    if (USE_MOCK) {
+      return aggregatedData.filter((item) => {
+        if (!item.minimalStockCount) {
           return false;
         }
-      }
 
-      if (selectedDeliverIds.length) {
-        const deliverId = item?.deliver?.deliver_id;
-        if (!deliverId || !selectedDeliverIds.includes(deliverId)) {
+        const baselineStock =
+          typeof item.mainStoreStock === "number"
+            ? item.mainStoreStock
+            : item.totalStockLeft;
+
+        if (baselineStock > item.minimalStockCount) {
           return false;
         }
-      }
 
-      if (
-        selectedStoreIds.length &&
-        stores.length &&
-        selectedStoreIds.length !== stores.length
-      ) {
-        const hasStore = selectedStoreIds.some(
-          (storeId) => item.storeStocks?.[`store_${storeId}`]
-        );
-        if (!hasStore) {
-          return false;
+        if (searchSubmitted && searchText) {
+          const term = searchText.toLowerCase();
+          const target =
+            `${item.productName} ${item.productCode}`.toLowerCase();
+          if (!target.includes(term)) {
+            return false;
+          }
         }
-      }
 
-      return true;
-    });
+        if (selectedDeliverIds.length) {
+          const deliverId = item?.deliver?.deliver_id;
+          if (!deliverId || !selectedDeliverIds.includes(deliverId)) {
+            return false;
+          }
+        }
+
+        if (
+          selectedStoreIds.length &&
+          stores.length &&
+          selectedStoreIds.length !== stores.length
+        ) {
+          const hasStore = selectedStoreIds.some(
+            (storeId) => item.storeStocks?.[`store_${storeId}`]
+          );
+          if (!hasStore) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+    }
+    return aggregatedData;
   }, [
     aggregatedData,
     searchSubmitted,
@@ -507,9 +514,16 @@ export default function Statistics() {
 
   const visibleStores = useMemo(() => {
     const selectedSet = new Set(selectedStoreIds);
-    return stores.filter(
+    const filtered = stores.filter(
       (store) => !selectedSet.size || selectedSet.has(store.store_id)
     );
+    return filtered.sort((a, b) => {
+      const aIsMain = isMainStore(a);
+      const bIsMain = isMainStore(b);
+      if (aIsMain && !bIsMain) return -1;
+      if (!aIsMain && bIsMain) return 1;
+      return 0;
+    });
   }, [stores, selectedStoreIds]);
 
   const isRowSelected = useCallback(
@@ -517,41 +531,49 @@ export default function Statistics() {
     [statsSelection]
   );
 
-  const handleRowSelect = (record, shouldSelect) => {
-    if (shouldSelect) {
-      const prepared = {
-        id: record.selectionId,
-        deliver_id: record?.deliver?.deliver_name || "",
-        store_id: { store_name: record.storeSummary || "Barcha omborlar" },
-        price: formatPrice(record.pricePerUnit),
-        img: record.image,
-        goods_name: record.productName,
-        goods_code: record.productCode,
-        products_count:
-          record.recommendedPurchase > 0 ? record.recommendedPurchase : 1,
-      };
-      const filteredSelection = statsSelection.filter(
-        (item) => item.id !== record.selectionId
-      );
-      dispatch(setData([...filteredSelection, prepared]));
-    } else {
-      dispatch(
-        setData(statsSelection.filter((item) => item.id !== record.selectionId))
-      );
-    }
-  };
+  const handleRowSelect = useCallback(
+    (record, shouldSelect) => {
+      if (shouldSelect) {
+        const prepared = {
+          id: record.selectionId,
+          deliver_id: record?.deliver?.deliver_name || "",
+          store_id: { store_name: record.storeSummary || "Barcha omborlar" },
+          price: formatPrice(record.pricePerUnit),
+          img: record.image,
+          goods_name: record.productName,
+          goods_code: record.productCode,
+          products_count:
+            record.recommendedPurchase > 0 ? record.recommendedPurchase : 1,
+        };
+        const filteredSelection = statsSelection.filter(
+          (item) => item.id !== record.selectionId
+        );
+        dispatch(setData([...filteredSelection, prepared]));
+      } else {
+        dispatch(
+          setData(
+            statsSelection.filter((item) => item.id !== record.selectionId)
+          )
+        );
+      }
+    },
+    [statsSelection, dispatch]
+  );
 
-  const handleQuantityChange = (id, quantity, maxValue) => {
-    const numeric = Number(quantity);
-    if (Number.isNaN(numeric) || numeric < 0) {
-      return;
-    }
-    const capped =
-      typeof maxValue === "number" && maxValue >= 0
-        ? Math.min(numeric, maxValue)
-        : numeric;
-    dispatch(setQuantity({ id, q: capped }));
-  };
+  const handleQuantityChange = useCallback(
+    (id, quantity, maxValue) => {
+      const numeric = Number(quantity);
+      if (Number.isNaN(numeric) || numeric < 0) {
+        return;
+      }
+      const capped =
+        typeof maxValue === "number" && maxValue >= 0
+          ? Math.min(numeric, maxValue)
+          : numeric;
+      dispatch(setQuantity({ id, q: capped }));
+    },
+    [dispatch]
+  );
 
   const handleDownload = () => {
     if (!statsSelection.length) return;
@@ -575,6 +597,26 @@ export default function Statistics() {
         fixed: "left",
       },
       {
+        title: "Rasm",
+        width: 80,
+        fixed: "left",
+        render: (_, record) => (
+          <div className="table-img-col">
+            <img
+              src={record?.image || "/assets/img/no data.png"}
+              alt={record?.productName || ""}
+              height={40}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                if (record?.image) {
+                  window.open(record.image);
+                }
+              }}
+            />
+          </div>
+        ),
+      },
+      {
         title: "Mahsulot",
         dataIndex: "productName",
         width: 220,
@@ -593,21 +635,86 @@ export default function Statistics() {
       },
     ];
 
-    const storeColumns = visibleStores.map((store) => ({
-      title: `Qolgan (${store.store_name})`,
-      dataIndex: `store_${store.store_id}`,
-      width: 150,
-      render: (_, record) => {
-        const value = record.storeStocks?.[`store_${store.store_id}`] || 0;
-        const warningStyle =
-          record.minimalStockCount &&
-          record.totalStockLeft <= record.minimalStockCount
-            ? { color: "#ffc107", fontWeight: "bold" }
-            : {};
+    const storeColumns = visibleStores.map((store) => {
+      const isMain = isMainStore(store);
+      return {
+        title: (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>{store.store_name}</span>
+            {isMain && (
+              <span
+                style={{
+                  fontSize: "10px",
+                  backgroundColor: "#28a745",
+                  color: "white",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontWeight: "bold",
+                }}
+              >
+                Asosiy
+              </span>
+            )}
+          </div>
+        ),
+        dataIndex: `store_${store.store_id}`,
+        width: 160,
+        render: (_, record) => {
+          const value = record.storeStocks?.[`store_${store.store_id}`] || 0;
+          const isLowStock =
+            record.minimalStockCount && value <= record.minimalStockCount;
+          const isMainStoreLow =
+            isMain &&
+            record.minimalStockCount &&
+            record.mainStoreStock <= record.minimalStockCount;
 
-        return <span style={warningStyle}>{formatCount(value)}</span>;
-      },
-    }));
+          const cellStyle = {
+            padding: "8px",
+            borderRadius: "4px",
+            backgroundColor: isMainStoreLow
+              ? darkMode
+                ? "rgba(255, 193, 7, 0.2)"
+                : "rgba(255, 193, 7, 0.15)"
+              : isLowStock
+              ? darkMode
+                ? "rgba(255, 193, 7, 0.1)"
+                : "rgba(255, 193, 7, 0.08)"
+              : "transparent",
+            border: isMain
+              ? darkMode
+                ? "1px solid rgba(255, 193, 7, 0.4)"
+                : "1px solid rgba(255, 193, 7, 0.3)"
+              : "1px solid transparent",
+            fontWeight: isMainStoreLow ? "bold" : isLowStock ? "600" : "normal",
+            color:
+              isMainStoreLow || isLowStock
+                ? "#ffc107"
+                : darkMode
+                ? "#e0e0e0"
+                : "#333",
+          };
+
+          return (
+            <div style={cellStyle}>
+              <div style={{ fontSize: "13px", marginBottom: "2px" }}>
+                {formatCount(value)}
+              </div>
+              {isMain && record.minimalStockCount > 0 && (
+                <div
+                  style={{
+                    fontSize: "10px",
+                    opacity: 0.7,
+                    color: isMainStoreLow ? "#ffc107" : "inherit",
+                  }}
+                >
+                  Min: {formatCount(record.minimalStockCount)}
+                </div>
+              )}
+            </div>
+          );
+        },
+      };
+    });
 
     const otherColumns = [
       {
@@ -638,13 +745,15 @@ export default function Statistics() {
         title: "Quti",
         dataIndex: "totalBoxes",
         width: 110,
-        render: (_, record) => formatCount(record.totalBoxes),
+        render: (_, record) =>
+          formatCount(record.totalBoxes ?? record.products_box_count ?? 0),
       },
       {
         title: "Har bir qutida",
         dataIndex: "perBox",
         width: 140,
-        render: (text) => formatCount(text),
+        render: (_, record) =>
+          formatCount(record.perBox ?? record.each_box_count ?? 0),
       },
       {
         title: "Zakaz (taxminiy)",
@@ -745,7 +854,14 @@ export default function Statistics() {
     ];
 
     return [...baseColumns, ...storeColumns, ...otherColumns];
-  }, [visibleStores, isRowSelected]);
+  }, [
+    visibleStores,
+    isRowSelected,
+    darkMode,
+    statsSelection,
+    handleQuantityChange,
+    handleRowSelect,
+  ]);
 
   const totalWidth = useMemo(
     () => columns.reduce((sum, col) => sum + (col.width || 100), 0),
