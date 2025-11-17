@@ -1,0 +1,53 @@
+{
+  "client_id": "c1",
+  "client_name": "Ali Akbar",
+  "balance": 120000,
+  "history": [
+    {
+      "id": "h1",
+      "date": "2025-10-20T10:00:00Z",
+      "type": "sale",
+      "amount": 200000,
+      "balance_after": 200000,
+      "note": "invoice INV-100",
+      "operator": "Admin User"
+    },
+    {
+      "id": "h2",
+      "date": "2025-11-01T14:30:00Z",
+      "type": "payment",
+      "amount": 80000,
+      "balance_after": 120000,
+      "note": "cash",
+      "operator": "Admin User"
+    },
+    {
+      "id": "h3",
+      "date": "2025-10-15T09:15:00Z",
+      "type": "sale",
+      "amount": 150000,
+      "balance_after": 150000,
+      "note": "invoice INV-099",
+      "operator": "Admin User"
+    },
+    {
+      "id": "h4",
+      "date": "2025-10-12T11:20:00Z",
+      "type": "payment",
+      "amount": 50000,
+      "balance_after": 0,
+      "note": "card payment",
+      "operator": "Admin User"
+    },
+    {
+      "id": "h5",
+      "date": "2025-10-10T16:45:00Z",
+      "type": "sale",
+      "amount": 200000,
+      "balance_after": 200000,
+      "note": "invoice INV-098",
+      "operator": "Admin User"
+    }
+  ]
+}
+

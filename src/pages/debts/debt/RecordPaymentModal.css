@@ -1,0 +1,192 @@
+.record-payment-content {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.record-payment-outstanding {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 16px;
+	background: #f8fafc;
+	border-radius: 6px;
+	font-size: 14px;
+}
+
+.record-payment-outstanding strong {
+	font-size: 18px;
+	color: #ef4444;
+}
+
+.record-payment-optimistic {
+	padding: 12px;
+	background: #fef3c7;
+	border: 1px solid #fcd34d;
+	border-radius: 6px;
+	color: #d97706;
+	font-size: 14px;
+	text-align: center;
+}
+
+.record-payment-form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.record-payment-field {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.record-payment-field label {
+	font-size: 14px;
+	font-weight: 500;
+	color: #374151;
+}
+
+.record-payment-field .required {
+	color: #ef4444;
+}
+
+.record-payment-amount-input {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	background: #ffffff;
+}
+
+.record-payment-amount-input.error {
+	border-color: #ef4444;
+}
+
+.record-payment-amount-input input {
+	flex: 1;
+	border: none;
+	outline: none;
+	font-size: 16px;
+	color: #1f2937;
+}
+
+.record-payment-amount-input input:focus {
+	outline: none;
+}
+
+.record-payment-currency {
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.record-payment-error {
+	font-size: 12px;
+	color: #ef4444;
+}
+
+.record-payment-quick-amounts {
+	display: flex;
+	gap: 8px;
+	margin-top: 4px;
+}
+
+.record-payment-quick-btn {
+	padding: 6px 12px;
+	background: #f3f4f6;
+	border: 1px solid #d1d5db;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #374151;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.record-payment-quick-btn:hover {
+	background: #e5e7eb;
+}
+
+.record-payment-select,
+.record-payment-textarea {
+	padding: 10px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #1f2937;
+	background: #ffffff;
+	font-family: inherit;
+}
+
+.record-payment-select:focus,
+.record-payment-textarea:focus {
+	outline: none;
+	border-color: #059669;
+	box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.record-payment-textarea {
+	resize: vertical;
+}
+
+.record-payment-summary {
+	padding: 16px;
+	background: #f8fafc;
+	border-radius: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.record-payment-summary-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 14px;
+}
+
+.record-payment-summary-row strong {
+	font-size: 16px;
+	color: #1f2937;
+}
+
+.record-payment-footer {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+}
+
+.record-payment-btn {
+	padding: 10px 20px;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+	border: none;
+}
+
+.record-payment-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.record-payment-btn-cancel {
+	background: #f3f4f6;
+	color: #374151;
+}
+
+.record-payment-btn-cancel:hover:not(:disabled) {
+	background: #e5e7eb;
+}
+
+.record-payment-btn-submit {
+	background: #059669;
+	color: #ffffff;
+}
+
+.record-payment-btn-submit:hover:not(:disabled) {
+	background: #047857;
+}
+

@@ -1,0 +1,158 @@
+import React, { useEffect, useState } from "react"
+import MetricCard from "../components/MetricCard"
+import PeriodComparison from "./PeriodComparison"
+import ProfitAnalysis from "./ProfitAnalysis"
+import { dashboardApi } from "../services/mockApi"
+import "./DashboardWidget.css"
+
+/**
+ * DashboardWidget - Summary widget showing profit and debt metrics
+ * @param {Function} onProfitClick - Handler when profit widget is clicked
+ * @param {Function} onDebtClick - Handler when debt widget is clicked
+ * @param {string} period - Period: 'today', 'week', 'month', 'year', 'period'
+ * @param {boolean} darkMode - Dark mode flag
+ */
+function DashboardWidget({ onProfitClick, onDebtClick, period = "today", darkMode = false }) {
+	const [data, setData] = useState(null)
+	const [analysisData, setAnalysisData] = useState(null)
+	const [loading, setLoading] = useState(true)
+	const [analysisLoading, setAnalysisLoading] = useState(true)
+
+	useEffect(() => {
+		setLoading(true)
+		setAnalysisLoading(true)
+		
+		// Load summary data
+		dashboardApi
+			.getSummary(period)
+			.then((response) => {
+				if (response.status === 200) {
+					setData(response.data)
+				}
+			})
+			.catch((error) => {
+				console.error("Dashboard data error:", error)
+			})
+			.finally(() => {
+				setLoading(false)
+			})
+		
+		// Load analysis data
+		dashboardApi
+			.getAnalysis(period)
+			.then((response) => {
+				if (response.status === 200) {
+					setAnalysisData(response.data)
+				}
+			})
+			.catch((error) => {
+				console.error("Analysis data error:", error)
+			})
+			.finally(() => {
+				setAnalysisLoading(false)
+			})
+	}, [period])
+
+	if (loading) {
+		return (
+			<div className="dashboard-widget-loading" role="status" aria-label="Yuklanmoqda">
+				<div className="dashboard-widget-skeleton" />
+			</div>
+		)
+	}
+
+	if (!data) {
+		return (
+			<div className="dashboard-widget-error" role="alert">
+				Ma'lumotlarni yuklashda xatolik yuz berdi
+			</div>
+		)
+	}
+
+	const { profit, previous_profit, debt } = data
+
+	// Calculate delta for MetricCard
+	const calculateDelta = (current, previous) => {
+		if (!previous || previous === 0) return current > 0 ? current : 0
+		return current - previous
+	}
+
+	return (
+		<div className={`dashboard-widget ${darkMode ? "dark" : ""}`} role="region" aria-label="Dashboard yig'ma ma'lumotlari">
+			<div className="dashboard-widget-section">
+				<h2 className="dashboard-widget-title">Foyda</h2>
+				<div className="dashboard-widget-grid">
+					<MetricCard
+						title="Jami foyda"
+						value={profit.total}
+						delta={previous_profit ? calculateDelta(profit.total, previous_profit.total) : undefined}
+						sparkline={profit.sparkline}
+						color="success"
+						onClick={onProfitClick}
+						darkMode={darkMode}
+					/>
+					<MetricCard
+						title="Daromad"
+						value={profit.revenue}
+						delta={previous_profit ? calculateDelta(profit.revenue, previous_profit.revenue) : undefined}
+						sparkline={profit.sparkline}
+						color="primary"
+						darkMode={darkMode}
+					/>
+					<MetricCard
+						title="Xarajat"
+						value={profit.cost}
+						delta={previous_profit ? calculateDelta(profit.cost, previous_profit.cost) : undefined}
+						sparkline={profit.sparkline}
+						color="primary"
+						darkMode={darkMode}
+					/>
+				</div>
+			</div>
+
+			{/* Period Comparison */}
+			{previous_profit && (
+				<PeriodComparison
+					current={profit}
+					previous={previous_profit}
+					period={period}
+					darkMode={darkMode}
+				/>
+			)}
+
+			{/* Profit Analysis */}
+			{!analysisLoading && analysisData && (
+				<ProfitAnalysis analysisData={analysisData} darkMode={darkMode} />
+			)}
+
+			<div className="dashboard-widget-section">
+				<h2 className="dashboard-widget-title">Qarz</h2>
+				<div className="dashboard-widget-grid">
+					<MetricCard
+						title="Qarz qoldig'i"
+						value={debt.outstanding}
+						sparkline={debt.sparkline}
+						color="danger"
+						onClick={onDebtClick}
+						darkMode={darkMode}
+					/>
+					<MetricCard
+						title="Muddat o'tgan"
+						value={debt.overdue}
+						color="danger"
+						darkMode={darkMode}
+					/>
+					<MetricCard
+						title="Faol mijozlar"
+						value={debt.active_clients}
+						color="primary"
+						darkMode={darkMode}
+					/>
+				</div>
+			</div>
+		</div>
+	)
+}
+
+export default DashboardWidget
+
