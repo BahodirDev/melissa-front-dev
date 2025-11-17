@@ -1,355 +1,143 @@
 /**
- * Mock API service for Profit & Debt modules
- * Simulates backend API calls with mock data
+ * API service for Profit & Debt modules
+ * NOTE: This file is deprecated. All components now use direct API calls via customHook/api
+ * This file is kept for reference only and can be removed in the future.
  */
 
-import profitListData from "../mockData/profitList.json";
-import profitDetailData from "../mockData/profitDetail.json";
-import debtListData from "../mockData/debtList.json";
-import debtLedgerData from "../mockData/debtLedger.json";
-import dashboardSummaryData from "../mockData/dashboardSummary.json";
+import { get, post } from "../../../customHook/api";
 
-// Simulate network delay
-const delay = (ms = 500) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// Format currency
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-  }).format(amount);
+/**
+ * @deprecated - Use direct API calls instead
+ * All profit operations now use:
+ * - GET /profit/list - for profit list
+ * - GET /profit/detail/:invoice_id - for profit detail
+ */
+export const profitApi = {
+  // This is deprecated - use direct API calls
 };
 
-// Mock Profit API
-export const profitApi = {
-  // Get profit list with filters
+/**
+ * @deprecated - Use direct API calls instead
+ * All dashboard operations now use:
+ * - GET /profit/dashboard/summary - for dashboard summary
+ * - GET /profit/dashboard/analysis - for dashboard analysis
+ */
+export const dashboardApi = {
+  // This is deprecated - use direct API calls
+};
+
+/**
+ * @deprecated - Use direct API calls instead
+ * Get stores from: GET /store/store-list
+ */
+export const getStores = () => {
+  // This is deprecated - use direct API calls
+  return [];
+};
+
+/**
+ * Debt API - Backend Integration
+ * NOTE: This is also deprecated. Components use direct API calls now.
+ * All debt operations use:
+ * - GET /client-debts/list - for debt list
+ * - GET /client-debts/ledger/:clientId - for debt ledger
+ * - POST /client-debts/payment - for recording payments
+ * - POST /client-debts/create - for creating debts
+ */
+export const debtApi = {
+  // This is deprecated - use direct API calls
   getList: async (params = {}) => {
-    await delay(300);
-    const {
-      from,
-      to,
-      page = 1,
-      limit = 20,
-      store,
-      minProfit,
-      search,
-      sortBy = "date",
-      sortOrder = "desc",
-    } = params;
+    const { page = 1, limit = 20, filter = null, search = null } = params;
 
-    let data = [...profitListData.data];
-
-    // Filter by date range
-    if (from || to) {
-      data = data.filter((item) => {
-        const itemDate = new Date(item.date);
-        if (from && itemDate < new Date(from)) return false;
-        if (to && itemDate > new Date(to)) return false;
-        return true;
-      });
-    }
-
-    // Filter by store
-    if (store) {
-      data = data.filter((item) => item.store === store);
-    }
-
-    // Filter by min profit
-    if (minProfit) {
-      data = data.filter((item) => item.profit >= minProfit);
-    }
-
-    // Search
-    if (search) {
-      const searchLower = search.toLowerCase();
-      data = data.filter(
-        (item) =>
-          item.invoice_id.toLowerCase().includes(searchLower) ||
-          item.store.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Sort
-    data.sort((a, b) => {
-      let aVal = a[sortBy];
-      let bVal = b[sortBy];
-      if (sortBy === "date") {
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
-      }
-      if (sortOrder === "asc") {
-        return aVal > bVal ? 1 : -1;
-      }
-      return aVal < bVal ? 1 : -1;
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
     });
 
-    // Paginate
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const paginatedData = data.slice(start, end);
-
-    return {
-      status: 200,
-      data: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total: data.length,
-        data: paginatedData,
-      },
-    };
-  },
-
-  // Get profit detail
-  getDetail: async (invoiceId) => {
-    await delay(200);
-    if (invoiceId === "INV-2025-1001") {
-      return {
-        status: 200,
-        data: profitDetailData,
-      };
-    }
-    // Return modified detail for other invoices
-    return {
-      status: 200,
-      data: {
-        ...profitDetailData,
-        invoice_id: invoiceId,
-      },
-    };
-  },
-
-  // Adjust profit (admin only)
-  adjustProfit: async (invoiceId, adjustment) => {
-    await delay(400);
-    const { cost_delta, note } = adjustment;
-    const detail = await profitApi.getDetail(invoiceId);
-    if (detail.status === 200) {
-      // Simulate adjustment
-      const updatedDetail = {
-        ...detail.data,
-        totals: {
-          ...detail.data.totals,
-          cost: detail.data.totals.cost + (cost_delta || 0),
-          profit: detail.data.totals.profit - (cost_delta || 0),
-        },
-        adjustment_note: note,
-        adjusted_at: new Date().toISOString(),
-      };
-      return {
-        status: 200,
-        data: updatedDetail,
-      };
-    }
-    return {
-      status: 400,
-      error: "Invoice not found",
-    };
-  },
-};
-
-// Mock Debt API
-export const debtApi = {
-  // Get debt list
-  getList: async (params = {}) => {
-    await delay(300);
-    const { page = 1, limit = 20, filter, search } = params;
-
-    let data = [...debtListData.data];
-
-    // Filter by status
-    if (filter === "overdue") {
-      data = data.filter((item) => item.overdue === true);
-    } else if (filter === "active") {
-      data = data.filter((item) => item.outstanding > 0 && !item.overdue);
-    } else if (filter === "cleared") {
-      data = data.filter((item) => item.outstanding === 0);
+    if (filter && filter !== "all") {
+      queryParams.append("filter", filter);
     }
 
-    // Search
     if (search) {
-      const searchLower = search.toLowerCase();
-      data = data.filter(
-        (item) =>
-          item.name.toLowerCase().includes(searchLower) ||
-          item.phone.includes(search)
+      queryParams.append("search", search);
+    }
+
+    try {
+      const response = await get(
+        `/client-debts/list?${queryParams.toString()}`
       );
+      return response;
+    } catch (error) {
+      console.error("Error fetching debt list:", error);
+      return {
+        status: 500,
+        error: "Ma'lumotlarni yuklashda xatolik",
+      };
     }
-
-    // Paginate
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const paginatedData = data.slice(start, end);
-
-    return {
-      status: 200,
-      data: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total: data.length,
-        data: paginatedData,
-      },
-    };
   },
 
-  // Get debt ledger for a client
   getLedger: async (clientId, params = {}) => {
-    await delay(250);
-    const { from, to, type } = params;
+    const { from = null, to = null, type = null } = params;
 
-    let history = [...debtLedgerData.history];
+    const queryParams = new URLSearchParams();
+    if (from) queryParams.append("from", from);
+    if (to) queryParams.append("to", to);
+    if (type) queryParams.append("type", type);
 
-    // Filter by date range
-    if (from || to) {
-      history = history.filter((item) => {
-        const itemDate = new Date(item.date);
-        if (from && itemDate < new Date(from)) return false;
-        if (to && itemDate > new Date(to)) return false;
-        return true;
-      });
+    try {
+      const queryString = queryParams.toString();
+      const endpoint = `/client-debts/ledger/${clientId}${
+        queryString ? `?${queryString}` : ""
+      }`;
+      const response = await get(endpoint);
+      return response;
+    } catch (error) {
+      console.error("Error fetching debt ledger:", error);
+      return {
+        status: 500,
+        error: "Qarz tarixini yuklashda xatolik",
+      };
     }
-
-    // Filter by type
-    if (type) {
-      history = history.filter((item) => item.type === type);
-    }
-
-    // Sort by date descending
-    history.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    return {
-      status: 200,
-      data: {
-        ...debtLedgerData,
-        client_id: clientId,
-        history,
-      },
-    };
   },
 
-  // Record payment
   recordPayment: async (clientId, payment) => {
-    await delay(500);
     const { amount, method, note } = payment;
 
-    // Get current ledger
-    const ledgerResponse = await debtApi.getLedger(clientId);
-    if (ledgerResponse.status !== 200) {
+    try {
+      const response = await post("/client-debts/payment", {
+        client_id: clientId,
+        amount: amount,
+        payment_method: method,
+        note: note || null,
+        client_debt_id: null,
+      });
+      return response;
+    } catch (error) {
+      console.error("Error recording payment:", error);
       return {
-        status: 400,
-        error: "Client not found",
+        status: 500,
+        error: "To'lov qayd etishda xatolik",
       };
     }
-
-    const ledger = ledgerResponse.data;
-    const newBalance = Math.max(0, ledger.balance - amount);
-
-    const newEntry = {
-      id: `h${Date.now()}`,
-      date: new Date().toISOString(),
-      type: "payment",
-      amount: amount,
-      balance_after: newBalance,
-      note: note || `${method} payment`,
-      operator: "Current User",
-    };
-
-    return {
-      status: 200,
-      data: {
-        client_id: clientId,
-        balance: newBalance,
-        entry: newEntry,
-      },
-    };
   },
 
-  // Create new debt (manual)
   createDebt: async (debtData) => {
-    await delay(400);
     const { client_id, amount, due_date, note } = debtData;
 
-    // Check if client exists
-    const clientList = await debtApi.getList({});
-    const client = clientList.data.data.find((c) => c.client_id === client_id);
-
-    if (!client) {
+    try {
+      const response = await post("/client-debts/create", {
+        client_id: client_id,
+        amount: amount,
+        due_date: due_date,
+        note: note || null,
+      });
+      return response;
+    } catch (error) {
+      console.error("Error creating debt:", error);
       return {
-        status: 400,
-        error: "Client not found",
+        status: 500,
+        error: "Qarz qo'shishda xatolik",
       };
     }
-
-    // Create new debt entry
-    const newDebt = {
-      client_id: client_id,
-      debt_id: `d${Date.now()}`,
-      amount: amount,
-      outstanding: amount,
-      due_date: due_date,
-      overdue: new Date(due_date) < new Date(),
-      created_at: new Date().toISOString(),
-      note: note,
-    };
-
-    // In real app, this would be saved to backend
-    // For mock, we just return success
-
-    return {
-      status: 200,
-      data: {
-        ...newDebt,
-        client_name: client.name,
-        client_phone: client.phone,
-      },
-    };
   },
-};
-
-// Mock Dashboard API
-export const dashboardApi = {
-  getSummary: async (period = "today") => {
-    await delay(200);
-
-    // Get current period data
-    const currentPeriod =
-      dashboardSummaryData.profit[period] || dashboardSummaryData.profit.today;
-
-    // Get previous period data for comparison
-    const previousPeriodMap = {
-      today: dashboardSummaryData.profit.yesterday,
-      week: dashboardSummaryData.profit.last_week,
-      month: dashboardSummaryData.profit.last_month,
-      year: dashboardSummaryData.profit.last_year,
-      period: dashboardSummaryData.profit.last_month, // Default to last month for custom period
-    };
-    const previousPeriod = previousPeriodMap[period] || null;
-
-    return {
-      status: 200,
-      data: {
-        profit: currentPeriod,
-        previous_profit: previousPeriod,
-        debt: dashboardSummaryData.debt,
-      },
-    };
-  },
-
-  getAnalysis: async (period = "today") => {
-    await delay(300);
-    return {
-      status: 200,
-      data: dashboardSummaryData.analysis,
-    };
-  },
-};
-
-// Export stores list (mock)
-export const getStores = () => {
-  return [
-    { value: "toshkent-1", label: "Toshkent-1" },
-    { value: "toshkent-2", label: "Toshkent-2" },
-    { value: "samarqand", label: "Samarqand" },
-    { value: "buxoro", label: "Buxoro" },
-  ];
 };

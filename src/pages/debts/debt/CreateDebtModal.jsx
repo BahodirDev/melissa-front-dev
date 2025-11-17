@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Plus, X, Info } from "@phosphor-icons/react"
 import Modal from "../components/Modal"
-import { debtApi } from "../services/mockApi"
+import { post } from "../../../customHook/api"
 import { toast } from "react-toastify"
 import { Select } from "antd"
 import "./CreateDebtModal.css"
@@ -64,23 +64,31 @@ function CreateDebtModal({ open, onClose, onSuccess, clients = [], darkMode = fa
 
 		setLoading(true)
 		try {
-			// In real app, this would call: POST /api/debt/create
-			const response = await debtApi.createDebt({
+			// Ensure due_date is in ISO format
+			let dueDate = formData.due_date
+			if (dueDate && !dueDate.includes('T')) {
+				// If it's just a date string (YYYY-MM-DD), convert to ISO
+				dueDate = new Date(dueDate + 'T00:00:00').toISOString()
+			}
+			
+			const response = await post("/client-debts/create", {
 				client_id: formData.client_id,
-				amount: formData.amount,
-				due_date: formData.due_date,
-				note: formData.note,
+				amount: parseFloat(formData.amount),
+				due_date: dueDate,
+				note: formData.note || null,
 			})
 
-			if (response.status === 200) {
+			if (response?.status === 200 || response?.status === 201) {
 				toast.success("Qarz muvaffaqiyatli qo'shildi")
 				onSuccess && onSuccess(response.data)
 				onClose()
 			} else {
-				toast.error("Qarz qo'shishda xatolik")
+				const errorMsg = response?.data?.message || response?.response?.data?.message || "Qarz qo'shishda xatolik"
+				toast.error(errorMsg)
 			}
 		} catch (error) {
-			toast.error("Qarz qo'shishda xatolik")
+			const errorMsg = error?.response?.data?.message || "Qarz qo'shishda xatolik"
+			toast.error(errorMsg)
 		} finally {
 			setLoading(false)
 		}

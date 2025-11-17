@@ -230,9 +230,96 @@
 
 .profit-list-filters-row {
     display: flex;
-    gap: 12px;
+    gap: 20px;
     align-items: flex-end;
     flex-wrap: wrap;
+}
+
+.profit-list-filters-inline {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.profit-list-date-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 280px;
+}
+
+.profit-list-inline-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.profit-list.dark .profit-list-inline-label {
+    color: #9da9bb;
+}
+
+.profit-list-date-inputs-inline {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.profit-list-date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 130px;
+}
+
+.profit-list-date-input-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.profit-list.dark .profit-list-date-input-label {
+    color: #9da9bb;
+}
+
+.profit-list-date-input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1f2937;
+    background: #ffffff;
+    transition: all 0.2s;
+}
+
+.profit-list-date-input:focus {
+    outline: none;
+    border-color: #429bca;
+    box-shadow: 0 0 0 3px rgba(66, 139, 202, 0.1);
+}
+
+.profit-list.dark .profit-list-date-input {
+    background: #0b1727;
+    border-color: #344050;
+    color: #d8e2ef;
+}
+
+.profit-list.dark .profit-list-date-input:focus {
+    border-color: #429bca;
+    box-shadow: 0 0 0 3px rgba(66, 139, 202, 0.2);
+}
+
+.profit-list-filter-item-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 180px;
+    flex: 1;
 }
 
 .profit-list-filter-group {
@@ -405,6 +492,28 @@
     .profit-list-filters-row {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .profit-list-filters-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profit-list-date-wrapper {
+        min-width: 100%;
+    }
+
+    .profit-list-date-inputs-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profit-list-date-input-group {
+        min-width: 100%;
+    }
+
+    .profit-list-filter-item-inline {
+        min-width: 100%;
     }
 
     .profit-list-filter-group {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Search,
+  MagnifyingGlass,
   Eye,
   CurrencyDollar,
   Bell,
@@ -10,7 +10,8 @@ import {
 import DataTable from "../components/DataTable";
 import EmptyState from "../components/EmptyState";
 import CreateDebtModal from "./CreateDebtModal";
-import { debtApi } from "../services/mockApi";
+import { get, post } from "../../../customHook/api";
+import { toast } from "react-toastify";
 import "./DebtList.css";
 
 /**
@@ -60,22 +61,99 @@ function DebtList({
     setLoading(true);
     setError(null);
     try {
-      const response = await debtApi.getList({
-        ...filters,
-        page: pagination.page,
-        limit: pagination.limit,
+      // Build query string
+      const queryParams = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
       });
-      if (response.status === 200) {
-        setData(response.data.data);
+
+      if (filters.filter && filters.filter !== "all") {
+        queryParams.append("filter", filters.filter);
+      }
+
+      if (filters.search) {
+        queryParams.append("search", filters.search);
+      }
+
+      const response = await get(
+        `/client-debts/list?${queryParams.toString()}`
+      );
+
+      // Debug: Log the response structure
+      console.log("DebtList - Full response:", {
+        httpStatus: response?.status,
+        hasResponseData: !!response?.data,
+        responseDataType: typeof response?.data,
+        hasNestedData: !!response?.data?.data,
+        nestedDataType: typeof response?.data?.data,
+        hasNestedNestedData: !!response?.data?.data?.data,
+        nestedNestedDataType: Array.isArray(response?.data?.data?.data)
+          ? "array"
+          : typeof response?.data?.data?.data,
+      });
+
+      if (response?.status === 200 || response?.status === 201) {
+        // Backend returns: {status: 200, data: {page, limit, total, debts, data: [...]}}
+        // Axios response: response.data = {status: 200, data: {...}}
+        // So the array is at: response.data.data.data
+        let responseData = [];
+        let totalCount = 0;
+
+        // Primary check: response.data.data.data (nested structure from backend)
+        if (
+          response.data?.data?.data &&
+          Array.isArray(response.data.data.data)
+        ) {
+          responseData = response.data.data.data;
+          totalCount =
+            response.data.data?.total ||
+            response.data.data?.debts ||
+            responseData.length;
+          console.log(
+            "DebtList - Using nested structure (response.data.data.data)",
+            responseData.length,
+            "items"
+          );
+        }
+        // Fallback: response.data.data (if backend returns data directly)
+        else if (Array.isArray(response.data?.data)) {
+          responseData = response.data.data;
+          totalCount =
+            response.data?.total || response.data?.debts || responseData.length;
+          console.log(
+            "DebtList - Using direct array (response.data.data)",
+            responseData.length,
+            "items"
+          );
+        }
+        // Fallback: response.data (if backend returns array directly)
+        else if (Array.isArray(response.data)) {
+          responseData = response.data;
+          totalCount = responseData.length;
+          console.log(
+            "DebtList - Using flat array (response.data)",
+            responseData.length,
+            "items"
+          );
+        } else {
+          console.error(
+            "DebtList - Could not find data array in response:",
+            response
+          );
+        }
+
+        setData(responseData);
         setPagination((prev) => ({
           ...prev,
-          total: response.data.total,
+          total: totalCount,
         }));
       } else {
         setError("Ma'lumotlarni yuklashda xatolik");
+        toast.error("Ma'lumotlarni yuklashda xatolik");
       }
     } catch (err) {
       setError("Ma'lumotlarni yuklashda xatolik");
+      toast.error("Ma'lumotlarni yuklashda xatolik");
     } finally {
       setLoading(false);
     }
@@ -90,10 +168,34 @@ function DebtList({
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const handleSendReminder = (client) => {
-    // Mock reminder
-    console.log("Sending reminder to:", client.name);
-    // In real app, this would call an API
+  const handleSendReminder = async (client) => {
+    if (!client || !client.client_id) {
+      toast.error("Mijoz ma'lumotlari topilmadi");
+      return;
+    }
+
+    try {
+      const response = await post(
+        `/client-debts/reminder/${client.client_id}`,
+        {}
+      );
+
+      if (response?.status === 200 || response?.status === 201) {
+        const responseData = response.data?.data || response.data;
+        toast.success(
+          `${
+            responseData.client_name || client.name
+          } ga eslatma muvaffaqiyatli yuborildi`
+        );
+      } else {
+        const errorMessage =
+          response.data?.message || "Eslatma yuborishda xatolik";
+        toast.error(errorMessage);
+      }
+    } catch (err) {
+      console.error("Error sending reminder:", err);
+      toast.error("Eslatma yuborishda xatolik yuz berdi");
+    }
   };
 
   const columns = [
@@ -188,9 +290,70 @@ function DebtList({
     );
   };
 
-  const handleCreateDebtSuccess = () => {
-    // Refresh debt list
-    loadData();
+  const handleCreateDebtSuccess = (responseData) => {
+    // Reset to first page
+    setPagination((prev) => ({ ...prev, page: 1, total: 0 }));
+    // Small delay to ensure backend has processed the new debt, then reload
+    setTimeout(() => {
+      // Force reload by calling loadData directly with page 1
+      const queryParams = new URLSearchParams({
+        page: "1",
+        limit: pagination.limit.toString(),
+      });
+
+      if (filters.filter && filters.filter !== "all") {
+        queryParams.append("filter", filters.filter);
+      }
+
+      if (filters.search) {
+        queryParams.append("search", filters.search);
+      }
+
+      get(`/client-debts/list?${queryParams.toString()}`)
+        .then((response) => {
+          if (response?.status === 200 || response?.status === 201) {
+            // Backend returns: {status: 200, data: {page, limit, total, debts, data: [...]}}
+            // Axios response: response.data = {status: 200, data: {...}}
+            // So the array is at: response.data.data.data
+            let responseData = [];
+            let totalCount = 0;
+
+            // Primary check: response.data.data.data (nested structure from backend)
+            if (
+              response.data?.data?.data &&
+              Array.isArray(response.data.data.data)
+            ) {
+              responseData = response.data.data.data;
+              totalCount =
+                response.data.data?.total ||
+                response.data.data?.debts ||
+                responseData.length;
+            }
+            // Fallback: response.data.data (if backend returns data directly)
+            else if (Array.isArray(response.data?.data)) {
+              responseData = response.data.data;
+              totalCount =
+                response.data?.total ||
+                response.data?.debts ||
+                responseData.length;
+            }
+            // Fallback: response.data (if backend returns array directly)
+            else if (Array.isArray(response.data)) {
+              responseData = response.data;
+              totalCount = responseData.length;
+            }
+
+            setData(responseData);
+            setPagination((prev) => ({
+              ...prev,
+              total: totalCount,
+            }));
+          }
+        })
+        .catch((err) => {
+          console.error("Error refreshing debt list:", err);
+        });
+    }, 300);
   };
 
   return (
@@ -225,14 +388,14 @@ function DebtList({
       <div className="debt-list-filters">
         <div className="debt-list-filters-row">
           <div className="debt-list-search">
-            {/* <Search size={20} />
-						<input
-							type="text"
-							placeholder="Mijoz nomi yoki telefon bo'yicha qidirish..."
-							value={filters.search}
-							onChange={(e) => handleFilterChange("search", e.target.value)}
-							className="debt-list-search-input"
-						/> */}
+            <MagnifyingGlass size={20} />
+            <input
+              type="text"
+              placeholder="Mijoz nomi yoki telefon bo'yicha qidirish..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
+              className="debt-list-search-input"
+            />
           </div>
           <div className="debt-list-filter-buttons">
             <button
