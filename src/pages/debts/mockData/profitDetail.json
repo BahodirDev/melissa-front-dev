@@ -1,0 +1,63 @@
+{
+  "invoice_id": "INV-2025-1001",
+  "date": "2025-11-15T10:23:00Z",
+  "store": "toshkent-1",
+  "items": [
+    {
+      "sku": "SKU-001",
+      "name": "olma",
+      "qty": 10,
+      "unit_cost": 1000,
+      "unit_price": 1500,
+      "revenue": 15000,
+      "cost": 10000,
+      "profit": 5000
+    },
+    {
+      "sku": "SKU-002",
+      "name": "banan",
+      "qty": 15,
+      "unit_cost": 2000,
+      "unit_price": 3000,
+      "revenue": 45000,
+      "cost": 30000,
+      "profit": 15000
+    },
+    {
+      "sku": "SKU-003",
+      "name": "uzum",
+      "qty": 8,
+      "unit_cost": 5000,
+      "unit_price": 8000,
+      "revenue": 64000,
+      "cost": 40000,
+      "profit": 24000
+    },
+    {
+      "sku": "SKU-004",
+      "name": "anor",
+      "qty": 12,
+      "unit_cost": 8000,
+      "unit_price": 12000,
+      "revenue": 144000,
+      "cost": 96000,
+      "profit": 48000
+    },
+    {
+      "sku": "SKU-005",
+      "name": "shaftoli",
+      "qty": 20,
+      "unit_cost": 3000,
+      "unit_price": 4500,
+      "revenue": 90000,
+      "cost": 60000,
+      "profit": 30000
+    }
+  ],
+  "totals": {
+    "revenue": 358000,
+    "cost": 236000,
+    "profit": 122000
+  }
+}
+

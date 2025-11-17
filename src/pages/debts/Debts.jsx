@@ -1,93 +1,257 @@
-import React, { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { setQuantity as setQuantityD } from "../../components/reducers/d-debt"
-import { setQuantity } from "../../components/reducers/debt"
-import { setData as setDataDeliver } from "../../components/reducers/deliver"
-import {
-	fakeLoad,
-	setData as setDataGood,
-} from "../../components/reducers/good"
-import { setQuantity as setQuantityN } from "../../components/reducers/noteDebt"
-import { setQuantity as setQuantityO } from "../../components/reducers/orderDebt"
-import { get } from "../../customHook/api"
-import Client from "./Client"
-import Supplier from "./Supplier"
-import Total from "./Total"
-import "./debts.css"
-import { toast } from "react-toastify"
-import { useNavigate, useOutletContext } from "react-router-dom"
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { toast } from "react-toastify";
+import DashboardWidget from "./profit/DashboardWidget";
+import ProfitList from "./profit/ProfitList";
+import ProfitDetailModal from "./profit/ProfitDetailModal";
+import DebtList from "./debt/DebtList";
+import DebtLedger from "./debt/DebtLedger";
+import RecordPaymentModal from "./debt/RecordPaymentModal";
+import "./debts.css";
 
 function Debts() {
-	const [
-		inputRef,
-		showDropdown,
-		setshowDropdown,
-		addModalVisible,
-		setAddModalVisible,
-		addModalDisplay,
-		setAddModalDisplay,
-		miniModal,
-		setMiniModal,
-		sidebar,
-		userInfo,
-		darkMode,
-	] = useOutletContext()
-	const navigate = useNavigate()
-	const { deliver, currency, good } = useSelector((state) => state)
-	const dispatch = useDispatch()
-	const [show, setShow] = useState("client")
+  const [
+    inputRef,
+    showDropdown,
+    setshowDropdown,
+    addModalVisible,
+    setAddModalVisible,
+    addModalDisplay,
+    setAddModalDisplay,
+    miniModal,
+    setMiniModal,
+    sidebar,
+    userInfo,
+    darkMode,
+  ] = useOutletContext();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { client } = useSelector((state) => state);
 
-	useEffect(() => {
-		if (localStorage.getItem("role") !== "1") navigate("/*")
-		setShow(localStorage.getItem("debt-section"))
-	}, [])
+  // View state
+  const [view, setView] = useState("dashboard"); // 'dashboard', 'profit', 'debt'
+  const [period, setPeriod] = useState("today"); // 'today', 'week', 'month', 'period'
 
-	if (!localStorage.getItem("debt-section"))
-		localStorage.setItem("debt-section", "client")
+  // Profit state
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [profitDetailOpen, setProfitDetailOpen] = useState(false);
 
-	const handleSectionSwitch = (e) => {
-		setShow(e.target.value)
-		localStorage.setItem("debt-section", e.target.value)
-	}
+  // Debt state
+  const [selectedClientId, setSelectedClientId] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [debtLedgerOpen, setDebtLedgerOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentOutstanding, setPaymentOutstanding] = useState(0);
 
-	return (
-		<>
-			<div className={`debt-switch ${darkMode ? "dark" : null}`}>
-				<button
-					type="button"
-					onClick={handleSectionSwitch}
-					value="client"
-					className={show === "client" ? "active" : null}
-				>
-					Oldi / Berdi
-				</button>
-				<button
-					type="button"
-					onClick={handleSectionSwitch}
-					value="supplier"
-					className={show === "supplier" ? "active" : null}
-				>
-					Haqdorlik / Qarzdorlik
-				</button>
-				<button
-					type="button"
-					onClick={handleSectionSwitch}
-					value="total"
-					className={show === "total" ? "active" : null}
-				>
-					Harajatlar
-				</button>
-			</div>
+  // Check if user is admin (role === 1)
+  const isAdmin = localStorage.getItem("role") === "1";
 
-			{show === "client" ? (
-				<Client />
-			) : show === "supplier" ? (
-				<Supplier />
-			) : (
-				<Total />
-			)}
-		</>
-	)
+  useEffect(() => {
+    if (localStorage.getItem("role") !== "1") {
+      navigate("/*");
+    }
+    const savedView = localStorage.getItem("debt-section");
+    if (savedView) {
+      setView(savedView);
+    }
+  }, [navigate]);
+
+  const handleProfitClick = () => {
+    setView("profit");
+    localStorage.setItem("debt-section", "profit");
+  };
+
+  const handleDebtClick = () => {
+    setView("debt");
+    localStorage.setItem("debt-section", "debt");
+  };
+
+  const handleViewChange = (newView) => {
+    setView(newView);
+    localStorage.setItem("debt-section", newView);
+  };
+
+  const handleProfitRowClick = (row) => {
+    setSelectedInvoice(row.invoice_id);
+    setProfitDetailOpen(true);
+  };
+
+  const handleProfitAdjust = (invoiceId, data) => {
+    // Open adjust modal (to be implemented)
+    toast.info("Foyda tahrirlash funksiyasi keyinchalik qo'shiladi");
+  };
+
+  const handleViewLedger = (clientId, client) => {
+    setSelectedClientId(clientId);
+    setSelectedClient(client);
+    setDebtLedgerOpen(true);
+  };
+
+  const handleRecordPayment = (clientId, client, outstanding) => {
+    setSelectedClientId(clientId);
+    setSelectedClient(client);
+    setPaymentOutstanding(outstanding || client?.outstanding || 0);
+    setPaymentModalOpen(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    // Refresh debt list if on debt view
+    if (view === "debt") {
+      // Force reload by toggling view
+      setView("debt");
+    }
+    // Refresh ledger if open
+    if (debtLedgerOpen) {
+      setDebtLedgerOpen(false);
+      setTimeout(() => {
+        setDebtLedgerOpen(true);
+      }, 100);
+    }
+  };
+
+  return (
+    <>
+      <div className={`debt-switch ${darkMode ? "dark" : null}`}>
+        <button
+          type="button"
+          onClick={() => handleViewChange("dashboard")}
+          className={view === "dashboard" ? "active" : null}
+          aria-label="Dashboard"
+          aria-pressed={view === "dashboard"}
+        >
+          Dashboard
+        </button>
+        <button
+          type="button"
+          onClick={() => handleViewChange("profit")}
+          className={view === "profit" ? "active" : null}
+          aria-label="Foyda"
+          aria-pressed={view === "profit"}
+        >
+          Foyda
+        </button>
+        <button
+          type="button"
+          onClick={() => handleViewChange("debt")}
+          className={view === "debt" ? "active" : null}
+          aria-label="Qarz"
+          aria-pressed={view === "debt"}
+        >
+          Qarz
+        </button>
+      </div>
+
+      {view === "dashboard" && (
+        <div className="debts-dashboard">
+          <div className="debts-dashboard-period">
+            <button
+              type="button"
+              className={period === "today" ? "active" : ""}
+              onClick={() => setPeriod("today")}
+            >
+              Bugun
+            </button>
+            <button
+              type="button"
+              className={period === "week" ? "active" : ""}
+              onClick={() => setPeriod("week")}
+            >
+              Hafta
+            </button>
+            <button
+              type="button"
+              className={period === "month" ? "active" : ""}
+              onClick={() => setPeriod("month")}
+            >
+              Oy
+            </button>
+            <button
+              type="button"
+              className={period === "year" ? "active" : ""}
+              onClick={() => setPeriod("year")}
+            >
+              Yil
+            </button>
+            <button
+              type="button"
+              className={period === "period" ? "active" : ""}
+              onClick={() => setPeriod("period")}
+            >
+              Davr
+            </button>
+          </div>
+          <DashboardWidget
+            onProfitClick={handleProfitClick}
+            onDebtClick={handleDebtClick}
+            period={period}
+            darkMode={darkMode}
+          />
+        </div>
+      )}
+
+      {view === "profit" && (
+        <ProfitList onRowClick={handleProfitRowClick} darkMode={darkMode} />
+      )}
+
+      {view === "debt" && !debtLedgerOpen && (
+        <DebtList
+          onViewLedger={handleViewLedger}
+          onRecordPayment={handleRecordPayment}
+          clients={
+            client?.data?.map((c) => ({
+              client_id: c.clients_id,
+              id: c.clients_id,
+              name: c.clients_name,
+              clients_name: c.clients_name,
+              phone: c.clients_nomer,
+              clients_nomer: c.clients_nomer,
+            })) || []
+          }
+          darkMode={darkMode}
+        />
+      )}
+
+      {view === "debt" && debtLedgerOpen && (
+        <DebtLedger
+          clientId={selectedClientId}
+          client={selectedClient}
+          onBack={() => setDebtLedgerOpen(false)}
+          onRecordPayment={handleRecordPayment}
+          darkMode={darkMode}
+        />
+      )}
+
+      {/* Profit Detail Modal */}
+      <ProfitDetailModal
+        invoiceId={selectedInvoice}
+        open={profitDetailOpen}
+        onClose={() => {
+          setProfitDetailOpen(false);
+          setSelectedInvoice(null);
+        }}
+        onAdjust={handleProfitAdjust}
+        isAdmin={isAdmin}
+        darkMode={darkMode}
+      />
+
+      {/* Record Payment Modal */}
+      <RecordPaymentModal
+        clientId={selectedClientId}
+        client={selectedClient}
+        outstanding={paymentOutstanding}
+        open={paymentModalOpen}
+        onClose={() => {
+          setPaymentModalOpen(false);
+          setSelectedClientId(null);
+          setSelectedClient(null);
+          setPaymentOutstanding(0);
+        }}
+        onSuccess={handlePaymentSuccess}
+        darkMode={darkMode}
+      />
+    </>
+  );
 }
 
-export default Debts
+export default Debts;

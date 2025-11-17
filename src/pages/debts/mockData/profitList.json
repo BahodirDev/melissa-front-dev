@@ -1,0 +1,63 @@
+{
+  "page": 1,
+  "limit": 20,
+  "total": 134,
+  "data": [
+    {
+      "invoice_id": "INV-2025-1001",
+      "date": "2025-11-15T10:23:00Z",
+      "store": "toshkent-1",
+      "product_count": 4,
+      "revenue": 350000,
+      "cost": 200000,
+      "profit": 150000,
+      "profit_percent": 42.86,
+      "status": "completed"
+    },
+    {
+      "invoice_id": "INV-2025-1002",
+      "date": "2025-11-15T09:15:00Z",
+      "store": "toshkent-2",
+      "product_count": 8,
+      "revenue": 520000,
+      "cost": 320000,
+      "profit": 200000,
+      "profit_percent": 38.46,
+      "status": "completed"
+    },
+    {
+      "invoice_id": "INV-2025-1003",
+      "date": "2025-11-14T16:45:00Z",
+      "store": "toshkent-1",
+      "product_count": 2,
+      "revenue": 180000,
+      "cost": 120000,
+      "profit": 60000,
+      "profit_percent": 33.33,
+      "status": "completed"
+    },
+    {
+      "invoice_id": "INV-2025-1004",
+      "date": "2025-11-14T14:30:00Z",
+      "store": "toshkent-2",
+      "product_count": 12,
+      "revenue": 750000,
+      "cost": 450000,
+      "profit": 300000,
+      "profit_percent": 40.0,
+      "status": "completed"
+    },
+    {
+      "invoice_id": "INV-2025-1005",
+      "date": "2025-11-13T11:20:00Z",
+      "store": "toshkent-1",
+      "product_count": 6,
+      "revenue": 420000,
+      "cost": 280000,
+      "profit": 140000,
+      "profit_percent": 33.33,
+      "status": "completed"
+    }
+  ]
+}
+

@@ -1,0 +1,152 @@
+.date-range-picker {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.date-range-inputs {
+	display: flex;
+	gap: 12px;
+	align-items: flex-end;
+}
+
+.date-input-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1;
+}
+
+.date-input-group label {
+	font-size: 14px;
+	font-weight: 500;
+	color: #374151;
+}
+
+.date-range-picker.dark .date-input-group label {
+	color: #9da9bb;
+}
+
+.date-input {
+	padding: 8px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #1f2937;
+	background: #ffffff;
+	transition: all 0.2s;
+}
+
+.date-input:focus {
+	outline: none;
+	border-color: #059669;
+	box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.date-range-picker.dark .date-input {
+	background: #0b1727;
+	border-color: #344050;
+	color: #d8e2ef;
+}
+
+.date-range-picker.dark .date-input:focus {
+	border-color: #059669;
+	box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+}
+
+.date-range-presets {
+	position: relative;
+}
+
+.preset-toggle {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 12px;
+	background: #f8fafc;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #374151;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.preset-toggle:hover {
+	background: #f1f5f9;
+	border-color: #d1d5db;
+}
+
+.preset-toggle:focus {
+	outline: none;
+	border-color: #059669;
+	box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.date-range-picker.dark .preset-toggle {
+	background: #0b1727;
+	border-color: #344050;
+	color: #9da9bb;
+}
+
+.date-range-picker.dark .preset-toggle:hover {
+	background: #162231;
+}
+
+.preset-dropdown {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	margin-top: 4px;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	min-width: 120px;
+	z-index: 10;
+	overflow: hidden;
+}
+
+.date-range-picker.dark .preset-dropdown {
+	background: #121e2d;
+	border-color: #344050;
+}
+
+.preset-option {
+	display: block;
+	width: 100%;
+	padding: 8px 12px;
+	text-align: left;
+	background: none;
+	border: none;
+	font-size: 14px;
+	color: #374151;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.preset-option:hover {
+	background: #f3f4f6;
+}
+
+.preset-option:focus {
+	outline: none;
+	background: #f3f4f6;
+}
+
+.date-range-picker.dark .preset-option {
+	color: #d8e2ef;
+}
+
+.date-range-picker.dark .preset-option:hover,
+.date-range-picker.dark .preset-option:focus {
+	background: #232e3c;
+}
+
+@media (max-width: 768px) {
+	.date-range-inputs {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
+

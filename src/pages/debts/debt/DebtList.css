@@ -1,0 +1,329 @@
+.debt-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* Info Banner */
+.debt-list-info-banner {
+	display: flex;
+	gap: 12px;
+	padding: 16px;
+	background: #eff6ff;
+	border: 1px solid #bfdbfe;
+	border-radius: 8px;
+	border-left: 4px solid #3b82f6;
+}
+
+.debt-list.dark .debt-list-info-banner {
+	background: rgba(59, 130, 246, 0.1);
+	border-color: rgba(59, 130, 246, 0.3);
+	border-left-color: #60a5fa;
+}
+
+.debt-list-info-banner-icon {
+	display: flex;
+	align-items: flex-start;
+	color: #3b82f6;
+	flex-shrink: 0;
+}
+
+.debt-list.dark .debt-list-info-banner-icon {
+	color: #60a5fa;
+}
+
+.debt-list-info-banner-content {
+	flex: 1;
+}
+
+.debt-list-info-banner-content strong {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1e40af;
+	margin-bottom: 4px;
+}
+
+.debt-list.dark .debt-list-info-banner-content strong {
+	color: #93c5fd;
+}
+
+.debt-list-info-banner-content p {
+	margin: 0;
+	font-size: 13px;
+	color: #1e3a8a;
+	line-height: 1.5;
+}
+
+.debt-list.dark .debt-list-info-banner-content p {
+	color: #bfdbfe;
+}
+
+.debt-list-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.debt-list-title {
+	font-size: 20px;
+	font-weight: 600;
+	color: #1f2937;
+	margin: 0;
+}
+
+.debt-list.dark .debt-list-title {
+	color: #d8e2ef;
+}
+
+.debt-list-create-btn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 20px;
+	background: #059669;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.debt-list-create-btn:hover {
+	background: #047857;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.debt-list-create-btn:focus {
+	outline: 2px solid #059669;
+	outline-offset: 2px;
+}
+
+.debt-list-filters {
+	padding: 16px;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+}
+
+.debt-list.dark .debt-list-filters {
+	background: #121e2d;
+	border-color: #344050;
+}
+
+.debt-list-filters-row {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.debt-list-search {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	background: #ffffff;
+}
+
+.debt-list.dark .debt-list-search {
+	background: #0b1727;
+	border-color: #344050;
+}
+
+.debt-list-search-input {
+	flex: 1;
+	border: none;
+	outline: none;
+	font-size: 14px;
+	color: #1f2937;
+	background: transparent;
+}
+
+.debt-list.dark .debt-list-search-input {
+	color: #d8e2ef;
+}
+
+.debt-list-search-input::placeholder {
+	color: #9ca3af;
+}
+
+.debt-list-filter-buttons {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.debt-list-filter-btn {
+	padding: 8px 16px;
+	background: #f3f4f6;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #374151;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.debt-list-filter-btn:hover {
+	background: #e5e7eb;
+}
+
+.debt-list-filter-btn.active {
+	background: #059669;
+	color: #ffffff;
+	border-color: #059669;
+}
+
+.debt-list-filter-btn:focus {
+	outline: 2px solid #059669;
+	outline-offset: 2px;
+}
+
+.debt-outstanding.has-debt {
+	color: #ef4444;
+	font-weight: 600;
+}
+
+.debt-outstanding.cleared {
+	color: #059669;
+	font-weight: 600;
+}
+
+.debt-status {
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.debt-status.overdue {
+	background: #fff1f2;
+	color: #ef4444;
+}
+
+.debt-status.active {
+	background: #fef3c7;
+	color: #d97706;
+}
+
+.debt-status.cleared {
+	background: #ecfdf5;
+	color: #059669;
+}
+
+.debt-list-actions {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+}
+
+.debt-list-action-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px;
+	background: #f3f4f6;
+	border: none;
+	border-radius: 4px;
+	color: #374151;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.debt-list-action-btn:hover {
+	background: #e5e7eb;
+	color: #1f2937;
+}
+
+.debt-list-action-btn:focus {
+	outline: 2px solid #059669;
+	outline-offset: 2px;
+}
+
+.debt-list.dark .debt-list-action-btn {
+	background: #232e3c;
+	color: #9da9bb;
+}
+
+.debt-list.dark .debt-list-action-btn:hover {
+	background: #344050;
+	color: #d8e2ef;
+}
+
+.debt-list-error {
+	padding: 16px;
+	background: #fff1f2;
+	border: 1px solid #fecdd3;
+	border-radius: 8px;
+	color: #ef4444;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.debt-list.dark .debt-list-error {
+	background: rgba(239, 68, 68, 0.1);
+	border-color: rgba(239, 68, 68, 0.3);
+	color: #f87171;
+}
+
+.debt-list-error button {
+	padding: 6px 12px;
+	background: #ef4444;
+	color: #ffffff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.debt-list-pagination {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 16px;
+	padding: 16px;
+}
+
+.debt-list-pagination button {
+	padding: 8px 16px;
+	background: #f3f4f6;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.debt-list-pagination button:hover:not(:disabled) {
+	background: #e5e7eb;
+}
+
+.debt-list-pagination button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.debt-list-pagination span {
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.debt-list.dark .debt-list-pagination span {
+	color: #9da9bb;
+}
+
+@media (max-width: 768px) {
+	.debt-list-filter-buttons {
+		flex-direction: column;
+	}
+
+	.debt-list-filter-btn {
+		width: 100%;
+	}
+}
+

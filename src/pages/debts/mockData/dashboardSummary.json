@@ -1,0 +1,89 @@
+{
+  "profit": {
+    "today": {
+      "total": 450000,
+      "revenue": 1200000,
+      "cost": 750000,
+      "sparkline": [120000, 150000, 180000, 200000, 220000, 250000, 450000]
+    },
+    "yesterday": {
+      "total": 380000,
+      "revenue": 1050000,
+      "cost": 670000,
+      "sparkline": [100000, 120000, 150000, 180000, 200000, 220000, 380000]
+    },
+    "week": {
+      "total": 3200000,
+      "revenue": 8500000,
+      "cost": 5300000,
+      "sparkline": [400000, 800000, 1200000, 1800000, 2400000, 2800000, 3200000]
+    },
+    "last_week": {
+      "total": 2800000,
+      "revenue": 7500000,
+      "cost": 4700000,
+      "sparkline": [350000, 700000, 1100000, 1600000, 2100000, 2500000, 2800000]
+    },
+    "month": {
+      "total": 8500000,
+      "revenue": 22000000,
+      "cost": 13500000,
+      "sparkline": [500000, 1200000, 2000000, 3500000, 5000000, 6500000, 8500000]
+    },
+    "last_month": {
+      "total": 7200000,
+      "revenue": 19000000,
+      "cost": 11800000,
+      "sparkline": [400000, 1000000, 1800000, 3000000, 4500000, 5800000, 7200000]
+    },
+    "year": {
+      "total": 95000000,
+      "revenue": 250000000,
+      "cost": 155000000,
+      "sparkline": [5000000, 15000000, 30000000, 50000000, 70000000, 85000000, 95000000]
+    },
+    "last_year": {
+      "total": 82000000,
+      "revenue": 215000000,
+      "cost": 133000000,
+      "sparkline": [4000000, 12000000, 25000000, 42000000, 60000000, 73000000, 82000000]
+    },
+    "period": {
+      "total": 15000000,
+      "revenue": 40000000,
+      "cost": 25000000,
+      "sparkline": [1000000, 3000000, 6000000, 9000000, 12000000, 13500000, 15000000]
+    }
+  },
+  "debt": {
+    "outstanding": 450000,
+    "overdue": 320000,
+    "active_clients": 8,
+    "sparkline": [500000, 480000, 460000, 450000, 440000, 445000, 450000]
+  },
+  "analysis": {
+    "top_products": [
+      { "name": "olma", "profit": 150000, "revenue": 300000, "cost": 150000 },
+      { "name": "banan", "profit": 120000, "revenue": 250000, "cost": 130000 },
+      { "name": "uzum", "profit": 100000, "revenue": 200000, "cost": 100000 },
+      { "name": "anor", "profit": 80000, "revenue": 180000, "cost": 100000 }
+    ],
+    "top_stores": [
+      { "name": "Toshkent-1", "profit": 250000, "revenue": 600000, "cost": 350000 },
+      { "name": "Toshkent-2", "profit": 200000, "revenue": 500000, "cost": 300000 },
+      { "name": "Samarqand", "profit": 0, "revenue": 100000, "cost": 100000 }
+    ],
+    "time_breakdown": [
+      { "label": "08:00-12:00", "profit": 150000, "revenue": 400000, "cost": 250000 },
+      { "label": "12:00-16:00", "profit": 200000, "revenue": 500000, "cost": 300000 },
+      { "label": "16:00-20:00", "profit": 100000, "revenue": 300000, "cost": 200000 }
+    ],
+    "insights": [
+      "Eng ko'p foyda keltirgan mahsulot: olma (150,000 so'm)",
+      "Eng samarali do'kon: Toshkent-1 (250,000 so'm foyda)",
+      "Eng faol vaqt: 12:00-16:00 (200,000 so'm foyda)",
+      "Foyda o'sishi: o'tgan davrga nisbatan +18.4%"
+    ]
+  }
+}
+

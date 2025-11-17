@@ -1,0 +1,143 @@
+.period-comparison {
+	padding: 20px;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	margin-bottom: 24px;
+}
+
+.period-comparison.dark {
+	background: #121e2d;
+	border-color: #344050;
+}
+
+.period-comparison-header {
+	margin-bottom: 16px;
+}
+
+.period-comparison-title {
+	font-size: 18px;
+	font-weight: 600;
+	color: #1f2937;
+	margin: 0;
+}
+
+.period-comparison.dark .period-comparison-title {
+	color: #d8e2ef;
+}
+
+.period-comparison-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 16px;
+}
+
+.comparison-card {
+	padding: 16px;
+	background: #f8fafc;
+	border-radius: 6px;
+	border: 1px solid #e5e7eb;
+}
+
+.period-comparison.dark .comparison-card {
+	background: #0b1727;
+	border-color: #344050;
+}
+
+.comparison-card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+.comparison-label {
+	font-size: 14px;
+	font-weight: 500;
+	color: #6b7280;
+}
+
+.period-comparison.dark .comparison-label {
+	color: #9da9bb;
+}
+
+.comparison-item {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 4px 8px;
+	border-radius: 4px;
+}
+
+.comparison-item-increase {
+	background: #ecfdf5;
+	color: #059669;
+}
+
+.period-comparison.dark .comparison-item-increase {
+	background: rgba(5, 150, 105, 0.2);
+	color: #10b981;
+}
+
+.comparison-item-decrease {
+	background: #fff1f2;
+	color: #ef4444;
+}
+
+.period-comparison.dark .comparison-item-decrease {
+	background: rgba(239, 68, 68, 0.2);
+	color: #f87171;
+}
+
+.comparison-item-neutral {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+	color: #9ca3af;
+}
+
+.comparison-values {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.comparison-value {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.comparison-value-label {
+	font-size: 13px;
+	color: #6b7280;
+}
+
+.period-comparison.dark .comparison-value-label {
+	color: #9da9bb;
+}
+
+.comparison-value-current {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1f2937;
+}
+
+.period-comparison.dark .comparison-value-current {
+	color: #d8e2ef;
+}
+
+.comparison-value-previous {
+	font-size: 14px;
+	color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+	.period-comparison-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
