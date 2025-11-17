@@ -30,6 +30,9 @@ function DataTable({
 	const [sortKey, setSortKey] = useState(null)
 	const [sortOrder, setSortOrder] = useState("asc")
 
+	// Ensure data is always an array
+	const safeData = Array.isArray(data) ? data : []
+
 	const handleSort = (key, sortable) => {
 		if (!sortable || !onSort) return
 
@@ -42,7 +45,7 @@ function DataTable({
 	const handleSelectAll = (e) => {
 		if (!selectable || !onSelectionChange) return
 		if (e.target.checked) {
-			onSelectionChange(data.map((row) => row.id || row.invoice_id || row.client_id))
+			onSelectionChange(safeData.map((row) => row.id || row.invoice_id || row.client_id))
 		} else {
 			onSelectionChange([])
 		}
@@ -58,8 +61,8 @@ function DataTable({
 		}
 	}
 
-	const isAllSelected = selectable && data.length > 0 && selectedRows.length === data.length
-	const isIndeterminate = selectable && selectedRows.length > 0 && selectedRows.length < data.length
+	const isAllSelected = selectable && safeData.length > 0 && selectedRows.length === safeData.length
+	const isIndeterminate = selectable && selectedRows.length > 0 && selectedRows.length < safeData.length
 
 	if (loading) {
 		return (
@@ -77,7 +80,7 @@ function DataTable({
 		)
 	}
 
-	if (!data || data.length === 0) {
+	if (!safeData || safeData.length === 0) {
 		return null // Empty state handled by parent
 	}
 
@@ -143,7 +146,7 @@ function DataTable({
 					</tr>
 				</thead>
 				<tbody>
-					{data.map((row, rowIdx) => {
+					{safeData.map((row, rowIdx) => {
 						const rowId = row.id || row.invoice_id || row.client_id || rowIdx
 						const isSelected = selectedRows.includes(rowId)
 						return (

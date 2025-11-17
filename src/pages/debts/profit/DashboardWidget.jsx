@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react"
 import MetricCard from "../components/MetricCard"
 import PeriodComparison from "./PeriodComparison"
 import ProfitAnalysis from "./ProfitAnalysis"
-import { dashboardApi } from "../services/mockApi"
+import { get } from "../../../customHook/api";
+import { toast } from "react-toastify";
 import "./DashboardWidget.css"
 
 /**
@@ -23,34 +24,43 @@ function DashboardWidget({ onProfitClick, onDebtClick, period = "today", darkMod
 		setAnalysisLoading(true)
 		
 		// Load summary data
-		dashboardApi
-			.getSummary(period)
-			.then((response) => {
-				if (response.status === 200) {
-					setData(response.data)
+		const loadSummary = async () => {
+			try {
+				const queryParams = new URLSearchParams({ period });
+				const response = await get(`/profit/dashboard/summary?${queryParams.toString()}`);
+				if (response?.status === 200 || response?.status === 201) {
+					setData(response.data);
+				} else {
+					console.error("Dashboard data error:", response);
+					toast.error("Dashboard ma'lumotlarini yuklashda xatolik");
 				}
-			})
-			.catch((error) => {
-				console.error("Dashboard data error:", error)
-			})
-			.finally(() => {
-				setLoading(false)
-			})
+			} catch (error) {
+				console.error("Dashboard data error:", error);
+				toast.error("Dashboard ma'lumotlarini yuklashda xatolik");
+			} finally {
+				setLoading(false);
+			}
+		};
 		
 		// Load analysis data
-		dashboardApi
-			.getAnalysis(period)
-			.then((response) => {
-				if (response.status === 200) {
-					setAnalysisData(response.data)
+		const loadAnalysis = async () => {
+			try {
+				const queryParams = new URLSearchParams({ period });
+				const response = await get(`/profit/dashboard/analysis?${queryParams.toString()}`);
+				if (response?.status === 200 || response?.status === 201) {
+					setAnalysisData(response.data);
+				} else {
+					console.error("Analysis data error:", response);
 				}
-			})
-			.catch((error) => {
-				console.error("Analysis data error:", error)
-			})
-			.finally(() => {
-				setAnalysisLoading(false)
-			})
+			} catch (error) {
+				console.error("Analysis data error:", error);
+			} finally {
+				setAnalysisLoading(false);
+			}
+		};
+
+		loadSummary();
+		loadAnalysis();
 	}, [period])
 
 	if (loading) {

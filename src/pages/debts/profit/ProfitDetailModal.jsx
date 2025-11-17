@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react"
 import { Download, Pencil } from "@phosphor-icons/react"
 import Modal from "../components/Modal"
 import DataTable from "../components/DataTable"
-import { profitApi } from "../services/mockApi"
+import { get } from "../../../customHook/api";
+import { toast } from "react-toastify";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import "./ProfitDetailModal.css"
 
 /**
@@ -30,15 +33,17 @@ function ProfitDetailModal({ invoiceId, open, onClose, onAdjust, isAdmin = false
 		setLoading(true)
 		setError(null)
 		try {
-			const response = await profitApi.getDetail(invoiceId)
-			if (response.status === 200) {
+			const response = await get(`/profit/detail/${invoiceId}`)
+			if (response?.status === 200 || response?.status === 201) {
 				setData(response.data)
 				setLastUpdated(new Date())
 			} else {
 				setError("Ma'lumotlarni yuklashda xatolik")
+				toast.error("Ma'lumotlarni yuklashda xatolik")
 			}
 		} catch (err) {
 			setError("Ma'lumotlarni yuklashda xatolik")
+			toast.error("Ma'lumotlarni yuklashda xatolik")
 		} finally {
 			setLoading(false)
 		}
@@ -62,8 +67,120 @@ function ProfitDetailModal({ invoiceId, open, onClose, onAdjust, isAdmin = false
 	}
 
 	const handleExport = () => {
-		// Mock export
-		console.log("Exporting invoice:", invoiceId)
+		if (!data || !data.items || data.items.length === 0) {
+			toast.warning("Eksport qilish uchun ma'lumot mavjud emas");
+			return;
+		}
+
+		try {
+			const doc = new jsPDF("portrait", "mm", "a4");
+
+			// Title
+			doc.setFontSize(18);
+			doc.text(`Foyda Tafsilotlari: ${data.invoice_id}`, 14, 15);
+
+			// Invoice info
+			doc.setFontSize(10);
+			let yPos = 25;
+			doc.text(`Sana: ${formatDate(data.date)}`, 14, yPos);
+			yPos += 6;
+			doc.text(`Do'kon: ${data.store}`, 14, yPos);
+			yPos += 6;
+			doc.text(`Mahsulotlar soni: ${data.items.length} ta`, 14, yPos);
+			yPos += 10;
+
+			// Prepare table data
+			const tableData = data.items.map((item) => [
+				item.name || "",
+				`${item.qty || 0} ta`,
+				formatCurrency(item.unit_price),
+				formatCurrency(item.revenue),
+				formatCurrency(item.cost),
+				formatCurrency(item.profit),
+			]);
+
+			// Add totals row
+			tableData.push([
+				"JAMI:",
+				"",
+				"",
+				formatCurrency(data.totals.revenue),
+				formatCurrency(data.totals.cost),
+				formatCurrency(data.totals.profit),
+			]);
+
+			// Create table
+			autoTable(doc, {
+				startY: yPos,
+				head: [
+					[
+						"Mahsulot",
+						"Miqdor",
+						"Narx (sotuv)",
+						"Daromad",
+						"Xarajat",
+						"Foyda",
+					],
+				],
+				body: tableData,
+				theme: "striped",
+				headStyles: {
+					fillColor: [66, 139, 202],
+					textColor: 255,
+					fontStyle: "bold",
+				},
+				styles: {
+					fontSize: 9,
+					cellPadding: 3,
+				},
+				columnStyles: {
+					0: { cellWidth: 60 },
+					1: { cellWidth: 25, halign: "center" },
+					2: { cellWidth: 30, halign: "right" },
+					3: { cellWidth: 30, halign: "right" },
+					4: { cellWidth: 30, halign: "right" },
+					5: { cellWidth: 30, halign: "right" },
+				},
+				margin: { top: yPos, left: 14, right: 14 },
+			});
+
+			// Footer
+			const pageCount = doc.internal.getNumberOfPages();
+			for (let i = 1; i <= pageCount; i++) {
+				doc.setPage(i);
+				doc.setFontSize(8);
+				doc.text(
+					`Sahifa ${i} / ${pageCount}`,
+					doc.internal.pageSize.getWidth() / 2,
+					doc.internal.pageSize.getHeight() - 10,
+					{ align: "center" }
+				);
+				doc.text(
+					new Date().toLocaleString("uz-UZ"),
+					doc.internal.pageSize.getWidth() - 14,
+					doc.internal.pageSize.getHeight() - 10,
+					{ align: "right" }
+				);
+			}
+
+			// Generate filename
+			const now = new Date();
+			const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+				.toString()
+				.padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
+			const formattedTime = `${now.getHours().toString().padStart(2, "0")}-${now
+				.getMinutes()
+				.toString()
+				.padStart(2, "0")}-${now.getSeconds().toString().padStart(2, "0")}`;
+			const filename = `Foyda_tafsiloti_${data.invoice_id}_${formattedDate}_${formattedTime}.pdf`;
+
+			// Save PDF
+			doc.save(filename);
+			toast.success("PDF muvaffaqiyatli yuklab olindi");
+		} catch (error) {
+			console.error("Export error:", error);
+			toast.error("PDF yuklab olishda xatolik");
+		}
 	}
 
 	const columns = [

@@ -3,9 +3,14 @@ import { toast } from "react-toastify"
 
 const apiRequest = async (method, endpoint, data) => {
 	try {
+		// Remove leading slash from endpoint if present, and ensure base URL doesn't have trailing slash
+		const baseUrl = (process.env.REACT_APP_URL || '').replace(/\/+$/, '');
+		const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+		const url = `${baseUrl}${cleanEndpoint}`;
+		
 		const response = await axios({
 			method,
-			url: `${process.env.REACT_APP_URL + endpoint}`,
+			url,
 			data,
 		})
 		if (response?.status === 400 || response?.status === 403) {

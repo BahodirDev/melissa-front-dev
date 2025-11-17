@@ -12,8 +12,10 @@ import DataTable from "../components/DataTable";
 import DateRangePicker from "../components/DateRangePicker";
 import EmptyState from "../components/EmptyState";
 import MetricCard from "../components/MetricCard";
-import { profitApi, getStores } from "../services/mockApi";
+import { get } from "../../../customHook/api";
 import { Select } from "antd";
+import { toast } from "react-toastify";
+import { exportToCSV, exportToPDF } from "../utils/exportUtils";
 import "./ProfitList.css";
 
 /**
@@ -41,8 +43,7 @@ function ProfitList({ onRowClick, darkMode = false }) {
   const [sortOrder, setSortOrder] = useState("desc");
   const [selectedRows, setSelectedRows] = useState([]);
   const [summary, setSummary] = useState({ total: 0, revenue: 0, cost: 0 });
-
-  const stores = getStores();
+  const [stores, setStores] = useState([]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("uz-UZ", {
@@ -59,43 +60,93 @@ function ProfitList({ onRowClick, darkMode = false }) {
     });
   };
 
+  const loadStores = async () => {
+    try {
+      const response = await get("/store/store-list");
+      if (response?.status === 200 || response?.status === 201) {
+        const storesData = response.data?.data || response.data || [];
+        setStores(storesData.map(store => ({
+          value: store.store_name,
+          label: store.store_name
+        })));
+      }
+    } catch (err) {
+      console.error("Stores load error:", err);
+    }
+  };
+
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await profitApi.getList({
-        ...filters,
-        page: pagination.page,
-        limit: pagination.limit,
-        sortBy,
-        sortOrder,
+      const queryParams = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+        sortBy: sortBy,
+        sortOrder: sortOrder,
       });
-      if (response.status === 200) {
-        setData(response.data.data);
+
+      if (filters.from) {
+        const fromDate = filters.from instanceof Date ? filters.from.toISOString() : filters.from;
+        queryParams.append("from", fromDate);
+      }
+      if (filters.to) {
+        const toDate = filters.to instanceof Date ? filters.to.toISOString() : filters.to;
+        queryParams.append("to", toDate);
+      }
+      if (filters.store) {
+        queryParams.append("store", filters.store);
+      }
+      if (filters.minProfit) {
+        queryParams.append("minProfit", filters.minProfit.toString());
+      }
+      if (filters.search) {
+        queryParams.append("search", filters.search);
+      }
+
+      const response = await get(`/profit/list?${queryParams.toString()}`);
+      
+      if (response?.status === 200 || response?.status === 201) {
+        // Ensure we always have an array
+        let responseData = [];
+        if (Array.isArray(response.data?.data)) {
+          responseData = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          responseData = response.data;
+        } else if (response.data && typeof response.data === 'object' && Array.isArray(response.data.data)) {
+          responseData = response.data.data;
+        }
+        setData(responseData);
         setPagination((prev) => ({
           ...prev,
-          total: response.data.total,
+          total: response.data?.total || responseData.length,
         }));
 
         // Calculate summary
-        const totals = response.data.data.reduce(
+        const totals = responseData.reduce(
           (acc, item) => ({
-            total: acc.total + item.profit,
-            revenue: acc.revenue + item.revenue,
-            cost: acc.cost + item.cost,
+            total: acc.total + parseFloat(item.profit || 0),
+            revenue: acc.revenue + parseFloat(item.revenue || 0),
+            cost: acc.cost + parseFloat(item.cost || 0),
           }),
           { total: 0, revenue: 0, cost: 0 }
         );
         setSummary(totals);
       } else {
         setError("Ma'lumotlarni yuklashda xatolik");
+        toast.error("Ma'lumotlarni yuklashda xatolik");
       }
     } catch (err) {
       setError("Ma'lumotlarni yuklashda xatolik");
+      toast.error("Ma'lumotlarni yuklashda xatolik");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadStores();
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -120,13 +171,39 @@ function ProfitList({ onRowClick, darkMode = false }) {
     setSortOrder(order);
   };
 
-  const handleExport = (format) => {
-    // Mock export
-    console.log(
-      `Exporting to ${format}`,
-      selectedRows.length > 0 ? selectedRows : "all"
-    );
-    // In real app, this would call an API
+  const handleExport = async (format) => {
+    try {
+      let dataToExport = data;
+      let isSelectedOnly = false;
+
+      // If rows are selected, export only selected rows
+      if (selectedRows.length > 0) {
+        dataToExport = data.filter((item) =>
+          selectedRows.some((selected) => selected.invoice_id === item.invoice_id)
+        );
+        isSelectedOnly = true;
+      }
+
+      if (!dataToExport || dataToExport.length === 0) {
+        toast.warning("Eksport qilish uchun ma'lumot mavjud emas");
+        return;
+      }
+
+      if (format === "csv") {
+        exportToCSV(dataToExport, summary, isSelectedOnly);
+        toast.success(
+          `${dataToExport.length} ta yozuv CSV formatida yuklab olindi`
+        );
+      } else if (format === "pdf") {
+        exportToPDF(dataToExport, summary, filters, isSelectedOnly);
+        toast.success(
+          `${dataToExport.length} ta yozuv PDF formatida yuklab olindi`
+        );
+      }
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Eksport qilishda xatolik yuz berdi");
+    }
   };
 
   const columns = [
@@ -177,20 +254,23 @@ function ProfitList({ onRowClick, darkMode = false }) {
       key: "profit_percent",
       label: "Foyda %",
       sortable: true,
-      render: (value) => (
-        <span
-          className={`profit-percent ${
-            value >= 30 ? "high" : value >= 15 ? "medium" : "low"
-          }`}
-        >
-          {value >= 30 ? (
-            <TrendUp size={14} />
-          ) : value < 15 ? (
-            <TrendDown size={14} />
-          ) : null}
-          {value.toFixed(1)}%
-        </span>
-      ),
+      render: (value) => {
+        const numValue = parseFloat(value) || 0;
+        return (
+          <span
+            className={`profit-percent ${
+              numValue >= 30 ? "high" : numValue >= 15 ? "medium" : "low"
+            }`}
+          >
+            {numValue >= 30 ? (
+              <TrendUp size={14} />
+            ) : numValue < 15 ? (
+              <TrendDown size={14} />
+            ) : null}
+            {numValue.toFixed(1)}%
+          </span>
+        );
+      },
     },
   ];
 
@@ -260,68 +340,87 @@ function ProfitList({ onRowClick, darkMode = false }) {
           </button>
         </div>
         <div className="profit-list-filters-row">
-          <div className="profit-list-filter-group">
-            <label>
-              Sana oralig'i
-              <span
-                className="profit-list-filter-help"
-                title="Foyda ma'lumotlarini qaysi davr uchun ko'rsatish"
+          <div className="profit-list-filters-inline">
+            <div className="profit-list-date-wrapper">
+              <label className="profit-list-inline-label">
+                Sana oralig'i
+                <span
+                  className="profit-list-filter-help"
+                  title="Foyda ma'lumotlarini qaysi davr uchun ko'rsatish"
+                >
+                  <Info size={14} />
+                </span>
+              </label>
+              <div className="profit-list-date-inputs-inline">
+                <div className="profit-list-date-input-group">
+                  <label htmlFor="date-from-inline" className="profit-list-date-input-label">Dan</label>
+                  <input
+                    id="date-from-inline"
+                    type="date"
+                    value={filters.from || ""}
+                    onChange={(e) => handleDateRangeChange({ from: e.target.value, to: filters.to })}
+                    className="profit-list-date-input"
+                  />
+                </div>
+                <div className="profit-list-date-input-group">
+                  <label htmlFor="date-to-inline" className="profit-list-date-input-label">Gacha</label>
+                  <input
+                    id="date-to-inline"
+                    type="date"
+                    value={filters.to || ""}
+                    onChange={(e) => handleDateRangeChange({ from: filters.from, to: e.target.value })}
+                    className="profit-list-date-input"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="profit-list-filter-item-inline">
+              <label>
+                Do'kon
+                <span
+                  className="profit-list-filter-help"
+                  title="Ma'lum bir do'kon uchun foyda ma'lumotlarini ko'rsatish"
+                >
+                  <Info size={14} />
+                </span>
+              </label>
+              <Select
+                placeholder="Barcha do'konlar"
+                className="profit-list-select"
+                value={filters.store}
+                onChange={(value) => handleFilterChange("store", value)}
+                allowClear
               >
-                <Info size={14} />
-              </span>
-            </label>
-            <DateRangePicker
-              value={{ from: filters.from, to: filters.to }}
-              onChange={handleDateRangeChange}
-              darkMode={darkMode}
-            />
-          </div>
-          <div className="profit-list-filter-group">
-            <label>
-              Do'kon
-              <span
-                className="profit-list-filter-help"
-                title="Ma'lum bir do'kon uchun foyda ma'lumotlarini ko'rsatish"
-              >
-                <Info size={14} />
-              </span>
-            </label>
-            <Select
-              placeholder="Barcha do'konlar"
-              className="profit-list-select"
-              value={filters.store}
-              onChange={(value) => handleFilterChange("store", value)}
-              allowClear
-            >
-              {stores.map((store) => (
-                <Select.Option key={store.value} value={store.value}>
-                  {store.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-          <div className="profit-list-filter-group">
-            <label>
-              Minimal foyda
-              <span
-                className="profit-list-filter-help"
-                title="Faqat shu summa va undan yuqori foyda ko'rsatkichlarini ko'rsatish"
-              >
-                <Info size={14} />
-              </span>
-            </label>
-            <input
-              type="number"
-              className="profit-list-input"
-              placeholder="Masalan: 100000"
-              value={filters.minProfit || ""}
-              onChange={(e) =>
-                handleFilterChange(
-                  "minProfit",
-                  e.target.value ? Number(e.target.value) : null
-                )
-              }
-            />
+                {stores.map((store) => (
+                  <Select.Option key={store.value} value={store.value}>
+                    {store.label}
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
+            <div className="profit-list-filter-item-inline">
+              <label>
+                Minimal foyda
+                <span
+                  className="profit-list-filter-help"
+                  title="Faqat shu summa va undan yuqori foyda ko'rsatkichlarini ko'rsatish"
+                >
+                  <Info size={14} />
+                </span>
+              </label>
+              <input
+                type="number"
+                className="profit-list-input"
+                placeholder="Masalan: 100000"
+                value={filters.minProfit || ""}
+                onChange={(e) =>
+                  handleFilterChange(
+                    "minProfit",
+                    e.target.value ? Number(e.target.value) : null
+                  )
+                }
+              />
+            </div>
           </div>
         </div>
         <div className="profit-list-filters-row profit-list-filters-actions">
