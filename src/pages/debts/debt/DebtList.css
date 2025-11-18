@@ -256,6 +256,26 @@
 	color: #d8e2ef;
 }
 
+.debt-list-action-btn-danger {
+	background: #fee2e2 !important;
+	color: #dc2626 !important;
+}
+
+.debt-list-action-btn-danger:hover {
+	background: #fecaca !important;
+	color: #b91c1c !important;
+}
+
+.debt-list.dark .debt-list-action-btn-danger {
+	background: rgba(220, 38, 38, 0.2) !important;
+	color: #f87171 !important;
+}
+
+.debt-list.dark .debt-list-action-btn-danger:hover {
+	background: rgba(220, 38, 38, 0.3) !important;
+	color: #ef4444 !important;
+}
+
 .debt-list-error {
 	padding: 16px;
 	background: #fff1f2;
