@@ -52,13 +52,14 @@
 }
 
 .statistics-row-selected td {
-	background-color: #ffe2e5 !important;
-	color: #7a0026;
+	/* background-color: #c2bbbb !important; */
+	background: rgba(33, 36, 185, 0.888) !important;
+	color: rgba(67, 192, 201, 0.784) !important;
 }
 
 .statistics-page.dark .statistics-row-selected td {
-	background-color: #4b1130 !important;
-	color: #ffabc1;
+	background: rgba(33, 36, 185, 0.888) !important;
+	color: rgba(67, 192, 201, 0.784) !important;
 }
 
 .statistics-download {
@@ -66,4 +67,3 @@
 	justify-content: flex-end;
 	margin-top: 16px;
 }
-
