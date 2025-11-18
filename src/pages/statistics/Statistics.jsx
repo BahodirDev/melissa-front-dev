@@ -1,4 +1,10 @@
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { Table, Select, Checkbox } from "antd";
 import { useOutletContext } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,10 +15,9 @@ import Pagination from "../../components/pagination/Pagination";
 import Search from "../../components/search/Search";
 import "./statistics.css";
 import Loader from "../../components/loader/Loader";
-import { get, downloadNewList } from "../../customHook/api";
+import { get } from "../../customHook/api";
 import { toast } from "react-toastify";
 import { setData, setQuantity } from "../../components/reducers/stats";
-import { confirmDownloadModal } from "../../components/confirm_download_modal/confirmDownloadModal";
 
 const USE_MOCK = process.env.REACT_APP_USE_MOCK_STATS === "true";
 
@@ -162,6 +167,7 @@ export default function Statistics() {
   const [selectedStoreIds, setSelectedStoreIds] = useState([]);
   const [selectedDeliverIds, setSelectedDeliverIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  const didMount = useRef(false);
 
   const fetchStores = useCallback(() => {
     if (USE_MOCK) {
@@ -205,66 +211,119 @@ export default function Statistics() {
       .catch(() => setDeliveries([]));
   }, []);
 
-  const fetchStatistics = useCallback(() => {
-    const params = new URLSearchParams();
-    params.append("limit", limit);
-    params.append("page", currentPage);
+  const handleSearch = useCallback(
+    (pageOverride = null) => {
+      setLoading(true);
+      setSearchSubmitted(true);
+      const searchValue = inputRef.current?.value?.trim() || "";
+      const pageToUse = pageOverride !== null ? pageOverride : currentPage;
 
-    if (searchSubmitted && searchText) {
-      params.append("search", searchText.trim());
-    }
+      const params = new URLSearchParams();
+      params.append("limit", limit);
+      params.append("page", pageToUse);
 
-    if (
-      selectedStoreIds.length &&
-      stores.length &&
-      selectedStoreIds.length !== stores.length
-    ) {
-      params.append("store_id", selectedStoreIds.join(","));
-    }
+      if (searchValue) {
+        params.append("search", searchValue);
+      }
 
-    if (selectedDeliverIds.length) {
-      params.append("deliver_id", selectedDeliverIds.join(","));
-    }
+      if (
+        selectedStoreIds.length &&
+        stores.length &&
+        selectedStoreIds.length !== stores.length
+      ) {
+        params.append("store_id", selectedStoreIds.join(","));
+      }
 
+      if (selectedDeliverIds.length) {
+        params.append("deliver_id", selectedDeliverIds.join(","));
+      }
+
+      if (USE_MOCK) {
+        setStatsRaw(MOCK_STATS);
+        setLoading(false);
+        return;
+      }
+
+      const endpoint = params.toString()
+        ? `/products/products-low-stock?${params.toString()}`
+        : `/products/products-low-stock`;
+
+      get(endpoint)
+        .then((response) => {
+          const data = response?.data || response;
+          if (
+            (response?.status === 200 || !response?.status) &&
+            Array.isArray(data) &&
+            data.length
+          ) {
+            setStatsRaw(data);
+            if (!data.length) setCurrentPage(1);
+          } else if (response?.status && response?.status !== 200) {
+            toast.error("Nomalum server xatolik");
+            setStatsRaw([]);
+          } else {
+            setStatsRaw([]);
+          }
+        })
+        .catch(() => {
+          toast.error("Nomalum server xatolik");
+          setStatsRaw([]);
+        })
+        .finally(() => setLoading(false));
+    },
+    [currentPage, limit, selectedStoreIds, selectedDeliverIds, stores.length]
+  );
+
+  const getData = useCallback(() => {
+    setLoading(true);
     if (USE_MOCK) {
       setStatsRaw(MOCK_STATS);
+      setLoading(false);
       return;
     }
 
-    const endpoint = params.toString()
-      ? `/products/products-low-stock?${params.toString()}`
-      : `/products/products-low-stock`;
+    // Check if any filters are active
+    const hasActiveFilters =
+      (selectedStoreIds.length &&
+        stores.length &&
+        selectedStoreIds.length !== stores.length) ||
+      selectedDeliverIds.length > 0 ||
+      (searchSubmitted && inputRef.current?.value?.trim().length > 0);
 
-    setLoading(true);
-    get(endpoint)
-      .then((response) => {
-        const data = response?.data || response;
-        if (
-          (response?.status === 200 || !response?.status) &&
-          Array.isArray(data) &&
-          data.length
-        ) {
-          setStatsRaw(data);
-        } else if (response?.status && response?.status !== 200) {
+    if (hasActiveFilters) {
+      handleSearch();
+    } else {
+      // No filters, fetch default data
+      get(`/products/products-low-stock?limit=${limit}&page=${currentPage}`)
+        .then((response) => {
+          const data = response?.data || response;
+          if (
+            (response?.status === 200 || !response?.status) &&
+            Array.isArray(data) &&
+            data.length
+          ) {
+            setStatsRaw(data);
+          } else if (response?.status && response?.status !== 200) {
+            toast.error("Nomalum server xatolik");
+            setStatsRaw([]);
+          } else {
+            setStatsRaw([]);
+          }
+        })
+        .catch(() => {
           toast.error("Nomalum server xatolik");
           setStatsRaw([]);
-        } else {
-          setStatsRaw([]);
-        }
-      })
-      .catch(() => {
-        toast.error("Nomalum server xatolik");
-        setStatsRaw([]);
-      })
-      .finally(() => setLoading(false));
+        })
+        .finally(() => setLoading(false));
+    }
   }, [
     currentPage,
     limit,
-    searchSubmitted,
-    searchText,
     selectedStoreIds,
     selectedDeliverIds,
     stores.length,
+    searchSubmitted,
+    handleSearch,
   ]);
 
   useEffect(() => {
@@ -278,22 +337,40 @@ export default function Statistics() {
     }
   }, [stores, selectedStoreIds.length]);
 
+  // Fetch data when page changes
   useEffect(() => {
-    fetchStatistics();
-  }, [fetchStatistics]);
+    getData();
+  }, [currentPage]);
 
+  // When filters change, reset page and trigger search (following Products.jsx pattern)
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedStoreIds, selectedDeliverIds]);
+    if (didMount.current) {
+      handleSearch(1);
+    } else {
+      didMount.current = true;
+    }
+  }, [selectedStoreIds, selectedDeliverIds, limit, handleSearch]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    // Clear searchSubmitted if no filters are active (following Products.jsx pattern)
+    if (
+      selectedStoreIds.length === stores.length &&
+      !selectedDeliverIds.length &&
+      !inputRef.current?.value?.trim()
+    ) {
+      setSearchSubmitted(false);
+    }
   };
 
-  const handleSearch = () => {
-    setSearchText(inputRef.current?.value?.trim() || "");
+  const handleSearchClick = () => {
+    const searchValue = inputRef.current?.value?.trim() || "";
+    setSearchText(searchValue);
     setSearchSubmitted(true);
     setCurrentPage(1);
+    // Trigger the actual search with page 1
+    handleSearch(1);
   };
 
   const clearSearch = () => {
@@ -302,18 +379,18 @@ export default function Statistics() {
     }
     setSearchText("");
     setSearchSubmitted(false);
-    setCurrentPage(1);
+    getData();
   };
 
   const clearFilters = () => {
     setSelectedStoreIds(stores.map((store) => store.store_id));
     setSelectedDeliverIds([]);
+    setSearchSubmitted(false);
     if (inputRef.current) {
       inputRef.current.value = "";
     }
     setSearchText("");
-    setSearchSubmitted(false);
-    setCurrentPage(1);
+    getData();
   };
 
   const handleStoreSelection = (selectedIds) => {
@@ -503,14 +580,16 @@ export default function Statistics() {
     }
   }, [currentPage, totalPages]);
 
-  const startIndex = (currentPage - 1) * limit;
-  const paginatedData = filteredData
-    .slice(startIndex, startIndex + limit)
-    .map((item, index) => ({
-      ...item,
-      key: startIndex + index + 1,
-      selectionId: `statistics-${item.id}`,
-    }));
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * limit;
+    return filteredData
+      .slice(startIndex, startIndex + limit)
+      .map((item, index) => ({
+        ...item,
+        key: startIndex + index + 1,
+        selectionId: `statistics-${item.id}`,
+      }));
+  }, [filteredData, currentPage, limit]);
 
   const visibleStores = useMemo(() => {
     const selectedSet = new Set(selectedStoreIds);
@@ -561,31 +640,138 @@ export default function Statistics() {
   );
 
   const handleQuantityChange = useCallback(
-    (id, quantity, maxValue) => {
+    (id, quantity) => {
       const numeric = Number(quantity);
       if (Number.isNaN(numeric) || numeric < 0) {
         return;
       }
-      const capped =
-        typeof maxValue === "number" && maxValue >= 0
-          ? Math.min(numeric, maxValue)
-          : numeric;
-      dispatch(setQuantity({ id, q: capped }));
+      // Allow any positive number, no maximum cap
+      dispatch(setQuantity({ id, q: numeric }));
     },
     [dispatch]
   );
 
-  const handleDownload = () => {
-    if (!statsSelection.length) return;
-    const payload = statsSelection.map((item) => ({
-      deliver: item?.deliver_id,
-      name: item?.goods_name,
-      code: item?.goods_code,
-      price: item?.price,
-      count: item?.products_count,
-    }));
+  const handleDownload = async () => {
+    if (!statsSelection.length) {
+      toast.warn("Mahsulot tanlang");
+      return;
+    }
 
-    confirmDownloadModal(downloadNewList, payload, darkMode);
+    try {
+      // Dynamically load jsPDF and jspdf-autotable from CDN
+      const loadScript = (src) => {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      };
+
+      // Load jsPDF if not already loaded
+      if (!window.jspdf) {
+        await loadScript(
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+        );
+      }
+      // Load autoTable plugin if not already loaded
+      if (!window.jspdf.plugins || !window.jspdf.plugins.autotable) {
+        await loadScript(
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"
+        );
+      }
+
+      const { jsPDF } = window.jspdf;
+
+      // Create new PDF document
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // Prepare data with proper column order: No, Ombor, Mahsulot, Kod, Ta'minotchi, narx, zakaz miqdori
+      const tableData = statsSelection.map((item, index) => [
+        index + 1,
+        item?.store_id?.store_name || "Barcha omborlar",
+        item?.goods_name || "",
+        item?.goods_code || "",
+        item?.deliver_id || "",
+        item?.price || "",
+        item?.products_count || 0,
+      ]);
+
+      // Add title
+      doc.setFontSize(18);
+      doc.text("Statistika", 14, 15);
+
+      // Add date
+      const now = new Date();
+      const dateStr = now.toLocaleDateString("uz-UZ", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      });
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Sana: ${dateStr}`, 14, 22);
+
+      // Add table using autoTable
+      doc.autoTable({
+        startY: 28,
+        head: [
+          [
+            "No",
+            "Ombor",
+            "Mahsulot",
+            "Kod",
+            "Ta'minotchi",
+            "Narx",
+            "Zakaz miqdori",
+          ],
+        ],
+        body: tableData,
+        theme: "striped",
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: "bold",
+          halign: "center",
+        },
+        bodyStyles: {
+          halign: "center",
+          cellPadding: 3,
+        },
+        columnStyles: {
+          0: { halign: "center", cellWidth: 15 }, // No
+          1: { cellWidth: 30 }, // Ombor
+          2: { cellWidth: 40 }, // Mahsulot
+          3: { cellWidth: 25 }, // Kod
+          4: { cellWidth: 30 }, // Ta'minotchi
+          5: { halign: "center", cellWidth: 25 }, // Narx
+          6: { halign: "center", cellWidth: 20 }, // Zakaz miqdori
+        },
+        styles: {
+          fontSize: 9,
+          font: "helvetica",
+          overflow: "linebreak",
+          cellWidth: "wrap",
+        },
+        margin: { top: 28, left: 10, right: 10 },
+      });
+
+      // Generate filename with timestamp
+      const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-");
+      const filename = `Statistika_${timestamp}.pdf`;
+
+      // Save PDF
+      doc.save(filename);
+      toast.success("PDF muvaffaqiyatli yuklab olindi");
+    } catch (error) {
+      console.error("PDF yaratishda xatolik:", error);
+      toast.error("PDF yaratishda xatolik yuz berdi");
+    }
   };
 
   const columns = useMemo(() => {
@@ -756,12 +942,6 @@ export default function Statistics() {
           formatCount(record.perBox ?? record.each_box_count ?? 0),
       },
       {
-        title: "Zakaz (taxminiy)",
-        dataIndex: "recommendedPurchase",
-        width: 170,
-        render: (text) => formatCount(text),
-      },
-      {
         title: "Narx (dona)",
         dataIndex: "pricePerUnit",
         width: 170,
@@ -788,7 +968,6 @@ export default function Statistics() {
             Number(selectedItem.products_count) > 0
               ? selectedItem.products_count
               : 1;
-          const maxOrder = Number(record.recommendedPurchase) || 0;
 
           return (
             <div className={`quantityWrapper ${darkMode ? "dark" : ""}`}>
@@ -798,8 +977,7 @@ export default function Statistics() {
                   e.stopPropagation();
                   handleQuantityChange(
                     selectedItem.id,
-                    Math.max(Number(quantity) - 1, 0),
-                    maxOrder
+                    Math.max(Number(quantity) - 1, 0)
                   );
                 }}
               >
@@ -811,11 +989,7 @@ export default function Statistics() {
                 value={quantity}
                 onClick={(e) => e.stopPropagation()}
                 onChange={(e) =>
-                  handleQuantityChange(
-                    selectedItem.id,
-                    e.target.value,
-                    maxOrder
-                  )
+                  handleQuantityChange(selectedItem.id, e.target.value)
                 }
                 onKeyPress={(e) => {
                   if (isNaN(e.key)) {
@@ -827,11 +1001,7 @@ export default function Statistics() {
                 className="quantityBtn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleQuantityChange(
-                    selectedItem.id,
-                    Number(quantity) + 1,
-                    maxOrder
-                  );
+                  handleQuantityChange(selectedItem.id, Number(quantity) + 1);
                 }}
               >
                 +
@@ -912,7 +1082,7 @@ export default function Statistics() {
       </div>
 
       <Search
-        handleSearch={handleSearch}
+        handleSearch={handleSearchClick}
         clearSearch={clearSearch}
         showAddBtn={false}
         darkMode={darkMode}
@@ -936,13 +1106,27 @@ export default function Statistics() {
             isRowSelected(record.selectionId) ? "statistics-row-selected" : ""
           }
           onRow={(record) => {
-            const warningStyle =
+            const isSelected = isRowSelected(record.selectionId);
+            const isLowStock =
               record.minimalStockCount &&
-              record.totalStockLeft <= record.minimalStockCount
-                ? darkMode
-                  ? getWarningColorDark()
-                  : getWarningColor()
-                : {};
+              record.totalStockLeft <= record.minimalStockCount;
+
+            // If selected, use dark-blue background with white text
+            if (isSelected) {
+              return {
+                style: {
+                  backgroundColor: "#0d47a1",
+                  color: "#ffffff",
+                },
+              };
+            }
+
+            // Otherwise, apply warning style for low stock
+            const warningStyle = isLowStock
+              ? darkMode
+                ? getWarningColorDark()
+                : getWarningColor()
+              : {};
             return {
               style: warningStyle,
             };
