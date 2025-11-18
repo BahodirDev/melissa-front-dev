@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Search,
-  Download,
   FilePdf,
   FileCsv,
   Info,
@@ -9,7 +7,6 @@ import {
   TrendDown,
 } from "@phosphor-icons/react";
 import DataTable from "../components/DataTable";
-import DateRangePicker from "../components/DateRangePicker";
 import EmptyState from "../components/EmptyState";
 import MetricCard from "../components/MetricCard";
 import { get } from "../../../customHook/api";
@@ -41,7 +38,6 @@ function ProfitList({ onRowClick, darkMode = false }) {
   });
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [selectedRows, setSelectedRows] = useState([]);
   const [summary, setSummary] = useState({ total: 0, revenue: 0, cost: 0 });
   const [stores, setStores] = useState([]);
 
@@ -173,31 +169,20 @@ function ProfitList({ onRowClick, darkMode = false }) {
 
   const handleExport = async (format) => {
     try {
-      let dataToExport = data;
-      let isSelectedOnly = false;
-
-      // If rows are selected, export only selected rows
-      if (selectedRows.length > 0) {
-        dataToExport = data.filter((item) =>
-          selectedRows.some((selected) => selected.invoice_id === item.invoice_id)
-        );
-        isSelectedOnly = true;
-      }
-
-      if (!dataToExport || dataToExport.length === 0) {
+      if (!data || data.length === 0) {
         toast.warning("Eksport qilish uchun ma'lumot mavjud emas");
         return;
       }
 
       if (format === "csv") {
-        exportToCSV(dataToExport, summary, isSelectedOnly);
+        exportToCSV(data, summary, false);
         toast.success(
-          `${dataToExport.length} ta yozuv CSV formatida yuklab olindi`
+          `${data.length} ta yozuv CSV formatida yuklab olindi`
         );
       } else if (format === "pdf") {
-        exportToPDF(dataToExport, summary, filters, isSelectedOnly);
+        exportToPDF(data, summary, filters, false);
         toast.success(
-          `${dataToExport.length} ta yozuv PDF formatida yuklab olindi`
+          `${data.length} ta yozuv PDF formatida yuklab olindi`
         );
       }
     } catch (error) {
@@ -259,12 +244,12 @@ function ProfitList({ onRowClick, darkMode = false }) {
         return (
           <span
             className={`profit-percent ${
-              numValue >= 30 ? "high" : numValue >= 15 ? "medium" : "low"
+              numValue >= 20 ? "high" : numValue >= 10 ? "medium" : "low"
             }`}
           >
-            {numValue >= 30 ? (
+            {numValue >= 20 ? (
               <TrendUp size={14} />
-            ) : numValue < 15 ? (
+            ) : numValue < 10 ? (
               <TrendDown size={14} />
             ) : null}
             {numValue.toFixed(1)}%
@@ -425,18 +410,6 @@ function ProfitList({ onRowClick, darkMode = false }) {
         </div>
         <div className="profit-list-filters-row profit-list-filters-actions">
           <div className="profit-list-actions">
-            {selectedRows.length > 0 && (
-              <button
-                type="button"
-                className="profit-list-action-btn profit-list-action-btn-secondary"
-                onClick={() => handleExport("csv")}
-                aria-label="Tanlanganlarni CSV ga eksport qilish"
-                title={`${selectedRows.length} ta tanlangan elementni eksport qilish`}
-              >
-                <FileCsv size={18} />
-                CSV ({selectedRows.length})
-              </button>
-            )}
             <button
               type="button"
               className="profit-list-action-btn profit-list-action-btn-primary"
@@ -454,7 +427,7 @@ function ProfitList({ onRowClick, darkMode = false }) {
               aria-label="CSV ga eksport qilish"
               title="Barcha ma'lumotlarni CSV formatida yuklab olish"
             >
-              <Download size={18} />
+              <FileCsv size={18} />
               CSV
             </button>
           </div>
@@ -490,9 +463,6 @@ function ProfitList({ onRowClick, darkMode = false }) {
           loading={loading}
           onSort={handleSort}
           onRowClick={onRowClick}
-          selectable={true}
-          selectedRows={selectedRows}
-          onSelectionChange={setSelectedRows}
           darkMode={darkMode}
         />
       )}

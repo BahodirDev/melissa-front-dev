@@ -6,12 +6,14 @@ import {
   Bell,
   Plus,
   Info,
+  Trash,
 } from "@phosphor-icons/react";
 import DataTable from "../components/DataTable";
 import EmptyState from "../components/EmptyState";
 import CreateDebtModal from "./CreateDebtModal";
-import { get, post } from "../../../customHook/api";
+import { get, post, remove } from "../../../customHook/api";
 import { toast } from "react-toastify";
+import { debtDeleteConfirm } from "../../../components/delete_modal/delete_modal";
 import "./DebtList.css";
 
 /**
@@ -198,6 +200,36 @@ function DebtList({
     }
   };
 
+  const handleDeleteDebt = (e, debt) => {
+    if (!debt || !debt.client_debt_id) {
+      toast.error("Qarz ma'lumotlari topilmadi");
+      return;
+    }
+
+    const deleteAction = async () => {
+      try {
+        const response = await remove(`/client-debts/${debt.client_debt_id}`);
+
+        if (response?.status === 200 || response?.status === 201) {
+          toast.success("Qarz muvaffaqiyatli o'chirildi");
+          // Reload the list
+          loadData();
+        } else {
+          const errorMessage =
+            response.data?.message ||
+            response.data?.error ||
+            "Qarzni o'chirishda xatolik";
+          toast.error(errorMessage);
+        }
+      } catch (err) {
+        console.error("Error deleting debt:", err);
+        toast.error("Qarzni o'chirishda xatolik yuz berdi");
+      }
+    };
+
+    debtDeleteConfirm(e, debt.name, debt.outstanding, deleteAction, darkMode);
+  };
+
   const columns = [
     {
       key: "name",
@@ -285,6 +317,20 @@ function DebtList({
               <Bell size={18} />
             </button>
           </>
+        )}
+        {row.client_debt_id && (
+          <button
+            type="button"
+            className="debt-list-action-btn debt-list-action-btn-danger"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteDebt(e, row);
+            }}
+            aria-label={`${row.name} uchun qarzni o'chirish`}
+            title="Qarzni o'chirish"
+          >
+            <Trash size={18} />
+          </button>
         )}
       </div>
     );
