@@ -1,0 +1,526 @@
+.profit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Summary Cards */
+.profit-list-summary {
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.profit-list.dark .profit-list-summary {
+    background: #121e2d;
+    border-color: #344050;
+}
+
+.profit-list-summary-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.profit-list-summary-title h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.profit-list.dark .profit-list-summary-title h3 {
+    color: #d8e2ef;
+}
+
+.profit-list-summary-help {
+    display: flex;
+    align-items: center;
+    color: #6b7280;
+    cursor: help;
+}
+
+.profit-list.dark .profit-list-summary-help {
+    color: #9da9bb;
+}
+
+.profit-list-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+/* Filters Header */
+.profit-list-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.profit-list-filters-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.profit-list.dark .profit-list-filters-header h3 {
+    color: #d8e2ef;
+}
+
+.profit-list-clear-filters {
+    padding: 6px 12px;
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.profit-list-clear-filters:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.profit-list-clear-filters:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.profit-list.dark .profit-list-clear-filters {
+    color: #9da9bb;
+    border-color: #344050;
+}
+
+.profit-list.dark .profit-list-clear-filters:hover:not(:disabled) {
+    background: #0b1727;
+    border-color: #4b5563;
+}
+
+/* Filter Help Icons */
+.profit-list-filter-help {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+    color: #9ca3af;
+    cursor: help;
+    vertical-align: middle;
+}
+
+.profit-list.dark .profit-list-filter-help {
+    color: #6b7280;
+}
+
+/* Filter Actions Row */
+.profit-list-filters-actions {
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.profit-list.dark .profit-list-filters-actions {
+    border-color: #344050;
+}
+
+.profit-list-info {
+    display: flex;
+    align-items: center;
+}
+
+.profit-list-info-text {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.profit-list.dark .profit-list-info-text {
+    color: #9da9bb;
+}
+
+.profit-list-info-text strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.profit-list.dark .profit-list-info-text strong {
+    color: #d8e2ef;
+}
+
+/* Action Buttons */
+.profit-list-action-btn-primary {
+    background: #059669;
+    color: #ffffff;
+}
+
+.profit-list-action-btn-primary:hover {
+    background: #047857;
+}
+
+.profit-list-action-btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.profit-list-action-btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.profit-list.dark .profit-list-action-btn-secondary {
+    background: #0b1727;
+    color: #d8e2ef;
+    border-color: #344050;
+}
+
+.profit-list.dark .profit-list-action-btn-secondary:hover {
+    background: #162231;
+}
+
+/* Profit Percent Styling */
+.profit-percent {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+}
+
+.profit-percent.high {
+    color: #059669;
+}
+
+.profit-percent.medium {
+    color: #f59e0b;
+}
+
+.profit-percent.low {
+    color: #ef4444;
+}
+
+.profit-list.dark .profit-percent.high {
+    color: #10b981;
+}
+
+.profit-list.dark .profit-percent.medium {
+    color: #fbbf24;
+}
+
+.profit-list.dark .profit-percent.low {
+    color: #f87171;
+}
+
+.profit-list-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.profit-list.dark .profit-list-filters {
+    background: #121e2d;
+    border-color: #344050;
+}
+
+.profit-list-filters-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.profit-list-filters-inline {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.profit-list-date-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 280px;
+}
+
+.profit-list-inline-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.profit-list.dark .profit-list-inline-label {
+    color: #9da9bb;
+}
+
+.profit-list-date-inputs-inline {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.profit-list-date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 130px;
+}
+
+.profit-list-date-input-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.profit-list.dark .profit-list-date-input-label {
+    color: #9da9bb;
+}
+
+.profit-list-date-input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1f2937;
+    background: #ffffff;
+    transition: all 0.2s;
+}
+
+.profit-list-date-input:focus {
+    outline: none;
+    border-color: #429bca;
+    box-shadow: 0 0 0 3px rgba(66, 139, 202, 0.1);
+}
+
+.profit-list.dark .profit-list-date-input {
+    background: #0b1727;
+    border-color: #344050;
+    color: #d8e2ef;
+}
+
+.profit-list.dark .profit-list-date-input:focus {
+    border-color: #429bca;
+    box-shadow: 0 0 0 3px rgba(66, 139, 202, 0.2);
+}
+
+.profit-list-filter-item-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 180px;
+    flex: 1;
+}
+
+.profit-list-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 150px;
+}
+
+.profit-list-filter-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.profit-list.dark .profit-list-filter-group label {
+    color: #9da9bb;
+}
+
+.profit-list-select,
+.profit-list-input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1f2937;
+    background: #ffffff;
+}
+
+.profit-list.dark .profit-list-select,
+.profit-list.dark .profit-list-input {
+    background: #0b1727;
+    border-color: #344050;
+    color: #d8e2ef;
+}
+
+.profit-list-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.profit-list.dark .profit-list-search {
+    background: #0b1727;
+    border-color: #344050;
+}
+
+.profit-list-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #1f2937;
+    background: transparent;
+}
+
+.profit-list.dark .profit-list-search-input {
+    color: #d8e2ef;
+}
+
+.profit-list-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.profit-list-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.profit-list-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #059669;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.profit-list-action-btn:hover {
+    background: #047857;
+}
+
+.profit-list-action-btn:focus {
+    outline: 2px solid #059669;
+    outline-offset: 2px;
+}
+
+.profit-value.positive {
+    color: #059669;
+    font-weight: 600;
+}
+
+.profit-list.dark .profit-value.positive {
+    color: #10b981;
+}
+
+.profit-list-error {
+    padding: 16px;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 8px;
+    color: #ef4444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profit-list.dark .profit-list-error {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+.profit-list-error button {
+    padding: 6px 12px;
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.profit-list-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+}
+
+.profit-list-pagination button {
+    padding: 8px 16px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.profit-list-pagination button:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.profit-list-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.profit-list-pagination span {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.profit-list.dark .profit-list-pagination span {
+    color: #9da9bb;
+}
+
+@media (max-width: 768px) {
+    .profit-list-filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profit-list-filters-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profit-list-date-wrapper {
+        min-width: 100%;
+    }
+
+    .profit-list-date-inputs-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profit-list-date-input-group {
+        min-width: 100%;
+    }
+
+    .profit-list-filter-item-inline {
+        min-width: 100%;
+    }
+
+    .profit-list-filter-group {
+        min-width: 100%;
+    }
+
+    .profit-list-actions {
+        flex-wrap: wrap;
+    }
+}

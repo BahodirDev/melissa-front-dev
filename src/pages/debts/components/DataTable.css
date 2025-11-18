@@ -1,0 +1,202 @@
+.data-table-container {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.data-table-container.dark {
+	background: #121e2d;
+	border-color: #344050;
+}
+
+.data-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.data-table thead {
+	background: #f8fafc;
+}
+
+.data-table-container.dark thead {
+	background: #0b1727;
+}
+
+.data-table-header {
+	padding: 12px 16px;
+	text-align: left;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: #6b7280;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table-container.dark .data-table-header {
+	color: #9da9bb;
+	border-bottom-color: #344050;
+}
+
+.data-table-header.sortable {
+	cursor: pointer;
+	user-select: none;
+	transition: background 0.2s;
+}
+
+.data-table-header.sortable:hover {
+	background: #f1f5f9;
+}
+
+.data-table-container.dark .data-table-header.sortable:hover {
+	background: #162231;
+}
+
+.data-table-header.sortable:focus {
+	outline: 2px solid #059669;
+	outline-offset: -2px;
+}
+
+.data-table-header-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.data-table-sort-icons {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	color: #9ca3af;
+}
+
+.data-table-sort-icons svg.active {
+	color: #059669;
+}
+
+.data-table-container.dark .data-table-sort-icons svg.active {
+	color: #10b981;
+}
+
+.data-table-row {
+	border-bottom: 1px solid #e5e7eb;
+	transition: background 0.2s;
+}
+
+.data-table-container.dark .data-table-row {
+	border-bottom-color: #344050;
+}
+
+.data-table-row.even {
+	background: #f8fafc;
+}
+
+.data-table-container.dark .data-table-row.even {
+	background: #0b1727;
+}
+
+.data-table-row.clickable {
+	cursor: pointer;
+}
+
+.data-table-row.clickable:hover {
+	background: #f1f5f9;
+}
+
+.data-table-container.dark .data-table-row.clickable:hover {
+	background: #162231;
+}
+
+.data-table-row.selected {
+	background: #ecfdf5;
+}
+
+.data-table-container.dark .data-table-row.selected {
+	background: rgba(5, 150, 105, 0.1);
+}
+
+.data-table-row.clickable:focus {
+	outline: 2px solid #059669;
+	outline-offset: -2px;
+}
+
+.data-table-cell {
+	padding: 12px 16px;
+	font-size: 14px;
+	color: #374151;
+}
+
+.data-table-container.dark .data-table-cell {
+	color: #d8e2ef;
+}
+
+.data-table-checkbox {
+	width: 48px;
+	padding: 12px;
+	text-align: center;
+}
+
+.data-table-checkbox input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	cursor: pointer;
+	accent-color: #059669;
+}
+
+.data-table-actions-header {
+	width: 80px;
+	padding: 12px 16px;
+	text-align: center;
+}
+
+.data-table-actions {
+	padding: 12px 16px;
+	text-align: center;
+}
+
+.data-table-loading {
+	padding: 24px;
+}
+
+.data-table-skeleton {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.data-table-skeleton-row {
+	display: flex;
+	gap: 12px;
+	height: 48px;
+}
+
+.data-table-skeleton-cell {
+	flex: 1;
+	background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+	background-size: 200% 100%;
+	animation: skeleton-loading 1.5s ease-in-out infinite;
+	border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+@media (max-width: 768px) {
+	.data-table {
+		font-size: 12px;
+	}
+
+	.data-table-header,
+	.data-table-cell {
+		padding: 8px 12px;
+	}
+}
+

@@ -1,0 +1,141 @@
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	padding: 16px;
+	backdrop-filter: blur(4px);
+}
+
+.modal-content {
+	background: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+	max-height: 90vh;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 760px;
+	outline: none;
+}
+
+.modal-content.dark {
+	background: #121e2d;
+	border: 1px solid #344050;
+}
+
+.modal-content.sm {
+	max-width: 400px;
+}
+
+.modal-content.md {
+	max-width: 600px;
+}
+
+.modal-content.lg {
+	max-width: 900px;
+}
+
+.modal-content.full {
+	max-width: 95vw;
+	max-height: 95vh;
+}
+
+.modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-content.dark .modal-header {
+	border-bottom-color: #344050;
+}
+
+.modal-title {
+	font-size: 20px;
+	font-weight: 600;
+	color: #1f2937;
+	margin: 0;
+}
+
+.modal-content.dark .modal-title {
+	color: #d8e2ef;
+}
+
+.modal-close {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 4px;
+	color: #6b7280;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s;
+}
+
+.modal-close:hover {
+	background: #f3f4f6;
+	color: #1f2937;
+}
+
+.modal-close:focus {
+	outline: 2px solid #059669;
+	outline-offset: 2px;
+}
+
+.modal-content.dark .modal-close {
+	color: #9da9bb;
+}
+
+.modal-content.dark .modal-close:hover {
+	background: #232e3c;
+	color: #d8e2ef;
+}
+
+.modal-body {
+	padding: 20px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+.modal-footer {
+	padding: 16px 20px;
+	border-top: 1px solid #e5e7eb;
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+.modal-content.dark .modal-footer {
+	border-top-color: #344050;
+}
+
+@media (max-width: 768px) {
+	.modal-content {
+		max-width: 100%;
+		max-height: 100vh;
+		border-radius: 0;
+		margin: 0;
+	}
+
+	.modal-overlay {
+		padding: 0;
+	}
+
+	.modal-header,
+	.modal-body,
+	.modal-footer {
+		padding: 12px 16px;
+	}
+}
+

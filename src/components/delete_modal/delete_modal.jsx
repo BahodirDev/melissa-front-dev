@@ -78,3 +78,52 @@ export const transactionDeleteConfirm = (
 		className: mode ? "dark" : null,
 	})
 }
+
+export const debtDeleteConfirm = (e, name, amount, action, mode = false) => {
+	const formatCurrency = (amount) => {
+		return new Intl.NumberFormat("uz-UZ", {
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0,
+		}).format(amount);
+	};
+
+	const rect = e?.target?.getBoundingClientRect();
+
+	confirm({
+		title: (
+			<span className="delete-modal-span">
+				"{name}" uchun {formatCurrency(amount)} so'm qarzni o'chirishni tasdiqlaysizmi?
+			</span>
+		),
+		icon: " ",
+		okText: "Ha, o'chirish",
+		okType: "danger",
+		cancelText: "Bekor qilish",
+		width: 400,
+		onOk() {
+			action();
+		},
+		onCancel() {},
+		style: rect
+			? {
+					position: "absolute",
+					top: rect.top - 170,
+					left: rect.right - 400,
+					textAlign: "center",
+					padding: 0,
+					borderRadius: "var(--radius-lg)",
+			  }
+			: {
+					top: "50%",
+					transform: "translateY(-50%)",
+					textAlign: "center",
+					padding: 0,
+					borderRadius: "var(--radius-lg)",
+			  },
+		bodyStyle: {
+			display: "flex",
+			justifyContent: "center",
+		},
+		className: mode ? "dark" : null,
+	});
+};

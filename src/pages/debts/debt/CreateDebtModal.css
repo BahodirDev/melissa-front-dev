@@ -1,0 +1,172 @@
+.create-debt-content {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.create-debt-field {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.create-debt-field label {
+	font-size: 14px;
+	font-weight: 500;
+	color: #374151;
+}
+
+.create-debt-field .required {
+	color: #ef4444;
+}
+
+.create-debt-select,
+.create-debt-amount-input input,
+.create-debt-field input[type="date"],
+.create-debt-textarea {
+	padding: 10px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #1f2937;
+	background: #ffffff;
+	font-family: inherit;
+}
+
+.create-debt-select:focus,
+.create-debt-amount-input input:focus,
+.create-debt-field input[type="date"]:focus,
+.create-debt-textarea:focus {
+	outline: none;
+	border-color: #059669;
+	box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.create-debt-amount-input {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.create-debt-amount-input input {
+	flex: 1;
+}
+
+.create-debt-amount-input input.error {
+	border-color: #ef4444;
+}
+
+.create-debt-currency {
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.create-debt-amount-preview {
+	font-size: 16px;
+	font-weight: 600;
+	color: #059669;
+	margin-top: 4px;
+}
+
+.create-debt-textarea {
+	resize: vertical;
+}
+
+.create-debt-error {
+	font-size: 12px;
+	color: #ef4444;
+}
+
+.create-debt-info {
+	display: flex;
+	gap: 12px;
+	padding: 16px;
+	background: #eff6ff;
+	border: 1px solid #bfdbfe;
+	border-radius: 8px;
+	border-left: 4px solid #3b82f6;
+}
+
+.create-debt-content.dark .create-debt-info {
+	background: rgba(59, 130, 246, 0.1);
+	border-color: rgba(59, 130, 246, 0.3);
+	border-left-color: #60a5fa;
+}
+
+.create-debt-info-icon {
+	display: flex;
+	align-items: flex-start;
+	color: #3b82f6;
+	flex-shrink: 0;
+}
+
+.create-debt-content.dark .create-debt-info-icon {
+	color: #60a5fa;
+}
+
+.create-debt-info-content {
+	flex: 1;
+}
+
+.create-debt-info-content strong {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1e40af;
+	margin-bottom: 6px;
+}
+
+.create-debt-content.dark .create-debt-info-content strong {
+	color: #93c5fd;
+}
+
+.create-debt-info-content p {
+	margin: 0;
+	font-size: 13px;
+	color: #1e3a8a;
+	line-height: 1.6;
+}
+
+.create-debt-content.dark .create-debt-info-content p {
+	color: #bfdbfe;
+}
+
+.create-debt-footer {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+}
+
+.create-debt-btn {
+	padding: 10px 20px;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+	border: none;
+}
+
+.create-debt-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.create-debt-btn-cancel {
+	background: #f3f4f6;
+	color: #374151;
+}
+
+.create-debt-btn-cancel:hover:not(:disabled) {
+	background: #e5e7eb;
+}
+
+.create-debt-btn-submit {
+	background: #059669;
+	color: #ffffff;
+}
+
+.create-debt-btn-submit:hover:not(:disabled) {
+	background: #047857;
+}
+

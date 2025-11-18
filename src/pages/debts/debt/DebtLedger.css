@@ -1,0 +1,358 @@
+.debt-ledger {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.debt-ledger-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+}
+
+.debt-ledger.dark .debt-ledger-header {
+	background: #121e2d;
+	border-color: #344050;
+}
+
+.debt-ledger-back {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	background: #f3f4f6;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #374151;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.debt-ledger-back:hover {
+	background: #e5e7eb;
+}
+
+.debt-ledger-back:focus {
+	outline: 2px solid #059669;
+	outline-offset: 2px;
+}
+
+.debt-ledger.dark .debt-ledger-back {
+	background: #232e3c;
+	border-color: #344050;
+	color: #9da9bb;
+}
+
+.debt-ledger.dark .debt-ledger-back:hover {
+	background: #344050;
+}
+
+.debt-ledger-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.debt-ledger-title {
+	font-size: 20px;
+	font-weight: 600;
+	color: #1f2937;
+	margin: 0;
+}
+
+.debt-ledger.dark .debt-ledger-title {
+	color: #d8e2ef;
+}
+
+.debt-ledger-balance {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.debt-ledger-balance-label {
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.debt-ledger.dark .debt-ledger-balance-label {
+	color: #9da9bb;
+}
+
+.debt-ledger-balance-value {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.debt-ledger-balance-value.has-debt {
+	color: #ef4444;
+}
+
+.debt-ledger-balance-value.cleared {
+	color: #059669;
+}
+
+.debt-ledger-export-buttons {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.debt-ledger-export-btn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 16px;
+	background: #429bca;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.debt-ledger-export-btn:hover {
+	background: #357abd;
+}
+
+.debt-ledger-export-btn:focus {
+	outline: 2px solid #429bca;
+	outline-offset: 2px;
+}
+
+.debt-ledger-filters {
+	display: flex;
+	gap: 16px;
+	align-items: flex-end;
+	padding: 16px;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	flex-wrap: wrap;
+}
+
+.debt-ledger.dark .debt-ledger-filters {
+	background: #121e2d;
+	border-color: #344050;
+}
+
+.debt-ledger-date-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 280px;
+}
+
+.debt-ledger-inline-label {
+	font-size: 14px;
+	font-weight: 500;
+	color: #374151;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.debt-ledger.dark .debt-ledger-inline-label {
+	color: #9da9bb;
+}
+
+.debt-ledger-date-inputs-inline {
+	display: flex;
+	gap: 12px;
+	align-items: flex-end;
+}
+
+.debt-ledger-date-input-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1;
+	min-width: 130px;
+}
+
+.debt-ledger-date-input-label {
+	font-size: 13px;
+	font-weight: 500;
+	color: #6b7280;
+}
+
+.debt-ledger.dark .debt-ledger-date-input-label {
+	color: #9da9bb;
+}
+
+.debt-ledger-date-input {
+	padding: 8px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #1f2937;
+	background: #ffffff;
+	transition: all 0.2s;
+}
+
+.debt-ledger-date-input:focus {
+	outline: none;
+	border-color: #429bca;
+	box-shadow: 0 0 0 3px rgba(66, 139, 202, 0.1);
+}
+
+.debt-ledger.dark .debt-ledger-date-input {
+	background: #0b1727;
+	border-color: #344050;
+	color: #d8e2ef;
+}
+
+.debt-ledger.dark .debt-ledger-date-input:focus {
+	border-color: #429bca;
+	box-shadow: 0 0 0 3px rgba(66, 139, 202, 0.2);
+}
+
+.debt-ledger-type-filter {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 150px;
+}
+
+.debt-ledger-type-filter label {
+	font-size: 14px;
+	font-weight: 500;
+	color: #374151;
+}
+
+.debt-ledger.dark .debt-ledger-type-filter label {
+	color: #9da9bb;
+}
+
+.debt-ledger-select {
+	padding: 8px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #1f2937;
+	background: #ffffff;
+}
+
+.debt-ledger.dark .debt-ledger-select {
+	background: #0b1727;
+	border-color: #344050;
+	color: #d8e2ef;
+}
+
+.debt-ledger-payment-btn {
+	padding: 10px 20px;
+	background: #059669;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.debt-ledger-payment-btn:hover {
+	background: #047857;
+}
+
+.debt-ledger-payment-btn:focus {
+	outline: 2px solid #059669;
+	outline-offset: 2px;
+}
+
+.ledger-type {
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.ledger-type-sale {
+	background: #dbeafe;
+	color: #1e40af;
+}
+
+.ledger-type-payment {
+	background: #ecfdf5;
+	color: #059669;
+}
+
+.ledger-type-writeoff {
+	background: #fff1f2;
+	color: #ef4444;
+}
+
+.ledger-amount.positive {
+	color: #059669;
+	font-weight: 600;
+}
+
+.ledger-amount.negative {
+	color: #ef4444;
+	font-weight: 600;
+}
+
+.debt-ledger-error {
+	padding: 16px;
+	background: #fff1f2;
+	border: 1px solid #fecdd3;
+	border-radius: 8px;
+	color: #ef4444;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.debt-ledger.dark .debt-ledger-error {
+	background: rgba(239, 68, 68, 0.1);
+	border-color: rgba(239, 68, 68, 0.3);
+	color: #f87171;
+}
+
+.debt-ledger-error button {
+	padding: 6px 12px;
+	background: #ef4444;
+	color: #ffffff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+@media (max-width: 768px) {
+	.debt-ledger-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.debt-ledger-filters {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.debt-ledger-date-wrapper {
+		min-width: 100%;
+	}
+
+	.debt-ledger-date-inputs-inline {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.debt-ledger-date-input-group {
+		min-width: 100%;
+	}
+
+	.debt-ledger-type-filter {
+		min-width: 100%;
+	}
+}
+

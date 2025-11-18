@@ -1,0 +1,53 @@
+{
+  "page": 1,
+  "limit": 20,
+  "total": 12,
+  "data": [
+    {
+      "client_id": "c1",
+      "name": "Ali Akbar",
+      "phone": "+998901234567",
+      "outstanding": 120000,
+      "last_payment": "2025-11-01",
+      "overdue": true,
+      "due_date": "2025-10-15"
+    },
+    {
+      "client_id": "c2",
+      "name": "Sardor Karimov",
+      "phone": "+998901234568",
+      "outstanding": 85000,
+      "last_payment": "2025-11-10",
+      "overdue": false,
+      "due_date": "2025-11-20"
+    },
+    {
+      "client_id": "c3",
+      "name": "Dilshod Rahimov",
+      "phone": "+998901234569",
+      "outstanding": 200000,
+      "last_payment": "2025-10-25",
+      "overdue": true,
+      "due_date": "2025-10-10"
+    },
+    {
+      "client_id": "c4",
+      "name": "Farhod Toshmatov",
+      "phone": "+998901234570",
+      "outstanding": 0,
+      "last_payment": "2025-11-12",
+      "overdue": false,
+      "due_date": null
+    },
+    {
+      "client_id": "c5",
+      "name": "Javohir Usmonov",
+      "phone": "+998901234571",
+      "outstanding": 45000,
+      "last_payment": "2025-11-08",
+      "overdue": false,
+      "due_date": "2025-11-25"
+    }
+  ]
+}
+
