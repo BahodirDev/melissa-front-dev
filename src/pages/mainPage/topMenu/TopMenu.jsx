@@ -26,13 +26,13 @@ export default function TopMenu({
 
   // Navigation links configuration based on current pathname
   const navigationLinks = {
-    "/": {
-      to: "/statistics",
+    "/home": {
+      to: "/",
       label: "Qoldiq Statistikasi",
     },
-    "/statistics": {
-      to: "/",
-      label: "Ortga",
+    "/": {
+      to: "/home",
+      label: "Bosh sahifa",
     },
   };
 

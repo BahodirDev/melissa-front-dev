@@ -401,8 +401,9 @@ export default function Statistics() {
     }
   };
 
-  const handleSupplierSelection = (selectedIds) => {
-    setSelectedDeliverIds(selectedIds);
+  const handleSupplierSelection = (selectedId) => {
+    // Only allow single selection for supplier
+    setSelectedDeliverIds(selectedId ? [selectedId] : []);
   };
 
   const storesOptions = useMemo(
@@ -1061,15 +1062,13 @@ export default function Statistics() {
         </div>
         <div className={`input-wrapper ${darkMode ? "dark" : null}`}>
           <Select
-            mode="multiple"
             allowClear
             showSearch
             optionFilterProp="label"
-            placeholder="Ta'minotchilar"
+            placeholder="Ta'minotchi"
             className="select"
-            value={selectedDeliverIds}
+            value={selectedDeliverIds.length > 0 ? selectedDeliverIds[0] : null}
             onChange={handleSupplierSelection}
-            maxTagCount="responsive"
             options={deliverOptions}
           />
         </div>
