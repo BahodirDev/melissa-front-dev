@@ -62,8 +62,8 @@ export default function App(url) {
         <Route path="/login" element={<Login />} />
 
         <Route path="/" element={<MainPage />}>
-          <Route index element={<Home />} />
-          <Route path="/statistics" element={<Statistics />} />
+          <Route index element={<Statistics />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/products" element={<Products />} />
           <Route path="/goods" element={<Goods />} />
