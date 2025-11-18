@@ -51,11 +51,11 @@
 	z-index: 1;
 } */
 
-.ant-d-table .ant-table-tbody>tr.product-row:hover td {
+/* .ant-d-table .ant-table-tbody>tr.product-row:hover td {
 	background: transparent !important;
 	color: var(--color-dark) !important;
 	font-weight: 600 !important;
-}
+} */
 
 .ant-d-table .ant-table-tbody>tr.product-row.product-row-dead-limit {
 	background: rgba(255, 99, 132, 0.12) !important;
