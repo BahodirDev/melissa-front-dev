@@ -1,0 +1,255 @@
+/* View Switch Buttons - Similar to debt-switch */
+.employee-view-switch {
+  display: flex;
+  flex-direction: row;
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-light);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 20px;
+  width: max-content;
+}
+
+.employee-view-switch.dark {
+  background-color: var(--d-bg-light);
+}
+
+.employee-view-switch button {
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--color-secondary);
+  font-size: var(--text-md);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  transition: 0.1s;
+  margin: 0 0.5px;
+  cursor: pointer;
+}
+
+.employee-view-switch.dark button {
+  color: var(--d-color-secondary);
+}
+
+.employee-view-switch button:hover {
+  color: var(--color-primary);
+  background: var(--bg-icon);
+}
+
+.employee-view-switch.dark button:hover {
+  background: var(--d-bg-icon);
+}
+
+.employee-view-switch button:active {
+  transform: scale(0.98);
+  color: var(--color-primary);
+  background: var(--bg-icon);
+}
+
+.employee-view-switch button.active {
+  color: var(--color-primary);
+  background: var(--bg-icon);
+  font-weight: 600;
+}
+
+.employee-view-switch.dark button.active {
+  background: var(--d-bg-icon);
+}
+
+/* Dashboard Container */
+.employee-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Dashboard Period Selector - Similar to debts-dashboard-period */
+.employee-dashboard-period {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-light);
+  box-shadow: var(--shadow-md);
+  width: max-content;
+}
+
+.employee-dashboard-period.dark {
+  background-color: var(--d-bg-light);
+}
+
+.employee-dashboard-period button {
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--color-secondary);
+  font-size: var(--text-md);
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  transition: 0.1s;
+  cursor: pointer;
+}
+
+.employee-dashboard-period.dark button {
+  color: var(--d-color-secondary);
+}
+
+.employee-dashboard-period button:hover {
+  color: var(--color-primary);
+  background: var(--bg-icon);
+}
+
+.employee-dashboard-period button.active {
+  color: var(--color-primary);
+  background: var(--bg-icon);
+  font-weight: 600;
+}
+
+.employee-dashboard-period.dark button:hover {
+  background: var(--d-bg-icon);
+}
+
+.employee-dashboard-period.dark button.active {
+  background: var(--d-bg-icon);
+}
+
+.employee-performance-table {
+  margin-top: 20px;
+}
+
+.employee-sales-table,
+.employee-product-breakdown,
+.employee-client-breakdown {
+  margin-top: 20px;
+}
+
+.employee-comparison {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.employee-comparison.dark {
+  background-color: var(--d-bg-light);
+}
+
+.employee-comparison h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.comparison-item {
+  padding: 15px;
+  background-color: var(--bg-icon);
+  border-radius: var(--radius-sm);
+}
+
+.employee-comparison.dark .comparison-item {
+  background-color: var(--d-bg-icon);
+}
+
+.comparison-label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+}
+
+.employee-comparison.dark .comparison-label {
+  color: var(--d-text-secondary);
+}
+
+.comparison-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.current-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.employee-comparison.dark .current-value {
+  color: var(--d-primary);
+}
+
+.previous-value {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.employee-comparison.dark .previous-value {
+  color: var(--d-text-secondary);
+}
+
+.comparison-change {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.employee-averages {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.employee-averages.dark {
+  background-color: var(--d-bg-light);
+}
+
+.employee-averages h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.averages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.averages-section {
+  padding: 15px;
+  background-color: var(--bg-icon);
+  border-radius: var(--radius-sm);
+}
+
+.employee-averages.dark .averages-section {
+  background-color: var(--d-bg-icon);
+}
+
+.averages-section h4 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.employee-averages.dark .averages-section h4 {
+  color: var(--d-primary);
+}
+
+@media (max-width: 768px) {
+  .comparison-grid,
+  .averages-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

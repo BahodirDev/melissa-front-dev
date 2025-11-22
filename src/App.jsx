@@ -17,6 +17,7 @@ import {
   Settings,
   Store,
   ClientsInfo,
+  EmployeePerformance,
 } from "./components";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
@@ -79,6 +80,10 @@ export default function App(url) {
           <Route path="/monitoring" element={<Monitoring />} />
           <Route path="/return" element={<Return />} />
           <Route path="/debts" element={<Debts />} />
+          <Route path="/employee-performance">
+            <Route index element={<EmployeePerformance />} />
+            <Route path=":employeeId" element={<EmployeePerformance />} />
+          </Route>
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

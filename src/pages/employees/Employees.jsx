@@ -71,9 +71,11 @@ export default function Employees() {
 			get(`/users/users-list?limit=${limit}&page=${currentPage}`).then(
 				(data) => {
 					if (data?.status === 200 || data?.status === 201) {
-						setTotalPage(Math.ceil(data?.data?.users / limit))
-						dispatch(setData(data?.data?.data))
-						dispatch(setQuantity(data?.data?.users))
+						console.log("data employees", data);
+						
+						setTotalPage(Math.ceil(data?.data?.length / limit))
+						dispatch(setData(data?.data))
+						dispatch(setQuantity(data?.data?.length))
 					} else {
 						setTotalPage(1)
 						toast.error("Nomalum server xatolik")

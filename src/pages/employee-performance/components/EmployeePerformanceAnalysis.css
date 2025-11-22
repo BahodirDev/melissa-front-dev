@@ -1,0 +1,313 @@
+.employee-performance-analysis {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.employee-performance-analysis.dark {
+  background: #121e2d;
+  border-color: #344050;
+}
+
+.employee-analysis-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.employee-performance-analysis.dark .employee-analysis-title {
+  color: #d8e2ef;
+}
+
+.employee-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.employee-analysis-card {
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.employee-performance-analysis.dark .employee-analysis-card {
+  background: #0b1727;
+  border-color: #344050;
+}
+
+.employee-analysis-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 16px 0;
+}
+
+.employee-performance-analysis.dark .employee-analysis-card-title {
+  color: #d8e2ef;
+}
+
+.employee-analysis-chart {
+  height: 200px;
+  margin-bottom: 16px;
+}
+
+.employee-analysis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.employee-analysis-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.employee-performance-analysis.dark .employee-analysis-item {
+  background: #162231;
+  border-color: #344050;
+}
+
+.employee-analysis-item-name {
+  font-size: 14px;
+  color: #374151;
+  flex: 1;
+}
+
+.employee-performance-analysis.dark .employee-analysis-item-name {
+  color: #d8e2ef;
+}
+
+.employee-analysis-item-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #059669;
+}
+
+.employee-performance-analysis.dark .employee-analysis-item-value {
+  color: #10b981;
+}
+
+.employee-analysis-insights {
+  padding: 16px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+}
+
+.employee-performance-analysis.dark .employee-analysis-insights {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+.employee-analysis-insights-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #d97706;
+  margin: 0 0 12px 0;
+}
+
+.employee-performance-analysis.dark .employee-analysis-insights-title {
+  color: #f59e0b;
+}
+
+.employee-analysis-insights-list {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.employee-analysis-insight-item {
+  font-size: 14px;
+  color: #92400e;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.employee-performance-analysis.dark .employee-analysis-insight-item {
+  color: #fbbf24;
+}
+
+.employee-analysis-loading {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* Pie Charts Styles */
+.employee-pie-charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.employee-pie-chart-card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.employee-performance-analysis.dark .employee-pie-chart-card {
+  background: #121e2d;
+  border-color: #344050;
+}
+
+.employee-chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.employee-pie-chart-card.dark .employee-chart-title,
+.employee-performance-analysis.dark .employee-chart-title {
+  color: #d8e2ef;
+}
+
+.employee-chart-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+}
+
+.employee-pie-chart-card.dark .employee-chart-subtitle,
+.employee-performance-analysis.dark .employee-chart-subtitle {
+  color: #9ca3af;
+}
+
+.employee-chart-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.employee-performance-analysis.dark .employee-chart-stats {
+  border-top-color: #344050;
+}
+
+.employee-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.employee-stat-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.employee-performance-analysis.dark .employee-stat-label {
+  color: #9ca3af;
+}
+
+.employee-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #059669;
+}
+
+.employee-performance-analysis.dark .employee-stat-value {
+  color: #10b981;
+}
+
+/* Employee Information Section */
+.employee-info-section {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.employee-info-section.dark {
+  background: #121e2d;
+  border-color: #344050;
+}
+
+.employee-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.employee-info-section.dark .employee-section-title {
+  color: #d8e2ef;
+}
+
+.employee-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.employee-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.employee-info-section.dark .employee-info-item {
+  background: #0b1727;
+  border-color: #344050;
+}
+
+.employee-info-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.employee-info-section.dark .employee-info-label {
+  color: #9ca3af;
+}
+
+.employee-info-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.employee-info-section.dark .employee-info-value {
+  color: #d8e2ef;
+}
+
+@media (max-width: 768px) {
+  .employee-analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-analysis-chart {
+    height: 180px;
+  }
+
+  .employee-pie-charts-container {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

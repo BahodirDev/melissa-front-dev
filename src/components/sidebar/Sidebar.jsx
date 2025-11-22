@@ -258,6 +258,20 @@ export default function Sidebar({
 						</NavLink>
 					</li>
 				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink
+							to="/employee-performance"
+							className={`${
+								activeSectionIndex === 12 && url.pathname !== "/employee-performance"
+									? "tabFocus"
+									: null
+							}`}
+						>
+							<Users size={24} /> Xodimlar ishlashi
+						</NavLink>
+					</li>
+				)}
 				{/* <li>
 					<NavLink to="/settings">
 						<i className="fa-solid fa-gear"></i>
