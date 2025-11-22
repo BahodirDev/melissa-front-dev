@@ -74,6 +74,9 @@ export default function SSidebar({
 					case 11:
 						navigate("/currency")
 						break
+					case 12:
+						navigate("/employee-performance")
+						break
 				}
 			}
 		}
@@ -267,6 +270,21 @@ export default function SSidebar({
 							}`}
 						>
 							<CurrencyDollar size={24} />
+						</NavLink>
+					</li>
+				)}
+				{userRole === 1 && (
+					<li>
+						<NavLink
+							to="/employee-performance"
+							title="Xodimlar ishlashi"
+							className={`${
+								activeSectionIndex === 12 && url.pathname !== "/employee-performance"
+									? "tabFocus"
+									: null
+							}`}
+						>
+							<Users size={24} />
 						</NavLink>
 					</li>
 				)}

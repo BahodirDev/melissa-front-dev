@@ -1,0 +1,57 @@
+.employee-dashboard-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.employee-dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.employee-dashboard-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.employee-dashboard-widget.dark .employee-dashboard-title {
+  color: #d8e2ef;
+}
+
+.employee-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.employee-dashboard-loading {
+  padding: 48px;
+  text-align: center;
+}
+
+.employee-dashboard-error {
+  padding: 24px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  color: #ef4444;
+  text-align: center;
+}
+
+.employee-dashboard-widget.dark .employee-dashboard-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+@media (max-width: 768px) {
+  .employee-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

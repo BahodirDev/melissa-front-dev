@@ -1,0 +1,143 @@
+.employee-performance-comparison {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.employee-performance-comparison.dark {
+  background: #121e2d;
+  border-color: #344050;
+}
+
+.employee-comparison-header {
+  margin-bottom: 16px;
+}
+
+.employee-comparison-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.employee-performance-comparison.dark .employee-comparison-title {
+  color: #d8e2ef;
+}
+
+.employee-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.employee-comparison-card {
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.employee-performance-comparison.dark .employee-comparison-card {
+  background: #0b1727;
+  border-color: #344050;
+}
+
+.employee-comparison-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.employee-comparison-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.employee-performance-comparison.dark .employee-comparison-label {
+  color: #9da9bb;
+}
+
+.employee-comparison-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.employee-comparison-item-increase {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.employee-performance-comparison.dark .employee-comparison-item-increase {
+  background: rgba(5, 150, 105, 0.2);
+  color: #10b981;
+}
+
+.employee-comparison-item-decrease {
+  background: #fff1f2;
+  color: #ef4444;
+}
+
+.employee-performance-comparison.dark .employee-comparison-item-decrease {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.employee-comparison-item-neutral {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.employee-comparison-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.employee-comparison-value {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.employee-comparison-value-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.employee-performance-comparison.dark .employee-comparison-value-label {
+  color: #9da9bb;
+}
+
+.employee-comparison-value-current {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.employee-performance-comparison.dark .employee-comparison-value-current {
+  color: #d8e2ef;
+}
+
+.employee-comparison-value-previous {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .employee-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
