@@ -195,6 +195,7 @@ function EmployeePerformanceDashboard({ period = "month", dateRange = [], darkMo
             sparkline={data.sparkline}
             color="success"
             darkMode={darkMode}
+            isCurrency={true}
           />
           <MetricCard
             title="Jami foyda"
@@ -203,6 +204,7 @@ function EmployeePerformanceDashboard({ period = "month", dateRange = [], darkMo
             sparkline={data.sparkline}
             color="primary"
             darkMode={darkMode}
+            isCurrency={true}
           />
           <MetricCard
             title="Jami savdolar"
@@ -210,24 +212,28 @@ function EmployeePerformanceDashboard({ period = "month", dateRange = [], darkMo
             delta={previousData ? calculateDelta(data.total_sales_count, previousData.total_sales_count) : undefined}
             color="primary"
             darkMode={darkMode}
+            isCurrency={false}
           />
           <MetricCard
             title="Jami xodimlar"
             value={data.total_employees}
             color="primary"
             darkMode={darkMode}
+            isCurrency={false}
           />
           <MetricCard
             title="Sotilgan mahsulotlar"
             value={data.total_products_sold}
             color="primary"
             darkMode={darkMode}
+            isCurrency={false}
           />
           <MetricCard
             title="Mijozlar soni"
             value={data.unique_clients}
             color="primary"
             darkMode={darkMode}
+            isCurrency={false}
           />
         </div>
       </div>

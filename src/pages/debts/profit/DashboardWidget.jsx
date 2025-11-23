@@ -100,6 +100,7 @@ function DashboardWidget({ onProfitClick, onDebtClick, period = "today", darkMod
 						color="success"
 						onClick={onProfitClick}
 						darkMode={darkMode}
+						isCurrency={true}
 					/>
 					<MetricCard
 						title="Daromad"
@@ -108,6 +109,7 @@ function DashboardWidget({ onProfitClick, onDebtClick, period = "today", darkMod
 						sparkline={profit.sparkline}
 						color="primary"
 						darkMode={darkMode}
+						isCurrency={true}
 					/>
 					<MetricCard
 						title="Xarajat"
@@ -116,6 +118,7 @@ function DashboardWidget({ onProfitClick, onDebtClick, period = "today", darkMod
 						sparkline={profit.sparkline}
 						color="primary"
 						darkMode={darkMode}
+						isCurrency={true}
 					/>
 				</div>
 			</div>
@@ -145,18 +148,21 @@ function DashboardWidget({ onProfitClick, onDebtClick, period = "today", darkMod
 						color="danger"
 						onClick={onDebtClick}
 						darkMode={darkMode}
+						isCurrency={true}
 					/>
 					<MetricCard
 						title="Muddat o'tgan"
 						value={debt.overdue}
 						color="danger"
 						darkMode={darkMode}
+						isCurrency={true}
 					/>
 					<MetricCard
 						title="Faol mijozlar"
 						value={debt.active_clients}
 						color="primary"
 						darkMode={darkMode}
+						isCurrency={false}
 					/>
 				</div>
 			</div>
