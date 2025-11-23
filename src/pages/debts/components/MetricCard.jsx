@@ -10,8 +10,9 @@ import "./MetricCard.css"
  * @param {string} color - Color theme: 'primary', 'success', 'danger', 'warning'
  * @param {Function} onClick - Optional click handler
  * @param {boolean} darkMode - Dark mode flag
+ * @param {boolean} isCurrency - Whether the value is a currency (adds "so'm" suffix)
  */
-function MetricCard({ title, value, delta, sparkline, color = "primary", onClick, darkMode = false }) {
+function MetricCard({ title, value, delta, sparkline, color = "primary", onClick, darkMode = false, isCurrency = false }) {
 	const formatValue = (val) => {
 		if (typeof val === "number") {
 			return new Intl.NumberFormat("uz-UZ", {
@@ -75,7 +76,10 @@ function MetricCard({ title, value, delta, sparkline, color = "primary", onClick
 					</span>
 				)}
 			</div>
-			<div className="metric-value">{formatValue(value)} so'm</div>
+			<div className="metric-value">
+				{formatValue(value)}
+				{isCurrency && " so'm"}
+			</div>
 			{sparkline && <div className="metric-sparkline-container">{renderSparkline()}</div>}
 		</div>
 	)

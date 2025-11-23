@@ -279,18 +279,21 @@ function ProfitList({ onRowClick, darkMode = false }) {
               value={summary.total}
               color="success"
               darkMode={darkMode}
+              isCurrency={true}
             />
             <MetricCard
               title="Jami daromad"
               value={summary.revenue}
               color="primary"
               darkMode={darkMode}
+              isCurrency={true}
             />
             <MetricCard
               title="Jami xarajat"
               value={summary.cost}
               color="primary"
               darkMode={darkMode}
+              isCurrency={true}
             />
           </div>
         </div>
