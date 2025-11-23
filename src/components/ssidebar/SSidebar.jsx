@@ -229,7 +229,7 @@ export default function SSidebar({
 						<UsersFour size={24} />
 					</NavLink>
 				</li>
-				<li>
+				{/* <li>
 					<NavLink
 						to="/monitoring"
 						title="Monitoring"
@@ -242,7 +242,7 @@ export default function SSidebar({
 					>
 						<SecurityCamera size={24} />
 					</NavLink>
-				</li>
+				</li> */}
 				{userRole === 1 && (
 					<li>
 						<NavLink

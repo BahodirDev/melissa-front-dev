@@ -68,9 +68,6 @@ const EmployeeProductBreakdown = ({ data, darkMode, sidebar }) => {
   return (
     <div 
       className={`ant-d-table employee-product-breakdown ${darkMode ? "dark" : null}`}
-      style={{
-        width: sidebar && "calc(100dvw - 309px)",
-      }}
     >
       <Table
         columns={columns}
