@@ -77,7 +77,7 @@ export default function App(url) {
             <Route index element={<Clients />} />
             <Route path=":id" element={<ClientsInfo />} />
           </Route>
-          <Route path="/monitoring" element={<Monitoring />} />
+          {/* <Route path="/monitoring" element={<Monitoring />} /> */}
           <Route path="/return" element={<Return />} />
           <Route path="/debts" element={<Debts />} />
           <Route path="/employee-performance">

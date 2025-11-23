@@ -33,14 +33,7 @@ const EmployeePerformanceList = ({
       title: "Xodim ismi",
       dataIndex: "user_name",
       key: "user_name",
-      render: (text, record) => (
-        <span
-          style={{ cursor: "pointer", color: "var(--color-primary)" }}
-          onClick={() => onEmployeeClick(record.user_id)}
-        >
-          {text}
-        </span>
-      ),
+      render: (text) => text,
     },
     {
       title: "Savdolar soni",
@@ -119,6 +112,16 @@ const EmployeePerformanceList = ({
           emptyText: <NoData />,
         }}
         className={darkMode ? "dark" : null}
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              onEmployeeClick(record.user_id);
+            },
+            style: {
+              cursor: "pointer",
+            },
+          };
+        }}
       />
     </div>
   );

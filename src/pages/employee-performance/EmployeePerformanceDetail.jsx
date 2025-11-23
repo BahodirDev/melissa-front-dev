@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Select, DatePicker, Tabs } from "antd";
-import { ArrowLeft, Users, CurrencyDollar, TrendUp, Package } from "@phosphor-icons/react";
+import {
+  ArrowLeft,
+  Users,
+  CurrencyDollar,
+  TrendUp,
+  Package,
+} from "@phosphor-icons/react";
 import { get } from "../../customHook/api";
 import { toast } from "react-toastify";
 import Loader from "../../components/loader/Loader";
@@ -38,11 +44,34 @@ const EmployeePerformanceDetail = ({
   const [productsData, setProductsData] = useState([]);
   const [clientsData, setClientsData] = useState([]);
 
+  // Only load data when employee is available
   useEffect(() => {
-    loadAllData();
-  }, [employee, currentPeriod, currentDateRange]);
+    if (employee && employee.user_id) {
+      console.log(
+        "EmployeePerformanceDetail: Loading data for employee",
+        employee.user_id
+      );
+      loadAllData();
+    } else {
+      console.warn(
+        "EmployeePerformanceDetail: Employee not available yet",
+        employee
+      );
+    }
+  }, [employee?.user_id, currentPeriod, currentDateRange]);
 
   const loadAllData = async () => {
+    if (!employee || !employee.user_id) {
+      console.error(
+        "EmployeePerformanceDetail: Cannot load data - employee is missing"
+      );
+      return;
+    }
+
+    console.log(
+      "EmployeePerformanceDetail: Starting to load all data for employee",
+      employee.user_id
+    );
     setLoading(true);
     try {
       await Promise.all([
@@ -54,14 +83,20 @@ const EmployeePerformanceDetail = ({
         loadProducts(),
         loadClients(),
       ]);
+      console.log("EmployeePerformanceDetail: All data loaded successfully");
     } catch (error) {
-      console.error("Data load error:", error);
+      console.error("EmployeePerformanceDetail: Data load error:", error);
+      toast.error("Ma'lumotlarni yuklashda xatolik yuz berdi");
     } finally {
       setLoading(false);
     }
   };
 
   const loadSummary = async () => {
+    if (!employee || !employee.user_id) {
+      console.error("loadSummary: Employee is missing");
+      return;
+    }
     try {
       const queryParams = new URLSearchParams({
         period: currentPeriod,
@@ -72,16 +107,25 @@ const EmployeePerformanceDetail = ({
           "startDate",
           currentDateRange[0].format("YYYY-MM-DD")
         );
-        queryParams.append(
-          "endDate",
-          currentDateRange[1].format("YYYY-MM-DD")
-        );
+        queryParams.append("endDate", currentDateRange[1].format("YYYY-MM-DD"));
       }
+      console.log(
+        "loadSummary: Making request to",
+        `/employee-performance/summary?${queryParams.toString()}`
+      );
       const response = await get(
         `/employee-performance/summary?${queryParams.toString()}`
       );
+      console.log("loadSummary: Response received", response);
       if (response?.status === 200 && response.data?.data?.length > 0) {
         setSummary(response.data.data[0]);
+      } else if (
+        response?.status === 200 &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        // Handle case where response.data is directly an array
+        setSummary(response.data[0]);
       }
     } catch (error) {
       console.error("Summary load error:", error);
@@ -89,6 +133,10 @@ const EmployeePerformanceDetail = ({
   };
 
   const loadComparison = async () => {
+    if (!employee || !employee.user_id) {
+      console.error("loadComparison: Employee is missing");
+      return;
+    }
     try {
       const queryParams = new URLSearchParams({ period: currentPeriod });
       if (currentPeriod === "period" && currentDateRange?.length === 2) {
@@ -96,13 +144,13 @@ const EmployeePerformanceDetail = ({
           "startDate",
           currentDateRange[0].format("YYYY-MM-DD")
         );
-        queryParams.append(
-          "endDate",
-          currentDateRange[1].format("YYYY-MM-DD")
-        );
+        queryParams.append("endDate", currentDateRange[1].format("YYYY-MM-DD"));
       }
+      console.log("loadComparison: Making request");
       const response = await get(
-        `/employee-performance/${employee.user_id}/comparison?${queryParams.toString()}`
+        `/employee-performance/${
+          employee.user_id
+        }/comparison?${queryParams.toString()}`
       );
       if (response?.status === 200) {
         setComparison(response.data);
@@ -113,7 +161,12 @@ const EmployeePerformanceDetail = ({
   };
 
   const loadAverages = async () => {
+    if (!employee || !employee.user_id) {
+      console.error("loadAverages: Employee is missing");
+      return;
+    }
     try {
+      console.log("loadAverages: Making request");
       const response = await get(
         `/employee-performance/${employee.user_id}/averages`
       );
@@ -126,6 +179,10 @@ const EmployeePerformanceDetail = ({
   };
 
   const loadSales = async () => {
+    if (!employee || !employee.user_id) {
+      console.error("loadSales: Employee is missing");
+      return;
+    }
     try {
       const queryParams = new URLSearchParams({
         period: currentPeriod,
@@ -137,13 +194,13 @@ const EmployeePerformanceDetail = ({
           "startDate",
           currentDateRange[0].format("YYYY-MM-DD")
         );
-        queryParams.append(
-          "endDate",
-          currentDateRange[1].format("YYYY-MM-DD")
-        );
+        queryParams.append("endDate", currentDateRange[1].format("YYYY-MM-DD"));
       }
+      console.log("loadSales: Making request");
       const response = await get(
-        `/employee-performance/${employee.user_id}/sales?${queryParams.toString()}`
+        `/employee-performance/${
+          employee.user_id
+        }/sales?${queryParams.toString()}`
       );
       if (response?.status === 200) {
         setSalesData(response.data.data || []);
@@ -154,6 +211,10 @@ const EmployeePerformanceDetail = ({
   };
 
   const loadProducts = async () => {
+    if (!employee || !employee.user_id) {
+      console.error("loadProducts: Employee is missing");
+      return;
+    }
     try {
       const queryParams = new URLSearchParams({ period: currentPeriod });
       if (currentPeriod === "period" && currentDateRange?.length === 2) {
@@ -161,13 +222,13 @@ const EmployeePerformanceDetail = ({
           "startDate",
           currentDateRange[0].format("YYYY-MM-DD")
         );
-        queryParams.append(
-          "endDate",
-          currentDateRange[1].format("YYYY-MM-DD")
-        );
+        queryParams.append("endDate", currentDateRange[1].format("YYYY-MM-DD"));
       }
+      console.log("loadProducts: Making request");
       const response = await get(
-        `/employee-performance/${employee.user_id}/products?${queryParams.toString()}`
+        `/employee-performance/${
+          employee.user_id
+        }/products?${queryParams.toString()}`
       );
       if (response?.status === 200) {
         setProductsData(response.data.data || []);
@@ -178,6 +239,10 @@ const EmployeePerformanceDetail = ({
   };
 
   const loadClients = async () => {
+    if (!employee || !employee.user_id) {
+      console.error("loadClients: Employee is missing");
+      return;
+    }
     try {
       const queryParams = new URLSearchParams({ period: currentPeriod });
       if (currentPeriod === "period" && currentDateRange?.length === 2) {
@@ -185,13 +250,13 @@ const EmployeePerformanceDetail = ({
           "startDate",
           currentDateRange[0].format("YYYY-MM-DD")
         );
-        queryParams.append(
-          "endDate",
-          currentDateRange[1].format("YYYY-MM-DD")
-        );
+        queryParams.append("endDate", currentDateRange[1].format("YYYY-MM-DD"));
       }
+      console.log("loadClients: Making request");
       const response = await get(
-        `/employee-performance/${employee.user_id}/clients?${queryParams.toString()}`
+        `/employee-performance/${
+          employee.user_id
+        }/clients?${queryParams.toString()}`
       );
       if (response?.status === 200) {
         setClientsData(response.data.data || []);
@@ -202,9 +267,14 @@ const EmployeePerformanceDetail = ({
   };
 
   const loadAnalysis = async () => {
+    if (!employee || !employee.user_id) {
+      console.error("loadAnalysis: Employee is missing");
+      setAnalysisLoading(false);
+      return;
+    }
     setAnalysisLoading(true);
     try {
-      const queryParams = new URLSearchParams({ 
+      const queryParams = new URLSearchParams({
         period: currentPeriod,
         employeeId: employee.user_id,
       });
@@ -213,13 +283,13 @@ const EmployeePerformanceDetail = ({
           "startDate",
           currentDateRange[0].format("YYYY-MM-DD")
         );
-        queryParams.append(
-          "endDate",
-          currentDateRange[1].format("YYYY-MM-DD")
-        );
+        queryParams.append("endDate", currentDateRange[1].format("YYYY-MM-DD"));
       }
+      console.log("loadAnalysis: Making request");
       const response = await get(
-        `/employee-performance/${employee.user_id}/analysis?${queryParams.toString()}`
+        `/employee-performance/${
+          employee.user_id
+        }/analysis?${queryParams.toString()}`
       );
       if (response?.status === 200 || response?.status === 201) {
         setAnalysisData(response.data);
@@ -238,18 +308,28 @@ const EmployeePerformanceDetail = ({
     }).format(amount || 0);
   };
 
+  // Safety check: if employee is not available, show loader
+  if (!employee || !employee.user_id) {
+    console.warn(
+      "EmployeePerformanceDetail: Employee prop is missing or invalid",
+      employee
+    );
+    return <Loader />;
+  }
+
   if (loading && !summary) {
     return <Loader />;
   }
 
   return (
-    <>
+    <div className="employee-detail-container">
       <button
         className={`primary-btn ${darkMode ? "dark" : null}`}
         onClick={onBack}
-        style={{ marginBottom: "20px" }}
+        style={{ marginBottom: "var(--padding-lg)" }}
       >
-        <ArrowLeft size={20} style={{ marginRight: "8px" }} /> Orqaga
+        <ArrowLeft size={20} style={{ marginRight: "var(--padding-sm)" }} />{" "}
+        Orqaga
       </button>
 
       <div className={`filter-wrapper ${darkMode ? "dark" : null}`}>
@@ -275,10 +355,7 @@ const EmployeePerformanceDetail = ({
                 <span>Hafta</span>
               </div>
             </Select.Option>
-            <Select.Option
-              value="month"
-              className={darkMode ? "dark" : null}
-            >
+            <Select.Option value="month" className={darkMode ? "dark" : null}>
               <div>
                 <span>Oy</span>
               </div>
@@ -288,10 +365,7 @@ const EmployeePerformanceDetail = ({
                 <span>Yil</span>
               </div>
             </Select.Option>
-            <Select.Option
-              value="period"
-              className={darkMode ? "dark" : null}
-            >
+            <Select.Option value="period" className={darkMode ? "dark" : null}>
               <div>
                 <span>Davr</span>
               </div>
@@ -322,7 +396,9 @@ const EmployeePerformanceDetail = ({
           </div>
           <div className="employee-info-item">
             <span className="employee-info-label">Telefon:</span>
-            <span className="employee-info-value">{employee.user_nomer || "N/A"}</span>
+            <span className="employee-info-value">
+              {employee.user_nomer || "N/A"}
+            </span>
           </div>
           <div className="employee-info-item">
             <span className="employee-info-label">Rol:</span>
@@ -342,7 +418,9 @@ const EmployeePerformanceDetail = ({
                 <span className="employee-info-label">Birinchi savdo:</span>
                 <span className="employee-info-value">
                   {summary.first_sale_date
-                    ? new Date(summary.first_sale_date).toLocaleDateString("uz-UZ")
+                    ? new Date(summary.first_sale_date).toLocaleDateString(
+                        "uz-UZ"
+                      )
                     : "N/A"}
                 </span>
               </div>
@@ -350,7 +428,9 @@ const EmployeePerformanceDetail = ({
                 <span className="employee-info-label">Oxirgi savdo:</span>
                 <span className="employee-info-value">
                   {summary.last_sale_date
-                    ? new Date(summary.last_sale_date).toLocaleDateString("uz-UZ")
+                    ? new Date(summary.last_sale_date).toLocaleDateString(
+                        "uz-UZ"
+                      )
                     : "N/A"}
                 </span>
               </div>
@@ -418,21 +498,25 @@ const EmployeePerformanceDetail = ({
         className={darkMode ? "dark" : null}
       >
         <TabPane tab="Umumiy ko'rinish" key="overview">
-          {comparison && <EmployeeComparison comparison={comparison} darkMode={darkMode} />}
-          {averages && <EmployeeAverages averages={averages} darkMode={darkMode} />}
+          {comparison && (
+            <EmployeeComparison comparison={comparison} darkMode={darkMode} />
+          )}
+          {averages && (
+            <EmployeeAverages averages={averages} darkMode={darkMode} />
+          )}
         </TabPane>
         <TabPane tab="Tahlil" key="analysis">
           {analysisLoading ? (
             <Loader />
           ) : analysisData ? (
             <>
-              <EmployeePerformanceAnalysis 
-                analysisData={analysisData} 
+              <EmployeePerformanceAnalysis
+                analysisData={analysisData}
                 darkMode={darkMode}
                 isEmployeeView={true}
               />
-              <div style={{ marginTop: "40px" }}>
-                <EmployeePieCharts 
+              <div style={{ marginTop: "var(--padding-xxl)" }}>
+                <EmployeePieCharts
                   analysisData={analysisData}
                   clientsData={clientsData}
                   darkMode={darkMode}
@@ -440,24 +524,43 @@ const EmployeePerformanceDetail = ({
               </div>
             </>
           ) : (
-            <div style={{ padding: "20px", textAlign: "center" }}>
+            <div
+              style={{
+                padding: "var(--padding-xl)",
+                textAlign: "center",
+                color: darkMode
+                  ? "var(--d-color-accent)"
+                  : "var(--color-accent)",
+              }}
+            >
               Ma'lumotlar mavjud emas
             </div>
           )}
         </TabPane>
         <TabPane tab="Savdo tarixi" key="sales">
-          <EmployeeSalesTable data={salesData} darkMode={darkMode} sidebar={sidebar} />
+          <EmployeeSalesTable
+            data={salesData}
+            darkMode={darkMode}
+            sidebar={sidebar}
+          />
         </TabPane>
         <TabPane tab="Mahsulotlar bo'yicha" key="products">
-          <EmployeeProductBreakdown data={productsData} darkMode={darkMode} sidebar={sidebar} />
+          <EmployeeProductBreakdown
+            data={productsData}
+            darkMode={darkMode}
+            sidebar={sidebar}
+          />
         </TabPane>
         <TabPane tab="Mijozlar bo'yicha" key="clients">
-          <EmployeeClientBreakdown data={clientsData} darkMode={darkMode} sidebar={sidebar} />
+          <EmployeeClientBreakdown
+            data={clientsData}
+            darkMode={darkMode}
+            sidebar={sidebar}
+          />
         </TabPane>
       </Tabs>
-    </>
+    </div>
   );
 };
 
 export default EmployeePerformanceDetail;
-

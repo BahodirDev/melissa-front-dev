@@ -452,14 +452,14 @@
 	color: var(--color-secondary);
 }
 .info-item.dark h3 {
-	color: var(--d-color-secondary);
+	color: #e5e7eb;
 }
 .info-item h4 {
 	font-size: var(--text-sm);
 	color: var(--color-accent);
 }
 .info-item.dark h4 {
-	color: var(--d-color-accent);
+	color: #9ca3af;
 }
 .info-item span {
 	width: 36px;
