@@ -654,9 +654,11 @@ export default function Reports() {
         <InfoItem
           value={
             addSpace(
-              searchSubmitted
-                ? roundToNearestThousand(+filteredData?.hisob?.totalCostMinus)
-                : roundToNearestThousand(report.outcome)
+              roundToNearestThousand(
+                searchSubmitted
+                  ? +filteredData?.hisob?.totalCostMinus || 0
+                  : +report.outcome || 0
+              )
             ) + " so'm"
           }
           name="Kirim"
@@ -667,9 +669,11 @@ export default function Reports() {
         <InfoItem
           value={
             addSpace(
-              searchSubmitted
-                ? roundToNearestThousand(+filteredData?.hisob?.totalCostPilus)
-                : roundToNearestThousand(report.income)
+              roundToNearestThousand(
+                searchSubmitted
+                  ? +filteredData?.hisob?.totalCostPilus || 0
+                  : +report.income || 0
+              )
             ) + " so'm"
           }
           name="Chiqim"
@@ -680,9 +684,11 @@ export default function Reports() {
         <InfoItem
           value={
             addSpace(
-              searchSubmitted
-                ? roundToNearestThousand(+filteredData?.hisob?.totalProductCost)
-                : roundToNearestThousand(report.capital)
+              roundToNearestThousand(
+                searchSubmitted
+                  ? +filteredData?.hisob?.totalProductCost || 0
+                  : +report.capital || 0
+              )
             ) + " so'm"
           }
           name="Foyda"
@@ -693,9 +699,9 @@ export default function Reports() {
         <InfoItem
           value={addSpace(
             searchSubmitted
-              ? filteredData?.hisob?.totalInput -
-                  filteredData?.hisob?.totalOuput
-              : report.qtyIn - report.qtyOut
+              ? (filteredData?.hisob?.totalInput || 0) -
+                  (filteredData?.hisob?.totalOuput || 0)
+              : (report.qtyIn || 0) - (report.qtyOut || 0)
           )}
           name="Mavjud mahsulotlar soni"
           icon={<Cube size={24} color="var(--color-primary)" />}
@@ -704,7 +710,9 @@ export default function Reports() {
         />
         <InfoItem
           value={addSpace(
-            searchSubmitted ? filteredData?.hisob?.totalInput : report.qtyIn
+            searchSubmitted
+              ? filteredData?.hisob?.totalInput || 0
+              : report.qtyIn || 0
           )}
           name="Kirgan mahsulotlar soni"
           icon={<ArrowDown size={24} color="var(--color-success)" />}
@@ -713,7 +721,9 @@ export default function Reports() {
         />
         <InfoItem
           value={addSpace(
-            searchSubmitted ? filteredData?.hisob?.totalOuput : report.qtyOut
+            searchSubmitted
+              ? filteredData?.hisob?.totalOuput || 0
+              : report.qtyOut || 0
           )}
           name="Chiqqan mahsulotlar soni"
           icon={<ArrowUp size={24} color="var(--color-danger)" />}
