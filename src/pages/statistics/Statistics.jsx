@@ -167,7 +167,35 @@ export default function Statistics() {
   const [selectedStoreIds, setSelectedStoreIds] = useState([]);
   const [selectedDeliverIds, setSelectedDeliverIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(
+    USE_MOCK ? MOCK_STATS.length : 0
+  );
+  const [serverPaginated, setServerPaginated] = useState(!USE_MOCK);
   const didMount = useRef(false);
+
+  const normalizeStatsResponse = useCallback((payload) => {
+    if (!payload) {
+      return { rows: [], total: 0, serverSide: false };
+    }
+
+    if (Array.isArray(payload)) {
+      return { rows: payload, total: payload.length, serverSide: false };
+    }
+
+    if (Array.isArray(payload?.data)) {
+      const fromData = payload.data;
+      const totalValue =
+        Number(payload.total ?? fromData?.[0]?.full_count) ??
+        fromData.length;
+      return {
+        rows: fromData,
+        total: Number.isFinite(totalValue) ? totalValue : fromData.length,
+        serverSide: true,
+      };
+    }
+
+    return { rows: [], total: 0, serverSide: false };
+  }, []);
 
   const fetchStores = useCallback(() => {
     if (USE_MOCK) {
@@ -211,73 +239,104 @@ export default function Statistics() {
       .catch(() => setDeliveries([]));
   }, []);
 
+  // Debounce timer ref
+  const searchDebounceRef = useRef(null);
+
   const handleSearch = useCallback(
-    (pageOverride = null) => {
-      setLoading(true);
-      setSearchSubmitted(true);
-      const searchValue = inputRef.current?.value?.trim() || "";
-      const pageToUse = pageOverride !== null ? pageOverride : currentPage;
-
-      const params = new URLSearchParams();
-      params.append("limit", limit);
-      params.append("page", pageToUse);
-
-      if (searchValue) {
-        params.append("search", searchValue);
+    (pageOverride = null, skipDebounce = false) => {
+      // Clear existing debounce timer
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+        searchDebounceRef.current = null;
       }
 
-      if (
-        selectedStoreIds.length &&
-        stores.length &&
-        selectedStoreIds.length !== stores.length
-      ) {
-        params.append("store_id", selectedStoreIds.join(","));
-      }
+      const executeSearch = () => {
+        setLoading(true);
+        setSearchSubmitted(true);
+        const searchValue = inputRef.current?.value?.trim() || "";
+        const pageToUse = pageOverride !== null ? pageOverride : currentPage;
 
-      if (selectedDeliverIds.length) {
-        params.append("deliver_id", selectedDeliverIds.join(","));
-      }
+        const params = new URLSearchParams();
+        params.append("limit", limit);
+        params.append("page", pageToUse);
 
-      if (USE_MOCK) {
-        setStatsRaw(MOCK_STATS);
-        setLoading(false);
-        return;
-      }
+        if (searchValue) {
+          params.append("search", searchValue);
+        }
 
-      const endpoint = params.toString()
-        ? `/products/products-low-stock?${params.toString()}`
-        : `/products/products-low-stock`;
+        if (
+          selectedStoreIds.length &&
+          stores.length &&
+          selectedStoreIds.length !== stores.length
+        ) {
+          params.append("store_id", selectedStoreIds.join(","));
+        }
 
-      get(endpoint)
-        .then((response) => {
-          const data = response?.data || response;
-          if (
-            (response?.status === 200 || !response?.status) &&
-            Array.isArray(data) &&
-            data.length
-          ) {
-            setStatsRaw(data);
-            if (!data.length) setCurrentPage(1);
-          } else if (response?.status && response?.status !== 200) {
+        if (selectedDeliverIds.length) {
+          params.append("deliver_id", selectedDeliverIds.join(","));
+        }
+
+        if (USE_MOCK) {
+          setStatsRaw(MOCK_STATS);
+          setTotalCount(MOCK_STATS.length);
+          setServerPaginated(false);
+          setLoading(false);
+          return;
+        }
+
+        const endpoint = params.toString()
+          ? `/products/products-low-stock?${params.toString()}`
+          : `/products/products-low-stock`;
+
+        get(endpoint)
+          .then((response) => {
+            const data = response?.data ?? response;
+            if (response?.status === 200 || !response?.status) {
+              const { rows, total, serverSide } =
+                normalizeStatsResponse(data);
+              setStatsRaw(rows);
+              setTotalCount(total);
+              setServerPaginated(serverSide);
+              if (!rows.length) {
+                setCurrentPage(1);
+              }
+            } else {
+              toast.error("Nomalum server xatolik");
+              setStatsRaw([]);
+              setTotalCount(0);
+            }
+          })
+          .catch(() => {
             toast.error("Nomalum server xatolik");
             setStatsRaw([]);
-          } else {
-            setStatsRaw([]);
-          }
-        })
-        .catch(() => {
-          toast.error("Nomalum server xatolik");
-          setStatsRaw([]);
-        })
-        .finally(() => setLoading(false));
+            setTotalCount(0);
+          })
+          .finally(() => setLoading(false));
+      };
+
+      // Debounce search requests (except for page changes)
+      if (skipDebounce || pageOverride !== null) {
+        executeSearch();
+      } else {
+        searchDebounceRef.current = setTimeout(executeSearch, 300);
+      }
     },
-    [currentPage, limit, selectedStoreIds, selectedDeliverIds, stores.length]
+    [
+      currentPage,
+      limit,
+      selectedStoreIds,
+      selectedDeliverIds,
+      stores.length,
+      normalizeStatsResponse,
+    ]
   );
 
   const getData = useCallback(() => {
     setLoading(true);
     if (USE_MOCK) {
       setStatsRaw(MOCK_STATS);
+      setTotalCount(MOCK_STATS.length);
+      setServerPaginated(false);
       setLoading(false);
       return;
     }
@@ -296,23 +355,23 @@ export default function Statistics() {
       // No filters, fetch default data
       get(`/products/products-low-stock?limit=${limit}&page=${currentPage}`)
         .then((response) => {
-          const data = response?.data || response;
-          if (
-            (response?.status === 200 || !response?.status) &&
-            Array.isArray(data) &&
-            data.length
-          ) {
-            setStatsRaw(data);
-          } else if (response?.status && response?.status !== 200) {
+          const data = response?.data ?? response;
+          if (response?.status === 200 || !response?.status) {
+            const { rows, total, serverSide } =
+              normalizeStatsResponse(data);
+            setStatsRaw(rows);
+            setTotalCount(total);
+            setServerPaginated(serverSide);
+          } else {
             toast.error("Nomalum server xatolik");
             setStatsRaw([]);
-          } else {
-            setStatsRaw([]);
+            setTotalCount(0);
           }
         })
         .catch(() => {
           toast.error("Nomalum server xatolik");
           setStatsRaw([]);
+          setTotalCount(0);
         })
         .finally(() => setLoading(false));
     }
@@ -324,6 +383,7 @@ export default function Statistics() {
     stores.length,
     searchSubmitted,
     handleSearch,
+    normalizeStatsResponse,
   ]);
 
   useEffect(() => {
@@ -346,11 +406,20 @@ export default function Statistics() {
   useEffect(() => {
     setCurrentPage(1);
     if (didMount.current) {
-      handleSearch(1);
+      handleSearch(1, false); // Skip debounce for filter changes
     } else {
       didMount.current = true;
     }
   }, [selectedStoreIds, selectedDeliverIds, limit, handleSearch]);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, []);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -369,8 +438,8 @@ export default function Statistics() {
     setSearchText(searchValue);
     setSearchSubmitted(true);
     setCurrentPage(1);
-    // Trigger the actual search with page 1
-    handleSearch(1);
+    // Trigger the actual search with page 1, skip debounce for explicit search
+    handleSearch(1, true);
   };
 
   const clearSearch = () => {
@@ -379,6 +448,7 @@ export default function Statistics() {
     }
     setSearchText("");
     setSearchSubmitted(false);
+    setCurrentPage(1);
     getData();
   };
 
@@ -390,6 +460,7 @@ export default function Statistics() {
       inputRef.current.value = "";
     }
     setSearchText("");
+    setCurrentPage(1);
     getData();
   };
 
@@ -571,9 +642,13 @@ export default function Statistics() {
   ]);
 
   const totalPages = useMemo(() => {
+    if (serverPaginated && !USE_MOCK) {
+      const pages = Math.ceil((totalCount || 0) / limit) || 1;
+      return Math.max(pages, 1);
+    }
     const pages = Math.ceil(filteredData.length / limit) || 1;
     return Math.max(pages, 1);
-  }, [filteredData, limit]);
+  }, [filteredData, limit, serverPaginated, totalCount]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -583,14 +658,17 @@ export default function Statistics() {
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * limit;
-    return filteredData
-      .slice(startIndex, startIndex + limit)
-      .map((item, index) => ({
-        ...item,
-        key: startIndex + index + 1,
-        selectionId: `statistics-${item.id}`,
-      }));
-  }, [filteredData, currentPage, limit]);
+    const shouldSliceLocally = USE_MOCK || !serverPaginated;
+    const sourceData = shouldSliceLocally
+      ? filteredData.slice(startIndex, startIndex + limit)
+      : filteredData;
+
+    return sourceData.map((item, index) => ({
+      ...item,
+      key: startIndex + index + 1,
+      selectionId: `statistics-${item.id}`,
+    }));
+  }, [filteredData, currentPage, limit, serverPaginated]);
 
   const visibleStores = useMemo(() => {
     const selectedSet = new Set(selectedStoreIds);
