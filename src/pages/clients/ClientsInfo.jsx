@@ -60,7 +60,7 @@ const ClientsInfo = () => {
 				).then((data) => {
 					if (data?.status === 200) {
 						setList(data?.data)
-						setTotalPage(Math.ceil(data?.data?.length / limit))
+						setTotalPage(Math.ceil((data?.data?.[0]?.full_count || 0) / limit))
 					} else {
 						toast.error("Nomalur server xatolik")
 						setTotalPage(1)
@@ -80,7 +80,7 @@ const ClientsInfo = () => {
 		).then((data) => {
 			if (data?.status === 200) {
 				setList(data.data)
-				setTotalPage(Math.ceil(data?.data?.length / limit))
+				setTotalPage(Math.ceil((data?.data?.[0]?.full_count || 0) / limit))
 			} else {
 				toast.error("Nomalur server xatolik")
 				setTotalPage(1)
