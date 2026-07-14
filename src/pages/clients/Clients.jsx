@@ -40,7 +40,6 @@ export default function Employees() {
 		darkMode,
 	] = useOutletContext()
 
-	const [clientList, setClientList] = useState([])
 	const [new_name, setNew_name] = useState("")
 	const [new_number, setNew_number] = useState("")
 	const [desc, setDesc] = useState("")
@@ -61,9 +60,9 @@ export default function Employees() {
 		get(`/clients/clients-list?limit=${limit}&page=${currentPage}`).then(
 			(data) => {
 				if (data?.status === 201 || data?.status === 200) {
-					setClientList(data?.data)
-					setTotalPage(Math.ceil(data?.data?.length / limit))
-					dispatch(setQuantity(data?.data?.length))
+					dispatch(setData(data?.data))
+					setTotalPage(Math.ceil((data?.data?.[0]?.full_count || 0) / limit))
+					dispatch(setQuantity(data?.data?.[0]?.full_count || 0))
 				} else {
 					toast.error("Nomalur server xatolik")
 					setTotalPage(1)
@@ -78,9 +77,9 @@ export default function Employees() {
 		get(`/clients/clients-list?limit=${limit}&page=${currentPage}`).then(
 			(data) => {
 				if (data?.status === 201 || data?.status === 200) {
-					setClientList(data?.data)
-					setTotalPage(Math.ceil(data?.data?.length / limit))
-					dispatch(setQuantity(data?.data?.length))
+					dispatch(setData(data?.data))
+					setTotalPage(Math.ceil((data?.data?.[0]?.full_count || 0) / limit))
+					dispatch(setQuantity(data?.data?.[0]?.full_count || 0))
 				} else {
 					toast.error("Nomalur server xatolik")
 					setTotalPage(1)
@@ -143,7 +142,7 @@ export default function Employees() {
 				post("/clients/clients-post", newClient).then((data) => {
 					if (data?.status === 201) {
 						dispatch(addData(data?.data))
-						dispatch(setQuantity())
+						dispatch(setQuantity((state?.quantity || 0) + 1))
 						clearAndClose()
 						toast.success("Mijoz muvoffaqiyatli qo'shildi")
 					} else if (data?.response?.data?.error === "CLIENTS_ALREADY_EXIST") {
@@ -189,7 +188,7 @@ export default function Employees() {
 		remove(`/clients/clients-delete/${id}`).then((data) => {
 			if (data?.status === 200) {
 				dispatch(removeDebt(id))
-				dispatch(setQuantity())
+				dispatch(setQuantity(Math.max(0, (state?.quantity || 0) - 1)))
 				toast.success("Mijoz muvoffaqiyatli o'chirildi")
 				clearAndClose()
 			} else if (data?.response?.data?.error === "DEBTS_EXIST") {
@@ -377,7 +376,7 @@ export default function Employees() {
 			) : (
 				<>
 					<ClientList
-						data={searchSubmitted ? filteredData : clientList}
+						data={searchSubmitted ? filteredData : state?.data}
 						deleteClient={deleteClient}
 						editClient={editClient}
 						showDropdown={showDropdown}
